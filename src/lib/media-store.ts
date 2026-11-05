@@ -26,7 +26,8 @@ export async function saveUploadedMedia(file:File,folder:string,slot:string):Pro
  if(file.size>12_000_000)throw new Error('Imagem acima de 12 MB. Otimize antes de importar.')
  const ext=file.type==='image/jpeg'?'jpg':file.type==='image/avif'?'avif':file.type==='image/png'?'png':'webp'
  const clean=(value:string)=>value.toLowerCase().replace(/[^a-z0-9-]/g,'-').slice(0,70)
- const ref=PREFIX+clean(folder)+'/'+clean(slot)+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'.'+ext
+ const folderPath=folder.split('/').map(clean).filter(Boolean).join('/')
+ const ref=PREFIX+folderPath+'/'+clean(slot)+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,7)+'.'+ext
  await saveMediaBlob(ref,file)
  return ref
 }
