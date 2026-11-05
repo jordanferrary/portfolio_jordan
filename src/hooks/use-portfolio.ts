@@ -4,6 +4,12 @@ import { initialProjects, starterCategories, type Project, type Category } from 
 import { mediaKey,mediaRefs,readMedia,saveMediaBlob } from '../lib/media-store'
 const KEY='jordan-portfolio-local-v2'
 export type PortfolioStore={projects:Project[];categories:Category[]}
+function migrateLegacyImage(src:string):string{
+ if(typeof src!=='string')return src
+ const match=src.match(/(?:^|\\/)images\\/(void-wanderer|moonlit-cottage|deepwalker|astral-guardian|neon-armor|ancient-ruins)\\.webp(?:\\?.*)?$/)
+ return match?import.meta.env.BASE_URL+'images/projects/'+match[1]+'/'+match[1]+'.webp':src
+}
+
 function parseStore(raw:unknown):PortfolioStore{
  if(!raw||typeof raw!=='object')throw new Error('Arquivo de dados inválido')
  const obj=raw as {projects?:unknown;categories?:unknown}
@@ -13,8 +19,9 @@ function parseStore(raw:unknown):PortfolioStore{
   if(!c||typeof c!=='object')throw new Error('Categoria inválida')
   return c as Category
  })
- const projects=obj.projects as Project[]
- for(const p of projects)if(typeof p.id!=='string'||typeof p.title!=='string'||!Array.isArray(p.blocks))throw new Error('Projeto inválido')
+ const items=obj.projects as Project[]
+ for(const p of items)if(typeof p.id!=='string'||typeof p.title!=='string'||!Array.isArray(p.blocks))throw new Error('Projeto inválido')
+ const projects=items.map(p=>({...p,image:migrateLegacyImage(p.image),blocks:p.blocks.map(b=>({...b,content:b.type==='image'?migrateLegacyImage(b.content):b.content,media:b.media?migrateLegacyImage(b.media):b.media,after:b.after?migrateLegacyImage(b.after):b.after,gallery:b.gallery?.map(migrateLegacyImage)}))}))
  return {projects,categories}
 }
 function load():PortfolioStore{
