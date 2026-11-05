@@ -1,76 +1,47 @@
-# Jordan Ferrary — React Portfolio
+# Jordan Ferrary — 3D Artist Portfolio
 
-A modular, responsive React portfolio built with Vite, React Router and Lucide icons.
+Portfólio React responsivo construído com React 19, TypeScript strict, Vite e Tailwind CSS v4.
 
-## Requirements
-- Node.js 18.18+ (Node 20 LTS recommended)
-- npm
+## Requisitos
 
-## Run locally
+- Node.js 22 ou superior
+- npm 10 ou superior
+
+## Desenvolvimento
 
 ```bash
 npm install
 npm run dev
 ```
 
-Create a production build:
+O Vite escuta em `0.0.0.0:5173`, adequado ao encaminhamento de portas do GitHub Codespaces.
+
+## Verificações e build
 
 ```bash
+npm run typecheck
 npm run build
 npm run preview
 ```
 
-## Routes
-- `/` — Home / featured work carousel
-- `/portfolio` — Filterable portfolio gallery
-- `/project/:slug` — Reusable project detail template
-- `/about` — About page
+## GitHub Pages
 
-## Add or edit projects
+O `vite.config.ts` lê `GITHUB_REPOSITORY` durante o build e calcula automaticamente o `base`:
 
-Edit `src/data/projects.js`. Each project should have a unique `slug`, title, category, cover image, description, role, software list and gallery array.
+- Repositório comum: `/<nome-do-repositorio>/`
+- Repositório `usuario.github.io`: `/`
 
-The home carousel uses entries with `featured: true`. The gallery automatically includes every project.
+O workflow `.github/workflows/deploy.yml` publica a pasta `dist` quando há push para `main`. No repositório, abra **Settings → Pages** e selecione **GitHub Actions** como fonte de publicação. Se a branch principal tiver outro nome, atualize o gatilho do workflow.
 
-## Replace placeholder images
+## Assets
 
-The current images are visual placeholders from Unsplash and are not Jordan's final artwork. Replace the `cover` and `gallery` URLs in `src/data/projects.js` with your own optimized image paths, ideally stored in `public/assets/projects/`.
+As imagens em `public/images/` foram recortadas das quatro referências fornecidas e convertidas para WebP. Os caminhos de imagem passam por `import.meta.env.BASE_URL` para funcionar também em subdiretórios do GitHub Pages.
 
-Example:
+## Interações
 
-```js
-cover: "/assets/projects/shark/shark-main.webp",
-gallery: [
-  "/assets/projects/shark/shark-main.webp",
-  "/assets/projects/shark/shark-detail-01.webp"
-]
-```
-
-Recommended export formats:
-- WebP or AVIF for portfolio images
-- 1800–2400 px wide for hero / project covers
-- 1200–1600 px wide for gallery details
-- Keep each image reasonably compressed
-
-## Social links
-
-Edit the destinations in `src/components/layout/Sidebar.jsx` and the contact destination in `src/pages/About.jsx`. They are currently generic external links, not connected to Jordan's actual profiles.
-
-## Music player
-
-Add a properly licensed track at `public/audio/portfolio-atmosphere.mp3`. The player supports play/pause and volume. It does not autoplay, respecting browser autoplay restrictions.
-
-## Design / implementation notes
-- Dark graphite background, lavender-purple accents, glass surfaces and rounded organic corners.
-- Desktop layout reserves a fixed left rail; mobile switches to a slide-in navigation.
-- Project image click opens a lightbox. The separate **View project** link navigates to the project detail route.
-- Lightbox supports Escape and arrow-key navigation.
-- The project detail page is data-driven, so new project pages do not require duplicated JSX.
-- The UI language is English, as planned for the public portfolio.
-
-## Before publishing
-1. Replace all placeholder artwork and sample project copy.
-2. Add the real Discord, Reddit, ArtStation, Behance and Patreon profile URLs.
-3. Add the licensed MP3 if desired.
-4. Run `npm run build` and test the production preview on desktop and mobile.
-5. Deploy the generated `dist/` directory to your preferred static host.
+- Navegação por âncoras e indicação da seção ativa.
+- Filtros de categoria e pesquisa na galeria.
+- Modal acessível de detalhes do projeto (Base UI Dialog).
+- Navegação entre depoimentos.
+- Controle visual de play/pause no mini player.
+- Formulário que copia a mensagem formatada; não envia dados para servidor.
