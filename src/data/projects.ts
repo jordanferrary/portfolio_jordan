@@ -5,10 +5,10 @@ export type Category = { id:string; label:string; icon:CategoryIcon; image?:stri
 export type Project = { id:string;title:string;category:string;year:string;image:string;description:string;tools:string[];featured:boolean;blocks:Block[] }
 export const imageUrl = (name:string)=>import.meta.env.BASE_URL+'images/'+name
 const sample=(id:string,title:string,category:string,year:string,image:string,description:string,tools:string[],featured:boolean):Project=>({
- id,title,category,year,image:imageUrl(image),description,tools,featured,
+ id,title,category,year,image:imageUrl('projects/'+id+'/'+image),description,tools,featured,
  blocks:[{id:id+'-intro',type:'heading',content:'Behind the project'},
  {id:id+'-story',type:'text',content:description},
- {id:id+'-visual',type:'image',content:imageUrl(image)},
+ {id:id+'-visual',type:'image',content:imageUrl('projects/'+id+'/'+image)},
  {id:id+'-process',type:'heading',content:'Creative process'},
  {id:id+'-details',type:'text',content:'From early exploration to final presentation — modeling, materials, lighting and artistic decisions.'}]
 })
