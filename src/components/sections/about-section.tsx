@@ -1,4 +1,4 @@
-import { Brush, Code2, Cuboid, Gem, Lightbulb, Sparkles } from 'lucide-react'
+import { Brush, Code2, Cuboid, Gem, Lightbulb } from 'lucide-react'
 import { SectionHeading } from '../ui/section-heading'
 
 const specialties = [
