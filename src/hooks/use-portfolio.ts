@@ -6,7 +6,7 @@ const KEY='jordan-portfolio-local-v2'
 export type PortfolioStore={projects:Project[];categories:Category[]}
 function migrateLegacyImage(src:string):string{
  if(typeof src!=='string')return src
- const match=src.match(/(?:^|\\/)images\\/(void-wanderer|moonlit-cottage|deepwalker|astral-guardian|neon-armor|ancient-ruins)\\.webp(?:\\?.*)?$/)
+ const match=src.match(new RegExp('(?:^|/)images/(void-wanderer|moonlit-cottage|deepwalker|astral-guardian|neon-armor|ancient-ruins)[.]webp(?:[?].*)?$'))
  return match?import.meta.env.BASE_URL+'images/projects/'+match[1]+'/'+match[1]+'.webp':src
 }
 
