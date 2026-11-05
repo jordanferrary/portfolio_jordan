@@ -1,57 +1,8 @@
+import { BriefcaseBusiness, Grid2X2, House, Mail, Pause, Play, UserRound } from 'lucide-react'
 import { useState } from 'react'
-import { assetPath } from '../../lib/assets'
-import { Grid2X2, House, Mail, Pause, Play, UserRound } from 'lucide-react'
-
-interface SidebarProps {
-  activeSection: string
-}
-
-const navItems = [
-  { id: 'inicio', label: 'Início', icon: House },
-  { id: 'portfolio', label: 'Portfólio', icon: Grid2X2 },
-  { id: 'sobre', label: 'Sobre', icon: UserRound },
-  { id: 'contato', label: 'Contato', icon: Mail },
-]
-
-export function Sidebar({ activeSection }: SidebarProps) {
-  const [isPlaying, setIsPlaying] = useState(true)
-
-  return (
-    <aside data-slot="sidebar" className="sidebar" aria-label="Navegação principal">
-      <a className="brand-mark" href="#/inicio" aria-label="Jordan Ferrary — início">
-        <span>JF</span>
-      </a>
-      <nav className="side-nav">
-        {navItems.map(({ id, label, icon: Icon }) => (
-          <a
-            key={id}
-            href={`#/${id}`}
-            className="side-nav-link"
-            data-active={activeSection === id ? '' : undefined}
-            aria-current={activeSection === id ? 'location' : undefined}
-          >
-            <span className="side-icon"><Icon aria-hidden="true" /></span>
-            <span>{label}</span>
-          </a>
-        ))}
-      </nav>
-      <div className="music-card">
-        <img src={assetPath('album-cover.webp')} alt="Capa abstrata da faixa Midnight" />
-        <div className="music-copy">
-          <strong>Midnight</strong>
-          <span>Luna Studio</span>
-          <span className="music-wave" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /></span>
-        </div>
-        <button
-          type="button"
-          className="music-toggle"
-          aria-label={isPlaying ? 'Pausar animação musical decorativa' : 'Reproduzir animação musical decorativa'}
-          aria-pressed={isPlaying}
-          onClick={() => setIsPlaying((playing) => !playing)}
-        >
-          {isPlaying ? <Pause aria-hidden="true" /> : <Play aria-hidden="true" />}
-        </button>
-      </div>
-    </aside>
-  )
+export type Page = 'inicio'|'portfolio'|'sobre'|'contato'
+export function Sidebar({page,navigate}:{page:Page;navigate:(page:Page)=>void}){
+ const [playing,setPlaying]=useState(false)
+ const links:[Page,typeof House,string][]=[['inicio',House,'Início'],['portfolio',Grid2X2,'Portfólio'],['sobre',UserRound,'Sobre'],['contato',Mail,'Contato']]
+ return <aside className="sidebar"><button className="brand" onClick={()=>navigate('inicio')} aria-label="Página inicial"><span>JF</span></button><nav className="side-nav" aria-label="Navegação principal">{links.map(([key,Icon,label])=><button key={key} className={page===key?'side-link current':'side-link'} onClick={()=>navigate(key)} aria-current={page===key?'page':undefined}><span className="side-icon"><Icon/></span><span>{label}</span></button>)}</nav><div className="mini-player"><div className="album"><BriefcaseBusiness size={18}/></div><div className="song"><b>Midnight</b><small>Luna Studio</small><span className="wave">▂▅▃▇▂▅▆▃</span></div><button onClick={()=>setPlaying(!playing)} aria-label={playing?'Pausar animação':'Ativar animação'} aria-pressed={playing}>{playing?<Pause size={16}/>:<Play size={16}/>}</button><div className="music-progress"/></div></aside>
 }

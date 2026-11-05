@@ -1,47 +1,37 @@
-# Jordan Ferrary — 3D Artist Portfolio
+# Jordan Ferrary — Portfolio V2
 
-Portfólio React responsivo construído com React 19, TypeScript strict, Vite e Tailwind CSS v4.
+React 19 + TypeScript strict + Vite + Tailwind CSS v4 + Base UI + Lucide.
 
-## Requisitos
-
-- Node.js 22 ou superior
-- npm 10 ou superior
-
-## Desenvolvimento
+## Development
 
 ```bash
 npm install
 npm run dev
-```
-
-O Vite escuta em `0.0.0.0:5173`, adequado ao encaminhamento de portas do GitHub Codespaces.
-
-## Verificações e build
-
-```bash
 npm run typecheck
 npm run build
 npm run preview
 ```
 
+## Pages
+
+Home, Portfolio, About, Contact and project case-study routes use hash navigation to work under GitHub Pages.
+
+## Local Studio
+
+Press **Ctrl + \\** to toggle Local Studio. Edit featured work, add projects, create content layouts using headings/text/images, and manage category filters without editing source code. Changes are saved in **localStorage only** in that browser. Use Export JSON to back up and Import JSON to restore. This mode **is not authenticated** and is **not a production CMS**. It neither publishes to GitHub nor syncs between devices.
+
+**Security:** Do not embed the proposed numeric PIN or a GitHub write token in browser code. For a real private administrator panel, integrate server-side authentication, authorized storage, an upload service and protected publish operations. A hosting platform with server functions / database is required.
+
+Images are carried over from the existing repository as original binary Git blobs.
+
 ## GitHub Pages
 
-O `vite.config.ts` lê `GITHUB_REPOSITORY` durante o build e calcula automaticamente o `base`:
+The Actions workflow builds with `GITHUB_PAGES=true` so Vite uses `/reactteste/` as its base. GitHub Pages must be enabled with GitHub Actions as source in repository settings. Other hosts build with `npm run build` and serve `dist/`.
 
-- Repositório comum: `/<nome-do-repositorio>/`
-- Repositório `usuario.github.io`: `/`
+## Design fidelity
 
-O workflow `.github/workflows/deploy.yml` publica a pasta `dist` quando há push para `main`. No repositório, abra **Settings → Pages** e selecione **GitHub Actions** como fonte de publicação. Se a branch principal tiver outro nome, atualize o gatilho do workflow.
+The gallery follows the provided Figma screenshot. The linked Figma file could be inspected at the layer-navigation level, but precise asset exports and frame measurements were not available. Review spacing against the original in Figma before claiming pixel-perfect fidelity.
 
-## Assets
+## Known gaps
 
-As imagens em `public/images/` foram recortadas das quatro referências fornecidas e convertidas para WebP. Os caminhos de imagem passam por `import.meta.env.BASE_URL` para funcionar também em subdiretórios do GitHub Pages.
-
-## Interações
-
-- Navegação por âncoras e indicação da seção ativa.
-- Filtros de categoria e pesquisa na galeria.
-- Modal acessível de detalhes do projeto (Base UI Dialog).
-- Navegação entre depoimentos.
-- Controle visual de play/pause no mini player.
-- Formulário que copia a mensagem formatada; não envia dados para servidor.
+Real production CMS/authentication, cloud image upload, and contact form back end remain unconfigured. The contact page links to the public Instagram profile.
