@@ -60,7 +60,7 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
      <label>Nome<input maxLength={90} value={name} onChange={e=>setName(e.target.value)} placeholder="Seu nome" autoComplete="name"/></label>
      <label>E-mail para resposta<input required type="email" maxLength={150} value={email} onChange={e=>setEmail(e.target.value)} placeholder="seuemail@exemplo.com" autoComplete="email"/></label>
     </div>
-    <label className="contact-subject-label">Assunto <span className="contact-optional">(opcional)</span>
+    <label className="contact-subject-label"><span className="contact-field-caption">Assunto <small>(opcional)</small></span>
      <select value={subject} onChange={e=>setSubject(e.target.value)}>
       <option value="">Selecione o assunto, se desejar</option>
       {settings.interestOptions.map((item,index)=><option key={item+'-'+index} value={item}>{item}</option>)}
