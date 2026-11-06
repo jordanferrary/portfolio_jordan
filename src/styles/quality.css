@@ -1,0 +1,181 @@
+
+/* Gallery: equal-width masonry columns; JS balances heights and adapts columns to the available space. */
+.gallery-body .masonry{
+ display:grid!important;
+ grid-auto-flow:row;
+ gap:14px!important;
+ width:100%;
+ min-width:0;
+ align-items:start;
+}
+.gallery-body .masonry-column{
+ display:flex!important;
+ flex-direction:column;
+ gap:14px!important;
+ min-width:0;
+ align-items:stretch;
+}
+.gallery-body .masonry-column .gallery-card,
+.gallery-body .masonry-column .gallery-card.card-0,
+.gallery-body .masonry-column .gallery-card.card-1,
+.gallery-body .masonry-column .gallery-card.card-2,
+.gallery-body .masonry-column .gallery-card.card-3,
+.gallery-body .masonry-column .gallery-card.card-4,
+.gallery-body .masonry-column .gallery-card.card-5,
+.gallery-body .masonry-column .gallery-card.card-6{
+ height:auto!important;
+ min-height:0!important;
+ width:100%;
+ max-width:100%;
+ grid-column:auto!important;
+}
+.gallery-body .masonry-column .gallery-card.card-6{aspect-ratio:.93}
+.gallery-body .masonry>.add-card{
+ grid-column:1/-1!important;
+ min-height:90px!important;
+ height:auto!important;
+ width:100%!important;
+ display:flex!important;
+ align-items:center;
+ justify-content:center;
+ gap:12px;
+ border-radius:19px;
+}
+.gallery-body.preview-active .masonry,.gallery-body.preview-active .masonry-column{gap:12px!important}
+@media(max-width:720px){
+ .gallery-body .masonry,.gallery-body .masonry-column{gap:10px!important}
+ .gallery-body .masonry-column .gallery-card{border-radius:16px!important}
+}
+
+/* Comparison should preserve the imported image aspect ratio instead of forcing landscape cropping. */
+.comparison-block{min-width:0}
+.comparison-images{
+ width:100%!important;
+ max-width:860px;
+ height:auto!important;
+ min-height:0!important;
+ margin:0 auto;
+ background:linear-gradient(150deg,#180c27,#0b0616);
+ border:1px solid #4b246a;
+}
+.comparison-images>img,.comparison-images .comparison-after>img{
+ object-fit:contain!important;
+ object-position:center center!important;
+}
+.comparison-after{width:100%;height:100%}
+.comparison-block .media-caption{max-width:860px;margin:15px auto}
+
+/* Ensure quick insertion remains inside the 650px right-hand Studio panel. */
+.v2-editor{position:relative!important;isolation:isolate}
+.v2-editor .quick-insert-popover{
+ position:absolute!important;
+ left:14px!important;right:14px!important;
+ bottom:76px!important;
+ top:auto!important;
+ width:auto!important;
+ max-width:none!important;
+ max-height:min(450px,65dvh)!important;
+ overflow-y:auto!important;
+ overscroll-behavior:contain;
+ z-index:25!important;
+ border:1px solid #9c4bcc;
+ border-radius:18px!important;
+ background:linear-gradient(135deg,rgba(35,15,56,.97),rgba(17,8,31,.98))!important;
+ box-shadow:0 12px 36px #000b,0 0 22px #8a32c53a!important;
+ scrollbar-width:thin;
+}
+.v2-editor .quick-insert-head{
+ position:sticky;
+ top:0;
+ z-index:2;
+ padding:8px 3px 11px;
+ background:linear-gradient(135deg,#241237,#1b0d2b);
+ border-radius:10px 10px 0 0;
+}
+.v2-editor .quick-insert-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px}
+.v2-editor .quick-insert-grid button{min-width:0;min-height:86px}
+.v2-editor .quick-insert-grid .template-sketch{height:35px}
+@media(max-width:530px){
+ .v2-editor .quick-insert-popover{left:8px!important;right:8px!important;bottom:84px!important;max-height:55dvh!important;padding:9px}
+ .v2-editor .quick-insert-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+/* Divider template preview: an actual line and a small ornamental center icon. */
+.template-gallery .template-sketch.divider,
+.quick-insert-grid .template-sketch.divider{
+ display:flex!important;
+ flex-direction:row!important;
+ align-items:center!important;
+ gap:6px!important;
+ justify-content:center!important;
+}
+.template-gallery .template-sketch.divider i,
+.quick-insert-grid .template-sketch.divider i{
+ display:block!important;
+ flex:1 1 auto!important;
+ height:1px!important;
+ min-height:1px!important;
+ align-self:center!important;
+ background:linear-gradient(90deg,transparent,#ae61e7)!important;
+ border:0!important;
+ border-radius:2px!important;
+ box-shadow:0 0 8px #af4bea55;
+ opacity:1!important;
+}
+.template-gallery .template-sketch.divider i:last-child,
+.quick-insert-grid .template-sketch.divider i:last-child{
+ background:linear-gradient(90deg,#ae61e7,transparent)!important;
+}
+.template-gallery .template-sketch.divider i:nth-child(2),
+.quick-insert-grid .template-sketch.divider i:nth-child(2){
+ width:22px!important;
+ min-width:22px!important;
+ flex:0 0 22px!important;
+ display:grid!important;
+ place-items:center;
+ height:24px!important;
+ min-height:24px!important;
+ background:none!important;
+ box-shadow:none!important;
+}
+.template-gallery .template-sketch.divider i:nth-child(2)::after,
+.quick-insert-grid .template-sketch.divider i:nth-child(2)::after{
+ content:'✦';
+ color:#ca86ff;
+ font-style:normal;
+ font-size:20px;
+ line-height:1;
+ filter:drop-shadow(0 0 6px #a342ed9e);
+}
+
+/* Rich text should have an always-visible formatted preview during editing. */
+.text-composer .composer-live-preview{
+ margin:0;
+ padding:11px 13px 14px;
+ background:linear-gradient(160deg,rgba(31,14,48,.85),rgba(18,8,31,.88));
+ border-top:1px solid #542875;
+ color:#e7daf1;
+ font-size:13px;
+ line-height:1.6;
+ max-height:230px;
+ overflow-y:auto;
+}
+.composer-preview-label{
+ display:block;
+ font-size:10px;
+ letter-spacing:.04em;
+ font-weight:700;
+ text-transform:uppercase;
+ color:#a97dc8;
+ margin-bottom:7px;
+}
+.composer-live-preview .rich-text h2{font-size:21px;margin:0 0 9px}
+.composer-live-preview .rich-text h3{font-size:17px;margin:0 0 8px}
+.composer-live-preview .rich-text h4{font-size:15px;margin:0 0 7px}
+.composer-live-preview .rich-text p{margin:0 0 6px}
+.composer-live-preview .rich-text strong{font-weight:800!important;color:#fff!important}
+.composer-live-preview .rich-text em{font-style:italic!important}
+.composer-live-preview .rich-text .rich-accent{color:#c061ff!important;-webkit-text-fill-color:#c061ff!important}
+.composer-toolbar button{min-width:30px}
+.composer-toolbar button:hover{background:#54247c}
+.project-like .like-count{font-size:12px;font-weight:700;min-width:8px}

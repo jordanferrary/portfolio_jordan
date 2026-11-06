@@ -12,3 +12,5 @@ import './styles/music-library.css'
 import './styles/polish.css'
 
 import './styles/engagement.css'
+
+import './styles/quality.css'
