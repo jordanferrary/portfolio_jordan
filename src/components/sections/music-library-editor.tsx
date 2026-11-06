@@ -28,7 +28,8 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
   if(!draft)return
   if(!draft.title.trim()||!draft.artist.trim()){setError('Informe o título e o artista.');return}
   if(!draft.src&&!audioFile){setError('Adicione um arquivo de áudio ou uma URL direta.');return}
-  if(!audioFile&&!isLocalMedia(draft.src)&&!/^https?:\/\//i.test(draft.src)){setError('A URL do áudio deve começar com https:// ou http://.');return}
+  const publishedAudio=/^site:\/\/audio\/studio\/[a-f0-9]{64}\.(mp3|wav|ogg|m4a)$/i.test(draft.src)
+  if(!audioFile&&!isLocalMedia(draft.src)&&!publishedAudio&&!/^https?:\/\//i.test(draft.src)){setError('Use um arquivo importado, uma faixa já publicada ou uma URL https:// direta.');return}
   setBusy(true);setError('')
   try{
    const src=audioFile?await saveUploadedAudio(audioFile):draft.src.trim()
