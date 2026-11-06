@@ -4,3 +4,5 @@ import { App } from './app'
 import './styles/globals.css'
 import './styles/revision.css'
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>)
+
+import './styles/home-revision.css'
