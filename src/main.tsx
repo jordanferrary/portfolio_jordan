@@ -35,3 +35,5 @@ import './styles/site-identity.css'
 import './styles/studio-dock.css'
 import './styles/project-focus.css'
 import './styles/studio-polish.css'
+
+import './styles/studio-centered.css'
