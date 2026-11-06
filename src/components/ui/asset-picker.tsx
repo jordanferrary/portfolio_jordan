@@ -7,8 +7,8 @@ import {QuickEditImageButton} from './image-quick-editor'
 import { linkAssetToFolder,listMediaAssets,saveUploadedMedia,type LibraryAsset } from '../../lib/media-store'
 type Sources={projects:Project[];categories:Category[];home:HomeContent;about:AboutContent;tracks:MusicTrack[]}
 const LibraryContext=createContext<Sources|null>(null)
-export function AssetLibraryProvider({projects,categories,home,tracks,children}:Sources&{children:ReactNode}){
- const value=useMemo(()=>({projects,categories,home,tracks}),[projects,categories,home,tracks])
+export function AssetLibraryProvider({projects,categories,home,about,tracks,children}:Sources&{children:ReactNode}){
+ const value=useMemo(()=>({projects,categories,home,about,tracks}),[projects,categories,home,about,tracks])
  return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>
 }
 interface AssetEntry {ref:string;name:string;folders:string[];date:number}
