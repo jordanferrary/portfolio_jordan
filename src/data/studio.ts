@@ -1,6 +1,6 @@
 import type { Project } from './projects'
 export interface Testimonial { id:string; author:string; role:string; quote:string }
-export interface MusicTrack { id:string; title:string; artist:string; src:string }
+export interface MusicTrack { id:string; title:string; artist:string; src:string; cover?:string }
 export interface HomeContent {
  eyebrow:string
  titleFirst:string
