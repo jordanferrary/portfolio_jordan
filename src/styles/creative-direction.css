@@ -315,7 +315,7 @@ body{background:var(--jf-background);transition:background-color .35s ease}
 }
 .site-shell .contact-page-clean .contact-chat-panel :is(input,textarea,select){
  border-color:var(--jf-panel-edge);
- background:color-mix(in srgb,var(--jf-background) 84%,var(--jf-surface))!important;
+ background-color:color-mix(in srgb,var(--jf-background) 84%,var(--jf-surface))!important;
 }
 @media(max-width:750px){
  .site-shell .contact-page-clean .contact-chat-head{gap:12px;margin-bottom:19px;padding-bottom:15px}
