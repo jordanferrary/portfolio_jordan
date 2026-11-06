@@ -116,7 +116,8 @@
  .music-card-footer{padding-top:12px}
 }
 @media(max-width:750px){
- .music-widget{position:fixed!important;left:10px!important;bottom:84px!important;width:144px!important;z-index:51!important;max-height:none}
+ /* Older home styles hid the entire player on phones; keep the published playlist visible. */
+ .music-widget{display:block!important;visibility:visible!important;position:fixed!important;left:10px!important;bottom:84px!important;width:144px!important;z-index:51!important;max-height:none}
  .music-widget .music-card{width:144px;min-height:124px;padding:10px;border-radius:20px}
  .music-card::before{inset:8px;border-radius:13px}
  .music-widget .music-cover-button{width:48px;height:48px;min-width:48px;border-radius:10px}
