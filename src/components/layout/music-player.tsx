@@ -1,5 +1,5 @@
 import { useEffect,useRef,useState } from 'react'
-import { Check,Infinity as InfinityIcon,ListMusic,Pause,Play,X } from 'lucide-react'
+import { Check,Infinity as InfinityIcon,ListMusic,Pause,Play,Volume2,VolumeX,X } from 'lucide-react'
 import type { MusicTrack } from '../../data/studio'
 import { useAssetSrc,AssetImage } from '../ui/asset-image'
 export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
@@ -8,6 +8,8 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
  const [playing,setPlaying]=useState(false)
  const [repeatOne,setRepeatOne]=useState(()=>{try{return localStorage.getItem('jf-music-repeat')!=='next'}catch{return true}})
  const [progress,setProgress]=useState(0)
+ const [volume,setVolume]=useState(()=>{try{const saved=Number(localStorage.getItem('jf-music-volume'));return Number.isFinite(saved)&&saved>=0&&saved<=100?saved:70}catch{return 70}})
+ const [volumeOpen,setVolumeOpen]=useState(false)
  const [error,setError]=useState('')
  const audio=useRef<HTMLAudioElement>(null)
  const pendingPlay=useRef(false)
@@ -16,7 +18,7 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
  const source=useAssetSrc(current?.src)
  const cover=current?.cover||import.meta.env.BASE_URL+'images/music/album-cover.webp'
  useEffect(()=>{
-  const onPointer=(event:PointerEvent)=>{if(card.current&&!card.current.contains(event.target as Node))setOpen(false)}
+  const onPointer=(event:PointerEvent)=>{if(card.current&&!card.current.contains(event.target as Node)){setOpen(false);setVolumeOpen(false)}}
   const onKey=(event:KeyboardEvent)=>{if(event.key==='Escape')setOpen(false)}
   document.addEventListener('pointerdown',onPointer)
   window.addEventListener('keydown',onKey)
@@ -24,6 +26,7 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
  },[])
  useEffect(()=>{setProgress(0);setPlaying(false);if(current?.id){try{localStorage.setItem('jf-selected-song',current.id)}catch{/* storage unavailable */}}},[current?.id])
  useEffect(()=>{try{localStorage.setItem('jf-music-repeat',repeatOne?'one':'next')}catch{/* storage unavailable */}},[repeatOne])
+ useEffect(()=>{if(audio.current){audio.current.volume=volume/100;audio.current.muted=volume===0}try{localStorage.setItem('jf-music-volume',String(volume))}catch{/* storage unavailable */}},[volume])
  const tryPlay=()=>{
   if(!pendingPlay.current||!audio.current||!source)return
   pendingPlay.current=false
@@ -68,7 +71,7 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
   <div className="music-card">
    <div className="music-card-top"><button type="button" className="music-cover-button" onClick={()=>setOpen(v=>!v)} aria-label="Abrir biblioteca de músicas" aria-expanded={open} title="Escolher uma música"><AssetImage src={cover} alt={current?'Capa de '+current.title:'Capa da playlist'}/></button><button type="button" className="music-main-toggle" onClick={toggle} aria-label={playing?'Pausar música':'Reproduzir música'} aria-pressed={playing} disabled={!current}>{playing?<Pause size={31} fill="currentColor"/>:<Play size={28} fill="currentColor"/>}</button></div>
    <button type="button" className="music-card-details" onClick={()=>setOpen(v=>!v)} aria-label="Escolher música"><strong title={current?.title}>{current?.title||'Sua playlist'}</strong><span title={current?.artist}>{current?.artist||'Sem música cadastrada'}</span></button>
-   <div className="music-card-footer"><button type="button" className={repeatOne?'music-repeat is-on':'music-repeat'} aria-pressed={repeatOne} aria-label={repeatOne?'Repetir esta música: ativado. Alternar para próxima música.':'Próxima música ao terminar: ativado. Alternar para repetir esta faixa.'} title={repeatOne?'∞ Repetir mesma música':'Avançar para a próxima'} onClick={()=>setRepeatOne(value=>!value)}><InfinityIcon size={17}/></button><input className="music-seek" type="range" min="0" max="100" step="0.1" value={progress} onChange={e=>seek(Number(e.target.value))} disabled={!current} aria-label="Progresso da música" style={{background:'linear-gradient(to right, #a02aff '+progress+'%,#27143b '+progress+'%)'}}/></div>
+   <div className="music-card-footer"><button type="button" className={repeatOne?'music-repeat is-on':'music-repeat'} aria-pressed={repeatOne} aria-label={repeatOne?'Repetir esta música: ativado. Alternar para próxima música.':'Próxima música ao terminar: ativado. Alternar para repetir esta faixa.'} title={repeatOne?'∞ Repetir mesma música':'Avançar para a próxima'} onClick={()=>setRepeatOne(value=>!value)}><InfinityIcon size={17}/></button><input className="music-seek" type="range" min="0" max="100" step="0.1" value={progress} onChange={e=>seek(Number(e.target.value))} disabled={!current} aria-label="Progresso da música" style={{background:'linear-gradient(to right, #a02aff '+progress+'%,#27143b '+progress+'%)'}}/><button type="button" className={volumeOpen?'music-volume-toggle is-open':'music-volume-toggle'} aria-label="Ajustar volume" title={'Volume: '+volume+'%'} aria-expanded={volumeOpen} onClick={()=>setVolumeOpen(v=>!v)}>{volume===0?<VolumeX size={16}/>:<Volume2 size={16}/>}</button></div>{volumeOpen&&<div className="music-volume-popover" role="group" aria-label="Volume da música"><button type="button" onClick={()=>setVolume(v=>v===0?70:0)} aria-label={volume===0?'Ativar som':'Silenciar'}>{volume===0?<VolumeX size={17}/>:<Volume2 size={17}/>}</button><input type="range" min="0" max="100" step="1" value={volume} onChange={e=>setVolume(Number(e.target.value))} aria-label="Volume de reprodução"/><span>{volume}%</span></div>}
    {error&&<p className="music-card-error" role="status">{error}</p>}
   </div>
  </div>
