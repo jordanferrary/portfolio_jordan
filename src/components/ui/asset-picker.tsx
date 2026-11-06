@@ -13,13 +13,24 @@ export function AssetLibraryProvider({projects,categories,home,tracks,children}:
 interface AssetEntry {ref:string;name:string;folders:string[];date:number}
 function collectSources(sources:Sources|null,catalog:LibraryAsset[]):AssetEntry[]{
  const map=new Map<string,AssetEntry>()
- const add=(ref:string,folder:string,name:string,date=0)=>{
-  if(!ref||!ref.trim())return
+ const canonical=new Map<string,LibraryAsset>()
+ const aliases=new Map<string,string>()
+ const unique:LibraryAsset[]=[]
+ // Identical legacy uploads stay referenced on disk, but appear once in the picker.
+ for(const asset of catalog){
+  if(!asset.hash){unique.push(asset);continue}
+  const original=canonical.get(asset.hash)
+  if(original){aliases.set(asset.ref,original.ref);original.folders=[...new Set([...original.folders,...asset.folders])]}
+  else{const entry={...asset,folders:[...asset.folders]};canonical.set(asset.hash,entry);unique.push(entry)}
+ }
+ const add=(source:string,folder:string,name:string,date=0)=>{
+  if(!source||!source.trim())return
+  const ref=aliases.get(source)??source
   const prev=map.get(ref)
   if(prev){if(!prev.folders.includes(folder))prev.folders.push(folder);return}
   map.set(ref,{ref,name,folders:[folder],date})
  }
- for(const item of catalog)if(item.mime?.startsWith('image/')||/\.(png|jpe?g|webp|avif)(?:[?#]|$)/i.test(item.ref))for(const folder of item.folders)add(item.ref,folder,item.name,item.createdAt)
+ for(const item of unique)if(item.mime?.startsWith('image/')||/\.(png|jpe?g|webp|avif)(?:[?#]|$)/i.test(item.ref))for(const folder of item.folders)add(item.ref,folder,item.name,item.createdAt)
  for(const project of sources?.projects??[]){
   const folder='projects/'+project.id
   add(project.image,folder,project.title+' · Capa')
