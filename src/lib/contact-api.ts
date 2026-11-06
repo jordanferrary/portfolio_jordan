@@ -1,5 +1,6 @@
 export const contactApi=(import.meta.env.VITE_CONTACT_API_URL as string|undefined)?.trim().replace(/\/$/,'')??''
-export type ContactMessage={id:string;name:string;email:string;interests:string[];message:string;isRead:boolean;createdAt:string;avatar?:string|null}
+export type AttachmentInfo={id:string;name:string;size:number;type:string}
+export type ContactMessage={id:string;name:string;email:string;interests:string[];message:string;isRead:boolean;createdAt:string;avatar?:string|null;attachments?:AttachmentInfo[]}
 export type NewContact={name:string;email:string;interests:string[];message:string;website?:string;avatar?:string}
 async function jsonOrThrow(response:Response):Promise<unknown>{
  const data:unknown=await response.json().catch(()=>({}))
@@ -11,9 +12,12 @@ async function jsonOrThrow(response:Response):Promise<unknown>{
  }
  return data
 }
-export async function sendContact(data:NewContact):Promise<void>{
+export async function sendContact(data:NewContact,attachments:File[]=[]):Promise<void>{
  if(!contactApi)throw new Error('O envio de mensagens ainda não está configurado.')
- const response=await fetch(contactApi+'/contact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+ const form=new FormData()
+ form.set('payload',JSON.stringify(data))
+ for(const file of attachments)form.append('attachments',file,file.name)
+ const response=await fetch(contactApi+'/contact',{method:'POST',body:form})
  await jsonOrThrow(response)
 }
 async function adminRequest(path:string,token:string,method='GET',body?:object):Promise<unknown>{
@@ -59,4 +63,26 @@ export async function prepareContactAvatar(file:File):Promise<string>{
   if(!avatar.startsWith('data:image/webp;base64,')||avatar.length>45000)throw new Error('Não foi possível otimizar esta foto.')
   return avatar
  }finally{URL.revokeObjectURL(url)}
+}
+
+export async function getRemoteAttachment(token:string,messageId:string,attachmentId:string):Promise<Blob>{
+ if(!contactApi)throw new Error('O serviço de anexos não está configurado.')
+ const response=await fetch(contactApi+'/admin/messages/'+encodeURIComponent(messageId)+'/attachments/'+encodeURIComponent(attachmentId),{headers:{Authorization:'Bearer '+token}})
+ if(!response.ok){if(response.status===401)throw new Error('Acesso negado.');throw new Error('Não foi possível baixar o anexo.')}
+ return response.blob()
+}
+export const contactAttachmentLimit=3
+export const contactAttachmentMaxBytes=4*1024*1024
+export const contactAttachmentTotalBytes=8*1024*1024
+export function validateAttachments(files:File[]):string|undefined{
+ if(files.length>contactAttachmentLimit)return 'Escolha no máximo 3 arquivos.'
+ const total=files.reduce((sum,file)=>sum+file.size,0)
+ if(total>contactAttachmentTotalBytes)return 'Os anexos não podem ultrapassar 8 MB no total.'
+ for(const file of files){
+  if(file.size>contactAttachmentMaxBytes)return 'Cada anexo deve ter até 4 MB.'
+  const validType=['image/jpeg','image/png','image/webp','application/pdf'].includes(file.type)
+  const validName=/\.(jpe?g|png|webp|pdf)$/i.test(file.name)
+  if(!validType||!validName)return 'São aceitos JPG, PNG, WEBP ou PDF.'
+ }
+ return undefined
 }
