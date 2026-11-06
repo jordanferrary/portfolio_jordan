@@ -29,7 +29,7 @@ export function ProjectLike({projectId,showCount=false}:{projectId:string;showCo
   void fetch(endpoint,{method:'GET',credentials:'include',signal:controller.signal})
    .then(async res=>{if(!res.ok)throw new Error();return res.json() as Promise<unknown>})
    .then(data=>{if(!controller.signal.aborted&&isReply(data)){setCount(data.count);setLiked(data.liked);setRemote(true)}})
-   .catch(()=>{if(!controller.signal.aborted)setError('Contagem compartilhada indisponível. Curtidas locais continuam funcionando.')})
+   .catch(()=>{if(!controller.signal.aborted)setError('Shared like counts are unavailable. You can still like projects locally.')})
   return ()=>controller.abort()
  },[projectId])
  useEffect(()=>{
@@ -52,8 +52,8 @@ export function ProjectLike({projectId,showCount=false}:{projectId:string;showCo
    const data:unknown=await res.json()
    if(!isReply(data))throw new Error()
    setLiked(data.liked);setCount(data.count)
-  }catch{setError('Não foi possível registrar a curtida compartilhada. Tente novamente.')}
+  }catch{setError('Could not save your like. Please try again.')}
   finally{setPending(false)}
  }
- return <div className="project-like-wrap"><button type="button" className={liked?'project-like is-liked':'project-like'} onClick={()=>void toggle()} disabled={pending} aria-pressed={liked} aria-label={liked?'Remover curtida deste projeto':'Curtir este projeto'}><Heart size={18} fill={liked?'currentColor':'none'}/><span>{liked?'Curtido':'Curtir projeto'}</span>{showCount&&<span className="like-count" title={remote?'Curtidas compartilhadas':'Contagem somente deste navegador'}>{count}</span>}</button>{error&&<span className="like-error" role="status">{error}</span>}</div>
+ return <div className="project-like-wrap"><button type="button" className={liked?'project-like is-liked':'project-like'} onClick={()=>void toggle()} disabled={pending} aria-pressed={liked} aria-label={liked?'Unlike this project':'Like this project'}><Heart size={18} fill={liked?'currentColor':'none'}/><span>{liked?'Liked':'Like project'}</span>{showCount&&<span className="like-count" title={remote?'Shared likes':'Count on this browser only'}>{count}</span>}</button>{error&&<span className="like-error" role="status">{error}</span>}</div>
 }
