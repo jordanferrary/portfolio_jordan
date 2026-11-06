@@ -1,0 +1,104 @@
+
+/* Purple neon + graphite glass. Keep existing player dimensions and control positions. */
+.music-widget .music-card{
+ background:linear-gradient(144deg,rgba(72,25,105,.71),rgba(34,12,59,.78) 48%,rgba(12,7,26,.91))!important;
+ border-color:rgba(157,75,227,.7)!important;
+ backdrop-filter:blur(22px) saturate(150%);
+ -webkit-backdrop-filter:blur(22px) saturate(150%);
+ box-shadow:0 12px 36px #0200069c,0 0 26px #8e2de43b,inset 0 1px #edc4ff38!important;
+}
+.music-widget .music-card::before{
+ background:linear-gradient(150deg,rgba(24,9,48,.76),rgba(9,5,24,.67))!important;
+ border:1px solid rgba(158,75,238,.18);
+ backdrop-filter:blur(10px);
+ -webkit-backdrop-filter:blur(10px);
+ box-shadow:inset 0 1px 14px #cb85ff13;
+}
+.music-widget .music-cover-button{
+ border-color:#8f3bd9!important;
+ background:#200c35!important;
+ box-shadow:0 0 15px #8426db88,0 0 1px #efc4ff!important;
+}
+.music-widget .music-main-toggle{
+ background:linear-gradient(142deg,rgba(119,48,170,.76),rgba(57,20,96,.81))!important;
+ border-color:rgba(191,119,252,.54)!important;
+ box-shadow:inset 0 2px 9px #edc8ff29,0 0 16px #6d1caf45!important;
+}
+.music-widget .music-main-toggle:hover:not(:disabled){
+ background:linear-gradient(142deg,rgba(165,60,239,.83),rgba(85,26,155,.87))!important;
+ box-shadow:0 0 19px #9536f678!important;
+}
+.music-widget .music-card-details strong{color:#fff7ff!important;text-shadow:0 1px 12px #9e34ec26}
+.music-widget .music-card-details span{color:#cdb5df!important}
+.music-widget .music-repeat{background:rgba(73,24,112,.58)!important;border-color:rgba(144,69,214,.35)!important;color:#bca5ce!important}
+.music-widget .music-repeat.is-on{color:#d083ff!important;background:rgba(113,36,169,.69)!important;border-color:#ad55ef!important;box-shadow:0 0 11px #9b35ef70!important}
+.music-widget .music-popover{background:linear-gradient(150deg,rgba(39,13,65,.95),rgba(11,6,24,.97))!important;border-color:rgba(167,86,244,.65)!important;backdrop-filter:blur(20px) saturate(140%)!important;-webkit-backdrop-filter:blur(20px) saturate(140%)!important;box-shadow:0 15px 50px #06020dc5,0 0 24px #8029d242!important}
+.music-widget .music-track.selected,.music-widget .music-track:hover{background:rgba(104,37,161,.4)!important;border-color:rgba(164,75,234,.46)!important}
+.music-widget .music-card-error{background:rgba(47,15,67,.92)!important;border-color:#884cb1!important}
+
+/* Top-right customizable social buttons, retaining the preexisting layout. */
+.socials .social-link,
+.socials .socials-edit-button{
+ display:grid;place-items:center;flex:0 0 auto;
+ width:50px;height:50px;
+ border-radius:50%;
+ background:rgba(27,12,42,.78);
+ border:1px solid rgba(91,45,122,.85);
+ color:#eee0ff;
+ backdrop-filter:blur(13px);
+ -webkit-backdrop-filter:blur(13px);
+ box-shadow:0 3px 15px #02010629,inset 0 1px #b475e818;
+ transition:border-color .2s,background .2s,box-shadow .2s;
+}
+.socials .social-link:hover,.socials .socials-edit-button:hover{
+ background:rgba(83,25,123,.64);
+ border-color:#a34be8;
+ box-shadow:0 0 14px #962cde67;
+}
+.socials .social-custom-icon{width:24px;height:24px;object-fit:contain;border-radius:5px}
+.socials .social-short-mark{font-size:19px;font-weight:800;letter-spacing:-.05em}
+.socials .social-unconfigured{opacity:.57;cursor:not-allowed}
+.socials .socials-edit-button{border-color:#a44beb;background:rgba(87,26,133,.82);color:#f6e9ff;cursor:pointer}
+.home-settings-editor .editor-tabs{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.home-settings-editor .editor-tabs button{min-width:0;font-size:12px;padding:10px 5px;white-space:nowrap}
+
+/* Social-link manager shares Local Studio's rounded, purple editing controls. */
+.social-manager-list{display:flex;flex-direction:column;gap:9px;margin-top:14px}
+.social-manager-row{display:flex;align-items:center;gap:10px;min-width:0;border:1px solid #56316f;background:#1c1029;border-radius:15px;padding:10px}
+.social-manager-mark,.social-preview{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border:1px solid #7841a2;border-radius:14px;background:radial-gradient(circle at 25% 5%,#6a268f,#1a0b2a 75%);color:#e2b9ff}
+.social-manager-mark img,.social-preview img{height:26px;width:26px;object-fit:contain}
+.social-manager-info{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
+.social-manager-info b{font-size:13px}
+.social-manager-info small{font-size:11px;color:#baa1ce;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.social-manager-actions{display:flex;gap:4px;align-items:center}
+.social-manager-actions button,.social-manager-form-top button{display:grid;place-items:center;width:29px;height:29px;border-radius:9px;background:#301c43;border:1px solid #5c3878;padding:0}
+.social-manager-actions button:disabled{opacity:.32;cursor:default}
+.social-manager-add{width:100%;margin:15px 0;display:flex;align-items:center;justify-content:center;gap:9px;padding:13px;background:rgba(75,23,113,.42);border:1px dashed #a958dc;border-radius:15px;font-size:13px}
+.social-manager-form{border:1px solid #9252c0;border-radius:18px;padding:16px;background:rgba(39,16,63,.78);margin:14px 0}
+.social-manager-form-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}
+.social-manager-form-top h3{font-size:16px;margin:0}
+.home-settings-editor .social-manager-form label{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;font-size:12px;color:#ccb5df}
+.home-settings-editor .social-manager-form input:not([type=file]),.home-settings-editor .social-manager-form select{display:block;width:100%;min-width:0;background:#150a26;border:1px solid #664083;color:#fbf5ff;border-radius:11px;padding:10px}
+.social-icon-picker{display:flex;gap:13px;align-items:flex-start;margin-top:12px}
+.social-icon-picker>div:last-child{min-width:0;flex:1}
+.social-icon-picker b{font-size:12px}
+.social-icon-actions{display:flex;gap:7px;flex-wrap:wrap;margin:9px 0}
+.home-settings-editor .social-icon-actions .social-icon-upload{display:inline-flex;flex-direction:row;align-items:center;gap:6px;margin:0;padding:8px 11px;border:1px solid #8653af;background:#311845;border-radius:12px;font-size:12px;cursor:pointer}
+.social-icon-upload input{display:none}
+.social-clear-image{display:flex;align-items:center;gap:5px;border:0;background:none;font-size:11px;color:#c5a2d8}
+.social-icon-picker small{color:#b5a0c4;display:block;font-size:11px;line-height:1.4}
+.social-image-info{display:flex;gap:5px;align-items:center;font-size:11px;color:#ad91c1}
+.social-image-info img{width:24px;height:24px;object-fit:contain}
+.social-manager-error{font-size:12px;color:#ffabc4}
+.social-manager-save{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+.social-manager-save>button:first-child{padding:10px 14px;border-radius:12px;background:#211231;border:1px solid #644078;font-size:12px}
+@media(max-width:600px){
+ .socials .social-link,.socials .socials-edit-button{height:36px;width:36px}
+ .socials .social-custom-icon{width:19px;height:19px}
+ .socials .social-short-mark{font-size:14px}
+ .socials{max-width:calc(100vw - 25px);flex-wrap:wrap;justify-content:flex-end}
+ .home-settings-editor .editor-tabs{gap:4px;padding-left:8px;padding-right:8px}
+ .home-settings-editor .editor-tabs button{font-size:10px;padding:10px 2px}
+ .social-manager-row{flex-wrap:wrap}
+ .social-manager-actions{justify-content:flex-end;flex-basis:100%}
+}

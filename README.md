@@ -81,3 +81,11 @@ O frame de Home foi reproduzido a partir do screenshot anexado. A arte original 
 **Player:** clicar na capa abre a playlist; Play/Pause controlam apenas áudio, sem download; ∞ aceso repete continuamente a mesma faixa; ∞ apagado avança à próxima ao terminar (com mais de uma faixa). A reprodução automática pode ser bloqueada pelo navegador até uma interação do usuário.
 
 **Observação:** Local Studio e o PIN atual são apenas uma interface de testes; os dados ficam no IndexedDB/localStorage deste navegador. Nem música nem imagem nova são publicadas no GitHub por esses controles, e não há autenticação segura de servidor implementada.
+
+## Revisão: M4A, glass player e redes editáveis
+
+- `.m4a` aceito em uploads da playlist, com tipos MIME `audio/mp4`, `audio/x-m4a`, `audio/m4a`. Reprodução depende do suporte do navegador ao codec interno (por exemplo, AAC). O player usa o elemento `<audio>`; não há transcodificação nem download pelo botão Pause.
+- Aparência do player ajustada apenas nas cores, reflexos e transparências de vidro roxo/grafite, mantendo suas medidas.
+- Redes sociais no canto superior direito agora vêm do Local Studio: **Ctrl+\\** (PIN local de demonstração) → **Editar Home, redes e músicas** → **Redes sociais**. É possível criar, editar, reordenar e remover botões, selecionar ícones da lista ou subir/reutilizar imagens próprias, além de configurar URLs individuais.
+- O Behance vem com URL vazia, como placeholder **não clicável**, até o usuário informar o endereço do próprio perfil. Não foi inventado link de perfil.
+- URLs externas são validadas (HTTP/HTTPS), ou `mailto:` válido para a opção de e-mail. O editor continua **local**; publicar as mudanças para todos os visitantes precisa de backend/autenticação segura. O backup ZIP inclui ícones personalizados locais.
