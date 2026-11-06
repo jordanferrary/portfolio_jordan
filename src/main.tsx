@@ -22,3 +22,5 @@ import './styles/scroll-controls.css'
 import './styles/contact-avatars.css'
 
 import './styles/contact-studio-v2.css'
+
+import './styles/contact-clean.css'
