@@ -14,13 +14,14 @@ const AboutEditor=lazy(()=>import('./components/sections/about-editor').then(m=>
 import {ContactPage} from './components/sections/contact-page'
 const ContactEditor=lazy(()=>import('./components/sections/contact-editor').then(m=>({default:m.ContactEditor})))
 const HomeEditor=lazy(()=>import('./components/sections/home-editor').then(m=>({default:m.HomeEditor})))
-import { AssetLibraryProvider } from './components/ui/asset-picker'
+import { AssetLibraryProvider } from './components/ui/asset-library-context'
 import { usePortfolio } from './hooks/use-portfolio'
 const GitHubPublishEditor=lazy(()=>import('./components/sections/github-publish-editor').then(m=>({default:m.GitHubPublishEditor})))
 const SiteIdentityEditor=lazy(()=>import('./components/sections/site-identity-editor').then(m=>({default:m.SiteIdentityEditor})))
 const ThemePaletteEditor=lazy(()=>import('./components/sections/theme-palette-editor').then(m=>({default:m.ThemePaletteEditor})))
 import { applyThemePalette } from './lib/theme-palette'
-import { StudioDock,type StudioAction } from './components/sections/studio-dock'
+import type {StudioAction} from './components/sections/studio-dock'
+const StudioDock=lazy(()=>import('./components/sections/studio-dock').then(m=>({default:m.StudioDock})))
 const ImageConverter=lazy(()=>import('./components/sections/image-converter').then(m=>({default:m.ImageConverter})))
 import type { Project } from './data/projects'
 function route():Page|'project'{const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':(['inicio','portfolio','sobre','contato'].includes(part)?part as Page:'inicio')}
@@ -78,7 +79,7 @@ export function App(){
  {page==='sobre'&&<AboutPage about={portfolio.about} editing={editing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
  {page==='contato'&&<ContactPage socials={portfolio.socialLinks} settings={portfolio.contact} demoEnabled={editing} onEdit={()=>setContactEditorOpen(true)}/>}
  </div>
- {editing&&<StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onNewProject={()=>setEditor(null)} onPublish={()=>setGitHubPublishOpen(true)} onExport={portfolio.exportData} onLock={()=>{setEditing(false);setEditor(undefined)}} actions={studioActions}/>} 
+ {editing&&<Suspense fallback={null}><StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onNewProject={()=>setEditor(null)} onPublish={()=>setGitHubPublishOpen(true)} onExport={portfolio.exportData} onLock={()=>{setEditing(false);setEditor(undefined)}} actions={studioActions}/></Suspense>} 
   {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  <Suspense fallback={null}>
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
