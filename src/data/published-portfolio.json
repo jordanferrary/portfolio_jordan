@@ -1,370 +1,65 @@
 {
   "schema": 1,
-  "revision": "2026-11-06T07:34:27.101Z-68a8e9be-2d93-4e82-9fbd-f9f31d88bac7",
+  "revision": "2026-11-06T08:22:27.180Z-67aecaea-7eb9-4fb6-b08c-2e79d316b730",
   "store": {
     "projects": [
       {
-        "id": "moonlit-cottage",
-        "title": "Moonlit Cottage",
-        "category": "Environments",
+        "id": "project-mw4oyna3",
+        "title": "Room of the Palhacito",
+        "category": "Props",
         "year": "2026",
-        "image": "/portfolio_jordan/images/projects/moonlit-cottage/moonlit-cottage.webp",
-        "description": "A stylized fantasy cottage with warm windows and a cinematic nighttime atmosphere.",
+        "image": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png",
+        "description": "Um pequeno universo onde fantasia, ==cores== e criatividade se encontram. **Room of the Palhacito** é um diorama 3D estilizado que explora uma atmosfera lúdica e acolhedora, combinando elementos circenses, formas cartunescas e detalhes encantadores.\n\nA composição valoriza o contraste entre cores vibrantes, texturas expressivas e iluminação suave, criando um ambiente cheio de personalidade, no qual cada elemento contribui para uma identidade visual única.",
         "tools": [
           "Blender",
-          "Lighting"
+          "Substance Painter",
+          "Krita"
         ],
         "featured": true,
         "blocks": [
           {
-            "id": "moonlit-cottage-intro",
-            "type": "heading",
-            "content": "Behind the project"
-          },
-          {
-            "id": "moonlit-cottage-story",
-            "type": "text",
-            "content": "A stylized fantasy cottage with warm windows and a cinematic nighttime atmosphere."
-          },
-          {
-            "id": "moonlit-cottage-visual",
+            "id": "b-54ng20cikjv",
             "type": "image",
-            "content": "/portfolio_jordan/images/projects/moonlit-cottage/moonlit-cottage.webp"
+            "content": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png"
           },
           {
-            "id": "moonlit-cottage-process",
-            "type": "heading",
-            "content": "Creative process"
-          },
-          {
-            "id": "moonlit-cottage-details",
+            "id": "b-nfom6b8430d",
             "type": "text",
-            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
-          }
-        ],
-        "processSteps": []
-      },
-      {
-        "id": "astral-guardian",
-        "title": "Astral Guardian",
-        "category": "Stylized",
-        "year": "2025",
-        "image": "/portfolio_jordan/images/projects/astral-guardian/astral-guardian.webp",
-        "description": "A fantasy-inspired stylized character exploration.",
-        "tools": [
-          "Blender"
-        ],
-        "featured": false,
-        "blocks": [
-          {
-            "id": "astral-guardian-intro",
-            "type": "heading",
-            "content": "Behind the project"
+            "content": "Um pequeno universo onde fantasia, cores e criatividade se encontram. **Room of the Palhacito** é um diorama 3D estilizado que explora uma atmosfera lúdica e acolhedora, combinando elementos circenses, formas cartunescas e detalhes encantadores.\n\nA composição valoriza o contraste entre cores vibrantes, texturas expressivas e iluminação suave, criando um ambiente cheio de personalidade, no qual cada elemento contribui para uma identidade visual única."
           },
           {
-            "id": "astral-guardian-story",
-            "type": "text",
-            "content": "A fantasy-inspired stylized character exploration."
-          },
-          {
-            "id": "astral-guardian-visual",
-            "type": "image",
-            "content": "/portfolio_jordan/images/projects/astral-guardian/astral-guardian.webp"
-          },
-          {
-            "id": "astral-guardian-process",
-            "type": "heading",
-            "content": "Creative process"
-          },
-          {
-            "id": "astral-guardian-details",
-            "type": "text",
-            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
-          }
-        ],
-        "processSteps": []
-      },
-      {
-        "id": "neon-armor",
-        "title": "Neon Armor",
-        "category": "Props",
-        "year": "2025",
-        "image": "/portfolio_jordan/images/projects/neon-armor/neon-armor.webp",
-        "description": "Hard-surface shapes, modular forms and glowing purple accents.",
-        "tools": [
-          "Blender"
-        ],
-        "featured": false,
-        "blocks": [
-          {
-            "id": "neon-armor-intro",
-            "type": "heading",
-            "content": "Behind the project"
-          },
-          {
-            "id": "neon-armor-story",
-            "type": "text",
-            "content": "Hard-surface shapes, modular forms and glowing purple accents."
-          },
-          {
-            "id": "neon-armor-visual",
-            "type": "image",
-            "content": "/portfolio_jordan/images/projects/neon-armor/neon-armor.webp"
-          },
-          {
-            "id": "neon-armor-process",
-            "type": "heading",
-            "content": "Creative process"
-          },
-          {
-            "id": "neon-armor-details",
-            "type": "text",
-            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
-          }
-        ],
-        "processSteps": []
-      },
-      {
-        "id": "ancient-ruins",
-        "title": "Ancient Ruins",
-        "category": "Environments",
-        "year": "2025",
-        "image": "/portfolio_jordan/images/projects/ancient-ruins/ancient-ruins.webp",
-        "description": "An atmospheric study of monumental ancient architecture.",
-        "tools": [
-          "Blender"
-        ],
-        "featured": false,
-        "blocks": [
-          {
-            "id": "ancient-ruins-intro",
-            "type": "heading",
-            "content": "Behind the project"
-          },
-          {
-            "id": "ancient-ruins-story",
-            "type": "text",
-            "content": "An atmospheric study of monumental ancient architecture."
-          },
-          {
-            "id": "ancient-ruins-visual",
-            "type": "image",
-            "content": "/portfolio_jordan/images/projects/ancient-ruins/ancient-ruins.webp"
-          },
-          {
-            "id": "ancient-ruins-process",
-            "type": "heading",
-            "content": "Creative process"
-          },
-          {
-            "id": "ancient-ruins-details",
-            "type": "text",
-            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
-          }
-        ],
-        "processSteps": []
-      },
-      {
-        "id": "deepwalker",
-        "title": "Deepwalker",
-        "category": "Characters",
-        "year": "2026",
-        "image": "/portfolio_jordan/images/projects/deepwalker/deepwalker.webp",
-        "description": "An underwater-inspired stylized character exploring silhouette, materials and personality.",
-        "tools": [
-          "ZBrush",
-          "Blender"
-        ],
-        "featured": true,
-        "blocks": [
-          {
-            "id": "deepwalker-intro",
-            "type": "heading",
-            "content": "Behind the project"
-          },
-          {
-            "id": "deepwalker-story",
-            "type": "text",
-            "content": "An underwater-inspired stylized character exploring silhouette, materials and personality."
-          },
-          {
-            "id": "deepwalker-visual",
-            "type": "image",
-            "content": "/portfolio_jordan/images/projects/deepwalker/deepwalker.webp"
-          },
-          {
-            "id": "deepwalker-process",
-            "type": "heading",
-            "content": "Creative process"
-          },
-          {
-            "id": "deepwalker-details",
-            "type": "text",
-            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
-          }
-        ],
-        "processSteps": []
-      },
-      {
-        "id": "project-mw4e618j",
-        "title": "Novo projeto",
-        "category": "Props",
-        "year": "2026",
-        "image": "/portfolio_jordan/images/projects/astral-guardian/astral-guardian.webp",
-        "description": "",
-        "tools": [],
-        "featured": false,
-        "blocks": [
-          {
-            "id": "b-z4v77536ijt",
-            "type": "heading",
-            "content": "==**Titulo**=="
-          },
-          {
-            "id": "b-0daxu5hnbsz",
+            "id": "b-zdh6t2l9edc",
             "type": "divider",
             "content": "",
             "dividerIcon": "sparkles",
             "dividerStyle": "glow"
           },
           {
-            "id": "b-yi7jft7crnf",
-            "type": "text",
-            "content": "==Lorem ipsum== dolor sit amet, consectetur adipiscing elit. Vivamus lobortis nunc nec lorem pretium, et pellentesque turpis posuere. Fusce ultricies consectetur posuere. Sed at rhoncus arcu, eu tincidunt eros. Pellentesque porttitor a nibh nec cursus. Quisque ut dolor euismod, fermentum ligula posuere, feugiat purus. Cras congue ligula magna, quis porttitor risus faucibus in. Aenean gravida rutrum eleifend. Ut tristique neque ac mi posuere tristique. Nam vel vestibulum nulla, id accumsan mauris.\n\nNam hendrerit tellus non augue tempor, ut cursus augue posuere. Integer lacus leo, fringilla consectetur mattis et, ornare eget arcu. Cras viverra, diam eu condimentum iaculis, orci risus tempor augue, malesuada vulputate elit arcu et ex. Nulla facilisi. Vivamus sagittis, mi at porta finibus, turpis sem semper eros, sed sodales turpis massa sed sapien. Etiam ornare laoreet elit rutrum ullamcorper. Quisque vel dapibus tortor, quis bibendum dolor. Quisque urna mauris, sollicitudin et malesuada et, laoreet at diam."
-          },
-          {
-            "id": "b-uikxj2nt46",
-            "type": "divider",
-            "content": "",
-            "dividerIcon": "star",
-            "dividerStyle": "solid"
-          },
-          {
-            "id": "b-ighruy3me2t",
-            "type": "image",
-            "content": "/portfolio_jordan/images/hero/hero-character.webp"
-          },
-          {
-            "id": "b-aowjn0egcvc",
-            "type": "divider",
-            "content": "",
-            "dividerIcon": "diamond",
-            "dividerStyle": "dashed"
-          },
-          {
-            "id": "b-9yzbqrk7tpp",
-            "type": "image-left",
-            "content": "*Lorem ipsum dolor sit amet*, consectetur adipiscing elit. Donec in dignissim justo. Praesent et finibus lorem, a facilisis ante. Morbi non suscipit sem. Sed vel feugiat est. Etiam eget eros purus. Aliquam pretium, odio nec sagittis fermentum, elit ante venenatis eros, non gravida velit purus sed lacus. Nam bibendum non purus in porttitor. Morbi pharetra libero ut fringilla efficitur. In imperdiet cursus purus, et hendrerit lorem bibendum id. Integer auctor id libero sit amet fringilla. Nullam efficitur imperdiet nulla in sollicitudin. Curabitur vehicula orci sit amet turpis vulputate, in placerat diam placerat. Aenean non sem a orci posuere faucibus eu in nibh. Integer dapibus egestas aliquam. **Fusce rutrum nisi vel posuere imperdiet.**",
-            "media": "/portfolio_jordan/images/projects/deepwalker/deepwalker.webp"
-          },
-          {
-            "id": "b-xrvib6os3ps",
-            "type": "divider",
-            "content": "",
-            "dividerIcon": "circle",
-            "dividerStyle": "solid"
-          },
-          {
-            "id": "b-i6efadh3v1",
-            "type": "image-right",
-            "content": "*Lorem ipsum dolor sit amet*, consectetur adipiscing elit. Donec in dignissim justo. Praesent et finibus lorem, a facilisis ante. Morbi non suscipit sem. Sed vel feugiat est. Etiam eget eros purus. Aliquam pretium, odio nec sagittis fermentum, elit ante venenatis eros, non gravida velit purus sed lacus. Nam bibendum non purus in porttitor. Morbi pharetra libero ut fringilla efficitur. In imperdiet cursus purus, et hendrerit lorem bibendum id. Integer auctor id libero sit amet fringilla. Nullam efficitur imperdiet nulla in sollicitudin. Curabitur vehicula orci sit amet turpis vulputate, in placerat diam placerat. Aenean non sem a orci posuere faucibus eu in nibh. Integer dapibus egestas aliquam. **Fusce rutrum nisi vel posuere imperdiet.**",
-            "media": "/portfolio_jordan/images/projects/void-wanderer/void-wanderer.webp"
-          },
-          {
-            "id": "b-5khjwz9ntlm",
-            "type": "before-after",
-            "content": "eu estou amando isso",
-            "media": "site://images/studio/a68aa0534ca1697b6f53d3c3bc4b2d5b7a8c59f23e430156d82bf192e429bc20.jpg",
-            "after": "site://images/studio/a68aa0534ca1697b6f53d3c3bc4b2d5b7a8c59f23e430156d82bf192e429bc20.jpg"
-          },
-          {
-            "id": "b-3tz2dronxqw",
+            "id": "b-nm7uvn8tl8",
             "type": "gallery",
             "content": "",
             "gallery": [
-              "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg",
-              "site://images/studio/4beba119132b5d4d841e5c69040a4b5ec98e4baa10717e021e6a9db26fd704fc.jpg",
-              "/portfolio_jordan/images/projects/ancient-ruins/ancient-ruins.webp",
-              "/portfolio_jordan/images/profile/avatar.webp"
+              "site://images/studio/4fc607041ab62bb61900e73b1fcb2102fa344203d935cc3c0caaecdff9645ea8.png",
+              "site://images/studio/c1954c5571f0961167228e30ec3982087e814fb7a3c88ad40246ec8a8f7709eb.png",
+              "site://images/studio/ffd3728ce1cc4769ff3e8b713c5bd5b032a2321e993c16f903de74b24b34f30b.png",
+              "site://images/studio/621a3a8870a6b1eb0d69a61443efdef28c8287a2c7ae0f8962352c91e3d8d444.png"
             ]
-          }
-        ],
-        "processSteps": [
-          {
-            "id": "step-p21xgrdjobt",
-            "label": "Etapa 1",
-            "image": "site://images/studio/4beba119132b5d4d841e5c69040a4b5ec98e4baa10717e021e6a9db26fd704fc.jpg"
           },
           {
-            "id": "step-5x9z9disb5n",
-            "label": "Etapa 2",
-            "image": "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg"
+            "id": "b-u7f7wbn3v9",
+            "type": "divider",
+            "content": "",
+            "dividerIcon": "sparkles",
+            "dividerStyle": "glow"
           },
           {
-            "id": "step-0761hlc62hwf",
-            "label": "Etapa 3",
-            "image": "/portfolio_jordan/images/projects/void-wanderer/void-wanderer.webp"
-          },
-          {
-            "id": "step-9c01gluv31g",
-            "label": "Etapa 4",
-            "image": "site://images/studio/4beba119132b5d4d841e5c69040a4b5ec98e4baa10717e021e6a9db26fd704fc.jpg"
+            "id": "b-nxq09d3s1od",
+            "type": "before-after",
+            "content": "",
+            "media": "site://images/studio/87eb9b94f2355c69589f0e57336aaf4a2f490f8d005433af058c67a428cbcdc4.png",
+            "after": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png"
           }
         ]
-      },
-      {
-        "id": "project-mw4ctf88",
-        "title": "Novo projeto",
-        "category": "Props",
-        "year": "2026",
-        "image": "/portfolio_jordan/images/projects/deepwalker/deepwalker.webp",
-        "description": "",
-        "tools": [],
-        "featured": false,
-        "blocks": [],
-        "processSteps": []
-      },
-      {
-        "id": "void-wanderer",
-        "title": "Void Wanderer",
-        "category": "Characters",
-        "year": "2026",
-        "image": "/portfolio_jordan/images/projects/void-wanderer/void-wanderer.webp",
-        "description": "A character study focused on style, expression and mood. This project explores a more introspective and mysterious aesthetic.",
-        "tools": [
-          "ZBrush",
-          "Blender",
-          "Texturing"
-        ],
-        "featured": true,
-        "blocks": [
-          {
-            "id": "void-wanderer-intro",
-            "type": "heading",
-            "content": "Behind the project"
-          },
-          {
-            "id": "void-wanderer-story",
-            "type": "text",
-            "content": "A character study focused on style, expression and mood. This project explores a more introspective and mysterious aesthetic."
-          },
-          {
-            "id": "void-wanderer-visual",
-            "type": "image",
-            "content": "/portfolio_jordan/images/projects/void-wanderer/void-wanderer.webp"
-          },
-          {
-            "id": "void-wanderer-process",
-            "type": "heading",
-            "content": "Creative process"
-          },
-          {
-            "id": "void-wanderer-details",
-            "type": "text",
-            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
-          }
-        ],
-        "processSteps": []
       }
     ],
     "categories": [
@@ -456,7 +151,7 @@
       "name": "Jordan Ferrary",
       "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in dignissim justo. Praesent et finibus lorem, a facilisis ante. Morbi non suscipit sem. Sed vel feugiat est. Etiam eget eros purus. Aliquam pretium, odio nec sagittis fermentum, elit ante venenatis eros, non gravida velit purus sed lacus. Nam bibendum non purus in porttitor. Morbi pharetra libero ut fringilla efficitur. In imperdiet cursus purus, et hendrerit lorem bibendum id. Integer auctor id libero sit amet fringilla. Nullam efficitur imperdiet nulla in sollicitudin. Curabitur vehicula orci sit amet turpis vulputate, in placerat diam placerat. Aenean non sem a orci posuere faucibus eu in nibh. Integer dapibus egestas aliquam. Fusce rutrum nisi vel posuere imperdiet.",
       "portrait": "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg",
-      "secondaryImage": "",
+      "secondaryImage": "site://images/studio/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5.png",
       "specialties": [
         "3D Modeling",
         "Sculpting",
@@ -482,6 +177,10 @@
       "allowAvatar": true,
       "allowAttachments": true
     },
-    "galleryBackground": "site://images/studio/5f5db0accc8c625c55ac22172769e03bc4e723816e5990a9a33e0ded87341807.webp"
+    "galleryBackground": "site://images/studio/5f5db0accc8c625c55ac22172769e03bc4e723816e5990a9a33e0ded87341807.webp",
+    "siteLogo": "site://images/studio/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5.png",
+    "siteLogoHover": "",
+    "siteLogoSize": 140,
+    "siteLogoHoverScale": 110
   }
 }
