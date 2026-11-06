@@ -1,0 +1,89 @@
+import { useState } from 'react'
+import { AlertTriangle,CheckCircle2,CloudUpload,Download,ExternalLink,Eye,EyeOff,GitBranch,RotateCcw,ShieldCheck,X } from 'lucide-react'
+import type { PortfolioStore } from '../../hooks/use-portfolio'
+import { currentPublishedRevision } from '../../hooks/use-portfolio'
+import { publishPortfolioToGitHub,type GitHubPublishResult } from '../../lib/github-publish'
+
+type Props={
+ store:PortfolioStore
+ onPublished:(revision:string)=>void
+ onRestore:()=>void
+ onExport:()=>Promise<void>
+ onClose:()=>void
+}
+export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClose}:Props){
+ const [token,setToken]=useState('')
+ const [visible,setVisible]=useState(false)
+ const [confirmed,setConfirmed]=useState(false)
+ const [busy,setBusy]=useState(false)
+ const [status,setStatus]=useState('')
+ const [error,setError]=useState('')
+ const [result,setResult]=useState<GitHubPublishResult|null>(null)
+ const close=()=>{if(busy)return;setToken('');onClose()}
+ const publish=async()=>{
+  if(!token.trim()||!confirmed||busy)return
+  setBusy(true);setError('');setResult(null)
+  try{
+   const finished=await publishPortfolioToGitHub(token,store,currentPublishedRevision,setStatus)
+   onPublished(finished.revision)
+   setResult(finished)
+   setStatus('As alterações estão no GitHub. O GitHub Pages publicará essa versão após o workflow concluir.')
+  }catch(e){setError(e instanceof Error?e.message:'Não foi possível publicar no GitHub.')}
+  finally{setToken('');setBusy(false)}
+ }
+ const restore=()=>{
+  if(!window.confirm('Substituir seu rascunho local pela versão publicada que está carregada neste site? Salve um backup ZIP se quiser manter suas alterações.'))return
+  onRestore();close()
+ }
+ return <div className="editor-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)close()}}>
+  <section className="editor-panel github-publish-editor" role="dialog" aria-modal="true" aria-label="Publicar portfólio no GitHub">
+   <header><div><span className="eyebrow"><GitBranch size={14}/> GITHUB STUDIO</span><h2>Publicar portfólio</h2></div><button type="button" onClick={close} disabled={busy} aria-label="Fechar publicação"><X size={20}/></button></header>
+   <div className="editor-scroll">
+    <div className="github-publish-overview">
+     <div className="github-publish-icon"><CloudUpload size={25}/></div>
+     <div><strong>Publicação sem servidor adicional</strong><p>Seus projetos e mídias serão gravados no repositório. A automação do GitHub Pages gera o site atualizado.</p></div>
+    </div>
+    <div className="github-publish-stats">
+     <span><b>{store.projects.length}</b><small>projetos</small></span>
+     <span><b>{store.musicTracks.length}</b><small>músicas</small></span>
+     <span><b>main</b><small>branch</small></span>
+    </div>
+    {result?<div className="github-publish-success" role="status">
+     <CheckCircle2 size={28}/>
+     <h3>Publicação enviada!</h3>
+     <p>{status}</p>
+     <small>{result.newFiles} arquivo(s) de mídia novo(s) · Commit {result.commitSha.slice(0,7)}</small>
+     <a href={result.commitUrl} target="_blank" rel="noopener noreferrer">Ver alterações no GitHub <ExternalLink size={15}/></a>
+     <a href="https://github.com/jordanferrary/portfolio_jordan/actions" target="_blank" rel="noopener noreferrer">Acompanhar publicação do site <ExternalLink size={15}/></a>
+    </div>:<>
+     <div className="github-publish-section">
+      <div className="github-publish-section-title"><ShieldCheck size={18}/><h3>Autorizar somente esta publicação</h3></div>
+      <p>Crie um <b>fine-grained personal access token</b> do GitHub, restrito ao repositório <code>jordanferrary/portfolio_jordan</code>, com permissão <b>Contents: Read and write</b> e prazo de validade curto.</p>
+      <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Criar token restrito no GitHub <ExternalLink size={14}/></a>
+     </div>
+     <label className="github-publish-token-label">Token temporário do GitHub
+      <div className="github-publish-token-control">
+       <input value={token} type={visible?'text':'password'} autoComplete="off" autoCapitalize="off" spellCheck={false} onChange={e=>setToken(e.target.value)} placeholder="Cole o token somente aqui" disabled={busy} aria-label="Token temporário de publicação GitHub"/>
+       <button type="button" onClick={()=>setVisible(v=>!v)} aria-label={visible?'Ocultar token':'Mostrar token'} disabled={busy}>{visible?<EyeOff size={17}/>:<Eye size={17}/>}</button>
+      </div>
+     </label>
+     <p className="github-publish-security"><ShieldCheck size={14}/> A credencial fica apenas na memória desta página durante a publicação. Não é adicionada ao código, ao ZIP ou ao armazenamento do navegador.</p>
+     <label className="github-publish-confirm">
+      <input type="checkbox" checked={confirmed} onChange={e=>setConfirmed(e.target.checked)} disabled={busy}/>
+      <span>Revisei o conteúdo e autorizo a publicação pública dos projetos, imagens e áudios selecionados.</span>
+     </label>
+     {busy&&<div className="github-publish-progress" role="status"><span className="github-publish-progress-indicator"/>{status}</div>}
+     {error&&<div className="github-publish-error" role="alert"><AlertTriangle size={17}/><span>{error}</span></div>}
+    </>}
+    <div className="github-publish-secondary">
+     <button type="button" onClick={()=>void onExport()} disabled={busy}><Download size={15}/>Fazer backup ZIP</button>
+     <button type="button" onClick={restore} disabled={busy}><RotateCcw size={15}/>Restaurar versão publicada</button>
+    </div>
+    <p className="github-publish-footnote">As alterações feitas no Local Studio continuam locais até a publicação. As mensagens privadas de contato e as curtidas de visitantes exigem uma API separada.</p>
+   </div>
+   <footer><button type="button" className="subtle-action" onClick={close} disabled={busy}>{result?'Fechar':'Cancelar'}</button>
+    {!result&&<button type="button" className="save-action" onClick={()=>void publish()} disabled={busy||!token.trim()||!confirmed}><CloudUpload size={17}/>{busy?'Publicando...':'Publicar no GitHub'}</button>}
+   </footer>
+  </section>
+ </div>
+}

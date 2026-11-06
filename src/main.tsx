@@ -26,3 +26,5 @@ import './styles/contact-studio-v2.css'
 import './styles/contact-clean.css'
 
 import './styles/gallery-background.css'
+
+import './styles/github-publish.css'

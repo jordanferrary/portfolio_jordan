@@ -1,5 +1,5 @@
 import { useEffect,useState } from 'react'
-import { BriefcaseBusiness,Plus } from 'lucide-react'
+import { BriefcaseBusiness,CloudUpload,Plus } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
 import { SocialBar } from './components/layout/social-bar'
 import { Gallery } from './components/sections/gallery'
@@ -16,6 +16,7 @@ import {AdminInboxBell} from './components/sections/admin-inbox'
 import { HomeEditor } from './components/sections/home-editor'
 import { AssetLibraryProvider } from './components/ui/asset-picker'
 import { usePortfolio } from './hooks/use-portfolio'
+import { GitHubPublishEditor } from './components/sections/github-publish-editor'
 import type { Project } from './data/projects'
 function route(){const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':(['inicio','portfolio','sobre','contato'].includes(part)?part:'inicio')}
 export function App(){
@@ -27,6 +28,7 @@ export function App(){
  const [homeEditorOpen,setHomeEditorOpen]=useState(false)
  const [aboutEditorOpen,setAboutEditorOpen]=useState(false)
  const [contactEditorOpen,setContactEditorOpen]=useState(false)
+ const [githubPublishOpen,setGitHubPublishOpen]=useState(false)
  const [galleryBackgroundEditorOpen,setGalleryBackgroundEditorOpen]=useState(false)
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio()
@@ -48,11 +50,12 @@ export function App(){
  {page==='sobre'&&<AboutPage about={portfolio.about} editing={editing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
  {page==='contato'&&<ContactPage socials={portfolio.socialLinks} settings={portfolio.contact} demoEnabled={editing} onEdit={()=>setContactEditorOpen(true)}/>}
  </div>
- {editing&&<div className="admin-bar"><BriefcaseBusiness size={16}/> Local Studio <span>Rascunhos locais · ZIP para backup</span><button onClick={()=>{setHomeEditorTab('home');setHomeEditorOpen(true)}}>Editar Home, redes e músicas</button><button onClick={()=>setAboutEditorOpen(true)}>Editar Sobre</button><button onClick={()=>setContactEditorOpen(true)}>Editar Contato</button><button onClick={()=>{setHomeEditorTab('likes');setHomeEditorOpen(true)}}>Curtidas</button><button onClick={()=>setEditor(null)}><Plus size={15}/> Novo projeto</button><button onClick={()=>{setEditing(false);setEditor(undefined)}}>Bloquear editor</button></div>}
+ {editing&&<div className="admin-bar"><BriefcaseBusiness size={16}/> Local Studio <span>Rascunhos locais · ZIP para backup</span><button onClick={()=>{setHomeEditorTab('home');setHomeEditorOpen(true)}}>Editar Home, redes e músicas</button><button onClick={()=>setAboutEditorOpen(true)}>Editar Sobre</button><button onClick={()=>setContactEditorOpen(true)}>Editar Contato</button><button onClick={()=>{setHomeEditorTab('likes');setHomeEditorOpen(true)}}>Curtidas</button><button className="studio-publish-trigger" onClick={()=>setGitHubPublishOpen(true)}><CloudUpload size={15}/>Publicar no GitHub</button><button onClick={()=>setEditor(null)}><Plus size={15}/> Novo projeto</button><button onClick={()=>{setEditing(false);setEditor(undefined)}}>Bloquear editor</button></div>}
  {editing&&<AdminInboxBell/>}
  {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
  {galleryBackgroundEditorOpen&&<GalleryBackgroundEditor value={portfolio.galleryBackground} onSave={portfolio.setGalleryBackground} onClose={()=>setGalleryBackgroundEditorOpen(false)}/>}
+ {editing&&githubPublishOpen&&<GitHubPublishEditor store={portfolio} onPublished={portfolio.markPublished} onRestore={portfolio.restorePublished} onExport={portfolio.exportData} onClose={()=>setGitHubPublishOpen(false)}/>}
  {contactEditorOpen&&<ContactEditor settings={portfolio.contact} onSave={portfolio.setContact} onClose={()=>setContactEditorOpen(false)}/>}
  {aboutEditorOpen&&<AboutEditor value={portfolio.about} onSave={portfolio.setAbout} onClose={()=>setAboutEditorOpen(false)}/>}
  {homeEditorOpen&&<HomeEditor initialTab={homeEditorTab} showLikeCounts={portfolio.showLikeCounts} onShowLikeCounts={portfolio.setShowLikeCounts} home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} links={portfolio.socialLinks} onLinks={portfolio.setSocialLinks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
