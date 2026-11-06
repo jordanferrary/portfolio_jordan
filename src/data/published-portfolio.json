@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-06T12:36:42.536Z-d24a55d2-ec5b-4a92-bc17-4d1484736ba9",
+  "revision": "2026-11-06T12:36:42.536Z-d24a55d2-ec5b-4a92-bc17-4d1484736ba9-classic-purple",
   "store": {
     "projects": [
       {
@@ -289,10 +289,10 @@
     "siteLogoHoverScale": 110,
     "siteFavicon": "",
     "themePalette": {
-      "primary": "#A63FFF",
-      "secondary": "#42DFF5",
-      "background": "#0B0715",
-      "surface": "#1C102B"
+      "primary": "#A234FA",
+      "secondary": "#CB89FF",
+      "background": "#090611",
+      "surface": "#170D26"
     },
     "seoTitle": "Jordan Ferrary — Creative Portfolio",
     "seoDescription": "Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects."

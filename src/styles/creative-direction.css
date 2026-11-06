@@ -1,10 +1,10 @@
 /* JF / NEON ATELIER — visual language derived from only four editable root colors.
    The public portfolio changes; private Local Studio controls remain consistent. */
 :root{
- --jf-primary:#A63FFF;
- --jf-secondary:#42DFF5;
- --jf-background:#0B0715;
- --jf-surface:#1C102B;
+ --jf-primary:#A234FA;
+ --jf-secondary:#CB89FF;
+ --jf-background:#090611;
+ --jf-surface:#170D26;
  --jf-primary-glow:color-mix(in srgb,var(--jf-primary) 34%,transparent);
  --jf-primary-soft:color-mix(in srgb,var(--jf-primary) 17%,transparent);
  --jf-secondary-glow:color-mix(in srgb,var(--jf-secondary) 28%,transparent);
@@ -265,17 +265,61 @@ body{background:var(--jf-background);transition:background-color .35s ease}
 /* Contact: premium glass, a clear invitation to reach out. */
 .site-shell .contact-chat-panel{
  border:1px solid var(--jf-panel-edge)!important;
- background:linear-gradient(150deg,var(--jf-panel-elevated),var(--jf-surface))!important;
- box-shadow:0 23px 55px #0008,0 0 33px var(--jf-primary-soft)!important;
+ background:linear-gradient(150deg,
+  color-mix(in srgb,var(--jf-surface) 95%,#ffffff 5%),
+  color-mix(in srgb,var(--jf-background) 55%,var(--jf-surface) 45%))!important;
+ box-shadow:0 23px 55px #0008,0 0 30px color-mix(in srgb,var(--jf-primary) 8%,transparent)!important;
  backdrop-filter:blur(18px);
 }
-.site-shell .contact-chat-head{
- border-color:var(--jf-panel-edge);
- background:var(--jf-primary-soft);
+.site-shell .contact-page-clean .contact-chat-head{
+ display:flex;
+ align-items:center;
+ gap:14px;
+ margin:0 0 24px;
+ padding:0 0 18px;
+ border:0;
+ border-bottom:1px solid var(--jf-panel-edge);
+ border-radius:0;
+ background:transparent!important;
+ box-shadow:none;
 }
-.site-shell .contact-chat-icon{
- color:var(--jf-secondary)!important;
- background:var(--jf-primary-soft)!important;
+.site-shell .contact-page-clean .contact-chat-head strong{
+ display:block;
+ color:#F7EDFF;
+ font-size:16px;
+ font-weight:700;
+ letter-spacing:-.02em;
+ line-height:1.35;
+}
+.site-shell .contact-page-clean .contact-chat-head small{
+ display:block;
+ margin-top:5px;
+ color:#BFAACD;
+ opacity:1;
+ font-size:11px;
+ line-height:1.5;
+}
+.site-shell .contact-page-clean .contact-chat-icon{
+ display:grid;
+ place-items:center;
+ width:42px;
+ height:42px;
+ flex:0 0 42px;
+ border:1px solid color-mix(in srgb,var(--jf-primary) 55%,transparent)!important;
+ border-radius:14px;
+ color:var(--jf-primary)!important;
+ background:linear-gradient(150deg,
+  color-mix(in srgb,var(--jf-primary) 20%,var(--jf-surface)),
+  color-mix(in srgb,var(--jf-primary) 6%,var(--jf-background)))!important;
+ box-shadow:inset 0 1px #ffffff12,0 6px 20px color-mix(in srgb,var(--jf-primary) 9%,transparent);
+}
+.site-shell .contact-page-clean .contact-chat-panel :is(input,textarea,select){
+ border-color:var(--jf-panel-edge);
+ background:color-mix(in srgb,var(--jf-background) 84%,var(--jf-surface))!important;
+}
+@media(max-width:750px){
+ .site-shell .contact-page-clean .contact-chat-head{gap:12px;margin-bottom:19px;padding-bottom:15px}
+ .site-shell .contact-page-clean .contact-chat-icon{width:38px;height:38px;flex-basis:38px;border-radius:12px}
 }
 .site-shell .contact-page :is(input,textarea,select):focus{
  border-color:var(--jf-primary)!important;

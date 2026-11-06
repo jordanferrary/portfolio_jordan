@@ -2,10 +2,10 @@
 export type ThemePalette={primary:string;secondary:string;background:string;surface:string}
 export type ThemeColorKey=keyof ThemePalette
 export const DEFAULT_THEME:ThemePalette={
- primary:'#A63FFF',
- secondary:'#42DFF5',
- background:'#0B0715',
- surface:'#1C102B'
+ primary:'#A234FA',
+ secondary:'#CB89FF',
+ background:'#090611',
+ surface:'#170D26'
 }
 export const PALETTE_FIELDS:{key:ThemeColorKey;label:string;description:string}[]=[
  {key:'primary',label:'Cor principal',description:'Botões, foco, marca e elementos de destaque'},
@@ -22,11 +22,21 @@ export function normalizeHexColor(value:unknown):string|null{
 }
 export function normalizeThemePalette(raw:unknown):ThemePalette{
  const value=raw&&typeof raw==='object'?raw as Partial<Record<ThemeColorKey,unknown>>:{}
+ // Migrate the temporary cyan palette introduced by the visual redesign.
+ // Only migrate an exact match: any intentionally customized palette remains unchanged.
+ const previous={
+  primary:normalizeHexColor(value.primary),
+  secondary:normalizeHexColor(value.secondary),
+  background:normalizeHexColor(value.background),
+  surface:normalizeHexColor(value.surface)
+ }
+ if(previous.primary==='#A63FFF'&&previous.secondary==='#42DFF5'&&previous.background==='#0B0715'&&previous.surface==='#1C102B')
+  return {...DEFAULT_THEME}
  return {
-  primary:normalizeHexColor(value.primary)??DEFAULT_THEME.primary,
-  secondary:normalizeHexColor(value.secondary)??DEFAULT_THEME.secondary,
-  background:normalizeHexColor(value.background)??DEFAULT_THEME.background,
-  surface:normalizeHexColor(value.surface)??DEFAULT_THEME.surface
+  primary:previous.primary??DEFAULT_THEME.primary,
+  secondary:previous.secondary??DEFAULT_THEME.secondary,
+  background:previous.background??DEFAULT_THEME.background,
+  surface:previous.surface??DEFAULT_THEME.surface
  }
 }
 export function applyThemePalette(palette:ThemePalette):void{
