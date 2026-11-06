@@ -2,6 +2,7 @@ import { useMemo,useState, type DragEvent } from 'react'
 import { ArrowDown,ArrowUp,Download,GripVertical,ImagePlus,Plus,Save,Trash2,Upload,X } from 'lucide-react'
 import { AssetImage } from '../ui/asset-image'
 import { AssetClipButton } from '../ui/asset-picker'
+import { QuickEditImageButton } from '../ui/image-quick-editor'
 import { FilterIcon } from '../ui/filter-icon'
 import { TextComposer } from '../ui/text-composer'
 import type { ProcessStep } from '../../data/projects'
@@ -31,7 +32,7 @@ function MediaField({value,onChange,folder,slot,label,onError}:{value:string;onC
   if(file)void upload(file)
   else if(media)onChange(media)
  }
- return <div className="media-field"><div className="media-upload-zone" onDragOver={event=>event.preventDefault()} onDrop={drop}>{value?<AssetImage src={value} alt={'Prévia: '+label}/>:<div className="empty-media"><ImagePlus size={25}/><span>Arraste uma imagem aqui</span></div>}</div><div className="media-controls"><label className="media-upload-button"><Upload size={15}/>{sending?'Importando...':'Carregar imagem'}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={e=>{const file=e.target.files?.[0];if(file)void upload(file);e.target.value=''}}/></label><AssetClipButton folder={folder} onSelect={onChange}/>{value&&<button type="button" onClick={()=>onChange('')}><X size={15}/>Remover</button>}</div><label className="media-url-label">{label} — URL ou arquivo<input value={isLocalMedia(value)?'':value} onChange={e=>onChange(e.target.value)} placeholder={isLocalMedia(value)?'Imagem armazenada neste navegador':'https://...'} aria-label={label+' URL'}/></label></div>
+ return <div className="media-field"><div className="media-upload-zone" onDragOver={event=>event.preventDefault()} onDrop={drop}>{value?<AssetImage src={value} alt={'Prévia: '+label}/>:<div className="empty-media"><ImagePlus size={25}/><span>Arraste uma imagem aqui</span></div>}</div><div className="media-controls"><label className="media-upload-button"><Upload size={15}/>{sending?'Importando...':'Carregar imagem'}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={e=>{const file=e.target.files?.[0];if(file)void upload(file);e.target.value=''}}/></label><AssetClipButton folder={folder} onSelect={onChange}/>{value&&<QuickEditImageButton source={value} folder={folder} onSave={onChange}/>} {value&&<button type="button" onClick={()=>onChange('')}><X size={15}/>Remover</button>}</div><label className="media-url-label">{label} — URL ou arquivo<input value={isLocalMedia(value)?'':value} onChange={e=>onChange(e.target.value)} placeholder={isLocalMedia(value)?'Imagem armazenada neste navegador':'https://...'} aria-label={label+' URL'}/></label></div>
 }
 function ToolTags({tools,onChange}:{tools:string[];onChange:(next:string[])=>void}){
  const [text,setText]=useState('')
