@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowDown,ArrowUp,ImagePlus,Pencil,Plus,Save,Trash2,Upload,X } from 'lucide-react'
 import { AssetClipButton } from '../ui/asset-picker'
+import {QuickEditImageButton} from '../ui/image-quick-editor'
 import { SocialMark,safeSocialUrl } from '../ui/social-mark'
 import { AssetImage } from '../ui/asset-image'
 import { isLocalMedia,saveUploadedMedia } from '../../lib/media-store'
@@ -37,7 +38,7 @@ export function SocialLinksEditor({links,onChange}:Props){
    <label>Nome / plataforma<input value={draft.label} maxLength={50} placeholder="Behance, ArtStation, Bluesky..." onChange={e=>patch({label:e.target.value})}/></label>
    <label>Link completo<input value={draft.url} type="url" placeholder="https://www.behance.net/seu-perfil" onChange={e=>patch({url:e.target.value})}/></label>
    <label>Ícone predefinido<select value={draft.icon} onChange={e=>patch({icon:e.target.value as SocialIcon,iconImage:undefined})}>{socialIconOptions.map(icon=><option key={icon} value={icon}>{icon}</option>)}</select></label>
-   <div className="social-icon-picker"><div className="social-preview"><SocialMark social={draft}/></div><div><b>Ícone personalizado (opcional)</b><div className="social-icon-actions"><label className="social-icon-upload"><Upload size={15}/>{busy?'Importando...':'Importar PNG / WEBP'}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={e=>{const file=e.target.files?.[0];if(file)void upload(file);e.target.value=''}}/></label><AssetClipButton folder="social-icons" onSelect={src=>patch({iconImage:src})}/>{draft.iconImage&&<button className="social-clear-image" onClick={()=>patch({iconImage:undefined})}><X size={13}/>Remover</button>}</div><small>Para plataformas sem ícone predefinido, importe o logotipo desejado.</small></div></div>
+   <div className="social-icon-picker"><div className="social-preview"><SocialMark social={draft}/></div><div><b>Ícone personalizado (opcional)</b><div className="social-icon-actions"><label className="social-icon-upload"><Upload size={15}/>{busy?'Importando...':'Importar PNG / WEBP'}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={e=>{const file=e.target.files?.[0];if(file)void upload(file);e.target.value=''}}/></label><AssetClipButton folder="social-icons" onSelect={src=>patch({iconImage:src})}/>{draft.iconImage&&<QuickEditImageButton source={draft.iconImage} folder="social-icons" onSave={iconImage=>patch({iconImage})}/>}{draft.iconImage&&<button className="social-clear-image" onClick={()=>patch({iconImage:undefined})}><X size={13}/>Remover</button>}</div><small>Para plataformas sem ícone predefinido, importe o logotipo desejado.</small></div></div>
    {draft.iconImage&&<div className="social-image-info"><ImagePlus size={14}/>{isLocalMedia(draft.iconImage)?'Imagem local reutilizável':<AssetImage src={draft.iconImage} alt="Ícone escolhido"/>}</div>}
    {error&&<p role="alert" className="social-manager-error">{error}</p>}
    <div className="social-manager-save"><button onClick={()=>setDraft(null)}>Cancelar</button><button className="save-action" onClick={save}><Save size={16}/>Salvar rede</button></div>

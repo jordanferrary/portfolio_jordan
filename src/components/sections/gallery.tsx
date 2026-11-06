@@ -6,8 +6,8 @@ import { FilterIcon } from '../ui/filter-icon'
 import { ProjectLike } from './project-like'
 import { RichText } from '../ui/rich-text'
 import { distributeMasonry } from '../../lib/masonry'
-interface Props { projects:Project[]; categories:Category[]; selected:Project|null;onPreview:(project:Project)=>void;onClosePreview:()=>void;onOpen:(project:Project)=>void;editing:boolean;onAdd:()=>void;onEdit:(project:Project)=>void;showLikeCounts:boolean }
-export function Gallery({projects,categories,selected,onPreview,onClosePreview,onOpen,editing,onAdd,onEdit,showLikeCounts}:Props){
+interface Props { projects:Project[]; categories:Category[]; selected:Project|null;onPreview:(project:Project)=>void;onClosePreview:()=>void;onOpen:(project:Project)=>void;editing:boolean;onAdd:()=>void;onEdit:(project:Project)=>void;showLikeCounts:boolean;heroImage?:string }
+export function Gallery({projects,categories,selected,onPreview,onClosePreview,onOpen,editing,onAdd,onEdit,showLikeCounts,heroImage}:Props){
  const [filter,setFilter]=useState('All')
  const [search,setSearch]=useState('')
  const [filtersOpen,setFiltersOpen]=useState(false)
@@ -19,7 +19,7 @@ export function Gallery({projects,categories,selected,onPreview,onClosePreview,o
  const balancedColumns=useMemo(()=>distributeMasonry(filtered,columnCount),[filtered,columnCount])
  const steps=selected?(selected.processSteps??[]).filter(step=>step.image.trim()):[]
  return <section className="gallery-page">
-  <div className="gallery-banner"><AssetImage src={import.meta.env.BASE_URL+'images/hero/hero-character.webp'} alt=""/><div className="stars" aria-hidden="true">✧ <span>✦</span></div></div>
+  <div className="gallery-banner"><AssetImage src={heroImage||import.meta.env.BASE_URL+'images/hero/hero-character.webp'} alt=""/><div className="stars" aria-hidden="true">✧ <span>✦</span></div></div>
   <header className="gallery-heading"><p className="eyebrow"><Sparkles size={17}/> Explore my portfolio</p><h1>A world of art,<br/>in every <em>detail.</em></h1><p>Dive into my 3D creations and discover the stories<br className="desktop-break"/> behind each project.</p><div className="accent-line"/></header>
   <div className="toolbar"><div className="chips" role="group" aria-label="Filtrar por categoria"><button className={filter==='All'?'active':''} onClick={()=>setFilter('All')}><Sparkles/>All</button>{categories.map(c=><button key={c.id} className={filter===c.label?'active':''} onClick={()=>setFilter(c.label)}><FilterIcon category={c}/>{c.label}</button>)}</div><div className="search-group"><label className="search"><Search size={17}/><input aria-label="Search for projects" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search for projects..."/>{search&&<button onClick={()=>setSearch('')} aria-label="Limpar busca"><X size={15}/></button>}</label><button className={filtersOpen?'filter-button active':'filter-button'} onClick={()=>setFiltersOpen(v=>!v)} aria-label="Filtros de projetos" aria-expanded={filtersOpen}><SlidersHorizontal size={19}/></button></div></div>
   {filtersOpen&&<p className="filter-details" role="status">{filtered.length} de {projects.length} projetos · {filter==='All'?'Todas as categorias':filter} · Busque também por ferramenta utilizada.</p>}

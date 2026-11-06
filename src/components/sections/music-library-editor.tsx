@@ -3,6 +3,7 @@ import { ArrowDown,ArrowUp,Check,ImagePlus,Pencil,Plus,Save,Trash2,Upload,X } fr
 import type { MusicTrack } from '../../data/studio'
 import { AssetImage } from '../ui/asset-image'
 import { AssetClipButton } from '../ui/asset-picker'
+import {QuickEditImageButton} from '../ui/image-quick-editor'
 import { isLocalMedia,saveUploadedAudio,saveUploadedMedia } from '../../lib/media-store'
 type Props={tracks:MusicTrack[];onTracks:(tracks:MusicTrack[])=>void;onNotice:(message:string)=>void}
 type TrackDraft={id:string;title:string;artist:string;src:string;cover:string}
@@ -48,7 +49,7 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
    <div className="music-track-fields"><label>Nome da música<input value={draft.title} maxLength={90} onChange={e=>update({title:e.target.value})} placeholder="Ex.: Midnight" required/></label><label>Artista<input value={draft.artist} maxLength={90} onChange={e=>update({artist:e.target.value})} placeholder="Ex.: Luna Studio" required/></label></div>
    <div className="music-track-image">
     <div className="music-track-cover-preview">{coverPreview?<img src={coverPreview} alt="Nova capa"/>:draft.cover?<AssetImage src={draft.cover} alt="Capa atual"/>:<div className="music-no-cover"><ImagePlus size={24}/><small>Sem capa</small></div>}</div>
-    <div className="music-cover-actions"><b>Imagem da capa</b><label className="media-upload-button"><Upload size={15}/>Importar capa<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={e=>{setCoverFile(e.target.files?.[0]??null);e.target.value=''}}/></label><AssetClipButton folder="music" onSelect={cover=>{setCoverFile(null);update({cover})}}/>{(coverFile||draft.cover)&&<button onClick={()=>{setCoverFile(null);update({cover:''})}}><X size={14}/>Remover capa</button>}</div>
+    <div className="music-cover-actions"><b>Imagem da capa</b><label className="media-upload-button"><Upload size={15}/>Importar capa<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={e=>{setCoverFile(e.target.files?.[0]??null);e.target.value=''}}/></label><AssetClipButton folder="music" onSelect={cover=>{setCoverFile(null);update({cover})}}/>{draft.cover&&!coverFile&&<QuickEditImageButton source={draft.cover} folder="music" onSave={cover=>update({cover})}/>}{(coverFile||draft.cover)&&<button onClick={()=>{setCoverFile(null);update({cover:''})}}><X size={14}/>Remover capa</button>}</div>
    </div>
    <div className="music-audio-input"><b>Arquivo de áudio</b><label className="audio-upload"><Upload size={17}/>{audioFile?'Substituir arquivo':'Importar MP3, WAV, OGG ou M4A'}<input type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,audio/m4a,.mp3,.wav,.ogg,.m4a" onChange={e=>{setAudioFile(e.target.files?.[0]??null);e.target.value=''}}/></label>{audioFile?<span className="music-audio-file"><Check size={15}/>{audioFile.name}</span>:isLocalMedia(draft.src)?<span className="music-audio-file"><Check size={15}/>Áudio salvo neste navegador</span>:null}<label>Ou URL direta do arquivo<input value={isLocalMedia(draft.src)?'':draft.src} placeholder={isLocalMedia(draft.src)?'Áudio local selecionado':'https://site.com/musica.m4a'} onChange={e=>{update({src:e.target.value});setAudioFile(null)}}/></label></div>
    {error&&<p role="alert" className="music-editor-error">{error}</p>}
