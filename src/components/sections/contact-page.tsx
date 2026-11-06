@@ -15,6 +15,7 @@ export function ContactPage({socials}:{socials:SocialLink[]}){
  const [sending,setSending]=useState(false)
  const [error,setError]=useState('')
  const [sent,setSent]=useState(false)
+ const mailFallback=socials.map(s=>safeSocialUrl(s.url)).find(url=>url?.startsWith('mailto:'))
  const handleAvatar=async(file:File)=>{
   setAvatarBusy(true);setError('')
   try{setAvatar(await prepareContactAvatar(file))}
@@ -23,9 +24,16 @@ export function ContactPage({socials}:{socials:SocialLink[]}){
  }
  const submit=async(event:FormEvent<HTMLFormElement>)=>{
   event.preventDefault()
-  if(!contactApi)return
+  if(!contactApi&&!mailFallback)return
   if(!selected.length){setError('Selecione pelo menos um interesse.');return}
   if(message.trim().length<10){setError('Conte um pouco mais sobre a sua ideia.');return}
+  if(!contactApi&&mailFallback){
+   const subject='Contato pelo portfólio - '+(name.trim()||'Novo cliente')
+   const body=['Nome: '+(name.trim()||'Não informado'),'E-mail: '+email.trim(),'Interesses: '+selected.join(', '),'Mensagem:',message.trim()].join('\n')
+   window.location.href=mailFallback+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body)
+   setError('O aplicativo de e-mail será aberto. Confirme o envio por lá; a foto opcional não é anexada neste modo.')
+   return
+  }
   setSending(true);setError('')
   try{
    await sendContact({name:name.trim(),email:email.trim(),interests:selected,message:message.trim(),website,avatar:avatar||undefined})
@@ -47,8 +55,8 @@ export function ContactPage({socials}:{socials:SocialLink[]}){
     <label className="contact-message-label">Sua mensagem<textarea required maxLength={2500} minLength={10} value={message} onChange={e=>setMessage(e.target.value)} placeholder="Descreva o conceito, o prazo e o que deseja criar..." rows={5}/></label>
     <label className="contact-honeypot" aria-hidden="true" tabIndex={-1}>Website<input tabIndex={-1} autoComplete="off" value={website} onChange={e=>setWebsite(e.target.value)}/></label>
     {error&&<p role="alert" className="contact-form-error">{error}</p>}
-    {!contactApi&&<p className="contact-setup-warning"><Mail size={15}/> Formulário ainda não conectado a um servidor. Para entrar em contato, utilize as redes acima.</p>}
-    <button className="contact-send-button" type="submit" disabled={!contactApi||sending||avatarBusy}>{sending?'Enviando...':'Enviar mensagem'} <Send size={17}/></button><p className="contact-privacy-note">As informações, incluindo a foto opcional, serão utilizadas apenas para identificar sua mensagem e responder ao contato. Não compartilhe informações sensíveis.</p>
+    {!contactApi&&<p className="contact-setup-warning"><Mail size={15}/>{mailFallback?'O envio pela caixa de entrada do site ainda não foi ativado. Você pode abrir seu aplicativo de e-mail para enviar a mensagem.':'O formulário ainda não está conectado a um servidor. Para entrar em contato, utilize as redes acima ou configure um endereço de e-mail no Local Studio.'}</p>}
+    <button className="contact-send-button" type="submit" disabled={(!contactApi&&!mailFallback)||sending||avatarBusy}>{sending?'Enviando...':contactApi?'Enviar mensagem':'Abrir e-mail para enviar'} <Send size={17}/></button><p className="contact-privacy-note">As informações, incluindo a foto opcional, serão utilizadas apenas para identificar sua mensagem e responder ao contato. Não compartilhe informações sensíveis.</p>
    </form>}
   </section>
  </main>
