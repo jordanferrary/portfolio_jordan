@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS contact_messages (
  interests TEXT NOT NULL,
  message TEXT NOT NULL,
  avatar TEXT,
+ attachments TEXT NOT NULL DEFAULT '[]',
  is_read INTEGER NOT NULL DEFAULT 0,
  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

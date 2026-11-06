@@ -41,3 +41,19 @@ O formulário aceita foto **enviada voluntariamente pelo próprio visitante** (P
 - Banco existente, criado com a versão anterior: execute uma única vez `npx wrangler d1 execute jf-portfolio-likes --remote --file=migrations/001_contact_avatar.sql` antes do deploy atualizado.
 - A visualização/exclusão continua protegida por `ADMIN_TOKEN`. É possível excluir mensagens individualmente ou limpar apenas as mensagens já lidas.
 - Recomendado configurar uma política de retenção (prazo de exclusão) para e-mails e fotos de clientes, além de CAPTCHA/Turnstile e uma declaração de privacidade adequada.
+
+
+## Teste pelo GitHub Pages, serviços editáveis e anexos de orçamento
+
+O GitHub Pages continua sendo estático. **No modo Local Studio**, o formulário cria mensagens e anexos de teste em IndexedDB, acessíveis pelo sininho **no mesmo navegador e perfil**, sem exigir token adicional. Esses testes não chegam a outras máquinas ou ao proprietário por e-mail. Não use essa prévia como caixa de entrada de clientes reais.
+
+No editor `Editar Contato` é possível adicionar, renomear, reordenar ou excluir interesses/serviços e alterar o convite ao cliente. A ordenação manual da galeria também é local e fica no backup ZIP.
+
+Para produção, o frontend envia `multipart/form-data` com JSON no campo `payload` e até **3 anexos** (JPG/PNG/WEBP/PDF), **4 MB cada** e **8 MB no total**. O Worker armazena os arquivos **privadamente em Cloudflare R2**, guarda apenas os metadados no D1 e oferece download protegido por `ADMIN_TOKEN`.
+
+1. Crie o bucket `npx wrangler r2 bucket create jf-contact-files` e configure o binding `ATTACHMENTS` no seu `wrangler.toml`.
+2. Em instalação nova, aplique `schema.sql`. Em banco existente, aplique **apenas uma vez** a migração `migrations/002_contact_attachments.sql`.
+3. Implante o Worker com `COOKIE_SECRET` e `ADMIN_TOKEN` definidos como segredos, e informe `VITE_CONTACT_API_URL` ao build do site.
+4. O login do Local Studio **não autentica a API pública**. O token adicional é necessário para ler anexos e e-mails reais. Sem isso, qualquer pessoa poderia ler e excluir mensagens de clientes porque o PIN está no JavaScript.
+
+A exclusão de mensagens no servidor também apaga os anexos vinculados em R2. Não compartilhe URLs diretas do bucket.

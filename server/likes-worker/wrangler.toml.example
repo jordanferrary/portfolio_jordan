@@ -8,3 +8,8 @@ ALLOWED_ORIGIN = "https://jordanferrary.github.io"
 binding = "LIKES_DB"
 database_name = "jf-portfolio-likes"
 database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+# Enable quote reference attachments. Create this bucket before deploying.
+[[r2_buckets]]
+binding = "ATTACHMENTS"
+bucket_name = "jf-contact-files"
