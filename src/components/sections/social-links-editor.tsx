@@ -32,7 +32,7 @@ export function SocialLinksEditor({links,onChange}:Props){
   catch(e){setError(e instanceof Error?e.message:'Falha ao importar ícone.')}
   finally{setBusy(false)}
  }
- return <section className="social-links-manager" aria-label="Gerenciador de redes sociais"><div className="editor-section-title"><h3>Redes do canto superior direito</h3><p>Adicione, edite, reordene ou exclua os botões. O Behance está sem endereço porque não foi fornecido o URL do seu perfil; configure-o abaixo.</p></div>
+ return <section className="social-links-manager" aria-label="Gerenciador de redes sociais"><div className="editor-section-title"><h3>Redes sociais do portfólio</h3><p>Adicione, edite, reordene ou exclua os perfis. Os links configurados aparecem no cabeçalho e na página Contato; o primeiro ganha destaque no Contato.</p></div>
   <div className="social-manager-list">{links.map((s,i)=><article className="social-manager-row" key={s.id}><div className="social-manager-mark"><SocialMark social={s}/></div><div className="social-manager-info"><b>{s.label}</b><small title={s.url}>{safeSocialUrl(s.url)?s.url:'Link não configurado'}</small></div><div className="social-manager-actions"><button onClick={()=>move(i,i-1)} disabled={i===0} aria-label={'Mover '+s.label+' para cima'}><ArrowUp size={15}/></button><button onClick={()=>move(i,i+1)} disabled={i===links.length-1} aria-label={'Mover '+s.label+' para baixo'}><ArrowDown size={15}/></button><button onClick={()=>edit(s)} aria-label={'Editar '+s.label}><Pencil size={15}/></button><button onClick={()=>remove(s.id)} aria-label={'Excluir '+s.label}><Trash2 size={15}/></button></div></article>)}</div>
   {!draft?<button className="social-manager-add" onClick={()=>{setDraft(newDraft());setError('')}}><Plus size={17}/>Adicionar rede social</button>:<div className="social-manager-form"><div className="social-manager-form-top"><h3>{links.some(s=>s.id===draft.id)?'Editar rede':'Nova rede social'}</h3><button onClick={()=>setDraft(null)} aria-label="Fechar cadastro"><X size={17}/></button></div>
    <label>Nome / plataforma<input value={draft.label} maxLength={50} placeholder="Behance, ArtStation, Bluesky..." onChange={e=>patch({label:e.target.value})}/></label>
@@ -43,6 +43,6 @@ export function SocialLinksEditor({links,onChange}:Props){
    {error&&<p role="alert" className="social-manager-error">{error}</p>}
    <div className="social-manager-save"><button onClick={()=>setDraft(null)}>Cancelar</button><button className="save-action" onClick={save}><Save size={16}/>Salvar rede</button></div>
   </div>}
- <p className="editor-help">Os botões sem URL permanecem visíveis como placeholders inativos. Um link só se torna clicável quando um endereço válido é cadastrado. As alterações do Studio ainda são locais.</p>
+ <p className="editor-help">Perfis sem endereço válido não são exibidos na página Contato. Salve cada rede neste gerenciador antes de salvar a página. A publicação definitiva ocorre pelo GitHub Studio.</p>
  </section>
 }

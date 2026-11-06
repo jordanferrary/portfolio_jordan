@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-06T20:21:05.813Z-99cfdf76-ad86-471b-aa5b-2d021072cf4e",
+  "revision": "2026-11-06T20:21:05.813Z-99cfdf76-ad86-471b-aa5b-2d021072cf4e-social-first-contact",
   "store": {
     "projects": [
       {
@@ -217,16 +217,16 @@
     ],
     "socialLinks": [
       {
-        "id": "behance",
-        "label": "Behance",
-        "url": "https://www.behance.net/jordanferrary",
-        "icon": "behance"
-      },
-      {
         "id": "instagram",
         "label": "Instagram",
         "url": "https://www.instagram.com/jordan_.ferrary/",
         "icon": "instagram"
+      },
+      {
+        "id": "behance",
+        "label": "Behance",
+        "url": "https://www.behance.net/jordanferrary",
+        "icon": "behance"
       }
     ],
     "showLikeCounts": true,
@@ -249,8 +249,8 @@
     "contact": {
       "titleFirst": "Have a project",
       "titleAccent": "in mind?",
-      "introduction": "Share your idea, creative goals, and what you need from a 3D artist. Let’s explore how we can bring your project to life.",
-      "greeting": "Tell me about your project and share any references you have in mind.",
+      "introduction": "For collaborations, commissions, or questions about my work, reach out through my social profiles. Let’s start a conversation.",
+      "greeting": "Choose a platform below to explore my work or get in touch.",
       "interestOptions": [
         "3D Characters",
         "3D Modeling & Sculpting",

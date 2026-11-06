@@ -6,9 +6,9 @@ export type SocialIcon = 'github'|'instagram'|'behance'|'youtube'|'linkedin'|'tw
 export interface SocialLink { id:string; label:string; url:string; icon:SocialIcon; iconImage?:string }
 export const socialIconOptions:SocialIcon[]=['github','instagram','behance','youtube','linkedin','twitter','facebook','twitch','dribbble','discord','tiktok','pinterest','reddit','artstation','globe','mail','custom']
 export const defaultSocialLinks:SocialLink[]=[
+ {id:'instagram',label:'Instagram',url:'https://www.instagram.com/jordan_.ferrary/',icon:'instagram'},
  {id:'github',label:'GitHub',url:'https://github.com/jordanferrary',icon:'github'},
- {id:'behance',label:'Behance',url:'',icon:'behance'},
- {id:'instagram',label:'Instagram',url:'https://www.instagram.com/jordan_.ferrary/',icon:'instagram'}
+ {id:'behance',label:'Behance',url:'',icon:'behance'}
 ]
 export interface HomeContent {
  eyebrow:string
@@ -72,8 +72,8 @@ export interface ContactSettings {
 export const defaultContact:ContactSettings={
  titleFirst:'Have a project',
  titleAccent:'in mind?',
- introduction:'Share your idea, creative goals, and what you need from a 3D artist. Let’s explore how we can bring your project to life.',
- greeting:'Tell me about your project and share any references you have in mind.',
+ introduction:'For collaborations, commissions, or questions about my work, reach out through my social profiles. Let’s start a conversation.',
+ greeting:'Choose a platform below to explore my work or get in touch.',
  interestOptions:['3D Characters','3D Modeling & Sculpting','Environments','Game Art','Motion Design','Illustration','Other'],
  allowAvatar:false,
  allowAttachments:true

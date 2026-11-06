@@ -137,6 +137,7 @@ export function usePortfolio(editing=false){
  const setThemePalette=(themePalette:ThemePalette)=>save({...store,themePalette:normalizeThemePalette(themePalette)})
  const setAbout=(about:AboutContent)=>save({...store,about})
  const setContact=(contact:ContactSettings)=>save({...store,contact})
+ const setContactPage=(contact:ContactSettings,socialLinks:SocialLink[])=>save({...store,contact,socialLinks})
  const setTestimonials=(testimonials:Testimonial[])=>save({...store,testimonials})
  const setMusicTracks=(musicTracks:MusicTrack[])=>save({...store,musicTracks})
  const setSocialLinks=(socialLinks:SocialLink[])=>save({...store,socialLinks})
@@ -174,5 +175,5 @@ export function usePortfolio(editing=false){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setCategories,setHome,setGalleryBackground,setBranding,setSiteIdentity,setThemePalette,setAbout,setContact,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setCategories,setHome,setGalleryBackground,setBranding,setSiteIdentity,setThemePalette,setAbout,setContact,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }
