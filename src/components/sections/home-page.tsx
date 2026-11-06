@@ -1,0 +1,24 @@
+import { useState } from 'react'
+import { ArrowRight,ArrowUpRight,ChevronLeft,ChevronRight,Gamepad2,Palette,Pencil,Quote,Shapes,Sparkles } from 'lucide-react'
+import type { HomeContent,Testimonial } from '../../data/studio'
+import type { Project } from '../../data/projects'
+import { AssetImage } from '../ui/asset-image'
+type Props={home:HomeContent;testimonials:Testimonial[];projects:Project[];editing:boolean;onOpenProject:(project:Project)=>void;onEditProject:(project:Project)=>void;onEditHome:()=>void;onNavigatePortfolio:()=>void}
+export function HomePage({home,testimonials,projects,editing,onOpenProject,onEditProject,onEditHome,onNavigatePortfolio}:Props){
+ const [slide,setSlide]=useState(0)
+ const current=testimonials[slide%Math.max(1,testimonials.length)]
+ const featured=projects.filter(p=>p.featured).slice(0,3)
+ const focusIcons=[Shapes,Gamepad2,Palette]
+ return <main className="home-dashboard">
+  <div className="home-wallpaper" aria-hidden="true"><AssetImage src={home.background} alt=""/></div>
+  <div className="home-upper">
+   <div className="home-intro"><p className="home-eyebrow"><i/>{home.eyebrow}</p><h1>{home.titleFirst.split('\n').map((line,index)=><span key={index}>{line}<br/></span>)}<em>{home.titleSecond}</em></h1><p className="home-blurb">{home.introduction}</p><button className="home-explore" onClick={onNavigatePortfolio}>Explore my portfolio <span><ArrowUpRight size={18}/></span></button></div>
+   <aside className="home-about-panel"><div className="home-avatar-ring"><AssetImage src={home.avatar} alt="Avatar do artista"/><span className="avatar-status"/></div><h2>Jordan Ferrary</h2><p className="home-profile-role">3D Artist</p><p className="home-availability"><i/>{home.available?'Available for projects':'Open to new ideas'}</p><p className="home-tagline">{home.aboutTagline}</p><div className="home-specialties"><small>✦ Specialties</small><div>{home.specialties.map(item=><span key={item}>{item}</span>)}</div></div></aside>
+  </div>
+  <div className="home-bottom-panels">
+   <section className="home-featured-panel" aria-label="Trabalhos em destaque"><div className="home-panel-heading"><h2><Sparkles size={17}/> Featured Projects</h2><button onClick={onNavigatePortfolio}>View all <ArrowRight size={15}/></button></div><div className="home-featured-cards">{featured.map(p=><div className="home-work" key={p.id}><button className="home-work-link" onClick={()=>onOpenProject(p)} title={'Abrir '+p.title}><AssetImage src={p.image} alt={p.title}/><span className="work-title">{p.title}</span><span className="work-arrow"><ArrowUpRight size={18}/></span></button>{editing&&<button className="home-work-edit" aria-label={'Editar '+p.title} onClick={()=>onEditProject(p)}><Pencil size={15}/></button>}</div>)}{featured.length===0&&<div className="no-featured">Marque um projeto como destaque no editor.</div>}</div></section>
+   <section className="home-testimonials-panel" aria-label="Depoimentos"><div className="home-panel-heading"><h2>What people say</h2>{editing&&<button aria-label="Editar depoimentos" onClick={onEditHome}><Pencil size={15}/></button>}</div><div className="quote-illustration"><Quote size={31} fill="currentColor"/></div>{current?<div className="feedback-content"><blockquote>{current.quote}</blockquote><small>— {current.author}{current.role?' · '+current.role:''}</small></div>:<div className="feedback-empty"><p>Feedbacks de clientes e parceiros aparecerão aqui.</p>{editing&&<button onClick={onEditHome}>Adicionar primeiro feedback</button>}</div>}<div className="feedback-controls"><span>{testimonials.length?slide%testimonials.length+1:0} / {testimonials.length}</span><div><button disabled={testimonials.length<2} aria-label="Depoimento anterior" onClick={()=>setSlide(v=>(v-1+testimonials.length)%testimonials.length)}><ChevronLeft size={18}/></button><button disabled={testimonials.length<2} aria-label="Próximo depoimento" onClick={()=>setSlide(v=>(v+1)%testimonials.length)}><ChevronRight size={18}/></button></div></div></section>
+   <section className="home-focus-panel" aria-label="Especialidades artísticas"><div className="home-panel-heading"><h2><span className="focus-heading-icon">▥</span> Project Focus</h2></div><div className="focus-items">{home.focusItems.map((item,index)=>{const Icon=focusIcons[index%focusIcons.length];return <div className="focus-item" key={index}><Icon size={27}/><span>{item}</span></div>})}</div></section>
+  </div>
+ </main>
+}
