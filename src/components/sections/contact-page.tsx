@@ -21,7 +21,6 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
   .map(s=>({social:s,url:safeSocialUrl(s.url)}))
   .filter((item):item is {social:SocialLink;url:string}=>
    Boolean(item.url)&&item.social.icon!=='mail'&&!item.url?.startsWith('mailto:'))
- const primary=channels[0]
  return <main className="contact-page contact-social-page">
   <div className="contact-social-atmosphere" aria-hidden="true"><i/><i/><i/></div>
   <div className="contact-social-layout">
@@ -31,7 +30,6 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
     <p className="contact-social-description">{protectArtistName(settings.introduction)}</p>
     <div className="contact-social-divider" aria-hidden="true"><span/><span/></div>
     <div className="contact-social-message"><span className="contact-social-message-icon"><MessagesSquare size={19}/></span><div><strong>Let's talk where we're already connected.</strong><p>Choose one of my social platforms and reach out there — no forms or email required.</p></div></div>
-    {primary&&<a className="contact-social-primary-link" href={primary.url} target="_blank" rel="noopener noreferrer"><span>Connect on {primary.social.label}</span><ArrowUpRight size={18}/></a>}
     <a className="contact-social-portfolio-link" href="#/portfolio">Explore the portfolio <ArrowRight size={17}/></a>
     {demoEnabled&&<button type="button" lang="pt-BR" className="contact-dev-edit" onClick={onEdit}><Pencil size={15}/>Personalizar contato e redes</button>}
    </section>
