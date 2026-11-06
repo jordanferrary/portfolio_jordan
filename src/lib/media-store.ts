@@ -112,7 +112,12 @@ export async function listMediaAssets():Promise<LibraryAsset[]>{
 }
 export async function saveUploadedMedia(file:File,folder:string,slot:string):Promise<string>{
  if(!['image/png','image/jpeg','image/webp','image/avif'].includes(file.type))throw new Error('Use PNG, JPG, WEBP ou AVIF.')
- if(file.size>12_000_000)throw new Error('Imagem acima de 12 MB. Otimize antes de importar.')
+ if(file.size>35_000_000)throw new Error('Imagem acima de 35 MB. Reduza antes de importar.')
+ // The optimizer is imported only when an owner uploads an image.
+ const {optimizeImage}=await import('./image-optimize')
+ const optimized=await optimizeImage(file)
+ if(optimized.size>12_000_000)throw new Error('Imagem convertida acima de 12 MB. Reduza a resolução no conversor do Studio.')
+ file=optimized
  const hash=await fingerprint(file)
  const catalog=await listMediaAssets()
  const same=catalog.find(a=>a.hash===hash&&a.size===file.size&&isLocalMedia(a.ref))
