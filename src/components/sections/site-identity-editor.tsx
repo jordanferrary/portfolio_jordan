@@ -21,7 +21,7 @@ export function SiteIdentityEditor({value,homeBanner,onSave,onEditBanner,onClose
  const [busy,setBusy]=useState(false)
  const importFavicon=async(file:File)=>{
   setBusy(true);setError('')
-  try{setDraft(current=>({...current,siteFavicon:await saveUploadedMedia(file,'branding','favicon')}))}
+  try{const reference=await saveUploadedMedia(file,'branding','favicon');setDraft(current=>({...current,siteFavicon:reference}))}
   catch(e){setError(e instanceof Error?e.message:'Não foi possível salvar o favicon.')}
   finally{setBusy(false)}
  }
