@@ -67,3 +67,17 @@ O conteúdo foi reconstruído a partir do screenshot e referências Figma compar
 
 ### Pendência visual
 O frame de Home foi reproduzido a partir do screenshot anexado. A arte original de fundo da referência não está entre os assets fornecidos e o Figma não pôde ser inspecionado por completo nesta sessão. O editor da Home permite trocar essa imagem pela exportação correta.
+
+## Biblioteca de imagens e player (revisão seguinte)
+
+**Biblioteca por clipe:** cada campo de imagem oferece “Biblioteca”. Por padrão, “Neste projeto” mostra imagens daquele projeto, inclusive as reaproveitadas. “Todas as imagens” remove o filtro, e a busca encontra arquivos por nome/pasta. A biblioteca também mostra mídias locais anteriormente enviadas e as capas e imagens já cadastradas nos projetos, Home e filtros.
+
+**Deduplicação:** novas importações são comparadas pelo hash SHA-256 do conteúdo. Reimportar o mesmo arquivo retorna sua referência existente em vez de salvar outro blob. Arquivos legados idênticos são agrupados na lista, mas não apagados, evitando quebrar referências antigas. Um asset compartilhado pode pertencer a múltiplas pastas lógicas.
+
+**Backup:** `jordan-portfolio-backup.zip` inclui `portfolio.json`, `media-library.json` e todos os blobs locais do catálogo, mesmo que ainda não estejam vinculados a um projeto. Use esse arquivo para restaurar biblioteca e conteúdo no mesmo navegador ou em outro.
+
+**Cadastro de músicas:** Local Studio → “Editar Home, feedbacks e músicas” → “Músicas” → “Adicionar nova música”. Informe título, artista, imagem da capa e áudio MP3/WAV/OGG ou URL direta. A capa pode ser importada ou reutilizada pelo clipe. A playlist aceita editar, excluir e ordenar as faixas.
+
+**Player:** clicar na capa abre a playlist; Play/Pause controlam apenas áudio, sem download; ∞ aceso repete continuamente a mesma faixa; ∞ apagado avança à próxima ao terminar (com mais de uma faixa). A reprodução automática pode ser bloqueada pelo navegador até uma interação do usuário.
+
+**Observação:** Local Studio e o PIN atual são apenas uma interface de testes; os dados ficam no IndexedDB/localStorage deste navegador. Nem música nem imagem nova são publicadas no GitHub por esses controles, e não há autenticação segura de servidor implementada.
