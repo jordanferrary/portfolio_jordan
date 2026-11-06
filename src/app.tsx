@@ -1,8 +1,7 @@
 import { useEffect,useState } from 'react'
-import { ArrowRight,ArrowUpRight,BriefcaseBusiness,Mail,Plus } from 'lucide-react'
+import { BriefcaseBusiness,Plus } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
 import { SocialBar } from './components/layout/social-bar'
-import { safeSocialUrl } from './components/ui/social-mark'
 import { Gallery } from './components/sections/gallery'
 import { ProjectPage } from './components/sections/project-page'
 import { AdminEditor } from './components/sections/admin-editor'
@@ -10,8 +9,9 @@ import { AdminGate } from './components/sections/admin-gate'
 import { HomePage } from './components/sections/home-page'
 import { AboutPage } from './components/sections/about-page'
 import { AboutEditor } from './components/sections/about-editor'
+import {ContactPage} from './components/sections/contact-page'
+import {AdminInboxBell} from './components/sections/admin-inbox'
 import { HomeEditor } from './components/sections/home-editor'
-import { AssetImage } from './components/ui/asset-image'
 import { AssetLibraryProvider } from './components/ui/asset-picker'
 import { usePortfolio } from './hooks/use-portfolio'
 import type { Project } from './data/projects'
@@ -42,9 +42,10 @@ export function App(){
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
  {page==='inicio'&&<HomePage home={portfolio.home} testimonials={portfolio.testimonials} projects={portfolio.projects} editing={editing} onOpenProject={openProject} onEditProject={setEditor} onEditHome={()=>{setHomeEditorTab('feedback');setHomeEditorOpen(true)}} onNavigatePortfolio={()=>navigate('portfolio')}/>}
  {page==='sobre'&&<AboutPage about={portfolio.about} editing={editing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
- {page==='contato'&&<main className="simple-page"><span className="eyebrow">✦ Work together</span><h1>Have a project<br/><em>in mind?</em></h1><p>Let's turn a creative idea into a remarkable visual experience.</p>{portfolio.socialLinks.filter(s=>safeSocialUrl(s.url)).slice(0,3).map((s,i)=><a key={s.id} className={i===0?'home-cta':'contact-link'} href={safeSocialUrl(s.url)} target="_blank" rel="noopener noreferrer">{'Contact on '+s.label} {i===0?<Mail size={18}/>:<ArrowUpRight size={18}/>}</a>)}</main>}
+ {page==='contato'&&<ContactPage socials={portfolio.socialLinks}/>}
  </div>
  {editing&&<div className="admin-bar"><BriefcaseBusiness size={16}/> Local Studio <span>Rascunhos locais · ZIP para backup</span><button onClick={()=>{setHomeEditorTab('home');setHomeEditorOpen(true)}}>Editar Home, redes e músicas</button><button onClick={()=>setAboutEditorOpen(true)}>Editar Sobre</button><button onClick={()=>{setHomeEditorTab('likes');setHomeEditorOpen(true)}}>Curtidas</button><button onClick={()=>setEditor(null)}><Plus size={15}/> Novo projeto</button><button onClick={()=>{setEditing(false);setEditor(undefined)}}>Bloquear editor</button></div>}
+ {editing&&<AdminInboxBell/>}
  {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
  {aboutEditorOpen&&<AboutEditor value={portfolio.about} onSave={portfolio.setAbout} onClose={()=>setAboutEditorOpen(false)}/>}
