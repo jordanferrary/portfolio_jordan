@@ -70,3 +70,53 @@
 .inline-preview-content .preview-description{font-size:14px;line-height:1.5;color:#d1c1e0}
 .inline-preview-content .preview-description h2{font-size:21px}
 .inline-preview-content .preview-description h3{font-size:17px}
+
+
+/* Inline project preview: the action belongs at the top-left; metadata at top-right. */
+.inline-preview .preview-meta-row{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+ margin:0 0 10px;
+ min-width:0;
+}
+.inline-preview .preview-meta-row .preview-like-row{
+ flex:0 0 auto;
+ margin:0;
+ min-width:0;
+}
+.inline-preview .preview-meta-row .project-like-wrap{min-width:0}
+.inline-preview .preview-meta-row .project-like{
+ min-height:37px;
+ padding:8px 12px;
+ font-size:11px;
+ white-space:nowrap;
+}
+.inline-preview .preview-meta-row .category-badge.static{
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ flex:0 1 auto;
+ max-width:54%;
+ min-width:0;
+ margin:0 0 0 auto;
+ padding:9px 12px;
+ white-space:nowrap;
+}
+.inline-preview .preview-meta-row .category-badge.static svg,
+.inline-preview .preview-meta-row .category-badge.static .filter-custom-icon{
+ flex:0 0 15px;
+}
+.inline-preview .preview-category-label{
+ display:block;
+ min-width:0;
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
+}
+@media(max-width:390px){
+ .inline-preview .preview-meta-row{gap:7px}
+ .inline-preview .preview-meta-row .project-like{padding:7px 10px;gap:6px}
+ .inline-preview .preview-meta-row .category-badge.static{padding:8px 10px;max-width:51%}
+}
