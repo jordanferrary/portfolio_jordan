@@ -53,8 +53,10 @@ function parseStore(raw:unknown):PortfolioStore{
  const contact={
   ...defaultContact,
   ...(obj.contact??{}),
-  introduction:obj.contact?.introduction?.startsWith('Conte sua ideia')?defaultContact.introduction:obj.contact?.introduction??defaultContact.introduction,
-  greeting:obj.contact?.greeting?.startsWith('Olá!')?defaultContact.greeting:obj.contact?.greeting??defaultContact.greeting,
+  introduction:(obj.contact?.introduction?.startsWith('Conte sua ideia')||obj.contact?.introduction==='Share your idea, creative goals, and what you need from a 3D artist. Let’s explore how we can bring your project to life.')
+   ?defaultContact.introduction:obj.contact?.introduction??defaultContact.introduction,
+  greeting:(obj.contact?.greeting?.startsWith('Olá!')||obj.contact?.greeting==='Tell me about your project and share any references you have in mind.')
+   ?defaultContact.greeting:obj.contact?.greeting??defaultContact.greeting,
   interestOptions:Array.isArray(obj.contact?.interestOptions)
    ?obj.contact.interestOptions.filter((item):item is string=>typeof item==='string'&&item.trim().length>0).map(item=>legacyPublicTopics[item]??item)
    :defaultContact.interestOptions
