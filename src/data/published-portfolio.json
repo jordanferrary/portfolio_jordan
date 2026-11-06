@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-06T08:36:47.311Z-d342908c-9dac-4cb6-a05c-d8773e997ae8-en",
+  "revision": "2026-11-06T09:04:30.578Z-219c2fee-d1c2-4b34-8421-3e56203db9a1",
   "store": {
     "projects": [
       {
@@ -125,9 +125,27 @@
     "testimonials": [
       {
         "id": "review-mw4agj2p",
-        "author": "",
+        "author": "Misty",
         "role": "",
-        "quote": ""
+        "quote": "\"Jordan’s 3D gym models are flawless. The water lighting and creative realism is incredible!\""
+      },
+      {
+        "id": "review-mw4qu8h0",
+        "author": "Jessie",
+        "role": "",
+        "quote": "\"Jordan’s mecha designs are nothing short of divine. The level of glamour and creativity is incredible!\""
+      },
+      {
+        "id": "review-mw4qyb1q",
+        "author": "Ash Ketchum",
+        "role": "text",
+        "quote": "\"Jordan’s work is absolutely electrifying! The level of energy and battle arena detail is incredible!\""
+      },
+      {
+        "id": "review-mw4qz0qt",
+        "author": "Gary Oak",
+        "role": "",
+        "quote": "\"Jordan’s trophy renders are exceptional. The level of perfection and detail is almost as stunning as me!\""
       }
     ],
     "musicTracks": [
