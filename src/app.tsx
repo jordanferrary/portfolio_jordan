@@ -3,6 +3,7 @@ import { BriefcaseBusiness,Plus } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
 import { SocialBar } from './components/layout/social-bar'
 import { Gallery } from './components/sections/gallery'
+import { GalleryBackgroundEditor } from './components/sections/gallery-background-editor'
 import { ProjectPage } from './components/sections/project-page'
 import { AdminEditor } from './components/sections/admin-editor'
 import { AdminGate } from './components/sections/admin-gate'
@@ -26,6 +27,7 @@ export function App(){
  const [homeEditorOpen,setHomeEditorOpen]=useState(false)
  const [aboutEditorOpen,setAboutEditorOpen]=useState(false)
  const [contactEditorOpen,setContactEditorOpen]=useState(false)
+ const [galleryBackgroundEditorOpen,setGalleryBackgroundEditorOpen]=useState(false)
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio()
  const navigate=(next:Page)=>{location.hash='/'+next;setPage(next);window.scrollTo(0,0)}
@@ -38,8 +40,8 @@ export function App(){
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
- return <AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} tracks={portfolio.musicTracks}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
- {page==='portfolio'&&<Gallery projects={portfolio.projects} categories={portfolio.categories} selected={preview} onPreview={p=>setPreviewId(p.id)} onClosePreview={()=>setPreviewId(null)} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} showLikeCounts={portfolio.showLikeCounts} heroImage={portfolio.home.background}/>}
+ return <AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} tracks={portfolio.musicTracks}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
+ {page==='portfolio'&&<Gallery projects={portfolio.projects} categories={portfolio.categories} selected={preview} onPreview={p=>setPreviewId(p.id)} onClosePreview={()=>setPreviewId(null)} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} showLikeCounts={portfolio.showLikeCounts} heroImage={portfolio.galleryBackground} onEditBackground={()=>setGalleryBackgroundEditorOpen(true)}/>}
  {page==='project'&&project&&<ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts}/>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
  {page==='inicio'&&<HomePage home={portfolio.home} testimonials={portfolio.testimonials} projects={portfolio.projects} editing={editing} onOpenProject={openProject} onEditProject={setEditor} onEditHome={()=>{setHomeEditorTab('feedback');setHomeEditorOpen(true)}} onNavigatePortfolio={()=>navigate('portfolio')}/>}
@@ -50,6 +52,7 @@ export function App(){
  {editing&&<AdminInboxBell/>}
  {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
+ {galleryBackgroundEditorOpen&&<GalleryBackgroundEditor value={portfolio.galleryBackground} onSave={portfolio.setGalleryBackground} onClose={()=>setGalleryBackgroundEditorOpen(false)}/>}
  {contactEditorOpen&&<ContactEditor settings={portfolio.contact} onSave={portfolio.setContact} onClose={()=>setContactEditorOpen(false)}/>}
  {aboutEditorOpen&&<AboutEditor value={portfolio.about} onSave={portfolio.setAbout} onClose={()=>setAboutEditorOpen(false)}/>}
  {homeEditorOpen&&<HomeEditor initialTab={homeEditorTab} showLikeCounts={portfolio.showLikeCounts} onShowLikeCounts={portfolio.setShowLikeCounts} home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} links={portfolio.socialLinks} onLinks={portfolio.setSocialLinks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
