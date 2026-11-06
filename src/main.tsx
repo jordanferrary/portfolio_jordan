@@ -37,3 +37,6 @@ import './styles/project-focus.css'
 import './styles/studio-polish.css'
 
 import './styles/studio-centered.css'
+
+import './styles/creative-direction.css'
+import './styles/theme-palette-editor.css'

@@ -19,6 +19,8 @@ import { AssetLibraryProvider } from './components/ui/asset-picker'
 import { usePortfolio } from './hooks/use-portfolio'
 import { GitHubPublishEditor } from './components/sections/github-publish-editor'
 import { SiteIdentityEditor } from './components/sections/site-identity-editor'
+import { ThemePaletteEditor } from './components/sections/theme-palette-editor'
+import { applyThemePalette } from './lib/theme-palette'
 import { StudioDock,type StudioAction } from './components/sections/studio-dock'
 import type { Project } from './data/projects'
 function route():Page|'project'{const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':(['inicio','portfolio','sobre','contato'].includes(part)?part as Page:'inicio')}
@@ -35,6 +37,7 @@ export function App(){
  const [galleryBackgroundEditorOpen,setGalleryBackgroundEditorOpen]=useState(false)
  const [logoEditorOpen,setLogoEditorOpen]=useState(false)
  const [siteIdentityOpen,setSiteIdentityOpen]=useState(false)
+ const [themePaletteOpen,setThemePaletteOpen]=useState(false)
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
  const navigate=(next:Page)=>{location.hash='/'+next;setPage(next);window.scrollTo(0,0)}
@@ -57,9 +60,11 @@ export function App(){
   {id:'reviews',label:'Feedbacks',description:'Depoimentos reais e autoria',section:'Conteúdo',icon:MessageSquare,onClick:()=>openHomeTab('feedback')},
   {id:'social',label:'Redes sociais',description:'Links, ícones e plataformas',section:'Conteúdo',icon:Share2,onClick:()=>openHomeTab('socials')},
   {id:'likes',label:'Curtidas',description:'Visibilidade e contagem',section:'Conteúdo',icon:Heart,onClick:()=>openHomeTab('likes')},
-  {id:'brand',label:'Logo lateral',description:'Imagem principal, hover e escala',section:'Identidade',icon:Palette,onClick:()=>setLogoEditorOpen(true)},
+  {id:'palette',label:'Paleta de cores',description:'Círculo cromático, HEX, RGB e variáveis globais',section:'Identidade',icon:Palette,onClick:()=>setThemePaletteOpen(true)},
+  {id:'brand',label:'Logo lateral',description:'Imagem principal, hover e escala',section:'Identidade',icon:ImageIcon,onClick:()=>setLogoEditorOpen(true)},
   {id:'share',label:'Favicon e link',description:'Ícone da aba e prévia compartilhada',section:'Identidade',icon:ImageIcon,onClick:()=>setSiteIdentityOpen(true)}
  ]
+ useEffect(()=>{applyThemePalette(portfolio.themePalette)},[portfolio.themePalette])
  useEffect(()=>{const sync=()=>{setPage(route());window.scrollTo(0,0)};window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync)},[])
  useEffect(()=>{
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
@@ -77,6 +82,7 @@ export function App(){
  {editing&&<AdminInboxBell/>}
  {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
+ {editing&&themePaletteOpen&&<ThemePaletteEditor value={portfolio.themePalette} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}
  {editing&&siteIdentityOpen&&<SiteIdentityEditor value={{siteFavicon:portfolio.siteFavicon,seoTitle:portfolio.seoTitle,seoDescription:portfolio.seoDescription}} homeBanner={portfolio.home.background} onSave={portfolio.setSiteIdentity} onEditBanner={()=>openHomeTab('home')} onClose={()=>setSiteIdentityOpen(false)}/>}
  {editing&&logoEditorOpen&&<BrandLogoEditor value={{siteLogo:portfolio.siteLogo,siteLogoHover:portfolio.siteLogoHover,siteLogoSize:portfolio.siteLogoSize,siteLogoHoverScale:portfolio.siteLogoHoverScale}} onSave={portfolio.setBranding} onClose={()=>setLogoEditorOpen(false)}/>}
  {editing&&galleryBackgroundEditorOpen&&<GalleryBackgroundEditor value={portfolio.galleryBackground} onSave={portfolio.setGalleryBackground} onClose={()=>setGalleryBackgroundEditorOpen(false)}/>}

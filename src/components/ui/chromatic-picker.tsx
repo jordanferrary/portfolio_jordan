@@ -127,7 +127,7 @@ export function ChromaticPicker({value,onChange}:{value:string;onChange:(next:st
  const slider=(label:string,n:number,max:number,onValue:(v:number)=>void)=>
   <label className="chromatic-slider" key={label}><span>{label}<b>{Math.round(n)}{label==='Matiz'?'°':'%'}</b></span><input type="range" min="0" max={max} step="1" value={Math.round(n)} onChange={e=>onValue(Number(e.target.value))}/></label>
  const pickerStyle={'--picker-hue':rgbToHex(hueRgb(hsv.h))} as CSSProperties
- return <div className="chromatic-picker">
+ return <div className="chromatic-picker" style={pickerStyle}>
   <div className="chromatic-wheel-layout">
    <div className={'chromatic-wheel'+(dragging?' is-dragging':'')} style={pickerStyle} onPointerDown={down} onPointerMove={e=>{if(drag.current)usePoint(e,drag.current)}} onPointerUp={up} onPointerCancel={up} aria-label="Círculo cromático: clique no aro para escolher matiz e no triângulo para saturação e luminosidade">
     <div className="chromatic-hue-ring" aria-hidden="true"/>
