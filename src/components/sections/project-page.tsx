@@ -23,7 +23,7 @@ function StoryBlock({block,projectTitle}:{block:Block;projectTitle:string}){
  return null
 }
 export function ProjectPage({project,onBack,editing,onEdit,showLikeCounts}:{project:Project;onBack:()=>void;editing:boolean;onEdit:()=>void;showLikeCounts:boolean}){
- const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery'].includes(block.type))
+ const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery','video'].includes(block.type))
  const processImages=(project.processSteps??[]).filter(step=>step.image.trim().length>0)
  const needsArtworkShowcase=!hasDetailedArtwork
  return <main className={'project-page'+(needsArtworkShowcase?' project-page-artwork-only':'')}><button className="back-link" onClick={onBack}><ArrowLeft size={18}/> Back to portfolio</button><div className="project-hero"><AssetImage src={project.image} alt={project.title} style={framingStyle(project.heroFocus)}/><div className="project-hero-content"><span className="eyebrow">✦ {project.category} / {project.year}</span><h1>{project.title}</h1><RichText className="project-hero-description" value={project.description}/><div className="tools">{project.tools.map(t=><span key={t}>{t}</span>)}</div>{editing&&<button className="primary-action" onClick={onEdit}><Pencil size={16}/>Editar projeto</button>}</div></div><div className="project-engagement"><ProjectLike projectId={project.id} showCount={showLikeCounts}/></div><div className="case-study">
