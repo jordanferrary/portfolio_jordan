@@ -1,0 +1,18 @@
+.zoomable-art{cursor:zoom-in}
+.zoomable-art:focus-visible{outline:3px solid var(--jf-primary,#b65bff);outline-offset:4px}
+.art-lightbox{position:fixed;inset:0;z-index:9999;background:rgba(6,4,11,.98);color:#f4e8ff;display:flex;flex-direction:column;isolation:isolate}
+.art-lightbox-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px max(16px,env(safe-area-inset-left));border-bottom:1px solid #53306e;background:#150d21}
+.art-lightbox-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:600;max-width:42vw}
+.art-lightbox-controls{display:flex;align-items:center;gap:7px}
+.art-lightbox-controls button{border:1px solid #684283;background:#2b153e;border-radius:10px;color:#f1d7ff;width:37px;height:37px;display:grid;place-items:center;cursor:pointer}
+.art-lightbox-controls button:hover:not(:disabled){border-color:#b97cff;background:#4a2568}
+.art-lightbox-controls button:disabled{opacity:.35;cursor:default}
+.art-lightbox-controls output{min-width:56px;text-align:center;font-size:12px;font-variant-numeric:tabular-nums}
+.art-lightbox-stage{flex:1;min-height:0;display:grid;place-items:center;overflow:hidden;touch-action:none;user-select:none;cursor:grab}
+.art-lightbox-stage img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;pointer-events:none;transform-origin:center center;will-change:transform}
+.art-lightbox-help{margin:0;padding:11px 15px 15px;text-align:center;font-size:11px;color:#b59cc9}
+.art-lightbox-controls button:focus-visible{outline:2px solid #d59cff;outline-offset:2px}
+.comparison-zoom-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:8px}
+.comparison-zoom-actions button{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;background:#211332;border:1px solid #6c4686;border-radius:9px;color:#dfc1f2;font-size:11px}
+@media(max-width:650px){.art-lightbox-toolbar{padding:9px 10px}.art-lightbox-title{max-width:27vw;font-size:10px}.art-lightbox-controls{gap:3px}.art-lightbox-controls button{width:31px;height:33px}.art-lightbox-controls output{min-width:40px;font-size:10px}.art-lightbox-help{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.art-lightbox-stage img{will-change:auto}}
