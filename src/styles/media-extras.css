@@ -1,0 +1,23 @@
+.image-converter-panel{width:min(670px,100%)}
+.image-converter-panel .editor-scroll{padding:24px;display:flex;flex-direction:column;gap:19px}
+.converter-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.converter-fields label{display:flex;flex-direction:column;gap:8px;font-size:12px;color:#d4b7e9}
+.converter-fields select{padding:11px;background:#170d23;border:1px solid #754a93;border-radius:9px;color:#fff}
+.converter-fields input[type=range]{accent-color:#ae62ee}
+.converter-result{border:1px solid #684289;border-radius:16px;padding:14px;color:#d8c1e8;font-size:12px}
+.converter-result img{display:block;max-height:230px;max-width:100%;object-fit:contain;margin:auto}
+.converter-result p{margin:8px 0 0}
+.project-video-embed{max-width:1050px;width:100%;margin:0 auto}
+.project-video-frame{position:relative;aspect-ratio:16/9;overflow:hidden;background:#100b17;border-radius:19px;border:1px solid #75418e}
+.project-video-frame iframe{display:block;width:100%;height:100%;border:0}
+.project-video-poster{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:0;border:0;background:linear-gradient(135deg,#241634,#120b1a);cursor:pointer;color:#fff}
+.project-video-poster>img{position:absolute;width:100%;height:100%;object-fit:cover;opacity:.77}
+.project-video-placeholder{font-size:clamp(32px,7vw,76px);letter-spacing:.14em;font-weight:800;color:#6a4a83}
+.project-video-play{z-index:1;display:grid;place-items:center;width:72px;height:72px;border-radius:50%;background:#7e27bd;border:1px solid #cb90f4;box-shadow:0 10px 35px #100718cc;transition:transform .2s}
+.project-video-poster:hover .project-video-play{transform:scale(1.12)}
+.project-video-provider{position:absolute;bottom:17px;left:20px;z-index:1;font-size:12px;font-weight:650;text-shadow:0 2px 8px #000}
+.project-video-source{display:inline-flex;align-items:center;gap:6px;margin-top:9px;font-size:12px;color:#c59fe7;text-decoration:none}
+.project-video-source:hover{text-decoration:underline}
+.project-video-edit-preview{margin-top:13px}
+@media(max-width:600px){.converter-fields{grid-template-columns:1fr}.project-video-play{width:57px;height:57px}.image-converter-panel .editor-scroll{padding:15px}}
+@media(prefers-reduced-motion:reduce){.project-video-play{transition:none}}
