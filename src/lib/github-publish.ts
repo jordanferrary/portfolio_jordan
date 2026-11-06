@@ -15,7 +15,6 @@ const ROOT='/repos/'+OWNER+'/'+REPO
 const CONTENT_PATH='src/data/published-portfolio.json'
 const MAX_NEW_MEDIA_BYTES=80*1024*1024
 type Kind='image'|'audio'
-type JsonValue=Record<string,unknown>
 type TreeEntry={path:string;mode:'100644';type:'blob';sha?:string;content?:string}
 export type GitHubPublishResult={revision:string;commitSha:string;commitUrl:string;newFiles:number}
 export type GitHubPublishProgress=(status:string)=>void
