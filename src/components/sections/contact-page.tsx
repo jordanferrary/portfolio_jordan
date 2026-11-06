@@ -47,7 +47,7 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
    <p className="eyebrow"><Sparkles size={17}/> LET'S CREATE</p>
    <h1>{settings.titleFirst}<br/><em>{settings.titleAccent}</em></h1>
    <p>{settings.introduction}</p>
-   {demoEnabled&&<button type="button" className="contact-dev-edit" onClick={onEdit}><Pencil size={15}/>Editar contato</button>}
+   {demoEnabled&&<button type="button" lang="pt-BR" className="contact-dev-edit" onClick={onEdit}><Pencil size={15}/>Editar contato</button>}
    <div className="contact-alt-links"><span>Connect with me</span><div>{socials.filter(s=>safeSocialUrl(s.url)).map(s=><a key={s.id} href={safeSocialUrl(s.url)} target="_blank" rel="noopener noreferrer" title={s.label}><SocialMark social={s}/><span>{s.label}</span><ArrowUpRight size={13}/></a>)}</div></div>
   </div>
   <section className="contact-chat-panel" aria-label="Contact form">

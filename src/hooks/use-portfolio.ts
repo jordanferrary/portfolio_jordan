@@ -14,25 +14,44 @@ export function clampBrandScale(value:unknown,fallback:number,min:number,max:num
  const number=typeof value==='number'?value:Number(value)
  return Number.isFinite(number)?Math.max(min,Math.min(max,Math.round(number))):fallback
 }
+const legacyPublicTopics:Record<string,string>={
+ 'Personagens 3D':'3D Characters',
+ 'Modelagem e sculpt':'3D Modeling & Sculpting',
+ 'Cenários':'Environments',
+ 'Ilustração':'Illustration',
+ 'Outros':'Other'
+}
+function englishCategory(label:string):string{
+ return label.toLowerCase()==='enviroment'?'Environments':label
+}
 function parseStore(raw:unknown):PortfolioStore{
  if(!raw||typeof raw!=='object')throw new Error('Arquivo de dados inválido')
  const obj=raw as Partial<PortfolioStore>
  if(!Array.isArray(obj.projects)||!Array.isArray(obj.categories))throw new Error('Formato inválido')
  const categories:Category[]=obj.categories.map((c:Category|string)=>{
-  if(typeof c==='string'){const known=starterCategories.find(k=>k.label===c);return known??{id:c.toLowerCase().replace(/[^a-z0-9]+/g,'-'),label:c,icon:'grid'}}
+  if(typeof c==='string'){const known=starterCategories.find(k=>k.label===c);return known??{id:c.toLowerCase().replace(/[^a-z0-9]+/g,'-'),label:englishCategory(c),icon:'grid'}}
   if(!c||typeof c!=='object'||typeof c.label!=='string')throw new Error('Categoria inválida')
-  return c
+  return {...c,label:englishCategory(c.label)}
  })
  for(const p of obj.projects)if(typeof p.id!=='string'||typeof p.title!=='string'||!Array.isArray(p.blocks))throw new Error('Projeto inválido')
- const projects=obj.projects.map(p=>({...p,image:normalizeBundledImage(p.image),blocks:p.blocks.map(b=>({...b,content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage)})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
+ const projects=obj.projects.map(p=>({...p,category:englishCategory(p.category),image:normalizeBundledImage(p.image),blocks:p.blocks.map(b=>({...b,content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage)})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
  const home={...defaultHome,...(obj.home??{}),avatar:normalizeBundledImage(obj.home?.avatar??defaultHome.avatar),background:normalizeBundledImage(obj.home?.background??defaultHome.background)}
  const galleryBackground=normalizeBundledImage(obj.galleryBackground??obj.home?.background??defaultGalleryBackground)
  const siteLogo=typeof obj.siteLogo==='string'?normalizeBundledImage(obj.siteLogo):''
  const siteLogoHover=typeof obj.siteLogoHover==='string'?normalizeBundledImage(obj.siteLogoHover):''
  const siteLogoSize=clampBrandScale(obj.siteLogoSize,100,65,180)
  const siteLogoHoverScale=clampBrandScale(obj.siteLogoHoverScale,110,100,170)
- const about={...defaultAbout,...(obj.about??{}),portrait:normalizeBundledImage(obj.about?.portrait??defaultAbout.portrait),secondaryImage:normalizeBundledImage(obj.about?.secondaryImage??defaultAbout.secondaryImage)}
- const contact={...defaultContact,...(obj.contact??{}),interestOptions:Array.isArray(obj.contact?.interestOptions)?obj.contact.interestOptions.filter((item):item is string=>typeof item==='string'&&item.trim().length>0):defaultContact.interestOptions}
+ const legacyBio=obj.about?.bio
+ const about={...defaultAbout,...(obj.about??{}),bio:legacyBio&&/Lorem ipsum|Curabitur vehicula|Praesent et finibus/i.test(legacyBio)?defaultAbout.bio:legacyBio??defaultAbout.bio,portrait:normalizeBundledImage(obj.about?.portrait??defaultAbout.portrait),secondaryImage:normalizeBundledImage(obj.about?.secondaryImage??defaultAbout.secondaryImage)}
+ const contact={
+  ...defaultContact,
+  ...(obj.contact??{}),
+  introduction:obj.contact?.introduction?.startsWith('Conte sua ideia')?defaultContact.introduction:obj.contact?.introduction??defaultContact.introduction,
+  greeting:obj.contact?.greeting?.startsWith('Olá!')?defaultContact.greeting:obj.contact?.greeting??defaultContact.greeting,
+  interestOptions:Array.isArray(obj.contact?.interestOptions)
+   ?obj.contact.interestOptions.filter((item):item is string=>typeof item==='string'&&item.trim().length>0).map(item=>legacyPublicTopics[item]??item)
+   :defaultContact.interestOptions
+ }
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks

@@ -79,7 +79,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
      <button type="button" onClick={()=>void onExport()} disabled={busy}><Download size={15}/>Fazer backup ZIP</button>
      <button type="button" onClick={restore} disabled={busy}><RotateCcw size={15}/>Restaurar versão publicada</button>
     </div>
-    <p className="github-publish-footnote">As alterações feitas no Local Studio continuam locais até a publicação. As mensagens privadas de contato e as curtidas de visitantes exigem uma API separada.</p>
+    <p className="github-publish-footnote">Revise os textos destinados aos visitantes em inglês antes de publicar. Rascunhos antigos podem conter conteúdo em português. As alterações feitas no Local Studio continuam locais até a publicação. Mensagens privadas e curtidas compartilhadas exigem uma API separada.</p>
    </div>
    <footer><button type="button" className="subtle-action" onClick={close} disabled={busy}>{result?'Fechar':'Cancelar'}</button>
     {!result&&<button type="button" className="save-action" onClick={()=>void publish()} disabled={busy||!token.trim()||!confirmed}><CloudUpload size={17}/>{busy?'Publicando...':'Publicar no GitHub'}</button>}
