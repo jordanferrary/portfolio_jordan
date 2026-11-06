@@ -40,3 +40,5 @@ import './styles/studio-centered.css'
 
 import './styles/creative-direction.css'
 import './styles/theme-palette-editor.css'
+
+import './styles/portfolio-review.css'

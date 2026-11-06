@@ -1,0 +1,194 @@
+/* Portfolio review: content-first gallery and honest, complete project pages. */
+
+/* With the side preview removed, the gallery always owns the full available width. */
+.gallery-page .gallery-body{
+ display:block!important;
+ width:100%;
+ min-width:0;
+ grid-template-columns:minmax(0,1fr)!important;
+}
+.gallery-page .gallery-body .masonry{
+ width:100%;
+ gap:clamp(10px,1.1vw,18px)!important;
+ align-items:start;
+}
+.gallery-page .gallery-body .masonry-column{
+ min-width:0;
+ gap:clamp(10px,1.1vw,18px)!important;
+}
+.gallery-page .gallery-card{
+ overflow:hidden;
+ border-radius:20px!important;
+}
+.gallery-page .gallery-card .project-copy{
+ left:clamp(11px,1.1vw,18px);
+ bottom:clamp(11px,1.1vw,17px);
+ right:12px;
+ min-width:0;
+}
+.gallery-page .gallery-card .project-copy b{
+ font-size:clamp(12px,1.05vw,16px);
+ line-height:1.32;
+ overflow-wrap:anywhere;
+}
+.gallery-page .gallery-card .project-copy small{
+ font-size:clamp(9px,.75vw,11px);
+}
+.gallery-page .gallery-card .category-badge{
+ max-width:calc(100% - 55px);
+ overflow:hidden;
+ text-overflow:ellipsis;
+ white-space:nowrap;
+}
+.gallery-page .gallery-card .card-open{
+ z-index:3;
+}
+
+/* A full-bleed artwork presentation for projects with no editorial gallery yet.
+   Only the real cover and the project's existing process images are displayed. */
+.project-page-artwork-only .project-hero{
+ min-height:clamp(270px,35vw,510px);
+}
+.project-page-artwork-only .project-hero-content{
+ max-width:min(720px,100%);
+}
+.project-page-artwork-only .project-hero-description:empty,
+.project-page-artwork-only .tools:empty{
+ display:none;
+}
+.project-page-artwork-only .case-study{
+ max-width:1120px;
+ margin-top:clamp(32px,4.8vw,70px)!important;
+}
+.project-artwork-showcase{
+ display:flex;
+ flex-direction:column;
+ gap:25px;
+ min-width:0;
+}
+.project-artwork-heading{
+ display:flex;
+ flex-direction:column;
+ gap:8px;
+ padding:0 1px;
+}
+.project-artwork-heading>span{
+ font-size:11px;
+ font-weight:800;
+ letter-spacing:.12em;
+ color:var(--jf-secondary,#cb89ff);
+}
+.project-artwork-heading h2{
+ color:#f5ecff;
+ font-size:clamp(24px,3.3vw,42px);
+ line-height:1.12;
+ letter-spacing:-.055em;
+ margin:0;
+}
+.project-artwork-heading p{
+ color:#ad92c4;
+ font-size:13px;
+ margin:0;
+}
+.project-artwork-frame{
+ margin:0;
+ padding:clamp(10px,1.7vw,22px);
+ border:1px solid var(--jf-panel-edge,#5d3b78);
+ border-radius:clamp(16px,2vw,28px);
+ background:
+  radial-gradient(ellipse 100% 65% at 50% 0%,var(--jf-primary-soft,#531e72),transparent),
+  linear-gradient(135deg,var(--jf-surface,#170d26),var(--jf-background,#090611));
+ box-shadow:0 24px 65px #0009,0 0 35px var(--jf-primary-soft,#5d29802a);
+ overflow:hidden;
+}
+.project-artwork-frame>img{
+ display:block;
+ width:100%;
+ height:auto;
+ max-height:80vh;
+ object-fit:contain;
+ object-position:center;
+ margin:0 auto;
+ border-radius:clamp(9px,1.2vw,18px);
+}
+.project-artwork-frame figcaption{
+ color:#af9ac2;
+ font-size:12px;
+ padding:13px 3px 2px;
+ text-align:left;
+}
+.project-artwork-process{
+ display:flex;
+ flex-direction:column;
+ gap:18px;
+ margin-top:25px;
+}
+.project-artwork-process-heading h3{
+ color:#f6edff;
+ font-size:20px;
+ margin:0 0 5px;
+}
+.project-artwork-process-heading p{
+ color:#ae9abd;
+ font-size:12px;
+ margin:0;
+}
+.project-artwork-process-grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));
+ gap:14px;
+}
+.project-artwork-process-grid figure{
+ margin:0;
+ padding:9px;
+ border:1px solid var(--jf-panel-edge,#55366b);
+ border-radius:17px;
+ background:var(--jf-surface,#170d26);
+}
+.project-artwork-process-grid figure>img{
+ display:block;
+ width:100%;
+ height:210px;
+ object-fit:contain;
+ border-radius:10px;
+ background:#0e0919;
+}
+.project-artwork-process-grid figcaption{
+ font-size:12px;
+ color:#c8b4d8;
+ padding:10px 4px 4px;
+}
+
+/* Never reserve empty real estate for nonexistent endorsements.
+   Remaining cards rearrange into two intentionally sized columns. */
+.home-bottom-panels.no-testimonials{
+ grid-template-columns:minmax(0,1.8fr) minmax(215px,.78fr)!important;
+}
+.home-bottom-panels.no-testimonials .home-featured-panel{
+ min-width:0;
+}
+.home-bottom-panels.no-testimonials .home-focus-panel{
+ grid-column:auto!important;
+}
+
+@media(max-width:850px){
+ .home-bottom-panels.no-testimonials{
+  grid-template-columns:minmax(0,1fr)!important;
+  height:auto!important;
+ }
+ .home-bottom-panels.no-testimonials>section{
+  min-height:205px;
+ }
+ .home-bottom-panels.no-testimonials .home-focus-panel{
+  min-height:170px!important;
+ }
+}
+@media(max-width:560px){
+ .gallery-page .gallery-card .project-copy b{font-size:12px}
+ .project-artwork-frame{padding:10px;border-radius:18px}
+ .project-artwork-frame>img{max-height:none}
+ .project-artwork-process-grid figure>img{height:auto;max-height:65vh}
+}
+@media(prefers-reduced-motion:reduce){
+ .gallery-page .gallery-card{scroll-behavior:auto}
+}
