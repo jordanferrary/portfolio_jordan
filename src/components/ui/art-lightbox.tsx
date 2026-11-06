@@ -19,6 +19,7 @@ export function ArtLightbox({src,alt,onClose}:Props){
  const pinch=useRef<{distance:number;zoom:number}|null>(null)
  const previousFocus=useRef<HTMLElement|null>(null)
  const changeZoom=(value:number)=>{const next=clamp(Number(value.toFixed(2)),1,5);setZoom(next);if(next===1)setPan({x:0,y:0})}
+ const adjustZoom=(amount:number)=>setZoom(previous=>clamp(Number((previous+amount).toFixed(2)),1,5))
  useEffect(()=>{
   previousFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null
   const previousOverflow=document.body.style.overflow
@@ -26,13 +27,13 @@ export function ArtLightbox({src,alt,onClose}:Props){
   closeButton.current?.focus()
   const onKey=(event:KeyboardEvent)=>{
    if(event.key==='Escape'){event.preventDefault();onClose()}
-   if(event.key==='+'||event.key==='='){event.preventDefault();changeZoom(zoom+.5)}
-   if(event.key==='-'){event.preventDefault();changeZoom(zoom-.5)}
+   if(event.key==='+'||event.key==='='){event.preventDefault();adjustZoom(.5)}
+   if(event.key==='-'){event.preventDefault();adjustZoom(-.5)}
    if(event.key==='0'){event.preventDefault();changeZoom(1)}
   }
   document.addEventListener('keydown',onKey)
   return ()=>{document.removeEventListener('keydown',onKey);document.body.style.overflow=previousOverflow;previousFocus.current?.focus()}
- },[onClose,zoom])
+ },[onClose])
  const pointerDown=(event:ReactPointerEvent<HTMLDivElement>)=>{
   if(event.target instanceof HTMLElement&&event.target.closest('button'))return
   event.currentTarget.setPointerCapture(event.pointerId)
