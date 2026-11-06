@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-06T08:36:47.311Z-d342908c-9dac-4cb6-a05c-d8773e997ae8",
+  "revision": "2026-11-06T08:36:47.311Z-d342908c-9dac-4cb6-a05c-d8773e997ae8-en",
   "store": {
     "projects": [
       {
@@ -97,7 +97,7 @@
       },
       {
         "id": "enviroment-lgi",
-        "label": "enviroment",
+        "label": "Environments",
         "icon": "mountain"
       }
     ],
@@ -166,7 +166,7 @@
       "titleFirst": "More than pixels.",
       "titleAccent": "A creative vision.",
       "name": "Jordan Ferrary",
-      "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in dignissim justo. Praesent et finibus lorem, a facilisis ante. Morbi non suscipit sem. Sed vel feugiat est. Etiam eget eros purus. Aliquam pretium, odio nec sagittis fermentum, elit ante venenatis eros, non gravida velit purus sed lacus. Nam bibendum non purus in porttitor. Morbi pharetra libero ut fringilla efficitur. In imperdiet cursus purus, et hendrerit lorem bibendum id. Integer auctor id libero sit amet fringilla. Nullam efficitur imperdiet nulla in sollicitudin. Curabitur vehicula orci sit amet turpis vulputate, in placerat diam placerat. Aenean non sem a orci posuere faucibus eu in nibh. Integer dapibus egestas aliquam. Fusce rutrum nisi vel posuere imperdiet.",
+      "bio": "I'm Jordan Ferrary, a 3D artist, illustrator, and motion designer passionate about creating characters, environments, and memorable visual experiences.\n\nMy work brings together digital sculpting, modeling, stylized art, and creative storytelling. From game-ready concepts to expressive illustrations, I aim to give every project its own personality and artistic direction.",
       "portrait": "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg",
       "secondaryImage": "site://images/studio/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5.png",
       "specialties": [
@@ -180,16 +180,16 @@
     "contact": {
       "titleFirst": "Have a project",
       "titleAccent": "in mind?",
-      "introduction": "Conte sua ideia, seus objetivos e o que procura em um artista 3D. Assim podemos encontrar a melhor direção criativa para o projeto.",
-      "greeting": "Olá! Conte um pouco sobre o que deseja criar. Preencha suas informações e envie referências, se quiser.",
+      "introduction": "Share your idea, creative goals, and what you need from a 3D artist. Let’s explore how we can bring your project to life.",
+      "greeting": "Tell me about your project and share any references you have in mind.",
       "interestOptions": [
-        "Personagens 3D",
-        "Modelagem e sculpt",
-        "Cenários",
+        "3D Characters",
+        "3D Modeling & Sculpting",
+        "Environments",
         "Game Art",
         "Motion Design",
-        "Ilustração",
-        "Outros"
+        "Illustration",
+        "Other"
       ],
       "allowAvatar": true,
       "allowAttachments": true
