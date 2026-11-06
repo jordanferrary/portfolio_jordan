@@ -107,3 +107,11 @@ O frame de Home foi reproduzido a partir do screenshot anexado. A arte original 
 - **Comparador:** cada bloco `Antes / depois` agora permite renomear os dois lados — por exemplo, `Wireframe` e `Versão final`.
 - **Contato:** página de conversa/formulário com nome opcional, e-mail, interesses e mensagem. O modo dev mostra o sininho inferior direito, que exige uma **chave secreta separada** para ler mensagens, marcar como lidas ou excluí-las. Contagem de não lidas atualiza periodicamente após autenticar.
 - **Servidor necessário:** o GitHub Pages não armazena mensagens nem autentica o proprietário. O Worker de exemplo em `server/likes-worker` inclui rotas `/contact` e `/admin/messages` com Cloudflare D1. Configure o Worker, as tabelas do `schema.sql`, `COOKIE_SECRET`, `ADMIN_TOKEN` e `VITE_CONTACT_API_URL` antes de receber contatos reais. **O backend não foi implantado automaticamente.** Se não estiver configurado, o formulário fica desabilitado e apresenta links alternativos; nenhuma mensagem é descartada silenciosamente.
+
+
+## Correção de sliders e contatos
+- A barra de progresso do volume e seu marcador receberam estilos explícitos para Chromium/Opera e Firefox, sem aparência padrão branca/cinza.
+- A rolagem da página, editores e caixas de mensagens usa o mesmo roxo/grafite da interface.
+- O formulário permite foto de perfil **opcional, fornecida pelo remetente**, guardada na caixa de entrada. Se não houver foto, o sistema exibe iniciais em um avatar de cor própria. Não é possível obter automaticamente uma foto privada da conta de e-mail de alguém apenas pelo endereço.
+- No painel de mensagens, as exclusões individuais já existiam. Agora há o botão **Limpar lidas** com confirmação para gerir vários contatos.
+- Para envios reais entre navegadores, continue com a ativação do Worker/D1 documentada em `server/likes-worker/README.md`. A interface não afirma sucesso antes de o servidor responder.

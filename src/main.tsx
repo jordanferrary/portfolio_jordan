@@ -18,3 +18,5 @@ import './styles/quality.css'
 import './styles/studio-expansion.css'
 
 import './styles/scroll-controls.css'
+
+import './styles/contact-avatars.css'

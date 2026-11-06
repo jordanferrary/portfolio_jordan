@@ -31,3 +31,13 @@ O mesmo Worker agora aceita `POST /contact` para envio de mensagens públicas e 
 O sininho consulta o total de mensagens não lidas somente depois de autenticar e atualiza a cada minuto. As mensagens ficam no D1 e não no GitHub. O servidor valida e limita envios por origem/IP hash e não armazena o IP puro. Recomenda-se acrescentar CAPTCHA/Turnstile, retenção e políticas de privacidade antes de aceitar grande volume de envios.
 
 **Atenção:** este repositório não inclui segredo do administrador e não implanta o backend automaticamente. A execução de CI valida o código, mas não significa que o formulário está ativo.
+
+
+## Avatares opcionais para identificação de contatos
+
+O formulário aceita foto **enviada voluntariamente pelo próprio visitante** (PNG/JPEG/WEBP). O navegador prepara um avatar 96×96 em WEBP, sem dados EXIF; o Worker valida o tamanho e armazena a imagem privada em D1 junto da mensagem. Se nenhuma foto for enviada, o Studio mostra iniciais em uma cor consistente por e-mail. Não tentamos buscar automaticamente a foto da conta Google/Outlook, pois isso não é disponibilizado livremente pelo endereço de e-mail.
+
+- Instalação nova: o `schema.sql` já contém a coluna `avatar`.
+- Banco existente, criado com a versão anterior: execute uma única vez `npx wrangler d1 execute jf-portfolio-likes --remote --file=migrations/001_contact_avatar.sql` antes do deploy atualizado.
+- A visualização/exclusão continua protegida por `ADMIN_TOKEN`. É possível excluir mensagens individualmente ou limpar apenas as mensagens já lidas.
+- Recomendado configurar uma política de retenção (prazo de exclusão) para e-mails e fotos de clientes, além de CAPTCHA/Turnstile e uma declaração de privacidade adequada.

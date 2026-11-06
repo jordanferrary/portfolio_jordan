@@ -1,0 +1,36 @@
+
+/* Optional contact portrait, stored with the message and not linked to an email provider. */
+.contact-avatar-field{display:flex;align-items:center;gap:13px;padding:11px 13px;border:1px solid #64418482;border-radius:16px;background:linear-gradient(145deg,rgba(70,25,100,.32),rgba(23,10,43,.59))}
+.contact-avatar-field>div:last-child{min-width:0;flex:1}
+.contact-avatar-field b{font-size:12px;color:#f1e0ff}
+.contact-avatar-field b small{font-weight:500;color:#b7a0c7}
+.contact-avatar-field p{font-size:11px;line-height:1.4;color:#bba2ce;margin:5px 0 8px}
+.contact-avatar-preview{display:grid;place-items:center;width:62px;height:62px;flex:0 0 62px;border-radius:19px;color:#b87deb;border:1px solid #8652bc;background:radial-gradient(circle at 15% 15%,#532478,#201033 72%);overflow:hidden;box-shadow:inset 0 1px #f4c5ff22}
+.contact-avatar-preview img{width:100%;height:100%;object-fit:cover}
+.contact-avatar-actions{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.contact-avatar-actions .contact-avatar-upload{display:inline-flex;align-items:center;gap:6px;background:#502475;border:1px solid #9860c5;padding:7px 10px;border-radius:11px;color:#e5d3f3;font-size:11px;cursor:pointer}
+.contact-avatar-upload input[type=file]{display:none}
+.contact-avatar-actions>button{display:inline-flex;align-items:center;gap:4px;border:0;background:transparent;color:#bd93d4;font-size:11px;padding:6px}
+.contact-avatar-loading{display:block;margin-top:5px;font-size:10px;color:#c087e7}
+
+/* Private message portraits: real uploaded picture when supplied, consistent initials otherwise. */
+.inbox-avatar{width:41px;height:41px;flex:0 0 41px;border:1px solid #9d5ccc;border-radius:13px;display:grid;place-items:center;overflow:hidden;color:#f7e7ff;box-shadow:inset 0 1px #edc1ff27,0 0 10px #8a33d72c}
+.inbox-avatar>span{font-size:13px;letter-spacing:.02em;font-weight:800;text-shadow:0 1px 8px #0007}
+.inbox-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.inbox-avatar.large{width:56px;height:56px;flex:0 0 56px;border-radius:18px}
+.inbox-avatar.large>span{font-size:20px}
+.inbox-item{gap:11px}
+.inbox-item>span:first-child{min-width:0}
+.inbox-item>span:nth-child(2){display:flex;flex-direction:column;gap:4px;min-width:115px}
+.inbox-item b,.inbox-item small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inbox-detail-heading{justify-content:flex-start;gap:13px}
+.inbox-detail-identity{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}
+.inbox-detail-identity a{max-width:100%;overflow-wrap:anywhere}
+.inbox-detail-actions button:hover,.inbox-toolbar button:hover{border-color:#b25ff2;background:#562177}
+.inbox-toolbar button:disabled{opacity:.38;cursor:not-allowed}
+@media(max-width:590px){
+ .inbox-item>span:nth-child(2){min-width:0;max-width:140px}
+ .inbox-item-subject{font-size:10px}
+ .inbox-avatar{width:36px;height:36px;flex-basis:36px;border-radius:11px}
+ .contact-avatar-preview{width:53px;height:53px;flex-basis:53px;border-radius:15px}
+}
