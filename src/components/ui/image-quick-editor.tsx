@@ -85,7 +85,7 @@ export function ImageQuickEditor({source,folder,onSave,onClose}:Props){
  }
  return <div className="quick-image-overlay" lang="pt-BR" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section className="quick-image-panel" role="dialog" aria-modal="true" aria-label="Edição rápida de imagem">
-   <header><div><span className="eyebrow"><SlidersHorizontal size={15}/> IMAGE STUDIO</span><h2>Edição rápida</h2><p>Salve uma nova versão sem modificar o arquivo original.</p></div><button type="button" onClick={onClose} aria-label="Fechar editor"><X size={19}/></button></header>
+   <header><div><span className="eyebrow"><SlidersHorizontal size={15}/> ESTÚDIO DE IMAGENS</span><h2>Edição rápida</h2><p>Salve uma nova versão sem modificar o arquivo original.</p></div><button type="button" onClick={onClose} aria-label="Fechar editor"><X size={19}/></button></header>
    <div className="quick-image-preview">{image?<canvas ref={canvas} role="img" aria-label="Prévia da imagem editada"/>:<div className="quick-image-empty"><ImageIcon size={26}/>{loadError||'Carregando imagem...'}</div>}</div>
    <div className="quick-image-controls">
     <div className="quick-image-buttons"><button type="button" title="Girar para a esquerda" onClick={()=>setRotation(v=>(v+270)%360)}><RotateCcw size={16}/> -90°</button><button type="button" title="Girar para a direita" onClick={()=>setRotation(v=>(v+90)%360)}><RotateCw size={16}/> +90°</button><button type="button" className={mirror?'active':''} aria-pressed={mirror} onClick={()=>setMirror(v=>!v)}><FlipHorizontal size={16}/>Espelhar</button></div>
