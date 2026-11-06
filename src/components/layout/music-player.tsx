@@ -3,10 +3,10 @@ import { Check,Infinity as InfinityIcon,ListMusic,Pause,Play,X } from 'lucide-re
 import type { MusicTrack } from '../../data/studio'
 import { useAssetSrc,AssetImage } from '../ui/asset-image'
 export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
- const [selectedId,setSelectedId]=useState('')
+ const [selectedId,setSelectedId]=useState(()=>{try{return localStorage.getItem('jf-selected-song')??''}catch{return ''}})
  const [open,setOpen]=useState(false)
  const [playing,setPlaying]=useState(false)
- const [repeatOne,setRepeatOne]=useState(true)
+ const [repeatOne,setRepeatOne]=useState(()=>{try{return localStorage.getItem('jf-music-repeat')!=='next'}catch{return true}})
  const [progress,setProgress]=useState(0)
  const [error,setError]=useState('')
  const audio=useRef<HTMLAudioElement>(null)
@@ -22,7 +22,8 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
   window.addEventListener('keydown',onKey)
   return ()=>{document.removeEventListener('pointerdown',onPointer);window.removeEventListener('keydown',onKey)}
  },[])
- useEffect(()=>{setProgress(0);setPlaying(false)},[current?.id])
+ useEffect(()=>{setProgress(0);setPlaying(false);if(current?.id){try{localStorage.setItem('jf-selected-song',current.id)}catch{/* storage unavailable */}}},[current?.id])
+ useEffect(()=>{try{localStorage.setItem('jf-music-repeat',repeatOne?'one':'next')}catch{/* storage unavailable */}},[repeatOne])
  const tryPlay=()=>{
   if(!pendingPlay.current||!audio.current||!source)return
   pendingPlay.current=false
