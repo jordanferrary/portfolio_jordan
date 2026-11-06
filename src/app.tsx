@@ -29,7 +29,6 @@ export function App(){
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
- const featured=portfolio.projects.filter(p=>p.featured).slice(0,3)
  return <div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks}/><div className="site-main"><div className="socials"><a href="https://github.com/jordanferrary" aria-label="GitHub" target="_blank" rel="noreferrer"><Github size={20}/></a><a href="https://www.behance.net/" aria-label="Behance" target="_blank" rel="noreferrer">Bē</a><a href="https://www.instagram.com/jordan_.ferrary/" aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram size={20}/></a></div>
  {page==='portfolio'&&<Gallery projects={portfolio.projects} categories={portfolio.categories} selected={preview} onPreview={p=>setPreviewId(p.id)} onClosePreview={()=>setPreviewId(null)} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor}/>}
  {page==='project'&&project&&<ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)}/>}
