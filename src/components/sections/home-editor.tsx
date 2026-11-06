@@ -6,9 +6,9 @@ import { AssetClipButton } from '../ui/asset-picker'
 import { MusicLibraryEditor } from './music-library-editor'
 import { SocialLinksEditor } from './social-links-editor'
 import { isLocalMedia,saveUploadedMedia } from '../../lib/media-store'
-type Props={home:HomeContent;testimonials:Testimonial[];tracks:MusicTrack[];links:SocialLink[];onLinks:(links:SocialLink[])=>void;onHome:(h:HomeContent)=>void;onTestimonials:(t:Testimonial[])=>void;onTracks:(t:MusicTrack[])=>void;onClose:()=>void;onExport:()=>Promise<void>}
-export function HomeEditor({home,testimonials,tracks,links,onLinks,onHome,onTestimonials,onTracks,onClose,onExport}:Props){
- const [tab,setTab]=useState<'home'|'feedback'|'music'|'socials'>('home')
+type Props={home:HomeContent;testimonials:Testimonial[];tracks:MusicTrack[];links:SocialLink[];onLinks:(links:SocialLink[])=>void;onHome:(h:HomeContent)=>void;onTestimonials:(t:Testimonial[])=>void;onTracks:(t:MusicTrack[])=>void;onClose:()=>void;onExport:()=>Promise<void>;initialTab?:'home'|'feedback'|'music'|'socials'}
+export function HomeEditor({home,testimonials,tracks,links,onLinks,onHome,onTestimonials,onTracks,onClose,onExport,initialTab='home'}:Props){
+ const [tab,setTab]=useState<'home'|'feedback'|'music'|'socials'>(initialTab)
  const [notice,setNotice]=useState('')
  const [specialtiesDraft,setSpecialtiesDraft]=useState(home.specialties.join('\n'))
  const [focusDraft,setFocusDraft]=useState(home.focusItems.join('\n'))
