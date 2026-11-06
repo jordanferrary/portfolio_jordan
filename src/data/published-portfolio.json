@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-06T09:19:00.092Z-e7a3084b-04cf-4d5a-93a6-7c13d9023e76",
+  "revision": "2026-11-06T12:36:42.536Z-d24a55d2-ec5b-4a92-bc17-4d1484736ba9",
   "store": {
     "projects": [
       {
@@ -77,6 +77,76 @@
             "image": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png"
           }
         ]
+      },
+      {
+        "id": "project-mw4y57pk",
+        "title": "frankie",
+        "category": "Props",
+        "year": "2026",
+        "image": "https://i.pinimg.com/736x/d4/f1/97/d4f1979af7ab7c8b4b3ace345adda3ff.jpg",
+        "description": "",
+        "tools": [],
+        "featured": true,
+        "blocks": []
+      },
+      {
+        "id": "project-mw4yafaa",
+        "title": "plants",
+        "category": "Props",
+        "year": "2026",
+        "image": "https://i.pinimg.com/1200x/55/cb/c3/55cbc3c021045f5189d7d5330a9d7d16.jpg",
+        "description": "",
+        "tools": [],
+        "featured": false,
+        "blocks": []
+      },
+      {
+        "id": "project-mw4y09kv",
+        "title": "Bruxa 3D",
+        "category": "Props",
+        "year": "2026",
+        "image": "https://i.pinimg.com/1200x/91/24/7f/91247f70fc6116e6d7a14f2aafa62290.jpg",
+        "description": "",
+        "tools": [],
+        "featured": false,
+        "blocks": []
+      },
+      {
+        "id": "project-mw4y7bfq",
+        "title": "Alice",
+        "category": "Props",
+        "year": "2026",
+        "image": "https://i.pinimg.com/1200x/a8/77/4f/a8774f356dba78e983efc7060438e0a0.jpg",
+        "description": "",
+        "tools": [],
+        "featured": false,
+        "blocks": []
+      },
+      {
+        "id": "project-mw4ygym0",
+        "title": "Piplup",
+        "category": "Props",
+        "year": "2026",
+        "image": "https://i.pinimg.com/1200x/06/29/d1/0629d1133e787c0d60c721767c7b33dd.jpg",
+        "description": "",
+        "tools": [],
+        "featured": false,
+        "blocks": []
+      },
+      {
+        "id": "project-mw4vi9s4",
+        "title": "Novo projeto",
+        "category": "Props",
+        "year": "2026",
+        "image": "https://i.pinimg.com/736x/e8/62/14/e86214cec1a1ef001493e302ad4ef17d.jpg",
+        "description": "## mecha - ==sci fy==",
+        "tools": [
+          "Blender",
+          "Zbrush",
+          "Substance Painter"
+        ],
+        "featured": true,
+        "blocks": []
       }
     ],
     "categories": [
@@ -178,7 +248,7 @@
         "icon": "instagram"
       }
     ],
-    "showLikeCounts": false,
+    "showLikeCounts": true,
     "about": {
       "eyebrow": "✦ Behind the art",
       "titleFirst": "More than pixels.",
@@ -216,6 +286,15 @@
     "siteLogo": "site://images/studio/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5.png",
     "siteLogoHover": "",
     "siteLogoSize": 140,
-    "siteLogoHoverScale": 110
+    "siteLogoHoverScale": 110,
+    "siteFavicon": "",
+    "themePalette": {
+      "primary": "#A63FFF",
+      "secondary": "#42DFF5",
+      "background": "#0B0715",
+      "surface": "#1C102B"
+    },
+    "seoTitle": "Jordan Ferrary — Creative Portfolio",
+    "seoDescription": "Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects."
   }
 }
