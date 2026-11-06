@@ -1,3 +1,4 @@
+import '../../styles/art-lightbox.css'
 import {useEffect,useRef,useState,type PointerEvent as ReactPointerEvent,type WheelEvent} from 'react'
 import {createPortal} from 'react-dom'
 import {Minus,Plus,RotateCcw,X} from 'lucide-react'
