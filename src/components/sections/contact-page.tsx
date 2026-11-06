@@ -1,81 +1,60 @@
-import {useState,type FormEvent} from 'react'
-import {ArrowUpRight,CheckCircle2,MessageCircle,Paperclip,Pencil,Send,Sparkles,X} from 'lucide-react'
+import {ArrowRight,ArrowUpRight,MessagesSquare,Pencil,Sparkles,Waypoints} from 'lucide-react'
 import type {SocialLink,ContactSettings} from '../../data/studio'
 import {safeSocialUrl,SocialMark} from '../ui/social-mark'
-import {contactApi,sendContact,validateAttachments} from '../../lib/contact-api'
-import {createDemoMessage} from '../../lib/contact-demo'
+import {protectArtistName} from '../ui/protected-name'
 
 type Props={socials:SocialLink[];settings:ContactSettings;demoEnabled:boolean;onEdit:()=>void}
 
-export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
- const [name,setName]=useState('')
- const [email,setEmail]=useState('')
- const [subject,setSubject]=useState('')
- const [message,setMessage]=useState('')
- const [website,setWebsite]=useState('')
- const [files,setFiles]=useState<File[]>([])
- const [sending,setSending]=useState(false)
- const [error,setError]=useState('')
- const [sent,setSent]=useState<'remote'|'demo'|null>(null)
+function channelDetails(link:SocialLink){
+ switch(link.icon){
+  case 'instagram':return {tag:'DIRECT CONVERSATIONS',description:'Follow my creative process or send a direct message.'}
+  case 'behance':return {tag:'CURATED PORTFOLIO',description:'Explore more artwork, collections and finished projects.'}
+  case 'artstation':return {tag:'ART & PROJECTS',description:'Discover my artwork and creative portfolio.'}
+  case 'github':return {tag:'PROJECTS & CODE',description:'See projects and work shared on GitHub.'}
+  default:return {tag:'CONNECT',description:'Visit my profile and connect with me there.'}
+ }
+}
 
- const addFiles=(incoming:File[])=>{
-  const next=[...files,...incoming]
-  const errorMessage=validateAttachments(next)
-  if(errorMessage){setError(errorMessage);return}
-  setFiles(next);setError('')
- }
- const submit=async(event:FormEvent<HTMLFormElement>)=>{
-  event.preventDefault()
-  if(message.trim().length<10){setError('Please tell me a little more about your idea.');return}
-  const attachments=settings.allowAttachments?files:[]
-  const errorMessage=validateAttachments(attachments)
-  if(errorMessage){setError(errorMessage);return}
-  const payload={
-   name:name.trim(),email:email.trim(),interests:[subject||'General inquiry'],
-   message:message.trim(),website
-  }
-  setSending(true);setError('')
-  try{
-   if(contactApi){await sendContact(payload,attachments);setSent('remote')}
-   else{await createDemoMessage(payload,attachments);setSent('demo')}
-   setMessage('');setSubject('');setFiles([])
-  }catch(e){setError(contactApi&&e instanceof Error?e.message:'Could not save this message locally. Please try again.')}
-  finally{setSending(false)}
- }
- return <main className="contact-page contact-page-clean">
-  <div className="contact-intro">
-   <p className="eyebrow"><Sparkles size={17}/> LET'S CREATE</p>
-   <h1>{settings.titleFirst}<br/><em>{settings.titleAccent}</em></h1>
-   <p>{settings.introduction}</p>
-   {demoEnabled&&<button type="button" lang="pt-BR" className="contact-dev-edit" onClick={onEdit}><Pencil size={15}/>Editar contato</button>}
-   <div className="contact-alt-links"><span>Connect with me</span><div>{socials.filter(s=>safeSocialUrl(s.url)).map(s=><a key={s.id} href={safeSocialUrl(s.url)} target="_blank" rel="noopener noreferrer" title={s.label}><SocialMark social={s}/><span>{s.label}</span><ArrowUpRight size={13}/></a>)}</div></div>
+/** Contact is now social-first: no browser-only inbox and no form that might never be read. */
+export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
+ const channels=socials
+  .map(s=>({social:s,url:safeSocialUrl(s.url)}))
+  .filter((item):item is {social:SocialLink;url:string}=>
+   Boolean(item.url)&&item.social.icon!=='mail'&&!item.url?.startsWith('mailto:'))
+ const primary=channels[0]
+ return <main className="contact-page contact-social-page">
+  <div className="contact-social-atmosphere" aria-hidden="true"><i/><i/><i/></div>
+  <div className="contact-social-layout">
+   <section className="contact-social-intro">
+    <p className="eyebrow"><Sparkles size={17}/> CONNECT & COLLABORATE</p>
+    <h1>{settings.titleFirst}<br/><em>{settings.titleAccent}</em></h1>
+    <p className="contact-social-description">{protectArtistName(settings.introduction)}</p>
+    <div className="contact-social-divider" aria-hidden="true"><span/><span/></div>
+    <div className="contact-social-message"><span className="contact-social-message-icon"><MessagesSquare size={19}/></span><div><strong>Let's talk where we're already connected.</strong><p>Choose one of my social platforms and reach out there — no forms or email required.</p></div></div>
+    {primary&&<a className="contact-social-primary-link" href={primary.url} target="_blank" rel="noopener noreferrer"><span>Connect on {primary.social.label}</span><ArrowUpRight size={18}/></a>}
+    <a className="contact-social-portfolio-link" href="#/portfolio">Explore the portfolio <ArrowRight size={17}/></a>
+    {demoEnabled&&<button type="button" lang="pt-BR" className="contact-dev-edit" onClick={onEdit}><Pencil size={15}/>Personalizar contato e redes</button>}
+   </section>
+   <section className="contact-social-directory" aria-label="Social media contact channels">
+    <header className="contact-social-directory-head">
+     <div><span className="contact-social-section-index">DIRECT CONNECTIONS / 01</span><h2>Find me online<span>.</span></h2><p>{settings.greeting}</p></div>
+     <span className="contact-social-head-ornament"><Waypoints size={21}/></span>
+    </header>
+    {channels.length>0?<div className="contact-social-cards">
+     {channels.map(({social,url},index)=>{
+      const meta=channelDetails(social)
+      return <a key={social.id} href={url} target="_blank" rel="noopener noreferrer"
+       className={'contact-social-card'+(index===0?' contact-social-card-featured':'')}
+       aria-label={'Visit '+social.label+' profile (opens in a new tab)'}>
+       <span className="contact-social-card-icon"><SocialMark social={social}/></span>
+       <span className="contact-social-card-info"><span className="contact-social-card-tag">{meta.tag}</span><strong>{social.label}</strong><small>{meta.description}</small></span>
+       <span className="contact-social-card-arrow"><ArrowUpRight size={20}/></span>
+      </a>
+     })}
+    </div>:<div className="contact-social-empty"><p>Social profiles are being updated. Please check back soon.</p>{demoEnabled&&<button type="button" onClick={onEdit}>Configurar redes sociais</button>}</div>}
+    <div className="contact-social-directory-footer"><span className="contact-social-status-dot"/>Links open directly on their respective platforms.</div>
+   </section>
   </div>
-  <section className="contact-chat-panel" aria-label="Contact form">
-   <div className="contact-chat-head">
-    <span className="contact-chat-icon"><MessageCircle size={20}/></span>
-    <div><strong>Send a message</strong><small>Tell me what you have in mind</small></div>
-   </div>
-   {sent?<div className="contact-success" role="status"><CheckCircle2 size={25}/><h2>{sent==='remote'?'Message sent!':'Message saved locally'}</h2><p>{sent==='remote'?'Your message has been received by the server.':'This message is only saved in your browser and was not delivered to the artist. Please reach out using the social links if you need a reply.'}</p><button type="button" onClick={()=>setSent(null)}>Write another message</button></div>:<form onSubmit={event=>void submit(event)}>
-    <div className="contact-form-row">
-     <label>Name<input maxLength={90} value={name} onChange={e=>setName(e.target.value)} placeholder="Your name" autoComplete="name"/></label>
-     <label>Reply email<input required type="email" maxLength={150} value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email"/></label>
-    </div>
-    <label className="contact-subject-label"><span className="contact-field-caption">Subject <small>(optional)</small></span>
-     <select value={subject} onChange={e=>setSubject(e.target.value)}>
-      <option value="">Choose a subject (optional)</option>
-      {settings.interestOptions.map((item,index)=><option key={item+'-'+index} value={item}>{item}</option>)}
-     </select>
-    </label>
-    <label className="contact-message-label">Your message<textarea required maxLength={2500} minLength={10} value={message} onChange={e=>setMessage(e.target.value)} placeholder="Tell me about your idea, references, timeline or budget..." rows={6}/></label>
-    {settings.allowAttachments&&<div className="contact-clean-attachment">
-     <label className="contact-attach-action"><Paperclip size={15}/>Attach references<input type="file" multiple accept=".png,.jpg,.jpeg,.webp,.pdf,image/png,image/jpeg,image/webp,application/pdf" onChange={e=>{addFiles(Array.from(e.target.files??[]));e.target.value=''}}/></label>
-     <span>Up to 3 images or PDFs · 8 MB total</span>
-     {files.length>0&&<div className="contact-file-list">{files.map((file,i)=><div className="contact-file" key={file.name+'-'+i}><Paperclip size={14}/><span title={file.name}>{file.name}</span><small>{(file.size/1024/1024).toFixed(1)} MB</small><button type="button" aria-label={'Remove '+file.name} onClick={()=>setFiles(v=>v.filter((_,n)=>i!==n))}><X size={14}/></button></div>)}</div>}
-    </div>}
-    <label className="contact-honeypot" aria-hidden="true" tabIndex={-1}>Website<input tabIndex={-1} autoComplete="off" value={website} onChange={e=>setWebsite(e.target.value)}/></label>
-    {error&&<p role="alert" className="contact-form-error">{error}</p>}
-    <button className="contact-send-button" type="submit" disabled={sending}>{sending?'Sending...':'Send message'} <Send size={17}/></button>
-   </form>}
-  </section>
+  <div className="contact-social-bottomline" aria-hidden="true"><span>3D ART</span><i/><span>CHARACTERS</span><i/><span>ENVIRONMENTS</span><i/><span>CREATIVE DIRECTION</span></div>
  </main>
 }
