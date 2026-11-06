@@ -20,6 +20,10 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npm run typecheck
+      - name: Prepare social preview and favicon from published content
+        run: |
+          python3 -m pip install --disable-pip-version-check Pillow
+          python3 scripts/build_site_identity.py
       - run: npm run build
         env:
           GITHUB_PAGES: 'true'
