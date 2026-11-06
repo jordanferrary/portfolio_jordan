@@ -23,7 +23,7 @@ export function distributeMasonry(projects:Project[],columns:number):MasonryItem
    const average=values.reduce((sum,v)=>sum+v,0)/values.length
    return values.reduce((sum,v)=>sum+(v-average)*(v-average),0)
   }
-  // Local improvement considers transfers and swaps. It substantially reduces
+  // Keep the first item in each column anchored to the top.\n  // Local improvement considers transfers and swaps. It substantially reduces
   // the leftover empty space for small, irregular collections without fixed rows.
   for(let pass=0;pass<Math.min(16,projects.length*2);pass++){
    const size=Array.from({length:count},()=>0)
@@ -33,14 +33,14 @@ export function distributeMasonry(projects:Project[],columns:number):MasonryItem
    let operation:{a:number;b:number;swap:boolean}|undefined
    for(let i=0;i<projects.length;i++){
     const from=memberships[i]
-    if(size[from]>1)for(let to=0;to<count;to++)if(to!==from){
+    if(i>=count&&size[from]>1)for(let to=0;to<count;to++)if(to!==from){
      const updated=[...heights]
      updated[from]-=weights[i]
      updated[to]+=weights[i]
      const score=spreadScore(updated)
      if(score<best){best=score;operation={a:i,b:to,swap:false}}
     }
-    for(let j=i+1;j<projects.length;j++){
+    for(let j=Math.max(i+1,count);j<projects.length&&i>=count;j++){
      const to=memberships[j]
      if(to===from)continue
      const updated=[...heights]
