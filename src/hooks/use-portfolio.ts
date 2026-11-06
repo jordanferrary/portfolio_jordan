@@ -17,13 +17,6 @@ export function clampBrandScale(value:unknown,fallback:number,min:number,max:num
  const number=typeof value==='number'?value:Number(value)
  return Number.isFinite(number)?Math.max(min,Math.min(max,Math.round(number))):fallback
 }
-const legacyPublicTopics:Record<string,string>={
- 'Personagens 3D':'3D Characters',
- 'Modelagem e sculpt':'3D Modeling & Sculpting',
- 'Cenários':'Environments',
- 'Ilustração':'Illustration',
- 'Outros':'Other'
-}
 function englishCategory(label:string):string{
  return label.toLowerCase()==='enviroment'?'Environments':label
 }
@@ -50,16 +43,13 @@ function parseStore(raw:unknown):PortfolioStore{
  const siteLogoHoverScale=clampBrandScale(obj.siteLogoHoverScale,110,100,170)
  const legacyBio=obj.about?.bio
  const about={...defaultAbout,...(obj.about??{}),bio:legacyBio&&/Lorem ipsum|Curabitur vehicula|Praesent et finibus/i.test(legacyBio)?defaultAbout.bio:legacyBio??defaultAbout.bio,portrait:normalizeBundledImage(obj.about?.portrait??defaultAbout.portrait),secondaryImage:normalizeBundledImage(obj.about?.secondaryImage??defaultAbout.secondaryImage)}
- const contact={
-  ...defaultContact,
-  ...(obj.contact??{}),
+ const contact:ContactSettings={
+  titleFirst:typeof obj.contact?.titleFirst==='string'?obj.contact.titleFirst:defaultContact.titleFirst,
+  titleAccent:typeof obj.contact?.titleAccent==='string'?obj.contact.titleAccent:defaultContact.titleAccent,
   introduction:(obj.contact?.introduction?.startsWith('Conte sua ideia')||obj.contact?.introduction==='Share your idea, creative goals, and what you need from a 3D artist. Let’s explore how we can bring your project to life.')
-   ?defaultContact.introduction:obj.contact?.introduction??defaultContact.introduction,
+   ?defaultContact.introduction:typeof obj.contact?.introduction==='string'?obj.contact.introduction:defaultContact.introduction,
   greeting:(obj.contact?.greeting?.startsWith('Olá!')||obj.contact?.greeting==='Tell me about your project and share any references you have in mind.')
-   ?defaultContact.greeting:obj.contact?.greeting??defaultContact.greeting,
-  interestOptions:Array.isArray(obj.contact?.interestOptions)
-   ?obj.contact.interestOptions.filter((item):item is string=>typeof item==='string'&&item.trim().length>0).map(item=>legacyPublicTopics[item]??item)
-   :defaultContact.interestOptions
+   ?defaultContact.greeting:typeof obj.contact?.greeting==='string'?obj.contact.greeting:defaultContact.greeting
  }
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'&&!isKnownDemoTestimonial(t)):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
