@@ -82,8 +82,21 @@ function extension(ref:string,blob:Blob,kind:Kind):string{
  throw new Error('Um áudio local tem formato incompatível. Use MP3, WAV, OGG ou M4A.')
 }
 function stageSnapshot(store:PortfolioStore){
- // Deep clone so the form keeps local media previews until GitHub Pages finishes deploying.
- return JSON.parse(JSON.stringify(store)) as PortfolioStore
+ // Publish only explicitly approved public content, never incidental UI state.
+ // Deep clone so the form keeps local media previews during deployment.
+ const publicData:PortfolioStore={
+  projects:store.projects,
+  categories:store.categories,
+  home:store.home,
+  testimonials:store.testimonials,
+  musicTracks:store.musicTracks,
+  socialLinks:store.socialLinks,
+  showLikeCounts:store.showLikeCounts,
+  about:store.about,
+  contact:store.contact,
+  galleryBackground:store.galleryBackground
+ }
+ return JSON.parse(JSON.stringify(publicData)) as PortfolioStore
 }
 
 export async function publishPortfolioToGitHub(
