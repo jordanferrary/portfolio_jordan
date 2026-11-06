@@ -36,3 +36,24 @@ export const defaultHome:HomeContent = {
 export const defaultTestimonials:Testimonial[] = []
 export const defaultMusicTracks:MusicTrack[] = []
 export const projectProcess=(p:Project)=>p.processSteps??[]
+
+export interface AboutContent {
+ eyebrow:string
+ titleFirst:string
+ titleAccent:string
+ name:string
+ bio:string
+ portrait:string
+ secondaryImage:string
+ specialties:string[]
+}
+export const defaultAbout:AboutContent={
+ eyebrow:'✦ Behind the art',
+ titleFirst:'More than pixels.',
+ titleAccent:'A creative vision.',
+ name:'Jordan Ferrary',
+ bio:'3D artist, modeler, illustrator and motion designer. I create characters, environments and visual experiences through technical curiosity and artistic direction.',
+ portrait:import.meta.env.BASE_URL+'images/profile/avatar.webp',
+ secondaryImage:'',
+ specialties:['3D Modeling','Sculpting','Motion Design','Illustration','Game Art']
+}

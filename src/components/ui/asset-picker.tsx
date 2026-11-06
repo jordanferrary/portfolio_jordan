@@ -1,10 +1,10 @@
 import { createContext,useContext,useEffect,useMemo,useState,type ReactNode } from 'react'
 import { Check,ImagePlus,Paperclip,Search,Upload,X } from 'lucide-react'
 import type { Project,Category } from '../../data/projects'
-import type { HomeContent,MusicTrack } from '../../data/studio'
+import type { HomeContent,MusicTrack,AboutContent } from '../../data/studio'
 import { AssetImage } from './asset-image'
 import { linkAssetToFolder,listMediaAssets,saveUploadedMedia,type LibraryAsset } from '../../lib/media-store'
-type Sources={projects:Project[];categories:Category[];home:HomeContent;tracks:MusicTrack[]}
+type Sources={projects:Project[];categories:Category[];home:HomeContent;about:AboutContent;tracks:MusicTrack[]}
 const LibraryContext=createContext<Sources|null>(null)
 export function AssetLibraryProvider({projects,categories,home,tracks,children}:Sources&{children:ReactNode}){
  const value=useMemo(()=>({projects,categories,home,tracks}),[projects,categories,home,tracks])
@@ -43,6 +43,7 @@ function collectSources(sources:Sources|null,catalog:LibraryAsset[]):AssetEntry[
   for(const step of project.processSteps??[])add(step.image,folder,project.title+' · '+step.label)
  }
  for(const category of sources?.categories??[])if(category.image)add(category.image,'filter-icons','Filtro '+category.label)
+ if(sources?.about){add(sources.about.portrait,'about','Imagem principal Sobre');add(sources.about.secondaryImage,'about','Imagem complementar Sobre')}
  if(sources?.home){
   add(sources.home.avatar,'home','Avatar')
   add(sources.home.background,'home','Arte de fundo')
