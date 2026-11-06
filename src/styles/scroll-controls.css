@@ -1,0 +1,97 @@
+
+/* Portfolio-native scrollbar: graphite track and violet neon thumb. */
+:root{scrollbar-width:thin;scrollbar-color:#713e99 #12081e}
+html,body,.site-main,.gallery-page,.editor-scroll,.asset-modal-scroll,.quick-insert-popover,.admin-inbox-panel,.inbox-content,.inbox-list,.music-popover,.quick-image-controls,textarea{
+ scrollbar-width:thin;scrollbar-color:#7842a2 #11091e;
+}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:linear-gradient(180deg,#10071b,#180d26);border-radius:20px}
+::-webkit-scrollbar-thumb{
+ background:linear-gradient(180deg,#6b2b95,#9d40db 50%,#683094);
+ border:2px solid #170c26;
+ border-radius:999px;
+ box-shadow:inset 0 0 4px #c390ef77;
+}
+::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8b3cbd,#bd59fc 50%,#823bb7)}
+::-webkit-scrollbar-corner{background:#13091e}
+@supports(selector(::-webkit-scrollbar)){
+ html{scrollbar-width:auto}
+}
+
+/* Explicitly remove native square range UI in Chromium, Opera and Firefox. */
+.music-widget .music-volume-inline{
+ width:100%!important;
+ min-width:0!important;
+ box-sizing:border-box!important;
+ overflow:hidden!important;
+ border:1px solid #7f43ab66!important;
+ background:linear-gradient(145deg,rgba(68,23,103,.44),rgba(18,8,39,.65))!important;
+ border-radius:12px!important;
+ padding:7px 6px!important;
+ box-shadow:inset 0 1px 10px #b957ef15!important;
+}
+.music-widget .music-volume-inline input[type="range"]{
+ display:block!important;
+ appearance:none!important;
+ -webkit-appearance:none!important;
+ box-sizing:border-box!important;
+ padding:0!important;
+ margin:0!important;
+ border:0!important;
+ border-radius:999px!important;
+ width:100%!important;
+ min-width:0!important;
+ flex:1 1 0!important;
+ height:5px!important;
+ min-height:5px!important;
+ max-height:5px!important;
+ outline:0!important;
+ cursor:pointer!important;
+ box-shadow:0 0 7px #8f2ac741!important;
+}
+.music-widget .music-volume-inline input[type="range"]::-webkit-slider-runnable-track{
+ height:5px!important;
+ border-radius:999px!important;
+ background:transparent!important;
+ border:0!important;
+}
+.music-widget .music-volume-inline input[type="range"]::-webkit-slider-thumb{
+ appearance:none!important;
+ -webkit-appearance:none!important;
+ width:13px!important;height:13px!important;
+ border-radius:50%!important;
+ margin-top:-4px!important;
+ background:radial-gradient(circle at 35% 25%,#e8b9ff,#ad38f2 65%,#7823be)!important;
+ border:1px solid #e0a3ff!important;
+ box-shadow:0 0 9px #c14fff99!important;
+ cursor:grab;
+}
+.music-widget .music-volume-inline input[type="range"]::-moz-range-track{
+ height:5px!important;
+ border:0!important;
+ border-radius:999px!important;
+ background:transparent!important;
+}
+.music-widget .music-volume-inline input[type="range"]::-moz-range-thumb{
+ width:12px!important;height:12px!important;
+ border-radius:50%!important;
+ border:1px solid #e0a3ff!important;
+ background:#ae3af1!important;
+ box-shadow:0 0 9px #c14fff99!important;
+ cursor:grab;
+}
+.music-widget .music-volume-inline input[type="range"]:focus-visible{
+ outline:2px solid #d79cff!important;
+ outline-offset:6px!important;
+}
+.music-widget .music-volume-inline span{
+ flex:0 0 27px!important;
+ font-size:10px!important;
+ color:#d4a6ef!important;
+ font-variant-numeric:tabular-nums;
+}
+.music-widget .music-volume-inline button{flex:0 0 17px!important;min-width:17px!important;background:transparent!important}
+@media(max-width:750px){
+ .music-widget .music-volume-inline{padding:5px 4px!important;gap:3px!important}
+ .music-widget .music-volume-inline span{flex-basis:22px!important;font-size:9px!important}
+}
