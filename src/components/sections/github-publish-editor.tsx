@@ -60,6 +60,19 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
       <div className="github-publish-section-title"><ShieldCheck size={18}/><h3>Autorizar somente esta publicação</h3></div>
       <p>Crie um <b>fine-grained personal access token</b> do GitHub, restrito ao repositório <code>jordanferrary/portfolio_jordan</code>, com permissão <b>Contents: Read and write</b> e prazo de validade curto.</p>
       <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Criar token restrito no GitHub <ExternalLink size={14}/></a>
+      <details className="github-token-help">
+       <summary>Como gerar o token? Ver passo a passo</summary>
+       <ol>
+        <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Gerar novo token no GitHub <ExternalLink size={12}/></a> e entre na sua conta <strong>jordanferrary</strong>.</li>
+        <li>Informe um nome como <strong>Portfolio Studio</strong> e escolha uma <strong>validade curta</strong>.</li>
+        <li>Em <strong>Resource owner</strong>, selecione sua conta. Em <strong>Repository access</strong>, escolha <strong>Only select repositories</strong> e marque <code>portfolio_jordan</code>.</li>
+        <li>Em <strong>Repository permissions → Contents</strong>, selecione <strong>Read and write</strong>. Deixe os demais acessos no mínimo necessário.</li>
+        <li>Clique em <strong>Generate token</strong>, copie o valor imediatamente e cole no campo abaixo. Depois, revise a confirmação e publique.</li>
+       </ol>
+       <p>Já gerou antes e perdeu o valor? O GitHub não permite visualizar novamente um token criado. Abra <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener noreferrer">Gerenciar meus tokens <ExternalLink size={12}/></a> para revogar o antigo se não for necessário e criar outro.</p>
+       <p>O token autoriza a publicação mesmo sem acesso ao PIN se alguém o obtiver. Não o envie por chat nem o coloque no código ou em capturas de tela.</p>
+       <a href="https://docs.github.com/pt/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener noreferrer">Documentação oficial do GitHub <ExternalLink size={12}/></a>
+      </details>
      </div>
      <label className="github-publish-token-label">Token temporário do GitHub
       <div className="github-publish-token-control">
