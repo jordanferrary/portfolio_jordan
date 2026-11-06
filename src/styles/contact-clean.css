@@ -43,10 +43,8 @@
  box-shadow:0 0 0 2px rgba(176,73,234,.18);
 }
 .contact-page-clean .contact-subject-label{display:flex;flex-direction:column;gap:7px}
-.contact-page-clean .contact-optional{
- color:#967cab;font-size:11px;font-weight:400;
- display:inline;position:absolute;margin-left:55px;
-}
+.contact-page-clean .contact-field-caption{display:flex;align-items:baseline;gap:6px}
+.contact-page-clean .contact-field-caption small{color:#967cab;font-size:11px;font-weight:400}
 .contact-page-clean .contact-chat-panel select{
  appearance:none;
  -webkit-appearance:none;
