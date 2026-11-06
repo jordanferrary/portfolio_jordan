@@ -3,6 +3,7 @@ import { ArrowLeft,ArrowUpRight,Pencil,Sparkles,Star,Diamond,Circle } from 'luci
 import type { Block,Project } from '../../data/projects'
 import { AssetImage } from '../ui/asset-image'
 import { RichText } from '../ui/rich-text'
+import { ProjectVideo } from '../ui/project-video'
 import { ProjectLike } from './project-like'
 import { framingStyle } from '../../lib/image-framing'
 function BeforeAfter({block,title}:{block:Block;title:string}){
@@ -16,6 +17,7 @@ function StoryBlock({block,projectTitle}:{block:Block;projectTitle:string}){
  if(block.type==='image')return <section className="story-block block-image"><AssetImage src={block.content} alt={'Artwork from '+projectTitle} loading="lazy"/></section>
  if(block.type==='image-left'||block.type==='image-right')return <section className={'story-block story-split '+block.type}><AssetImage src={block.media} alt={'Creative stage of '+projectTitle} loading="lazy"/><RichText value={block.content}/></section>
  if(block.type==='before-after')return <section className="story-block"><BeforeAfter block={block} title={projectTitle}/></section>
+ if(block.type==='video')return <section className="story-block block-video"><ProjectVideo url={block.content} poster={block.media} title={projectTitle+' video'}/></section>
  if(block.type==='divider'){const icons={sparkles:Sparkles,star:Star,diamond:Diamond,circle:Circle};const Icon=icons[block.dividerIcon as keyof typeof icons]??Sparkles;return <section className={'story-block art-divider art-divider-'+(block.dividerStyle??'glow')} role="separator" aria-label="Section divider"><span className="art-divider-line"/>{block.dividerIcon!=='none'&&<span className="art-divider-symbol"><Icon size={17}/></span>}<span className="art-divider-line"/></section>}
  if(block.type==='gallery')return <section className="story-block story-multi-images">{(block.gallery??[]).filter(Boolean).map((source,i)=><AssetImage key={source+i} src={source} alt={projectTitle+' — image '+(i+1)} loading="lazy"/>)}</section>
  return null
