@@ -89,3 +89,12 @@ O frame de Home foi reproduzido a partir do screenshot anexado. A arte original 
 - Redes sociais no canto superior direito agora vêm do Local Studio: **Ctrl+\\** (PIN local de demonstração) → **Editar Home, redes e músicas** → **Redes sociais**. É possível criar, editar, reordenar e remover botões, selecionar ícones da lista ou subir/reutilizar imagens próprias, além de configurar URLs individuais.
 - O Behance vem com URL vazia, como placeholder **não clicável**, até o usuário informar o endereço do próprio perfil. Não foi inventado link de perfil.
 - URLs externas são validadas (HTTP/HTTPS), ou `mailto:` válido para a opção de e-mail. O editor continua **local**; publicar as mudanças para todos os visitantes precisa de backend/autenticação segura. O backup ZIP inclui ícones personalizados locais.
+
+## Volume, títulos ricos, divisores e curtidas (2026-11)
+
+- No player, use o ícone de alto-falante ao lado do progresso para abrir o slider de **volume 0–100%** e o botão silenciar. O valor fica salvo neste navegador.
+- Nos layouts de **Título** e **Texto**, selecione palavras e use a paleta para aplicar `==destaque roxo==`; os controles de negrito `**texto**`, itálico `*texto*` e subtítulos H2/H3 também estão disponíveis. A renderização é segura e mantém a tipografia do site.
+- Novo layout **Linha divisória** com ícone central opcional (brilho, estrela, diamante ou círculo) e estilos de linha; não requer texto.
+- As páginas dos projetos não exibem mais o bloco fixo “PROJECT BREAKDOWN / Every detail tells a story.” A coluna inteira foi removida para ampliar a área de arte.
+- Curtidas: cada projeto tem botão de coração na página completa e prévia. No Local Studio, o botão **Curtidas** controla se a contagem aparece. Por padrão ela está oculta. Sem backend, apenas o voto deste navegador é registrado e o contador visível traz o rótulo `local`.
+- Para votos realmente compartilhados, implemente a API descrita em `server/likes-worker/`. A interface já consulta um endpoint opcional definido por `VITE_LIKES_API_URL`; **nenhum backend foi implantado** neste repositório. O exemplo de Worker requer configuração externa e não garante uma pessoa única sem autenticação adicional.
