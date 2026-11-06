@@ -74,6 +74,6 @@ export const defaultContact:ContactSettings={
  introduction:'Conte sua ideia, seus objetivos e o que procura em um artista 3D. Assim podemos encontrar a melhor direção criativa para o projeto.',
  greeting:'Olá! Conte um pouco sobre o que deseja criar. Preencha suas informações e envie referências, se quiser.',
  interestOptions:['Personagens 3D','Modelagem e sculpt','Cenários','Game Art','Motion Design','Ilustração','Outros'],
- allowAvatar:true,
+ allowAvatar:false,
  allowAttachments:true
 }
