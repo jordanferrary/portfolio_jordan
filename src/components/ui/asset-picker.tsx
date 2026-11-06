@@ -1,16 +1,10 @@
-import { createContext,useContext,useEffect,useMemo,useState,type ReactNode } from 'react'
+import { useContext,useEffect,useMemo,useState } from 'react'
 import { Check,ImagePlus,Paperclip,Search,Upload,X } from 'lucide-react'
-import type { Project,Category } from '../../data/projects'
-import type { HomeContent,MusicTrack,AboutContent } from '../../data/studio'
 import { AssetImage } from './asset-image'
+import {LibraryContext,type Sources} from './asset-library-context'
+export {AssetLibraryProvider} from './asset-library-context'
 import {QuickEditImageButton} from './image-quick-editor'
 import { linkAssetToFolder,listMediaAssets,saveUploadedMedia,type LibraryAsset } from '../../lib/media-store'
-type Sources={projects:Project[];categories:Category[];home:HomeContent;about:AboutContent;galleryBackground:string;siteLogo:string;siteLogoHover:string;siteFavicon:string;tracks:MusicTrack[]}
-const LibraryContext=createContext<Sources|null>(null)
-export function AssetLibraryProvider({projects,categories,home,about,galleryBackground,siteLogo,siteLogoHover,siteFavicon,tracks,children}:Sources&{children:ReactNode}){
- const value=useMemo(()=>({projects,categories,home,about,galleryBackground,siteLogo,siteLogoHover,siteFavicon,tracks}),[projects,categories,home,about,galleryBackground,siteLogo,siteLogoHover,siteFavicon,tracks])
- return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>
-}
 interface AssetEntry {ref:string;name:string;folders:string[];date:number}
 function collectSources(sources:Sources|null,catalog:LibraryAsset[]):AssetEntry[]{
  const map=new Map<string,AssetEntry>()
