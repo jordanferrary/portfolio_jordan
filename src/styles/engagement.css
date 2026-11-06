@@ -1,0 +1,63 @@
+
+/* New components retain the existing purple/graphite design language. */
+.rich-text .rich-accent,.block-heading .rich-accent{color:#bd53ff!important;-webkit-text-fill-color:#bd53ff!important;text-shadow:0 0 15px #a237f13a;font-weight:inherit}
+.story-block.block-heading .rich-text h2{font-size:clamp(25px,3.1vw,38px);letter-spacing:-.035em;line-height:1.15;font-weight:800;margin:0 0 12px}
+.story-block.block-heading .rich-text h3{font-size:clamp(21px,2.3vw,29px);letter-spacing:-.03em}
+.story-block.block-heading .rich-text h4{font-size:clamp(17px,1.7vw,22px)}
+.composer-toolbar button[aria-label="Destaque roxo"]{color:#c56aff;border:1px solid #ab59f244;background:linear-gradient(145deg,#50206f45,#210f3755)}
+.composer-toolbar button[aria-label="Destaque roxo"]:hover{background:#6a2ca1;border-color:#cb85fa}
+.v2-editor .divider-editor-fields{margin:6px 0 10px;padding:12px;border:1px solid #542f74;border-radius:13px;background:linear-gradient(135deg,#221334,#150b25)}
+.v2-editor .divider-editor-fields label{display:flex;flex-direction:column;gap:8px;margin:0;color:#d6bbea;font-size:12px}
+.v2-editor .divider-editor-preview{display:flex;align-items:center;justify-content:center;letter-spacing:9px;color:#ab52ec;text-shadow:0 0 13px #a32de574;font-size:17px;margin:13px auto 2px}
+.story-block.art-divider{display:flex;align-items:center;justify-content:center;gap:17px;width:100%;min-height:50px;margin:32px auto 45px;padding:4px 0;color:#b64fff}
+.art-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,#923ec69e 52%,#bd61ee);min-width:0}
+.art-divider-line:last-child{background:linear-gradient(90deg,#bd61ee,transparent)}
+.art-divider-symbol{display:grid;place-items:center;color:#bf65ff;filter:drop-shadow(0 0 9px #ab4afa)}
+.art-divider-glow .art-divider-line{box-shadow:0 0 9px #8d23b333}
+.art-divider-solid .art-divider-line{background:#8047a8;box-shadow:none}
+.art-divider-dashed .art-divider-line{background:repeating-linear-gradient(90deg,#944ec7 0px,#944ec7 9px,transparent 9px,transparent 17px);box-shadow:none}
+.case-study{display:block!important;max-width:1040px;width:100%;margin:55px auto 0!important}
+.case-study .story-blocks{display:block;width:100%;min-width:0}
+.case-study .story-blocks>section{max-width:100%}
+.project-engagement{max-width:1040px;margin:16px auto 0;display:flex;align-items:center;justify-content:flex-end}
+.project-like-wrap{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.project-like{min-height:37px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid #74419b;background:linear-gradient(155deg,rgba(71,26,100,.72),rgba(25,11,40,.76));border-radius:24px;padding:8px 13px;color:#d4b7e7;font-size:12px;box-shadow:inset 0 1px #cd84ff22;transition:border-color .2s,box-shadow .2s}
+.project-like:hover{border-color:#b955f4;box-shadow:0 0 15px #9325e744}
+.project-like.is-liked{color:#f0b3ff;border-color:#a24bec;background:linear-gradient(125deg,rgba(116,34,161,.72),rgba(52,12,81,.72))}
+.project-like.is-liked svg{color:#bf64f4;filter:drop-shadow(0 0 5px #a63beb77)}
+.project-like:disabled{opacity:.56;cursor:progress}
+.project-like .like-count{display:inline-flex;gap:5px;align-items:center;border-left:1px solid #a66bc34f;padding-left:8px;color:#f0dbfa;font-variant-numeric:tabular-nums}
+.project-like .like-count small{font-size:9px;color:#aa86bd;text-transform:uppercase;letter-spacing:.02em}
+.like-error{font-size:11px;color:#e9a6cd;max-width:220px}
+.preview-like-row{display:flex;align-items:center;margin:16px 0 2px;gap:12px}
+.inline-preview .preview-like-row .project-like{min-height:35px;font-size:11px}
+.inline-preview .preview-cta{margin-top:14px}
+.home-settings-editor .editor-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+.home-settings-editor .editor-tabs button{font-size:11px;padding:10px 4px;overflow:hidden;text-overflow:ellipsis}
+.likes-settings{border:1px solid #653789;background:linear-gradient(155deg,#2b1740b5,#150a24e3);border-radius:18px;padding:17px;margin:13px 0}
+.likes-settings h3{margin:0 0 11px;font-size:17px}
+.likes-settings p{font-size:13px;line-height:1.55;color:#cfb9df}
+.home-settings-editor .editor-scroll .likes-visibility-switch{display:flex;flex-direction:row;align-items:center;gap:10px;margin:18px 0;padding:14px;border:1px solid #783eac;border-radius:13px;background:#32164b;color:#f6e8ff}
+.likes-visibility-switch input{accent-color:#a43bf2;width:19px;height:19px;flex:0 0 auto}
+.likes-settings .likes-backend-note{font-size:12px;margin:0;color:#b69ecb}
+
+/* Compact volume control without changing the approved player body proportions. */
+.music-widget .music-card{overflow:visible}
+.music-widget .music-card-footer{gap:5px!important}
+.music-widget .music-seek{min-width:0;flex:1;width:auto!important}
+.music-widget .music-volume-toggle{border:1px solid #733a9d;border-radius:50%;background:#3c195c;color:#d19af4;display:grid;place-items:center;width:23px;height:23px;min-width:23px;flex:0 0 23px;padding:0;box-shadow:inset 0 1px #e7b4ff22}
+.music-widget .music-volume-toggle:hover,.music-widget .music-volume-toggle.is-open{border-color:#ba66f7;background:#6b2b93;color:#f3d3ff;box-shadow:0 0 10px #af45fa45}
+.music-volume-popover{position:absolute;bottom:38px;right:5px;display:flex;align-items:center;gap:8px;z-index:9;width:183px;border:1px solid #9953cb;border-radius:15px;padding:10px;background:linear-gradient(135deg,rgba(46,17,70,.96),rgba(14,8,32,.97));box-shadow:0 10px 28px #0300089c,0 0 12px #8328c56b;backdrop-filter:blur(15px)}
+.music-volume-popover button{border:0;background:none;color:#cb91f1;display:grid;place-items:center;width:22px;height:22px;padding:0;flex:0 0 22px}
+.music-volume-popover input{width:100%;min-width:0;flex:1;accent-color:#af44f6;cursor:pointer;height:6px}
+.music-volume-popover span{font-size:10px;color:#dbc1ec;width:30px;text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:600px){
+ .home-settings-editor .editor-tabs{grid-template-columns:repeat(5,minmax(0,1fr));padding:7px 5px;gap:2px}
+ .home-settings-editor .editor-tabs button{font-size:9px;padding:9px 2px;white-space:normal;line-height:1.15}
+ .music-widget .music-volume-toggle{width:19px;height:19px;min-width:19px;flex-basis:19px}
+ .music-widget .music-volume-toggle svg{width:14px;height:14px}
+ .music-widget .music-card-footer{gap:3px!important}
+ .music-volume-popover{width:170px;right:0;bottom:32px}
+ .case-study{margin-top:37px!important}
+ .project-engagement{margin-top:13px}
+}

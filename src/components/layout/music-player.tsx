@@ -8,7 +8,7 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
  const [playing,setPlaying]=useState(false)
  const [repeatOne,setRepeatOne]=useState(()=>{try{return localStorage.getItem('jf-music-repeat')!=='next'}catch{return true}})
  const [progress,setProgress]=useState(0)
- const [volume,setVolume]=useState(()=>{try{const saved=Number(localStorage.getItem('jf-music-volume'));return Number.isFinite(saved)&&saved>=0&&saved<=100?saved:70}catch{return 70}})
+ const [volume,setVolume]=useState(()=>{try{const raw=localStorage.getItem('jf-music-volume');if(raw===null)return 70;const saved=Number(raw);return Number.isFinite(saved)&&saved>=0&&saved<=100?saved:70}catch{return 70}})
  const [volumeOpen,setVolumeOpen]=useState(false)
  const [error,setError]=useState('')
  const audio=useRef<HTMLAudioElement>(null)
