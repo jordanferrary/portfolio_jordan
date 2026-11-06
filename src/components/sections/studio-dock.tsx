@@ -1,5 +1,5 @@
 import { useEffect,useRef,useState } from 'react'
-import { BookOpen,ChevronDown,CloudUpload,Download,LayoutGrid,LockKeyhole,Plus,Settings2,Sparkles,X } from 'lucide-react'
+import { BookOpen,ChevronDown,CloudUpload,Download,LayoutGrid,LockKeyhole,Plus,Sparkles,X } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 export type StudioSection='Páginas'|'Projetos'|'Conteúdo'|'Identidade'
