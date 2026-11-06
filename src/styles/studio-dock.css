@@ -1,0 +1,57 @@
+/* Local Studio 3.0: one responsive, contextual dock and organized tool library. */
+.studio-dock-anchor{position:fixed;z-index:68;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(1120px,calc(100vw - 30px));font-family:inherit}
+.studio-dock{display:flex;align-items:center;gap:18px;padding:9px 11px 9px 13px;width:100%;min-height:68px;border-radius:19px;border:1px solid #714292;background:linear-gradient(115deg,#1d102cfa,#130d20f7);box-shadow:0 20px 55px #050209e0,0 0 26px #62249d3b;backdrop-filter:blur(24px)}
+.studio-dock-brand{display:flex;align-items:center;gap:10px;flex:0 0 auto;border-right:1px solid #513069;padding-right:20px}
+.studio-dock-mark{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:linear-gradient(140deg,#8734c6,#47136e);border:1px solid #ba69e6;color:#ffedff}
+.studio-dock-brand>div{display:flex;flex-direction:column;gap:4px}
+.studio-dock-brand strong{font-size:13px;color:#f5e6ff;white-space:nowrap}
+.studio-dock-brand small{font-size:10px;color:#b9a0cd;white-space:nowrap}
+.studio-live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#85e1ad;margin-right:5px;box-shadow:0 0 9px #67db99}
+.studio-dock-context{flex:1;min-width:0;display:flex;align-items:center;gap:13px}
+.studio-dock-context>span{font-size:11px;color:#aa91bf;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.studio-context-button{background:#281537;border:1px solid #734697;border-radius:11px;padding:11px 12px;font-size:12px;color:#ead7f9;white-space:nowrap}
+.studio-context-button:hover{background:#3a2050;border-color:#a45dd1}
+.studio-dock-actions{display:flex;gap:8px;align-items:center;flex:0 0 auto}
+.studio-dock-actions button{display:inline-flex;gap:7px;align-items:center;justify-content:center;padding:11px 13px;min-height:42px;border:1px solid #6d448b;border-radius:11px;background:#28183a;color:#e9d6f7;font-size:12px;white-space:nowrap}
+.studio-dock-actions button:hover{filter:brightness(1.2)}
+.studio-dock-actions .studio-dock-publish{background:linear-gradient(115deg,#983ada,#6b219e);border-color:#c075f0;color:#fff;font-weight:700;box-shadow:0 0 15px #8f2fd745}
+.studio-dock-actions .studio-menu-button.active{background:#512573;border-color:#c47df3}
+.studio-dock-actions .studio-dock-exit{padding:11px 12px;border-color:#49335c;color:#c1a5d3;background:#1c1228}
+.studio-hub{position:absolute;right:0;bottom:calc(100% + 12px);width:min(780px,100%);max-height:min(77dvh,710px);overflow:auto;background:#110b1df5;border:1px solid #8656a7;border-radius:21px;box-shadow:0 24px 70px #000e,0 0 38px #63229e31;backdrop-filter:blur(30px)}
+.studio-hub-header{display:flex;align-items:start;justify-content:space-between;padding:22px 24px 19px;border-bottom:1px solid #3f2b54;position:sticky;top:0;z-index:1;background:#160d24f7;gap:12px}
+.studio-hub-header span{font-size:10px;letter-spacing:.13em;color:#bc83e4}
+.studio-hub-header h2{font-size:20px;color:#f9eaff;line-height:1.4;margin:4px 0}
+.studio-hub-header p{font-size:12px;line-height:1.55;color:#ad96c0;margin:0}
+.studio-hub-header button{display:grid;place-items:center;padding:9px;border-radius:10px;border:1px solid #5b3e70;background:#291738;color:#e5c8f3}
+.studio-hub-groups{display:flex;flex-direction:column;gap:20px;padding:20px 24px}
+.studio-hub-group h3{color:#ad8abf;font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 10px}
+.studio-hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.studio-hub-item{display:flex;align-items:center;text-align:left;gap:13px;min-width:0;padding:14px;border:1px solid #482d60;border-radius:14px;background:linear-gradient(145deg,#241430,#190f28);transition:border-color .15s ease,background .15s ease}
+.studio-hub-item:hover{border-color:#a466d4;background:#311a46}
+.studio-hub-icon{width:41px;height:41px;flex:0 0 41px;border-radius:12px;display:grid;place-items:center;color:#e4b3ff;background:#3b1e53}
+.studio-hub-item-copy{display:flex;flex-direction:column;min-width:0;gap:5px}
+.studio-hub-item-copy strong{color:#f4e4ff;font-size:13px}
+.studio-hub-item-copy small{color:#b09cbf;font-size:11px;line-height:1.45}
+.studio-hub-footer{display:flex;gap:8px;align-items:center;font-size:11px;color:#a991bb;border-top:1px solid #3f2b54;padding:13px 24px}
+@media(max-width:1000px){.studio-dock{gap:10px}.studio-dock-brand{padding-right:12px}.studio-dock-context>span{display:none}.studio-dock-actions button{padding:10px}.studio-dock-new span{display:none}}
+@media(max-width:720px){
+ .studio-dock-anchor{width:calc(100vw - 20px);bottom:max(9px,env(safe-area-inset-bottom))}
+ .studio-dock{min-height:58px;padding:7px 8px;gap:8px;border-radius:15px}
+ .studio-dock-mark{width:33px;height:35px;border-radius:10px}
+ .studio-dock-brand{padding-right:8px}
+ .studio-dock-brand strong{font-size:11px}
+ .studio-dock-brand small{font-size:9px}
+ .studio-dock-context{display:none}
+ .studio-dock-actions{flex:1;justify-content:flex-end;gap:6px}
+ .studio-dock-actions button{min-height:36px;padding:9px}
+ .studio-dock-actions .studio-menu-button span{display:none}
+ .studio-dock-actions .studio-menu-button>svg:last-child{display:none}
+ .studio-dock-actions .studio-dock-publish span{display:none}
+ .studio-dock-actions .studio-dock-exit{padding:9px}
+ .studio-hub{width:100%;max-height:76dvh;border-radius:17px}
+ .studio-hub-header{padding:16px}
+ .studio-hub-groups{padding:16px;gap:16px}
+ .studio-hub-grid{grid-template-columns:1fr}
+}
+@media(max-width:410px){.studio-dock-brand small{display:none}.studio-dock-brand{gap:6px}.studio-dock-actions button{padding:8px}.studio-dock-actions .studio-dock-new{display:none}}
+@media(prefers-reduced-motion:reduce){.studio-hub-item{transition:none}}
