@@ -1,10 +1,14 @@
 import { useCallback,useState } from 'react'
+import publishedPackage from '../data/published-portfolio.json'
 import JSZip from 'jszip'
 import { initialProjects, starterCategories, type Project, type Category } from '../data/projects'
 import { normalizeBundledImage } from '../lib/default-assets'
 import {defaultHome,defaultMusicTracks,defaultTestimonials,type HomeContent,type Testimonial,type MusicTrack,type SocialLink,defaultSocialLinks,type AboutContent,defaultAbout,type ContactSettings,defaultContact,defaultGalleryBackground} from '../data/studio'
 import { mediaKey,mediaRefs,readMedia,saveMediaBlob,isLocalMedia,listMediaAssets,saveCatalogItems,type LibraryAsset } from '../lib/media-store'
 const KEY='jordan-portfolio-local-v2'
+const PENDING_KEY='jordan-portfolio-publish-pending-v1'
+const bundled=publishedPackage as {schema:number;revision:string;store:unknown}
+export const currentPublishedRevision=bundled.revision||'initial'
 export interface PortfolioStore {projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string}
 function parseStore(raw:unknown):PortfolioStore{
  if(!raw||typeof raw!=='object')throw new Error('Arquivo de dados inválido')
@@ -26,9 +30,26 @@ function parseStore(raw:unknown):PortfolioStore{
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
  return {projects,categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground}
 }
-function load():PortfolioStore{
- try{const value=localStorage.getItem(KEY);if(value)return parseStore(JSON.parse(value) as unknown)}catch{/* keep defaults */}
+function publishedStore():PortfolioStore{
+ if(bundled.schema===1&&bundled.store){
+  try{return parseStore(bundled.store)}catch{/* preserve original defaults when a malformed content file is committed */}
+ }
  return {projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground}
+}
+function load():PortfolioStore{
+ try{
+  const snapshot=localStorage.getItem(KEY)
+  const pending=JSON.parse(localStorage.getItem(PENDING_KEY)??'null') as {revision?:string;snapshot?:string|null}|null
+  // Once the new deployment includes our own commit, release the old browser draft.
+  // Never discard changes made after the publish button was pressed.
+  if(pending?.revision===currentPublishedRevision&&pending.snapshot===snapshot){
+   localStorage.removeItem(KEY)
+   localStorage.removeItem(PENDING_KEY)
+  }
+  const value=localStorage.getItem(KEY)
+  if(value)return parseStore(JSON.parse(value) as unknown)
+ }catch{/* keep published or stock defaults */}
+ return publishedStore()
 }
 function refsFor(store:PortfolioStore):string[]{
  const refs=new Set(mediaRefs(store.projects,store.categories))
@@ -60,6 +81,16 @@ export function usePortfolio(){
  }
  const setCategories=(categories:Category[])=>save({...store,categories})
  const setHome=(home:HomeContent)=>save({...store,home})
+ const markPublished=(revision:string)=>{
+  // Credential-free marker only. Never write the GitHub token to localStorage.
+  try{localStorage.setItem(PENDING_KEY,JSON.stringify({revision,snapshot:localStorage.getItem(KEY)}))}catch{/* publication itself already succeeded */}
+ }
+ const restorePublished=()=>{
+  localStorage.removeItem(KEY)
+  localStorage.removeItem(PENDING_KEY)
+  setStore(publishedStore())
+  setSaveError('')
+ }
  const setGalleryBackground=(galleryBackground:string)=>save({...store,galleryBackground})
  const setAbout=(about:AboutContent)=>save({...store,about})
  const setContact=(contact:ContactSettings)=>save({...store,contact})
@@ -100,5 +131,5 @@ export function usePortfolio(){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...store,saveError,update,remove,reorderProjects,setCategories,setHome,setGalleryBackground,setAbout,setContact,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,exportData,importData}
+ return {...store,saveError,update,remove,reorderProjects,setCategories,setHome,setGalleryBackground,setAbout,setContact,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }

@@ -1,8 +1,9 @@
 import { useEffect, useState, type ComponentProps } from 'react'
 import { isLocalMedia,readMedia } from '../../lib/media-store'
+import { resolvePublishedAsset } from '../../lib/published-assets'
 import { normalizeBundledImage } from '../../lib/default-assets'
 export function useAssetSrc(source?:string){
- const normalized=source?normalizeBundledImage(source):''
+ const normalized=source?resolvePublishedAsset(normalizeBundledImage(source)):''
  const [url,setUrl]=useState(normalized&&!isLocalMedia(normalized)?normalized:'')
  useEffect(()=>{
   if(!normalized){setUrl('');return}
