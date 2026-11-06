@@ -5,10 +5,10 @@ import type { HomeContent,MusicTrack,AboutContent } from '../../data/studio'
 import { AssetImage } from './asset-image'
 import {QuickEditImageButton} from './image-quick-editor'
 import { linkAssetToFolder,listMediaAssets,saveUploadedMedia,type LibraryAsset } from '../../lib/media-store'
-type Sources={projects:Project[];categories:Category[];home:HomeContent;about:AboutContent;galleryBackground:string;tracks:MusicTrack[]}
+type Sources={projects:Project[];categories:Category[];home:HomeContent;about:AboutContent;galleryBackground:string;siteLogo:string;tracks:MusicTrack[]}
 const LibraryContext=createContext<Sources|null>(null)
-export function AssetLibraryProvider({projects,categories,home,about,galleryBackground,tracks,children}:Sources&{children:ReactNode}){
- const value=useMemo(()=>({projects,categories,home,about,galleryBackground,tracks}),[projects,categories,home,about,galleryBackground,tracks])
+export function AssetLibraryProvider({projects,categories,home,about,galleryBackground,siteLogo,tracks,children}:Sources&{children:ReactNode}){
+ const value=useMemo(()=>({projects,categories,home,about,galleryBackground,siteLogo,tracks}),[projects,categories,home,about,galleryBackground,siteLogo,tracks])
  return <LibraryContext.Provider value={value}>{children}</LibraryContext.Provider>
 }
 interface AssetEntry {ref:string;name:string;folders:string[];date:number}
@@ -44,6 +44,7 @@ function collectSources(sources:Sources|null,catalog:LibraryAsset[]):AssetEntry[
   for(const step of project.processSteps??[])add(step.image,folder,project.title+' · '+step.label)
  }
  if(sources?.galleryBackground)add(sources.galleryBackground,'gallery','Fundo da galeria')
+ if(sources?.siteLogo)add(sources.siteLogo,'branding','Logo da barra lateral')
  for(const category of sources?.categories??[])if(category.image)add(category.image,'filter-icons','Filtro '+category.label)
  if(sources?.about){add(sources.about.portrait,'about','Imagem principal Sobre');add(sources.about.secondaryImage,'about','Imagem complementar Sobre')}
  if(sources?.home){

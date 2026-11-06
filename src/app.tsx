@@ -4,6 +4,7 @@ import { Sidebar,type Page } from './components/layout/sidebar'
 import { SocialBar } from './components/layout/social-bar'
 import { Gallery } from './components/sections/gallery'
 import { GalleryBackgroundEditor } from './components/sections/gallery-background-editor'
+import { BrandLogoEditor } from './components/sections/brand-logo-editor'
 import { ProjectPage } from './components/sections/project-page'
 import { AdminEditor } from './components/sections/admin-editor'
 import { AdminGate } from './components/sections/admin-gate'
@@ -30,8 +31,9 @@ export function App(){
  const [contactEditorOpen,setContactEditorOpen]=useState(false)
  const [githubPublishOpen,setGitHubPublishOpen]=useState(false)
  const [galleryBackgroundEditorOpen,setGalleryBackgroundEditorOpen]=useState(false)
+ const [logoEditorOpen,setLogoEditorOpen]=useState(false)
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
- const portfolio=usePortfolio()
+ const portfolio=usePortfolio(editing)
  const navigate=(next:Page)=>{location.hash='/'+next;setPage(next);window.scrollTo(0,0)}
  const projectId=location.hash.replace(/^#\/project\//,'')
  const project=portfolio.projects.find(p=>p.id===projectId)
@@ -42,7 +44,7 @@ export function App(){
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
- return <AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} tracks={portfolio.musicTracks}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
+ return <AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} tracks={portfolio.musicTracks}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
  {page==='portfolio'&&<Gallery projects={portfolio.projects} categories={portfolio.categories} selected={preview} onPreview={p=>setPreviewId(p.id)} onClosePreview={()=>setPreviewId(null)} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} showLikeCounts={portfolio.showLikeCounts} heroImage={portfolio.galleryBackground} onEditBackground={()=>setGalleryBackgroundEditorOpen(true)}/>}
  {page==='project'&&project&&<ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts}/>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
@@ -50,10 +52,11 @@ export function App(){
  {page==='sobre'&&<AboutPage about={portfolio.about} editing={editing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
  {page==='contato'&&<ContactPage socials={portfolio.socialLinks} settings={portfolio.contact} demoEnabled={editing} onEdit={()=>setContactEditorOpen(true)}/>}
  </div>
- {editing&&<div className="admin-bar"><BriefcaseBusiness size={16}/> Local Studio <span>Rascunhos locais · ZIP para backup</span><button onClick={()=>{setHomeEditorTab('home');setHomeEditorOpen(true)}}>Editar Home, redes e músicas</button><button onClick={()=>setAboutEditorOpen(true)}>Editar Sobre</button><button onClick={()=>setContactEditorOpen(true)}>Editar Contato</button><button onClick={()=>{setHomeEditorTab('likes');setHomeEditorOpen(true)}}>Curtidas</button><button className="studio-publish-trigger" onClick={()=>setGitHubPublishOpen(true)}><CloudUpload size={15}/>Publicar no GitHub</button><button onClick={()=>setEditor(null)}><Plus size={15}/> Novo projeto</button><button onClick={()=>{setEditing(false);setEditor(undefined)}}>Bloquear editor</button></div>}
+ {editing&&<div className="admin-bar"><BriefcaseBusiness size={16}/> Local Studio <span>Rascunhos locais · ZIP para backup</span><button onClick={()=>{setHomeEditorTab('home');setHomeEditorOpen(true)}}>Editar Home, redes e músicas</button><button onClick={()=>setAboutEditorOpen(true)}>Editar Sobre</button><button onClick={()=>setLogoEditorOpen(true)}>Editar Logo</button><button onClick={()=>setContactEditorOpen(true)}>Editar Contato</button><button onClick={()=>{setHomeEditorTab('likes');setHomeEditorOpen(true)}}>Curtidas</button><button className="studio-publish-trigger" onClick={()=>setGitHubPublishOpen(true)}><CloudUpload size={15}/>Publicar no GitHub</button><button onClick={()=>setEditor(null)}><Plus size={15}/> Novo projeto</button><button onClick={()=>{setEditing(false);setEditor(undefined)}}>Bloquear editor</button></div>}
  {editing&&<AdminInboxBell/>}
  {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
+ {editing&&logoEditorOpen&&<BrandLogoEditor value={portfolio.siteLogo} onSave={portfolio.setSiteLogo} onClose={()=>setLogoEditorOpen(false)}/>}
  {galleryBackgroundEditorOpen&&<GalleryBackgroundEditor value={portfolio.galleryBackground} onSave={portfolio.setGalleryBackground} onClose={()=>setGalleryBackgroundEditorOpen(false)}/>}
  {editing&&githubPublishOpen&&<GitHubPublishEditor store={portfolio} onPublished={portfolio.markPublished} onRestore={portfolio.restorePublished} onExport={portfolio.exportData} onClose={()=>setGitHubPublishOpen(false)}/>}
  {contactEditorOpen&&<ContactEditor settings={portfolio.contact} onSave={portfolio.setContact} onClose={()=>setContactEditorOpen(false)}/>}

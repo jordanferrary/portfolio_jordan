@@ -9,7 +9,7 @@ const KEY='jordan-portfolio-local-v2'
 const PENDING_KEY='jordan-portfolio-publish-pending-v1'
 const bundled=publishedPackage as {schema:number;revision:string;store:unknown}
 export const currentPublishedRevision=bundled.revision||'initial'
-export interface PortfolioStore {projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string}
+export interface PortfolioStore {projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;siteLogo:string}
 function parseStore(raw:unknown):PortfolioStore{
  if(!raw||typeof raw!=='object')throw new Error('Arquivo de dados inválido')
  const obj=raw as Partial<PortfolioStore>
@@ -23,18 +23,19 @@ function parseStore(raw:unknown):PortfolioStore{
  const projects=obj.projects.map(p=>({...p,image:normalizeBundledImage(p.image),blocks:p.blocks.map(b=>({...b,content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage)})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
  const home={...defaultHome,...(obj.home??{}),avatar:normalizeBundledImage(obj.home?.avatar??defaultHome.avatar),background:normalizeBundledImage(obj.home?.background??defaultHome.background)}
  const galleryBackground=normalizeBundledImage(obj.galleryBackground??obj.home?.background??defaultGalleryBackground)
+ const siteLogo=typeof obj.siteLogo==='string'?normalizeBundledImage(obj.siteLogo):''
  const about={...defaultAbout,...(obj.about??{}),portrait:normalizeBundledImage(obj.about?.portrait??defaultAbout.portrait),secondaryImage:normalizeBundledImage(obj.about?.secondaryImage??defaultAbout.secondaryImage)}
  const contact={...defaultContact,...(obj.contact??{}),interestOptions:Array.isArray(obj.contact?.interestOptions)?obj.contact.interestOptions.filter((item):item is string=>typeof item==='string'&&item.trim().length>0):defaultContact.interestOptions}
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
- return {projects,categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground}
+ return {projects,categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,siteLogo}
 }
 function publishedStore():PortfolioStore{
  if(bundled.schema===1&&bundled.store){
   try{return parseStore(bundled.store)}catch{/* preserve original defaults when a malformed content file is committed */}
  }
- return {projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground}
+ return {projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,siteLogo:''}
 }
 function load():PortfolioStore{
  try{
@@ -56,14 +57,18 @@ function refsFor(store:PortfolioStore):string[]{
  if(isLocalMedia(store.home.avatar))refs.add(store.home.avatar)
  if(isLocalMedia(store.home.background))refs.add(store.home.background)
  if(isLocalMedia(store.galleryBackground))refs.add(store.galleryBackground)
+ if(isLocalMedia(store.siteLogo))refs.add(store.siteLogo)
  if(isLocalMedia(store.about.portrait))refs.add(store.about.portrait)
  if(isLocalMedia(store.about.secondaryImage))refs.add(store.about.secondaryImage)
  for(const t of store.musicTracks){if(isLocalMedia(t.src))refs.add(t.src);if(t.cover&&isLocalMedia(t.cover))refs.add(t.cover)}
  for(const s of store.socialLinks)if(s.iconImage&&isLocalMedia(s.iconImage))refs.add(s.iconImage)
  return [...refs]
 }
-export function usePortfolio(){
+export function usePortfolio(editing=false){
  const [store,setStore]=useState<PortfolioStore>(load)
+ // Public visitors always see the deployed GitHub content, even if this browser
+ // previously used Local Studio. Local drafts only become visible while editing.
+ const [deployedStore]=useState<PortfolioStore>(publishedStore)
  const [saveError,setSaveError]=useState('')
  const save=useCallback((next:PortfolioStore)=>{setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('')}catch{setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[])
  const update=(project:Project)=>save({...store,projects:store.projects.some(p=>p.id===project.id)?store.projects.map(p=>p.id===project.id?project:p):[project,...store.projects]})
@@ -92,6 +97,7 @@ export function usePortfolio(){
   setSaveError('')
  }
  const setGalleryBackground=(galleryBackground:string)=>save({...store,galleryBackground})
+ const setSiteLogo=(siteLogo:string)=>save({...store,siteLogo})
  const setAbout=(about:AboutContent)=>save({...store,about})
  const setContact=(contact:ContactSettings)=>save({...store,contact})
  const setTestimonials=(testimonials:Testimonial[])=>save({...store,testimonials})
@@ -131,5 +137,5 @@ export function usePortfolio(){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...store,saveError,update,remove,reorderProjects,setCategories,setHome,setGalleryBackground,setAbout,setContact,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setCategories,setHome,setGalleryBackground,setSiteLogo,setAbout,setContact,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }
