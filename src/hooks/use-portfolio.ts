@@ -3,7 +3,6 @@ import { DEFAULT_THEME,normalizeThemePalette,type ThemePalette } from '../lib/th
 import { isKnownDemoTestimonial } from '../lib/testimonial-safety'
 import { normalizeFraming } from '../lib/image-framing'
 import publishedPackage from '../data/published-portfolio.json'
-import JSZip from 'jszip'
 import { initialProjects, starterCategories, type Project, type Category } from '../data/projects'
 import { normalizeBundledImage } from '../lib/default-assets'
 import {defaultHome,defaultMusicTracks,defaultTestimonials,type HomeContent,type Testimonial,type MusicTrack,type SocialLink,defaultSocialLinks,type AboutContent,defaultAbout,type ContactSettings,defaultContact,defaultGalleryBackground} from '../data/studio'
@@ -134,6 +133,7 @@ export function usePortfolio(editing=false){
  const setSocialLinks=(socialLinks:SocialLink[])=>save({...store,socialLinks})
  const setShowLikeCounts=(showLikeCounts:boolean)=>save({...store,showLikeCounts})
  const exportData=async()=>{
+  const {default:JSZip}=await import('jszip')
   const zip=new JSZip()
   zip.file('portfolio.json',JSON.stringify(store,null,2))
   zip.file('LEIA-ME.txt','Backup do Studio: projetos, depoimentos, configuracoes da Home, trilhas e biblioteca de midias sem duplicacao. Importar restaura neste navegador; nao publica no GitHub.')
@@ -152,6 +152,7 @@ export function usePortfolio(editing=false){
  }
  const importData=async(file:File)=>{
   if(file.name.toLowerCase().endsWith('.json')){save(parseStore(JSON.parse(await file.text()) as unknown));return}
+  const {default:JSZip}=await import('jszip')
   const zip=await JSZip.loadAsync(file)
   const manifest=zip.file('portfolio.json')
   if(!manifest)throw new Error('portfolio.json não encontrado.')
