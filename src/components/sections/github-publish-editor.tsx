@@ -35,7 +35,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
   if(!window.confirm('Substituir seu rascunho local pela versão publicada que está carregada neste site? Salve um backup ZIP se quiser manter suas alterações.'))return
   onRestore();close()
  }
- return <div className="editor-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)close()}}>
+ return <div className="editor-overlay" lang="pt-BR" onMouseDown={e=>{if(e.target===e.currentTarget)close()}}>
   <section className="editor-panel github-publish-editor" role="dialog" aria-modal="true" aria-label="Publicar portfólio no GitHub">
    <header><div><span className="eyebrow"><GitBranch size={14}/> GITHUB STUDIO</span><h2>Publicar portfólio</h2></div><button type="button" onClick={close} disabled={busy} aria-label="Fechar publicação"><X size={20}/></button></header>
    <div className="editor-scroll">

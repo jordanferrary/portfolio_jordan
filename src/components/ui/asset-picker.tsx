@@ -84,7 +84,7 @@ export function AssetPicker({folder,onSelect,onClose}:{folder:string;onSelect:(r
    choose(ref)
   }catch(e){setError(e instanceof Error?e.message:'Não foi possível importar a imagem.')}finally{setBusy(false)}
  }
- return <div className="asset-modal-backdrop" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><section className="asset-modal" role="dialog" aria-modal="true" aria-label="Biblioteca de imagens">
+ return <div className="asset-modal-backdrop" lang="pt-BR" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}><section className="asset-modal" role="dialog" aria-modal="true" aria-label="Biblioteca de imagens">
   <header className="asset-modal-head"><div><span className="eyebrow"><Paperclip size={15}/> ASSET LIBRARY</span><h2>Escolher imagem existente</h2><p>Reutilize um arquivo sem criar outra cópia.</p></div><button aria-label="Fechar biblioteca" onClick={onClose}><X size={20}/></button></header>
   <div className="asset-modal-tools"><div className="asset-filter-switch"><button className={onlyCurrent?'active':''} onClick={()=>setOnlyCurrent(true)}>Neste projeto <span>{currentCount}</span></button><button className={!onlyCurrent?'active':''} onClick={()=>setOnlyCurrent(false)}>Todas as imagens <span>{entries.length}</span></button></div><label className="asset-search"><Search size={16}/><input placeholder="Pesquisar imagens e pastas" aria-label="Pesquisar imagens" value={search} onChange={e=>setSearch(e.target.value)}/>{search&&<button aria-label="Limpar pesquisa" onClick={()=>setSearch('')}><X size={15}/></button>}</label></div>
   <div className="asset-modal-scroll">

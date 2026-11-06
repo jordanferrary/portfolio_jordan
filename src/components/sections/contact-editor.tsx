@@ -27,7 +27,7 @@ export function ContactEditor({settings,onSave,onClose}:Props){
   onSave({...draft,allowAvatar:false,interestOptions:options})
   onClose()
  }
- return <div className="editor-overlay"><section className="editor-panel contact-editor" role="dialog" aria-modal="true" aria-label="Editar formulário de contato">
+ return <div className="editor-overlay" lang="pt-BR"><section className="editor-panel contact-editor" role="dialog" aria-modal="true" aria-label="Editar formulário de contato">
  <header><div><span className="eyebrow">✦ LOCAL STUDIO</span><h2>Editar Contato</h2></div><button type="button" onClick={onClose} aria-label="Fechar"><X size={20}/></button></header>
  <div className="editor-scroll">
   <div className="contact-editor-head"><p>Personalize os serviços que oferece, o convite ao cliente e as opções do formulário. As mudanças são aplicadas à prévia.</p></div>

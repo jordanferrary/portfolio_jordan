@@ -91,7 +91,7 @@ export function AdminInboxBell(){
   }catch(e){setError(readableError(e))}
  }
  const selected=messages.find(m=>m.id===active)
- return <div className="admin-inbox-container">
+ return <div className="admin-inbox-container" lang="pt-BR">
   <button type="button" className="admin-inbox-bell" onClick={()=>{setOpen(v=>!v);if(!open&&(localMode||token))void refresh()}} aria-label={count?count+' mensagens não lidas':'Abrir caixa de entrada'} aria-expanded={open}><Bell size={21}/>{count>0&&<span className="inbox-badge">{count>99?'99+':count}</span>}</button>
   {open&&<div className="admin-inbox-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)setOpen(false)}}>
    <section className="admin-inbox-panel" role="dialog" aria-modal="true" aria-label="Mensagens recebidas">

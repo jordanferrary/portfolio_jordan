@@ -20,7 +20,7 @@ export function AboutEditor({value,onSave,onClose}:Props){
   finally{setBusy(false)}
  }
  const save=()=>{if(!draft.titleFirst.trim()||!draft.name.trim()){setError('Informe o título e o nome do artista.');return}onSave({...draft,specialties:skillsText.split(/\r?\n|,/).map(s=>s.trim()).filter(Boolean).slice(0,30)});onClose()}
- return <div className="editor-overlay"><section className="editor-panel about-editor" role="dialog" aria-modal="true" aria-label="Editar página Sobre"><header><div><span className="eyebrow">✦ LOCAL STUDIO</span><h2>Personalizar Sobre</h2></div><button onClick={onClose} aria-label="Fechar editor"><X/></button></header>
+ return <div className="editor-overlay" lang="pt-BR"><section className="editor-panel about-editor" role="dialog" aria-modal="true" aria-label="Editar página Sobre"><header><div><span className="eyebrow">✦ LOCAL STUDIO</span><h2>Personalizar Sobre</h2></div><button onClick={onClose} aria-label="Fechar editor"><X/></button></header>
   <div className="editor-scroll"><p className="local-warning">Todas as alterações ficam neste navegador até o conteúdo ser publicado em uma hospedagem com backend.</p>
   <label>Texto pequeno acima do título<input value={draft.eyebrow} onChange={e=>patch({eyebrow:e.target.value})}/></label>
   <label>Primeira parte do título<input value={draft.titleFirst} onChange={e=>patch({titleFirst:e.target.value})}/></label>

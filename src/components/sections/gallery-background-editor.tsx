@@ -16,7 +16,7 @@ export function GalleryBackgroundEditor({value,onSave,onClose}:Props){
   catch(e){setError(e instanceof Error?e.message:'Não foi possível importar a imagem.')}
   finally{setUploading(false)}
  }
- return <div className="editor-overlay" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
+ return <div className="editor-overlay" lang="pt-BR" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section className="editor-panel gallery-background-editor" role="dialog" aria-modal="true" aria-label="Editar imagem de fundo da galeria">
    <header><div><span className="eyebrow">✦ LOCAL STUDIO</span><h2>Fundo da galeria</h2></div><button type="button" onClick={onClose} aria-label="Fechar editor"><X size={20}/></button></header>
    <div className="editor-scroll">

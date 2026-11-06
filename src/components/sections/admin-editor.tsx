@@ -88,7 +88,7 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
   setNewCategory('');setNewImage('');setMessage('Filtro criado. Ele aparecerá na galeria e poderá ser usado em qualquer projeto.')
  }
  const save=()=>{if(!draft.title.trim()||!draft.image.trim()){setTab('project');setMessage('Informe título e imagem de capa para salvar.');return}onSave(draft);onClose()}
- return <div className="editor-overlay"><section className="editor-panel v2-editor" role="dialog" aria-modal="true" aria-label="Editor visual"><header className="editor-head"><div><span className="eyebrow">✦ LOCAL STUDIO</span><h2>{project?'Editar projeto':'Criar projeto'}</h2></div><button type="button" onClick={onClose} aria-label="Fechar editor"><X/></button></header>
+ return <div className="editor-overlay" lang="pt-BR"><section className="editor-panel v2-editor" role="dialog" aria-modal="true" aria-label="Editor visual"><header className="editor-head"><div><span className="eyebrow">✦ LOCAL STUDIO</span><h2>{project?'Editar projeto':'Criar projeto'}</h2></div><button type="button" onClick={onClose} aria-label="Fechar editor"><X/></button></header>
  <div className="editor-tabs" role="tablist" aria-label="Áreas de edição"><button type="button" role="tab" aria-selected={tab==='project'} onClick={()=>setTab('project')}>Projeto</button><button type="button" role="tab" aria-selected={tab==='process'} onClick={()=>setTab('process')}>Processo</button><button type="button" role="tab" aria-selected={tab==='filters'} onClick={()=>setTab('filters')}>Filtros</button><button type="button" role="tab" aria-selected={tab==='backup'} onClick={()=>setTab('backup')}>Arquivos</button></div>
  <div className="editor-scroll">
  {tab==='project'&&<>

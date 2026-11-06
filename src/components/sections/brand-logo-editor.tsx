@@ -34,7 +34,7 @@ export function BrandLogoEditor({value,onSave,onClose}:Props){
    {draft[field]&&<button className="brand-logo-reset" type="button" disabled={busy} onClick={()=>patch({[field]:''})}><RotateCcw size={14}/>{field==='siteLogo'?'Usar JF original':'Remover versão hover'}</button>}
   </div>
  )
- return <div className="editor-overlay" onMouseDown={e=>{if(e.target===e.currentTarget&&!busy)onClose()}}>
+ return <div className="editor-overlay" lang="pt-BR" onMouseDown={e=>{if(e.target===e.currentTarget&&!busy)onClose()}}>
   <section className="editor-panel brand-logo-editor" role="dialog" aria-modal="true" aria-label="Personalizar logo e hover">
    <header><div><span className="eyebrow">✦ IDENTIDADE VISUAL</span><h2>Logo do portfólio</h2></div><button type="button" disabled={busy} onClick={onClose} aria-label="Fechar editor"><X size={20}/></button></header>
    <div className="editor-scroll">
