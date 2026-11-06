@@ -32,11 +32,17 @@ Os arquivos de mídia são identificados por SHA-256. O sistema reutiliza os arq
 
 - Salvar no editor cria rascunhos somente neste navegador; não atualiza o site público.
 - Publicar no GitHub grava uma nova versão no repositório; o GitHub Actions a transforma na versão pública.
-- Em outro navegador sem rascunhos próprios, a versão publicada é carregada.
-- Um navegador que já tinha rascunhos antigos continuará priorizando seus próprios dados até serem publicados ou restaurados.
+- Na navegação normal, **todos veem a versão publicada**, mesmo quem já brincou com o Local Studio. Não é preciso excluir cookies ou dados do site a cada atualização.
+- Ao desbloquear o Local Studio, o editor recupera os rascunhos locais daquele navegador. Ao bloquear o editor, a visualização volta para a versão pública.
+- A opção **Restaurar versão publicada** dentro da tela de publicação descarta o rascunho do navegador; faça backup antes se quiser conservar o trabalho.
+- O **logo lateral** pode ser trocado pelo botão de lápis no JF ou pela opção **Editar Logo** no Local Studio. Depois, use Publicar no GitHub para disponibilizá-lo aos visitantes.
 - A opção Restaurar versão publicada apaga os rascunhos locais e recupera o conteúdo incluído na versão do site carregada. Faça backup antes.
 - Depois da publicação, o Studio mantém os arquivos locais visíveis enquanto a publicação termina. Ao atualizar para a nova versão, remove o rascunho correspondente apenas se o conteúdo não tiver sido alterado novamente.
 - Se outra versão já foi publicada e o site atual está desatualizado, a publicação é bloqueada para evitar sobrescrever alterações sem revisão.
+
+## Por que um visitante parecia não receber atualizações?
+
+Versões antigas priorizavam rascunhos guardados no localStorage. Quem editasse no modo dev poderia ver seus próprios projetos e músicas antigos em vez da versão pública. A partir desta atualização, o modo visitante ignora o rascunho e sempre lê o conteúdo incluído no build do GitHub Pages; não é um problema de cookies. Quem estiver com o Studio desbloqueado pode continuar vendo seu rascunho até bloqueá-lo.
 
 ## Segurança e limites
 
