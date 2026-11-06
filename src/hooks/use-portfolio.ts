@@ -48,6 +48,17 @@ export function usePortfolio(){
  const save=useCallback((next:PortfolioStore)=>{setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('')}catch{setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[])
  const update=(project:Project)=>save({...store,projects:store.projects.some(p=>p.id===project.id)?store.projects.map(p=>p.id===project.id?project:p):[project,...store.projects]})
  const remove=(id:string)=>save({...store,projects:store.projects.filter(p=>p.id!==id)})
+ const reorderProjects=(sourceId:string,targetId:string,after=false)=>{
+  if(sourceId===targetId)return
+  const list=[...store.projects]
+  const source=list.findIndex(p=>p.id===sourceId)
+  if(source<0)return
+  const [item]=list.splice(source,1)
+  const target=list.findIndex(p=>p.id===targetId)
+  if(target<0)return
+  list.splice(target+(after?1:0),0,item)
+  save({...store,projects:list})
+ }
  const setCategories=(categories:Category[])=>save({...store,categories})
  const setHome=(home:HomeContent)=>save({...store,home})
  const setAbout=(about:AboutContent)=>save({...store,about})
@@ -89,5 +100,5 @@ export function usePortfolio(){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...store,saveError,update,remove,setCategories,setHome,setAbout,setContact,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,exportData,importData}
+ return {...store,saveError,update,remove,reorderProjects,setCategories,setHome,setAbout,setContact,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,exportData,importData}
 }
