@@ -72,9 +72,9 @@ export interface ContactSettings {
 export const defaultContact:ContactSettings={
  titleFirst:'Have a project',
  titleAccent:'in mind?',
- introduction:'Conte sua ideia, seus objetivos e o que procura em um artista 3D. Assim podemos encontrar a melhor direção criativa para o projeto.',
- greeting:'Olá! Conte um pouco sobre o que deseja criar. Preencha suas informações e envie referências, se quiser.',
- interestOptions:['Personagens 3D','Modelagem e sculpt','Cenários','Game Art','Motion Design','Ilustração','Outros'],
+ introduction:'Share your idea, creative goals, and what you need from a 3D artist. Let’s explore how we can bring your project to life.',
+ greeting:'Tell me about your project and share any references you have in mind.',
+ interestOptions:['3D Characters','3D Modeling & Sculpting','Environments','Game Art','Motion Design','Illustration','Other'],
  allowAvatar:false,
  allowAttachments:true
 }
