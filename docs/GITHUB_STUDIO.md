@@ -75,6 +75,23 @@ O script de imagens está em scripts/build_site_identity.py, utiliza Pillow no w
 
 **Domínio personalizado:** ao trocar de domínio, configure PUBLIC_SITE_URL como URL HTTPS pública do site, com barra final, e ajuste o base do Vite se necessário. O valor padrão é https://jordanferrary.github.io/portfolio_jordan/.
 
+## Direção de arte e paleta cromática
+
+Em **Ferramentas > Identidade > Paleta de cores**, o Local Studio disponibiliza um seletor cromático de alta precisão:
+
+- **Aro de matiz:** escolha a cor principal arrastando o marcador no círculo.
+- **Triângulo:** ajuste saturação e brilho em duas dimensões, como em editores de arte digital.
+- **Valores exatos:** digite códigos HEX ou valores RGB. Os controles H, S e V permitem ajustes numéricos.
+- **Variáveis globais:** Cor principal, Cor secundária, Fundo do site e Superfícies.
+- **Presets:** Neón, Aurora, Rosa, Solar e Lua, todos ajustáveis.
+- **Prévia ao vivo:** veja o resultado enquanto edita. Cancelar desfaz a experiência; Salvar paleta mantém um rascunho local. Publicar envia o novo tema ao GitHub.
+
+O tema é guardado na propriedade themePalette do conteúdo de portfólio. Valores HEX inválidos são descartados e substituídos pelos padrões. A versão pública usa a última paleta publicada; os rascunhos privados continuam isolados.
+
+As variáveis CSS fundamentais são --jf-primary, --jf-secondary, --jf-background e --jf-surface, aplicadas na raiz do documento. Bordas, brilho, fundos elevados e outros detalhes são derivados automaticamente por color-mix(), sem precisar configurar cada item individualmente.
+
+O arquivo src/styles/creative-direction.css controla os novos efeitos visuais das páginas públicas: superfícies em profundidade, gradientes cromáticos, microinterações, transições e animações leves. Para acessibilidade, a preferência do sistema por movimento reduzido desativa essas animações.
+
 ## Segurança e limites
 
 - O PIN do Local Studio é apenas uma barreira visual. A proteção real da publicação exige autorização no GitHub.
