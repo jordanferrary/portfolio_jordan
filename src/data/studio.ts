@@ -65,18 +65,12 @@ export interface ContactSettings {
  titleAccent:string
  introduction:string
  greeting:string
- interestOptions:string[]
- allowAvatar:boolean
- allowAttachments:boolean
 }
 export const defaultContact:ContactSettings={
  titleFirst:'Have a project',
  titleAccent:'in mind?',
  introduction:'For collaborations, commissions, or questions about my work, reach out through my social profiles. Let’s start a conversation.',
  greeting:'Choose a platform below to explore my work or get in touch.',
- interestOptions:['3D Characters','3D Modeling & Sculpting','Environments','Game Art','Motion Design','Illustration','Other'],
- allowAvatar:false,
- allowAttachments:true
 }
 
 /** The portfolio banner is configured independently from the Home wallpaper. */
