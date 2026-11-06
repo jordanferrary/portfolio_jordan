@@ -1,5 +1,5 @@
 import { useEffect,useState } from 'react'
-import { BriefcaseBusiness,CloudUpload,Plus } from 'lucide-react'
+import { Home,Grid2X2,UserRound,Mail,Image as ImageIcon,Heart,Music,Share2,Layers,Palette,Plus,MessageSquare } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
 import { SocialBar } from './components/layout/social-bar'
 import { Gallery } from './components/sections/gallery'
@@ -18,6 +18,8 @@ import { HomeEditor } from './components/sections/home-editor'
 import { AssetLibraryProvider } from './components/ui/asset-picker'
 import { usePortfolio } from './hooks/use-portfolio'
 import { GitHubPublishEditor } from './components/sections/github-publish-editor'
+import { SiteIdentityEditor } from './components/sections/site-identity-editor'
+import { StudioDock,type StudioAction } from './components/sections/studio-dock'
 import type { Project } from './data/projects'
 function route(){const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':(['inicio','portfolio','sobre','contato'].includes(part)?part:'inicio')}
 export function App(){
@@ -32,19 +34,38 @@ export function App(){
  const [githubPublishOpen,setGitHubPublishOpen]=useState(false)
  const [galleryBackgroundEditorOpen,setGalleryBackgroundEditorOpen]=useState(false)
  const [logoEditorOpen,setLogoEditorOpen]=useState(false)
+ const [siteIdentityOpen,setSiteIdentityOpen]=useState(false)
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
  const navigate=(next:Page)=>{location.hash='/'+next;setPage(next);window.scrollTo(0,0)}
+ const openHomeTab=(tab:'home'|'feedback'|'music'|'socials'|'likes')=>{setHomeEditorTab(tab);setHomeEditorOpen(true)}
  const projectId=location.hash.replace(/^#\/project\//,'')
  const project=portfolio.projects.find(p=>p.id===projectId)
  const preview=portfolio.projects.find(p=>p.id===previewId)??null
  const openProject=(p:Project)=>{setPreviewId(null);location.hash='/project/'+p.id;setPage('project');window.scrollTo(0,0)}
+ const pageLabels:Record<Page|'project',string>={inicio:'Home',portfolio:'Galeria',sobre:'Sobre',contato:'Contato',project:'Projeto'}
+ const editCurrent=()=>{if(page==='inicio')openHomeTab('home');else if(page==='portfolio')setGalleryBackgroundEditorOpen(true);else if(page==='sobre')setAboutEditorOpen(true);else if(page==='contato')setContactEditorOpen(true);else setEditor(project??null)}
+ const editingLabel=page==='project'?'Editar projeto':page==='portfolio'?'Editar galeria':'Editar página'
+ const studioActions:StudioAction[]=[
+  {id:'home',label:'Home',description:'Apresentação, banner e conteúdo inicial',section:'Páginas',icon:Home,onClick:()=>openHomeTab('home')},
+  {id:'about',label:'Sobre',description:'Bio, especialidades e imagens',section:'Páginas',icon:UserRound,onClick:()=>setAboutEditorOpen(true)},
+  {id:'contact',label:'Contato',description:'Texto, serviços e formulário',section:'Páginas',icon:Mail,onClick:()=>setContactEditorOpen(true)},
+  {id:'gallery',label:'Galeria',description:'Imagem de fundo da galeria',section:'Páginas',icon:Grid2X2,onClick:()=>setGalleryBackgroundEditorOpen(true)},
+  {id:'new-project',label:'Novo projeto',description:'Criar e compor uma nova obra',section:'Projetos',icon:Plus,onClick:()=>setEditor(null)},
+  ...(page==='project'&&project?[{id:'active-project',label:'Editar obra atual',description:project.title,section:'Projetos' as const,icon:Layers,onClick:()=>setEditor(project)}]:[]),
+  {id:'music',label:'Músicas',description:'Faixas, capas e ordem da playlist',section:'Conteúdo',icon:Music,onClick:()=>openHomeTab('music')},
+  {id:'reviews',label:'Feedbacks',description:'Depoimentos reais e autoria',section:'Conteúdo',icon:MessageSquare,onClick:()=>openHomeTab('feedback')},
+  {id:'social',label:'Redes sociais',description:'Links, ícones e plataformas',section:'Conteúdo',icon:Share2,onClick:()=>openHomeTab('socials')},
+  {id:'likes',label:'Curtidas',description:'Visibilidade e contagem',section:'Conteúdo',icon:Heart,onClick:()=>openHomeTab('likes')},
+  {id:'brand',label:'Logo lateral',description:'Imagem principal, hover e escala',section:'Identidade',icon:Palette,onClick:()=>setLogoEditorOpen(true)},
+  {id:'share',label:'Favicon e link',description:'Ícone da aba e prévia compartilhada',section:'Identidade',icon:ImageIcon,onClick:()=>setSiteIdentityOpen(true)}
+ ]
  useEffect(()=>{const sync=()=>{setPage(route());window.scrollTo(0,0)};window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync)},[])
  useEffect(()=>{
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
- return <AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} tracks={portfolio.musicTracks}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
+ return <AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
  {page==='portfolio'&&<Gallery projects={portfolio.projects} categories={portfolio.categories} selected={preview} onPreview={p=>setPreviewId(p.id)} onClosePreview={()=>setPreviewId(null)} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} showLikeCounts={portfolio.showLikeCounts} heroImage={portfolio.galleryBackground} onEditBackground={()=>setGalleryBackgroundEditorOpen(true)}/>}
  {page==='project'&&project&&<ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts}/>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
@@ -52,16 +73,17 @@ export function App(){
  {page==='sobre'&&<AboutPage about={portfolio.about} editing={editing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
  {page==='contato'&&<ContactPage socials={portfolio.socialLinks} settings={portfolio.contact} demoEnabled={editing} onEdit={()=>setContactEditorOpen(true)}/>}
  </div>
- {editing&&<div className="admin-bar" lang="pt-BR"><BriefcaseBusiness size={16}/> Local Studio <span>Rascunhos locais · ZIP para backup</span><button onClick={()=>{setHomeEditorTab('home');setHomeEditorOpen(true)}}>Editar Home, redes e músicas</button><button onClick={()=>setAboutEditorOpen(true)}>Editar Sobre</button><button onClick={()=>setLogoEditorOpen(true)}>Editar Logo</button><button onClick={()=>setContactEditorOpen(true)}>Editar Contato</button><button onClick={()=>{setHomeEditorTab('likes');setHomeEditorOpen(true)}}>Curtidas</button><button className="studio-publish-trigger" onClick={()=>setGitHubPublishOpen(true)}><CloudUpload size={15}/>Publicar no GitHub</button><button onClick={()=>setEditor(null)}><Plus size={15}/> Novo projeto</button><button onClick={()=>{setEditing(false);setEditor(undefined)}}>Bloquear editor</button></div>}
+ {editing&&<StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onNewProject={()=>setEditor(null)} onPublish={()=>setGitHubPublishOpen(true)} onExport={portfolio.exportData} onLock={()=>{setEditing(false);setEditor(undefined)}} actions={studioActions}/>} 
  {editing&&<AdminInboxBell/>}
  {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
+ {editing&&siteIdentityOpen&&<SiteIdentityEditor value={{siteFavicon:portfolio.siteFavicon,seoTitle:portfolio.seoTitle,seoDescription:portfolio.seoDescription}} homeBanner={portfolio.home.background} onSave={portfolio.setSiteIdentity} onEditBanner={()=>openHomeTab('home')} onClose={()=>setSiteIdentityOpen(false)}/>}
  {editing&&logoEditorOpen&&<BrandLogoEditor value={{siteLogo:portfolio.siteLogo,siteLogoHover:portfolio.siteLogoHover,siteLogoSize:portfolio.siteLogoSize,siteLogoHoverScale:portfolio.siteLogoHoverScale}} onSave={portfolio.setBranding} onClose={()=>setLogoEditorOpen(false)}/>}
- {galleryBackgroundEditorOpen&&<GalleryBackgroundEditor value={portfolio.galleryBackground} onSave={portfolio.setGalleryBackground} onClose={()=>setGalleryBackgroundEditorOpen(false)}/>}
+ {editing&&galleryBackgroundEditorOpen&&<GalleryBackgroundEditor value={portfolio.galleryBackground} onSave={portfolio.setGalleryBackground} onClose={()=>setGalleryBackgroundEditorOpen(false)}/>}
  {editing&&githubPublishOpen&&<GitHubPublishEditor store={portfolio} onPublished={portfolio.markPublished} onRestore={portfolio.restorePublished} onExport={portfolio.exportData} onClose={()=>setGitHubPublishOpen(false)}/>}
- {contactEditorOpen&&<ContactEditor settings={portfolio.contact} onSave={portfolio.setContact} onClose={()=>setContactEditorOpen(false)}/>}
- {aboutEditorOpen&&<AboutEditor value={portfolio.about} onSave={portfolio.setAbout} onClose={()=>setAboutEditorOpen(false)}/>}
- {homeEditorOpen&&<HomeEditor initialTab={homeEditorTab} showLikeCounts={portfolio.showLikeCounts} onShowLikeCounts={portfolio.setShowLikeCounts} home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} links={portfolio.socialLinks} onLinks={portfolio.setSocialLinks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
- {editor!==undefined&&<AdminEditor key={editor?.id??'new'} project={editor} projects={portfolio.projects} categories={portfolio.categories} onSave={portfolio.update} onDelete={portfolio.remove} onClose={()=>setEditor(undefined)} onCategories={portfolio.setCategories} onExport={portfolio.exportData} onImport={portfolio.importData}/>}
+ {editing&&contactEditorOpen&&<ContactEditor settings={portfolio.contact} onSave={portfolio.setContact} onClose={()=>setContactEditorOpen(false)}/>}
+ {editing&&aboutEditorOpen&&<AboutEditor value={portfolio.about} onSave={portfolio.setAbout} onClose={()=>setAboutEditorOpen(false)}/>}
+ {editing&&homeEditorOpen&&<HomeEditor initialTab={homeEditorTab} showLikeCounts={portfolio.showLikeCounts} onShowLikeCounts={portfolio.setShowLikeCounts} home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} links={portfolio.socialLinks} onLinks={portfolio.setSocialLinks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
+ {editing&&editor!==undefined&&<AdminEditor key={editor?.id??'new'} project={editor} projects={portfolio.projects} categories={portfolio.categories} onSave={portfolio.update} onDelete={portfolio.remove} onClose={()=>setEditor(undefined)} onCategories={portfolio.setCategories} onExport={portfolio.exportData} onImport={portfolio.importData}/>}
  </div></AssetLibraryProvider>
 }

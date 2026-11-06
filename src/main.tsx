@@ -30,3 +30,8 @@ import './styles/gallery-background.css'
 import './styles/github-publish.css'
 
 import './styles/brand-logo.css'
+
+import './styles/site-identity.css'
+import './styles/studio-dock.css'
+import './styles/project-focus.css'
+import './styles/studio-polish.css'
