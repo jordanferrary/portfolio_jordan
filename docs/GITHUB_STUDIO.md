@@ -92,6 +92,21 @@ As variáveis CSS fundamentais são --jf-primary, --jf-secondary, --jf-backgroun
 
 O arquivo src/styles/creative-direction.css controla os novos efeitos visuais das páginas públicas: superfícies em profundidade, gradientes cromáticos, microinterações, transições e animações leves. Para acessibilidade, a preferência do sistema por movimento reduzido desativa essas animações.
 
+## Enquadramento artístico por projeto
+
+O editor de qualquer obra agora possui a aba **02 · Enquadramento**, entre Informações e Composição.
+
+- **Capa da galeria:** controla somente a imagem apresentada nos cards da página Portfólio.
+- **Banner do projeto:** controla somente a imagem horizontal no topo da página da obra.
+- **Horizontal / Vertical:** ajuste de 0 a 100% para definir a região visível; você também pode arrastar a imagem na prévia.
+- **Zoom:** ajuste preciso de 1× a 2,5×, mantendo a imagem original intacta.
+- **Centralizar:** restaura o ajuste desse contexto para 50% / 50% / 1×.
+- **Copiar ajustes:** transfere o enquadramento de um contexto para outro.
+
+Na aba **Informações**, use o atalho **Ajustar enquadramento da capa e do banner** para chegar diretamente aos controles.
+
+Os dois ajustes ficam no próprio projeto como coverFocus e heroFocus. Obras antigas usam o enquadramento central até que você decida alterá-lo. Salvar o projeto grava um rascunho local; somente **Publicar** envia os novos enquadramentos ao site público. As imagens originais não são recortadas nem substituídas.
+
 ## Segurança e limites
 
 - O PIN do Local Studio é apenas uma barreira visual. A proteção real da publicação exige autorização no GitHub.
