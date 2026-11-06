@@ -1,40 +1,114 @@
-/* Custom brand image and in-context editing action. */
-.sidebar .brand-wrap{position:relative;flex:0 0 auto;width:66px;height:70px;display:grid;place-items:center}
-.sidebar .brand-wrap>.brand{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-width:0;min-height:0;padding:5px;line-height:1;border:0;background:transparent;cursor:pointer}
-.sidebar .brand-wrap>.brand>span{letter-spacing:-6px;text-indent:-6px}
-.sidebar .brand-wrap .brand-logo{display:block;width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 0 12px #9e3fff63)}
-.sidebar .brand-wrap .brand-edit-button{
- position:absolute;z-index:5;right:-7px;bottom:3px;
+/* Brand editor: image scale and optional alternate image on hover. */
+.sidebar .brand-wrap{
+ position:relative;flex:0 0 auto;width:66px;height:70px;
  display:grid;place-items:center;
- width:27px;height:27px;padding:0;border-radius:50%;
- border:1px solid #b168e8;
- color:#f4dfff;background:#431568;
- box-shadow:0 3px 12px #06030ba8;
- cursor:pointer;
+}
+.sidebar .brand-wrap>.brand{
+ display:grid;place-items:center;width:100%;height:100%;
+ min-width:0;min-height:0;padding:5px;line-height:1;
+ border:0;background:transparent;cursor:pointer;overflow:visible;
+}
+.brand-logo-display{position:relative;isolation:isolate;overflow:visible}
+.brand-logo-display .brand-logo-layer{
+ position:absolute;inset:5px;
+ display:grid;place-items:center;pointer-events:none;
+ transform-origin:center;
+ transition:opacity .22s ease,transform .3s cubic-bezier(.2,.75,.25,1),filter .25s ease;
+}
+.brand-logo-display .brand-logo-normal{
+ opacity:1;transform:scale(var(--brand-size,1));
+}
+.brand-logo-display .brand-logo-hover{
+ opacity:0;transform:scale(var(--brand-size,1));
+}
+.brand-logo-display .brand-logo{display:block;width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 0 10px #a132ff65)}
+.brand-logo-display .brand-monogram{
+ display:block;line-height:1;color:#a33cff;
+ font-size:28px;font-weight:800;letter-spacing:-6px;
+ padding-right:6px;text-shadow:0 0 17px #9c2fff;
+}
+@media(hover:hover){
+ .brand-logo-display:not(.has-brand-hover):hover .brand-logo-normal,
+ .brand-logo-display.has-brand-hover:hover .brand-logo-hover{
+  opacity:1;transform:scale(var(--brand-hover-total,1.1));
+  filter:drop-shadow(0 0 8px #b246ff78);
+ }
+ .brand-logo-display.has-brand-hover:hover .brand-logo-normal{opacity:0}
+}
+.brand-logo-display:not(.has-brand-hover):focus-visible .brand-logo-normal,
+.brand-logo-display.has-brand-hover:focus-visible .brand-logo-hover,
+.brand-logo-preview-frame.brand-logo-display:not(.has-brand-hover)[data-preview-hover="true"] .brand-logo-normal,
+.brand-logo-preview-frame.brand-logo-display.has-brand-hover[data-preview-hover="true"] .brand-logo-hover{
+ opacity:1;transform:scale(var(--brand-hover-total,1.1));filter:drop-shadow(0 0 8px #b246ff78);
+}
+.brand-logo-display.has-brand-hover:focus-visible .brand-logo-normal,
+.brand-logo-preview-frame.brand-logo-display.has-brand-hover[data-preview-hover="true"] .brand-logo-normal{opacity:0}
+.sidebar .brand-wrap .brand-edit-button{
+ position:absolute;z-index:5;right:-7px;bottom:3px;display:grid;place-items:center;
+ width:27px;height:27px;padding:0;border-radius:50%;border:1px solid #b168e8;
+ color:#f4dfff;background:#431568;box-shadow:0 3px 12px #06030ba8;cursor:pointer;
 }
 .sidebar .brand-wrap .brand-edit-button:hover{background:#762caa}
 .brand-logo-editor{width:min(535px,100%)}
+.brand-logo-editor .editor-scroll{padding:22px 24px}
 .brand-logo-hint{font-size:13px;line-height:1.65;color:#c8afd9;margin:0 0 19px}
-.brand-logo-preview-surface{display:flex;align-items:center;gap:19px;padding:21px;border:1px solid #613c84;border-radius:18px;background:radial-gradient(circle at 15% 10%,#3a1553,#130a20 70%)}
-.brand-logo-preview-frame{width:94px;height:106px;flex:0 0 94px;display:flex;align-items:center;justify-content:center;padding:13px;border:1px solid #8b3dbd;border-radius:35px;background:#12091c;color:#af45f3;box-shadow:0 0 25px #7b28ce4a}
-.brand-logo-preview-frame img{display:block;width:100%;height:100%;object-fit:contain}
-.brand-logo-preview-frame span{font-size:29px;font-weight:800;letter-spacing:-6px;text-indent:-6px;text-shadow:0 0 18px #b339ff}
-.brand-logo-preview-copy{display:flex;flex-direction:column;gap:7px}
+.brand-logo-preview-surface{
+ display:flex;align-items:center;gap:20px;padding:21px;margin:0 0 22px;
+ border:1px solid #613c84;border-radius:18px;
+ background:radial-gradient(circle at 15% 10%,#3a1553,#130a20 70%);
+}
+.brand-logo-editor .brand-logo-preview-frame{
+ position:relative;overflow:visible;flex:0 0 94px;
+ width:94px;height:106px;padding:13px;
+ border:1px solid #8b3dbd;border-radius:35px;
+ background:#12091c;color:#af45f3;
+ box-shadow:0 0 25px #7b28ce4a;cursor:pointer;
+}
+.brand-logo-preview-frame .brand-logo-layer{inset:13px}
+.brand-logo-preview-frame .brand-monogram{font-size:29px}
+.brand-logo-preview-copy{display:flex;flex-direction:column;gap:7px;min-width:0}
 .brand-logo-preview-copy strong{color:#f2e1ff;font-size:15px}
 .brand-logo-preview-copy small{color:#b09ac4;line-height:1.5;font-size:11px}
-.brand-logo-actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:19px 0 13px}
-.brand-logo-actions .media-upload-button{display:inline-flex;flex-direction:row;align-items:center;gap:8px;background:#351a4b;border:1px solid #8550a8;border-radius:13px;padding:10px 12px;font-size:12px;cursor:pointer;margin:0}
+.brand-logo-preview-copy>span{display:inline-flex;align-items:center;gap:7px;font-size:11px;color:#d3a1ff}
+.brand-logo-slider-group{
+ padding:17px;margin-bottom:22px;border:1px solid #593776;
+ border-radius:16px;background:#1b102a;
+}
+.brand-logo-slider-label{display:flex!important;justify-content:space-between;align-items:center;flex-direction:row!important;margin:0 0 11px!important;color:#e2c9f4;font-size:13px}
+.brand-logo-slider-label b{font-size:14px;color:#deb2ff;font-variant-numeric:tabular-nums}
+.brand-logo-slider-group input[type="range"]{display:block;width:100%;accent-color:#aa43fa;cursor:pointer;margin:0}
+.brand-logo-scale-help{display:flex;justify-content:space-between;margin:4px 0 17px;color:#9b80b0;font-size:10px}
+.brand-logo-scale-help:last-child{margin-bottom:0}
+.brand-logo-image-section{padding:18px 0;border-top:1px solid #452b5e}
+.brand-logo-section-heading h3{font-size:14px;color:#f1dffe;margin:0 0 5px}
+.brand-logo-section-heading p{font-size:11px;color:#b4a0c8;line-height:1.6;margin:0}
+.brand-logo-actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:13px 0}
+.brand-logo-actions .media-upload-button{
+ display:inline-flex;flex-direction:row;align-items:center;gap:8px;margin:0;
+ background:#351a4b;border:1px solid #8550a8;border-radius:13px;padding:10px 12px;
+ font-size:12px;cursor:pointer;
+}
 .brand-logo-actions .media-upload-button input[type=file]{display:none}
-.brand-logo-reset{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;color:#cdb2df;background:transparent;border:1px solid #674485;border-radius:12px;font-size:12px}
+.brand-logo-reset{
+ display:inline-flex;align-items:center;gap:8px;padding:9px 11px;
+ color:#cdb2df;background:transparent;border:1px solid #674485;
+ border-radius:12px;font-size:12px;cursor:pointer;
+}
 .brand-logo-reset:hover{border-color:#bd80e6;color:#f8e9ff}
-.brand-logo-tip{display:flex;align-items:start;gap:10px;margin-top:18px;color:#a58fb8}
+.brand-logo-tip{display:flex;align-items:start;gap:10px;margin:0 0 17px;color:#a58fb8}
 .brand-logo-tip p{margin:0;font-size:11px;line-height:1.6}
 .brand-logo-tip svg{flex:0 0 17px}
 @media(max-width:600px){
  .sidebar .brand-wrap{width:40px;height:50px}
  .sidebar .brand-wrap>.brand{padding:3px}
- .sidebar .brand-wrap>.brand>span{font-size:21px}
+ .sidebar .brand-wrap .brand-logo-layer{inset:3px}
+ .sidebar .brand-wrap .brand-monogram{font-size:21px;letter-spacing:-5px;padding-right:5px}
  .sidebar .brand-wrap .brand-edit-button{width:22px;height:22px;right:-8px;bottom:0}
  .sidebar .brand-wrap .brand-edit-button svg{width:11px;height:11px}
- .brand-logo-preview-surface{padding:15px}
+ .brand-logo-preview-surface{padding:16px;gap:15px}
+ .brand-logo-editor .editor-scroll{padding:17px}
+ .brand-logo-preview-frame .brand-monogram{font-size:28px}
+}
+@media(prefers-reduced-motion:reduce){
+ .brand-logo-display .brand-logo-layer{transition:none}
 }
