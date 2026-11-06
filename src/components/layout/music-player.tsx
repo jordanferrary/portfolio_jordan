@@ -1,5 +1,5 @@
 import { useEffect,useRef,useState } from 'react'
-import { Check,Infinity as InfinityIcon,ListMusic,Music2,Pause,Play,SkipForward,X } from 'lucide-react'
+import { Check,Infinity as InfinityIcon,ListMusic,Pause,Play,SkipForward,X } from 'lucide-react'
 import type { MusicTrack } from '../../data/studio'
 import { useAssetSrc,AssetImage } from '../ui/asset-image'
 export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
