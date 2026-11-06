@@ -21,7 +21,7 @@ import { GitHubPublishEditor } from './components/sections/github-publish-editor
 import { SiteIdentityEditor } from './components/sections/site-identity-editor'
 import { StudioDock,type StudioAction } from './components/sections/studio-dock'
 import type { Project } from './data/projects'
-function route(){const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':(['inicio','portfolio','sobre','contato'].includes(part)?part:'inicio')}
+function route():Page|'project'{const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':(['inicio','portfolio','sobre','contato'].includes(part)?part as Page:'inicio')}
 export function App(){
  const [page,setPage]=useState(route)
  const [previewId,setPreviewId]=useState<string|null>(null)
