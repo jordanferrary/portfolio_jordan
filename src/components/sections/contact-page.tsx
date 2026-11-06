@@ -18,9 +18,9 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
  const [sending,setSending]=useState(false)
  const [error,setError]=useState('')
  const [sent,setSent]=useState<'remote'|'demo'|null>(null)
- const mailFallback=socials.map(s=>safeSocialUrl(s.url)).find(url=>url?.startsWith('mailto:'))
- const previewMode=!contactApi&&demoEnabled
- const canSend=!!contactApi||demoEnabled||!!mailFallback
+ // Without a backend, GitHub Pages offers a clearly labelled same-browser demo.
+ const previewMode=!contactApi
+ const canSend=true
  const setFilesSafely=(incoming:File[])=>{
   const next=[...files,...incoming]
   const validation=validateAttachments(next)
@@ -40,14 +40,6 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
   const validation=validateAttachments(settings.allowAttachments?files:[])
   if(validation){setError(validation);return}
   const payload={name:name.trim(),email:email.trim(),interests:selected,message:message.trim(),website,avatar:settings.allowAvatar?(avatar||undefined):undefined}
-  if(!contactApi&&!demoEnabled){
-   if(mailFallback){
-    const subject='Contato pelo portfólio - '+(name.trim()||'Novo cliente')
-    const body=['Nome: '+(name.trim()||'Não informado'),'E-mail: '+email.trim(),'Interesses: '+selected.join(', '),'Mensagem:',message.trim()].join('\n')
-    window.location.href=mailFallback+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body)
-   }
-   return
-  }
   setSending(true);setError('')
   try{
    if(contactApi){await sendContact(payload,settings.allowAttachments?files:[]);setSent('remote')}
@@ -66,7 +58,7 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
   <section className="contact-chat-panel" aria-label="Enviar mensagem sobre seu projeto">
    <div className="contact-chat-head"><span className="contact-chat-icon"><MessageCircle size={22}/></span><div><strong>New conversation</strong><small>Vamos conversar sobre o seu projeto</small></div><span className="contact-chat-spark">✦</span></div>
    <div className="contact-bubble">{settings.greeting}</div>
-   {sent?<div className="contact-success" role="status"><CheckCircle2 size={25}/><h2>{sent==='remote'?'Mensagem enviada!':'Teste registrado!'}</h2><p>{sent==='remote'?'Sua solicitação chegou à caixa de entrada.':'Esta mensagem foi salva apenas neste navegador. Abra o sininho do Local Studio para conferir.'}</p><button type="button" onClick={()=>setSent(null)}>Enviar outra mensagem</button></div>:<form onSubmit={event=>void submit(event)}>
+   {sent?<div className="contact-success" role="status"><CheckCircle2 size={25}/><h2>{sent==='remote'?'Mensagem enviada!':'Teste registrado!'}</h2><p>{sent==='remote'?'Sua solicitação chegou à caixa de entrada.':'Mensagem salva somente neste navegador. Ative o modo dev e abra o sininho para conferir.'}</p><button type="button" onClick={()=>setSent(null)}>Enviar outra mensagem</button></div>:<form onSubmit={event=>void submit(event)}>
     <div className="contact-form-row"><label>Nome (opcional)<input maxLength={90} value={name} onChange={e=>setName(e.target.value)} placeholder="Como posso chamar você?"/></label><label>E-mail para resposta<input required type="email" maxLength={150} value={email} onChange={e=>setEmail(e.target.value)} placeholder="seuemail@exemplo.com"/></label></div>
     {settings.allowAvatar&&<div className="contact-avatar-field"><div className="contact-avatar-preview">{avatar?<img src={avatar} alt="Foto de perfil escolhida"/>:<ImagePlus size={21}/>}</div><div><b>Foto do contato <small>(opcional)</small></b><p>Se quiser, adicione uma foto para identificar sua mensagem.</p><div className="contact-avatar-actions"><label className="contact-avatar-upload">Adicionar foto<input type="file" accept="image/png,image/jpeg,image/webp" disabled={avatarBusy} onChange={e=>{const file=e.target.files?.[0];if(file)void handleAvatar(file);e.target.value=''}}/></label>{avatar&&<button type="button" onClick={()=>setAvatar('')} aria-label="Remover foto"><Trash2 size={14}/>Remover</button>}</div>{avatarBusy&&<small className="contact-avatar-loading">Preparando imagem...</small>}</div></div>}
     <fieldset><legend>Qual tipo de projeto interessa a você?</legend><div className="contact-chips">{settings.interestOptions.map(item=><button key={item} type="button" className={selected.includes(item)?'selected':''} aria-pressed={selected.includes(item)} onClick={()=>setSelected(v=>v.includes(item)?v.filter(x=>x!==item):[...v,item])}>{item}</button>)}</div></fieldset>
@@ -74,9 +66,9 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
     {settings.allowAttachments&&<div className="contact-attachments"><div className="contact-attachments-head"><Paperclip size={16}/><span>Referências para orçamento <small>(opcional)</small></span></div><label className="contact-attach-action"><Paperclip size={15}/>Adicionar arquivos<input type="file" multiple accept=".png,.jpg,.jpeg,.webp,.pdf,image/png,image/jpeg,image/webp,application/pdf" onChange={e=>{setFilesSafely(Array.from(e.target.files??[]));e.target.value=''}}/></label><span className="contact-attachment-note">Até 3 arquivos JPG, PNG, WEBP ou PDF. Máximo de 8 MB no total.</span>{files.length>0&&<div className="contact-file-list">{files.map((file,i)=><div className="contact-file" key={file.name+'-'+i}><Paperclip size={14}/><span title={file.name}>{file.name}</span><small>{(file.size/1024/1024).toFixed(1)} MB</small><button type="button" aria-label={'Remover '+file.name} onClick={()=>setFiles(v=>v.filter((_,n)=>i!==n))}><X size={14}/></button></div>)}</div>}</div>}
     <label className="contact-honeypot" aria-hidden="true" tabIndex={-1}>Website<input tabIndex={-1} autoComplete="off" value={website} onChange={e=>setWebsite(e.target.value)}/></label>
     {error&&<p role="alert" className="contact-form-error">{error}</p>}
-    {previewMode&&<p className="contact-preview-note"><CheckCircle2 size={13}/>Prévia local: as mensagens de teste aparecem no sininho deste navegador.</p>}
-    <button className="contact-send-button" type="submit" disabled={!canSend||sending||avatarBusy}>{sending?'Enviando...':contactApi||previewMode?'Enviar mensagem':mailFallback?'Abrir e-mail':'Contato pelas redes'} <Send size={17}/></button>
-    <p className="contact-privacy-note">{canSend?'Seus dados serão usados apenas para identificar o contato e responder ao pedido.':'Use um dos links de contato acima para falar sobre seu projeto.'}</p>
+    {previewMode&&<p className="contact-preview-note"><CheckCircle2 size={13}/>Teste local: a mensagem não é enviada pela internet. Abra o sininho no modo dev para visualizá-la.</p>}
+    <button className="contact-send-button" type="submit" disabled={!canSend||sending||avatarBusy}>{sending?'Enviando...':previewMode?'Enviar teste':'Enviar mensagem'} <Send size={17}/></button>
+    <p className="contact-privacy-note">{canSend?'Seus dados serão usados para identificar sua solicitação e responder ao contato.':'Use um dos links de contato acima para falar sobre seu projeto.'}</p>
    </form>}
   </section>
  </main>
