@@ -29,7 +29,7 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
  useEffect(()=>{if(audio.current){audio.current.volume=volume/100;audio.current.muted=volume===0}try{localStorage.setItem('jf-music-volume',String(volume))}catch{/* storage unavailable */}},[volume])
  const tryPlay=()=>{
   const player=audio.current
-  if(!pendingPlay.current||!player||!source||player.readyState<HTMLMediaElement.HAVE_CURRENT_DATA)return
+  if(!pendingPlay.current||!player||!source||player.readyState<2)return
   // Await actual media readiness. An immediate play() during a source change
   // can reject with AbortError; clearing the intent there previously broke next-track.
   void player.play().then(()=>{pendingPlay.current=false}).catch((reason:unknown)=>{
