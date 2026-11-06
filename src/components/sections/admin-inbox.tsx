@@ -1,7 +1,7 @@
 import {useCallback,useEffect,useState,type FormEvent} from 'react'
 import {Bell,CheckCheck,Download,Inbox,KeyRound,Paperclip,RefreshCw,Trash2,X} from 'lucide-react'
 import {contactApi,deleteMessage,getRemoteAttachment,listMessages,markMessage,unreadCount,type ContactMessage,type AttachmentInfo} from '../../lib/contact-api'
-import {demoUnreadCount,getDemoAttachment,listDemoMessages,observeDemoChanges,removeDemoMessage,setDemoMessageRead} from '../../lib/contact-demo'
+import {getDemoAttachment,listDemoMessages,observeDemoChanges,removeDemoMessage,setDemoMessageRead} from '../../lib/contact-demo'
 
 function ContactAvatar({message,large=false}:{message:ContactMessage;large?:boolean}){
  const name=(message.name.trim()||message.email.split('@')[0]||'?')
