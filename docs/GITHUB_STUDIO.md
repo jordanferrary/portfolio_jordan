@@ -44,6 +44,37 @@ Os arquivos de mídia são identificados por SHA-256. O sistema reutiliza os arq
 
 Versões antigas priorizavam rascunhos guardados no localStorage. Quem editasse no modo dev poderia ver seus próprios projetos e músicas antigos em vez da versão pública. A partir desta atualização, o modo visitante ignora o rascunho e sempre lê o conteúdo incluído no build do GitHub Pages; não é um problema de cookies. Quem estiver com o Studio desbloqueado pode continuar vendo seu rascunho até bloqueá-lo.
 
+## Local Studio 3.0 — área de trabalho organizada
+
+O modo de edição apresenta uma única barra flutuante com ações organizadas:
+- **Editar página:** ação contextual para Home, Galeria, Sobre, Contato ou o projeto aberto.
+- **Novo projeto:** cria uma obra, independentemente da página atual.
+- **Ferramentas:** central dividida em Páginas, Projetos, Conteúdo, Identidade e Gerenciamento.
+- **Publicar:** utiliza a mesma autorização GitHub por token temporário.
+- **Bloquear:** encerra a edição sem apagar seus rascunhos.
+
+Quando o editor de projeto abre, a página pública é ocultada por um fundo sólido. O workspace ocupa a tela e separa Informações, Composição, Processo, Categorias e Arquivos. Salvar continua sendo local até o próximo envio pelo GitHub Studio.
+
+## Prévia de link e favicon
+
+Em **Ferramentas > Identidade > Favicon e link**, você pode:
+- Editar o título e a descrição do cartão compartilhado, em inglês.
+- Conferir uma simulação do cartão de compartilhamento.
+- Trocar o favicon por uma imagem da biblioteca ou por upload quadrado.
+- Abrir o editor da Home para substituir o banner usado na prévia do link.
+
+Ao publicar pelo GitHub Studio, o mesmo GitHub Actions:
+1. Lê a imagem de fundo da Home do conteúdo público.
+2. Gera social-preview.jpg em **1200 x 630 pixels**, com enquadramento central.
+3. Gera ícones PNG em **16, 32 e 180 pixels** quando há favicon personalizado; senão mantém o JF original.
+4. Inclui no HTML inicial as tags estáticas **Open Graph** e **Twitter Card**, com links absolutos e versão que muda a cada publicação.
+
+As plataformas de mensagem consultam o HTML antes de executar o React, por isso as tags são produzidas no build. **Alguns aplicativos guardam prévias em cache e podem demorar para atualizá-las**, mesmo após uma publicação bem-sucedida.
+
+O script de imagens está em scripts/build_site_identity.py, utiliza Pillow no workflow do GitHub e não exige Cloudflare, R2 ou servidor adicional. O banner deve ser importado para a biblioteca do site ou estar hospedado nos arquivos públicos do próprio repositório. URLs de imagens de outros domínios não são baixadas automaticamente pelo workflow.
+
+**Domínio personalizado:** ao trocar de domínio, configure PUBLIC_SITE_URL como URL HTTPS pública do site, com barra final, e ajuste o base do Vite se necessário. O valor padrão é https://jordanferrary.github.io/portfolio_jordan/.
+
 ## Segurança e limites
 
 - O PIN do Local Studio é apenas uma barreira visual. A proteção real da publicação exige autorização no GitHub.
