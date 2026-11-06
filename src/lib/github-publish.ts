@@ -1,6 +1,7 @@
 import type { PortfolioStore } from '../hooks/use-portfolio'
 import { isLocalMedia,readMedia } from './media-store'
 import { isKnownDemoTestimonial } from './testimonial-safety'
+import {resolvePublishedAsset} from './published-assets'
 
 /**
  * Browser-only GitHub publishing.
@@ -86,6 +87,7 @@ function stageSnapshot(store:PortfolioStore){
  // Publish only explicitly approved public content, never incidental UI state.
  // Deep clone so the form keeps local media previews during deployment.
  const publicData:PortfolioStore={
+  imageVariants:store.imageVariants??{},
   projects:store.projects,
   categories:store.categories,
   home:store.home,
@@ -137,24 +139,63 @@ export async function publishPortfolioToGitHub(
  const pending=new Map<string,Blob>()
  const refCache=new Map<string,string>()
  let totalBytes=0
- async function stage(value:string|undefined,kind:Kind):Promise<string>{
-  if(!value||!isLocalMedia(value))return value??''
-  const cached=refCache.get(value)
-  if(cached)return cached
-  const blob=await readMedia(value)
-  if(!blob)throw new Error('Um arquivo do Studio não foi encontrado neste navegador ('+value.split('/').pop()+'). Importe-o novamente antes de publicar.')
-  const ext=extension(value,blob,kind)
+ async function stageBlob(blob:Blob,kind:Kind):Promise<string>{
+  const ext=extension('',blob,kind)
   const sha=await fingerprint(blob)
   const relative=(kind==='audio'?'audio':'images')+'/studio/'+sha+'.'+ext
   const filePath='public/'+relative
-  const reference='site://'+relative
   if(!existing.has(filePath)&&!pending.has(filePath)){
    totalBytes+=blob.size
    if(totalBytes>MAX_NEW_MEDIA_BYTES)throw new Error('Os arquivos novos excedem 80 MB. Publique em lotes menores ou compacte as mídias.')
    pending.set(filePath,blob)
   }
-  refCache.set(value,reference)
-  return reference
+  return 'site://'+relative
+ }
+ async function createVariants(reference:string,blob:Blob):Promise<void>{
+  if(snapshot.imageVariants[reference]||!blob.type.startsWith('image/'))return
+  if(typeof createImageBitmap!=='function')return
+  let bitmap:ImageBitmap
+  try{bitmap=await createImageBitmap(blob)}catch{return}
+  const width=bitmap.width,height=bitmap.height
+  bitmap.close()
+  if(Math.max(width,height)<=1100)return
+  onProgress('Gerando miniaturas WebP para a galeria e páginas dos projetos...')
+  const {optimizeImage}=await import('./image-optimize')
+  const original=new File([blob],'artwork.webp',{type:blob.type})
+  const small=await optimizeImage(original,{maxDimension:480,quality:.76})
+  const medium=await optimizeImage(original,{maxDimension:960,quality:.80})
+  const [smallRef,mediumRef]=await Promise.all([stageBlob(small,'image'),stageBlob(medium,'image')])
+  snapshot.imageVariants[reference]={
+   small:smallRef,
+   smallWidth:Math.max(1,Math.round(width*Math.min(1,480/Math.max(width,height)))),
+   medium:mediumRef,
+   mediumWidth:Math.max(1,Math.round(width*Math.min(1,960/Math.max(width,height)))),
+   largeWidth:width
+  }
+ }
+ async function stage(value:string|undefined,kind:Kind):Promise<string>{
+  if(!value)return ''
+  if(isLocalMedia(value)){
+   const cached=refCache.get(value)
+   if(cached)return cached
+   const blob=await readMedia(value)
+   if(!blob)throw new Error('Um arquivo do Studio não foi encontrado neste navegador ('+value.split('/').pop()+'). Importe-o novamente antes de publicar.')
+   const reference=await stageBlob(blob,kind)
+   refCache.set(value,reference)
+   if(kind==='image')await createVariants(reference,blob)
+   return reference
+  }
+  // Older already-published artwork can receive responsive versions at the next publication.
+  // Fetch only assets hosted by this site, never arbitrary external image URLs.
+  const ownSite=value.startsWith('site://images/studio/')||value.startsWith(import.meta.env.BASE_URL+'images/')
+  if(kind==='image'&&ownSite&&!snapshot.imageVariants[value]&&!refCache.has(value)){
+   refCache.set(value,value)
+   try{
+    const response=await fetch(resolvePublishedAsset(value),{credentials:'omit'})
+    if(response.ok)await createVariants(value,await response.blob())
+   }catch{/* Legacy or unavailable assets retain the original and continue publishing. */}
+  }
+  return value
  }
  onProgress('Preparando os projetos, capas, artes e trilhas...')
  for(const project of snapshot.projects){
