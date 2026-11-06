@@ -132,10 +132,10 @@ export function mediaRefs(projects:{image:string;blocks:{media?:string;after?:st
  return [...all].filter(isLocalMedia)
 }
 export async function saveUploadedAudio(file:File):Promise<string>{
- const valid=['audio/mpeg','audio/mp3','audio/wav','audio/x-wav','audio/ogg']
- if(!valid.includes(file.type)&&!/\.(mp3|wav|ogg)$/i.test(file.name))throw new Error('Envie MP3, WAV ou OGG.')
+ const valid=['audio/mpeg','audio/mp3','audio/wav','audio/x-wav','audio/ogg','audio/mp4','audio/x-m4a','audio/m4a']
+ if(!valid.includes(file.type)&&!/\.(mp3|wav|ogg|m4a)$/i.test(file.name))throw new Error('Envie MP3, WAV, OGG ou M4A.')
  if(file.size>25_000_000)throw new Error('Áudio acima de 25 MB; compacte antes de adicionar.')
- const ext=file.name.toLowerCase().match(/\.(mp3|wav|ogg)$/)?.[1]??'mp3'
+ const ext=file.name.toLowerCase().match(/\.(mp3|wav|ogg|m4a)$/)?.[1]??(file.type.includes('m4a')||file.type==='audio/mp4'?'m4a':'mp3')
  const ref='media://music/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext
  await saveMediaBlob(ref,file)
  return ref

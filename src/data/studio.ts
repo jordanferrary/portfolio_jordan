@@ -1,6 +1,14 @@
 import type { Project } from './projects'
 export interface Testimonial { id:string; author:string; role:string; quote:string }
 export interface MusicTrack { id:string; title:string; artist:string; src:string; cover?:string }
+export type SocialIcon = 'github'|'instagram'|'behance'|'youtube'|'linkedin'|'twitter'|'facebook'|'twitch'|'dribbble'|'discord'|'tiktok'|'pinterest'|'reddit'|'artstation'|'globe'|'mail'|'custom'
+export interface SocialLink { id:string; label:string; url:string; icon:SocialIcon; iconImage?:string }
+export const socialIconOptions:SocialIcon[]=['github','instagram','behance','youtube','linkedin','twitter','facebook','twitch','dribbble','discord','tiktok','pinterest','reddit','artstation','globe','mail','custom']
+export const defaultSocialLinks:SocialLink[]=[
+ {id:'github',label:'GitHub',url:'https://github.com/jordanferrary',icon:'github'},
+ {id:'behance',label:'Behance',url:'',icon:'behance'},
+ {id:'instagram',label:'Instagram',url:'https://www.instagram.com/jordan_.ferrary/',icon:'instagram'}
+]
 export interface HomeContent {
  eyebrow:string
  titleFirst:string
