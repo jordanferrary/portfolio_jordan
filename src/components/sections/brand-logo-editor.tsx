@@ -1,5 +1,5 @@
 import { useState,type CSSProperties } from 'react'
-import { Eye, ImagePlus, MousePointer2, RotateCcw, Save, Upload, X } from 'lucide-react'
+import { Eye, MousePointer2, RotateCcw, Save, Upload, X } from 'lucide-react'
 import type { PortfolioStore } from '../../hooks/use-portfolio'
 import { AssetImage } from '../ui/asset-image'
 import { AssetClipButton } from '../ui/asset-picker'
