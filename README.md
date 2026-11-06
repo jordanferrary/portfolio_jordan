@@ -119,3 +119,16 @@ O frame de Home foi reproduzido a partir do screenshot anexado. A arte original 
 
 ### Envio alternativo enquanto o backend não é ativado
 É possível adicionar a rede social **E-mail** com um endereço `mailto:seu-email@dominio.com` em **Local Studio → Redes sociais**. Se a API de mensagens ainda não estiver configurada, o formulário poderá abrir o aplicativo de e-mail do visitante com nome, e-mail, interesses e texto preenchidos. O visitante ainda deve confirmar o envio no próprio aplicativo; fotos opcionais não são anexadas nesse modo e não aparecem no sininho. A caixa de entrada do site exige a API/D1 para trabalhar entre dispositivos.
+
+
+## Fluxo de aprovação no GitHub Pages (modo de teste)
+
+O GitHub Pages está acessível publicamente pelo link de testes, mesmo que o portfólio comercial ainda não tenha sido lançado. As mudanças feitas em **Local Studio** são salvas apenas no navegador atual; não publicam arquivos nem alteram o GitHub automaticamente.
+
+- **Testar mensagens sem backend:** abra `/#/contato`, desbloqueie o Local Studio, preencha o formulário e clique em **Enviar mensagem**. Aparecerá a confirmação **Teste registrado**. Abra o sininho no canto inferior direito para ver a mensagem, foto de perfil opcional e anexos. Não é necessário digitar token adicional nesse modo de teste. As mensagens ficam no IndexedDB da origem `jordanferrary.github.io` e podem ser excluídas na caixa de entrada; não são transmitidas a outros navegadores.
+- **Testar anexos:** até 3 arquivos JPG/PNG/WEBP/PDF, no máximo 4 MB cada e 8 MB no total. Os arquivos podem ser baixados pelo painel de mensagens. Não ficam no ZIP do portfólio, pois representam testes de contato e não assets públicos.
+- **Personalizar o contato:** Local Studio → **Editar Contato**. Permite adicionar, editar, remover e reordenar opções de serviço; personalizar o texto inicial e ativar ou desativar fotos de perfil e anexos.
+- **Priorizar a galeria:** entre no Local Studio e arraste os cards da página Portfólio ou use as setas que surgem nos projetos. A ordem é persistida no armazenamento local e exportada com os dados do portfólio. Os primeiros projetos da lista são mantidos no topo do layout Pinterest; o restante continua balanceado em colunas de alturas variadas.
+- **Visitantes fora do modo de edição:** enquanto não houver backend, não há confirmação falsa de envio. Se um endereço `mailto:` estiver configurado nas redes, o formulário pode abrir o aplicativo de e-mail do visitante; caso contrário, o contato é direcionado aos links sociais.
+
+**Contato real:** o Worker em `server/likes-worker` já possui a API de mensagens, metadados em D1 e armazenamento privado de anexos em R2. Para ativar envios entre dispositivos, precisa ser implantado com banco, bucket, segredos e `VITE_CONTACT_API_URL`. O PIN do Studio é adequado à prévia local, mas não é autenticação segura para ler mensagens de outras pessoas em um servidor.
