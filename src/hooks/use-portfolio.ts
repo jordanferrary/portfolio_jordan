@@ -2,7 +2,7 @@ import { useCallback,useState } from 'react'
 import JSZip from 'jszip'
 import { initialProjects, starterCategories, type Project, type Category } from '../data/projects'
 import {defaultHome,defaultMusicTracks,defaultTestimonials,type HomeContent,type Testimonial,type MusicTrack} from '../data/studio'
-import { mediaKey,mediaRefs,readMedia,saveMediaBlob,isLocalMedia } from '../lib/media-store'
+import { mediaKey,mediaRefs,readMedia,saveMediaBlob,isLocalMedia,listMediaAssets,saveCatalogItems,type LibraryAsset } from '../lib/media-store'
 const KEY='jordan-portfolio-local-v2'
 export interface PortfolioStore {projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[]}
 function migrateLegacyImage(src:string):string{
@@ -33,7 +33,7 @@ function refsFor(store:PortfolioStore):string[]{
  const refs=new Set(mediaRefs(store.projects,store.categories))
  if(isLocalMedia(store.home.avatar))refs.add(store.home.avatar)
  if(isLocalMedia(store.home.background))refs.add(store.home.background)
- for(const t of store.musicTracks)if(isLocalMedia(t.src))refs.add(t.src)
+ for(const t of store.musicTracks){if(isLocalMedia(t.src))refs.add(t.src);if(t.cover&&isLocalMedia(t.cover))refs.add(t.cover)}
  return [...refs]
 }
 export function usePortfolio(){
@@ -49,8 +49,11 @@ export function usePortfolio(){
  const exportData=async()=>{
   const zip=new JSZip()
   zip.file('portfolio.json',JSON.stringify(store,null,2))
-  zip.file('LEIA-ME.txt','Backup do Studio: projetos, depoimentos, configuracoes da Home, trilhas e midias locais. Importar restaura neste navegador; nao publica no GitHub.')
-  for(const ref of refsFor(store)){
+  zip.file('LEIA-ME.txt','Backup do Studio: projetos, depoimentos, configuracoes da Home, trilhas e biblioteca de midias sem duplicacao. Importar restaura neste navegador; nao publica no GitHub.')
+  const catalog=await listMediaAssets()
+  zip.file('media-library.json',JSON.stringify(catalog,null,2))
+  const allRefs=new Set([...refsFor(store),...catalog.filter(a=>isLocalMedia(a.ref)).map(a=>a.ref)])
+  for(const ref of allRefs){
    const blob=await readMedia(ref)
    if(blob)zip.file('public/assets/'+mediaKey(ref),blob)
   }
@@ -66,10 +69,14 @@ export function usePortfolio(){
   const manifest=zip.file('portfolio.json')
   if(!manifest)throw new Error('portfolio.json não encontrado.')
   const parsed=parseStore(JSON.parse(await manifest.async('string')) as unknown)
-  for(const ref of refsFor(parsed)){
+  const catalogFile=zip.file('media-library.json')
+  const catalog:LibraryAsset[]=catalogFile?JSON.parse(await catalogFile.async('string')) as LibraryAsset[]:[]
+  const allRefs=new Set([...refsFor(parsed),...catalog.filter(a=>isLocalMedia(a.ref)).map(a=>a.ref)])
+  for(const ref of allRefs){
    const item=zip.file('public/assets/'+mediaKey(ref))??zip.file('public/images/'+mediaKey(ref))
    if(item)await saveMediaBlob(ref,await item.async('blob'))
   }
+  if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
  return {...store,saveError,update,remove,setCategories,setHome,setTestimonials,setMusicTracks,exportData,importData}

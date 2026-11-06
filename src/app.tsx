@@ -8,6 +8,7 @@ import { AdminGate } from './components/sections/admin-gate'
 import { HomePage } from './components/sections/home-page'
 import { HomeEditor } from './components/sections/home-editor'
 import { AssetImage } from './components/ui/asset-image'
+import { AssetLibraryProvider } from './components/ui/asset-picker'
 import { usePortfolio } from './hooks/use-portfolio'
 import type { Project } from './data/projects'
 function route(){const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':(['inicio','portfolio','sobre','contato'].includes(part)?part:'inicio')}
@@ -29,7 +30,7 @@ export function App(){
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
- return <div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks}/><div className="site-main"><div className="socials"><a href="https://github.com/jordanferrary" aria-label="GitHub" target="_blank" rel="noreferrer"><Github size={20}/></a><a href="https://www.behance.net/" aria-label="Behance" target="_blank" rel="noreferrer">Bē</a><a href="https://www.instagram.com/jordan_.ferrary/" aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram size={20}/></a></div>
+ return <AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} tracks={portfolio.musicTracks}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks}/><div className="site-main"><div className="socials"><a href="https://github.com/jordanferrary" aria-label="GitHub" target="_blank" rel="noreferrer"><Github size={20}/></a><a href="https://www.behance.net/" aria-label="Behance" target="_blank" rel="noreferrer">Bē</a><a href="https://www.instagram.com/jordan_.ferrary/" aria-label="Instagram" target="_blank" rel="noreferrer"><Instagram size={20}/></a></div>
  {page==='portfolio'&&<Gallery projects={portfolio.projects} categories={portfolio.categories} selected={preview} onPreview={p=>setPreviewId(p.id)} onClosePreview={()=>setPreviewId(null)} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor}/>}
  {page==='project'&&project&&<ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)}/>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
@@ -42,5 +43,5 @@ export function App(){
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
  {homeEditorOpen&&<HomeEditor home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
  {editor!==undefined&&<AdminEditor key={editor?.id??'new'} project={editor} projects={portfolio.projects} categories={portfolio.categories} onSave={portfolio.update} onDelete={portfolio.remove} onClose={()=>setEditor(undefined)} onCategories={portfolio.setCategories} onExport={portfolio.exportData} onImport={portfolio.importData}/>}
- </div>
+ </div></AssetLibraryProvider>
 }
