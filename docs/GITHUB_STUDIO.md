@@ -107,6 +107,18 @@ Na aba **Informações**, use o atalho **Ajustar enquadramento da capa e do bann
 
 Os dois ajustes ficam no próprio projeto como coverFocus e heroFocus. Obras antigas usam o enquadramento central até que você decida alterá-lo. Salvar o projeto grava um rascunho local; somente **Publicar** envia os novos enquadramentos ao site público. As imagens originais não são recortadas nem substituídas.
 
+## Página Contato — comunicação pelas redes
+
+A página Contato deixou de apresentar formulário de nome, e-mail ou mensagens. As pessoas visitantes encontram os perfis sociais **que já estão publicados e possuem URL válida**. O primeiro perfil é destacado, mas todos os botões levam diretamente à plataforma externa correspondente. Não há simulador de mensagem nem caixa de entrada no site.
+
+Em **Ferramentas > Páginas > Contato** você pode:
+- Editar em inglês os textos de apresentação e o convite à conexão.
+- Adicionar, editar e reordenar os links das redes sociais; a primeira ganha destaque.
+- Escolher ícones de plataforma ou adicionar ícones próprios.
+- Salvar a página como rascunho e publicar as mudanças usando o mesmo GitHub Studio.
+
+O editor de redes sociais é compartilhado entre o Contato, a Home e o topo do portfólio. Perfis sem URL válida não aparecem na página Contato. O método não requer APIs, banco de dados ou hospedagem de e-mail. A resposta às mensagens acontece na própria plataforma social.
+
 ## Segurança e limites
 
 - O PIN do Local Studio é apenas uma barreira visual. A proteção real da publicação exige autorização no GitHub.
