@@ -37,3 +37,13 @@ export function mediaRefs(projects:{image:string;blocks:{media?:string;after?:st
  for(const c of categories)if(c.image)all.add(c.image)
  return [...all].filter(isLocalMedia)
 }
+
+export async function saveUploadedAudio(file:File):Promise<string>{
+ const valid=['audio/mpeg','audio/mp3','audio/wav','audio/x-wav','audio/ogg']
+ if(!valid.includes(file.type) && !/\.(mp3|wav|ogg)$/i.test(file.name))throw new Error('Envie um arquivo MP3, WAV ou OGG.')
+ if(file.size>25_000_000)throw new Error('Áudio acima de 25 MB; compacte antes de adicionar.')
+ const suffix=file.name.toLowerCase().match(/\.(mp3|wav|ogg)$/)?.[1]??'mp3'
+ const ref='media://music/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+suffix
+ await saveMediaBlob(ref,file)
+ return ref
+}

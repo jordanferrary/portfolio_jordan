@@ -1,8 +1,9 @@
 export type BlockType = 'heading' | 'text' | 'image' | 'image-left' | 'image-right' | 'before-after' | 'gallery'
 export type Block = { id:string; type:BlockType; content:string; media?:string; after?:string; gallery?:string[] }
+export type ProcessStep = { id:string; label:string; image:string }
 export type CategoryIcon = 'user'|'mountain'|'box'|'sparkles'|'grid'|'palette'|'film'|'brush'|'shapes'
 export type Category = { id:string; label:string; icon:CategoryIcon; image?:string }
-export type Project = { id:string;title:string;category:string;year:string;image:string;description:string;tools:string[];featured:boolean;blocks:Block[] }
+export type Project = { id:string;title:string;category:string;year:string;image:string;description:string;tools:string[];featured:boolean;blocks:Block[];processSteps?:ProcessStep[] }
 export const imageUrl = (name:string)=>import.meta.env.BASE_URL+'images/'+name
 const sample=(id:string,title:string,category:string,year:string,image:string,description:string,tools:string[],featured:boolean):Project=>({
  id,title,category,year,image:imageUrl('projects/'+id+'/'+image),description,tools,featured,
