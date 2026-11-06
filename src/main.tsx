@@ -44,3 +44,5 @@ import './styles/theme-palette-editor.css'
 import './styles/portfolio-review.css'
 
 import './styles/project-framing.css'
+
+import './styles/contact-social.css'
