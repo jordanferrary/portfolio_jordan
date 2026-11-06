@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-06T09:04:30.578Z-219c2fee-d1c2-4b34-8421-3e56203db9a1",
+  "revision": "2026-11-06T09:19:00.092Z-e7a3084b-04cf-4d5a-93a6-7c13d9023e76",
   "store": {
     "projects": [
       {
@@ -138,7 +138,7 @@
       {
         "id": "review-mw4qyb1q",
         "author": "Ash Ketchum",
-        "role": "text",
+        "role": "",
         "quote": "\"Jordan’s work is absolutely electrifying! The level of energy and battle arena detail is incredible!\""
       },
       {
