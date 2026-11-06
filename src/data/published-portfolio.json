@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-06T07:04:45.618Z-da1572cb-1cc9-471d-a5a3-3ee2dba6c576",
+  "revision": "2026-11-06T07:34:27.101Z-68a8e9be-2d93-4e82-9fbd-f9f31d88bac7",
   "store": {
     "projects": [
       {
@@ -394,8 +394,8 @@
       "titleFirst": "The artist\nbehind the",
       "titleSecond": "worlds.",
       "introduction": "I'm Jordan Ferrary, a 3D artist focused on bringing ideas to life through art, modeling and creativity.",
-      "avatar": "/portfolio_jordan/images/profile/avatar.webp",
-      "background": "/portfolio_jordan/images/hero/hero-character.webp",
+      "avatar": "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg",
+      "background": "site://images/studio/5f5db0accc8c625c55ac22172769e03bc4e723816e5990a9a33e0ded87341807.webp",
       "available": true,
       "aboutTagline": "Turning imagination into reality.",
       "specialties": [
@@ -436,15 +436,9 @@
     ],
     "socialLinks": [
       {
-        "id": "github",
-        "label": "GitHub",
-        "url": "https://github.com/jordanferrary",
-        "icon": "github"
-      },
-      {
         "id": "behance",
         "label": "Behance",
-        "url": "",
+        "url": "https://www.behance.net/jordanferrary",
         "icon": "behance"
       },
       {
@@ -461,7 +455,7 @@
       "titleAccent": "A creative vision.",
       "name": "Jordan Ferrary",
       "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in dignissim justo. Praesent et finibus lorem, a facilisis ante. Morbi non suscipit sem. Sed vel feugiat est. Etiam eget eros purus. Aliquam pretium, odio nec sagittis fermentum, elit ante venenatis eros, non gravida velit purus sed lacus. Nam bibendum non purus in porttitor. Morbi pharetra libero ut fringilla efficitur. In imperdiet cursus purus, et hendrerit lorem bibendum id. Integer auctor id libero sit amet fringilla. Nullam efficitur imperdiet nulla in sollicitudin. Curabitur vehicula orci sit amet turpis vulputate, in placerat diam placerat. Aenean non sem a orci posuere faucibus eu in nibh. Integer dapibus egestas aliquam. Fusce rutrum nisi vel posuere imperdiet.",
-      "portrait": "/portfolio_jordan/images/profile/avatar.webp",
+      "portrait": "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg",
       "secondaryImage": "",
       "specialties": [
         "3D Modeling",
@@ -488,6 +482,6 @@
       "allowAvatar": true,
       "allowAttachments": true
     },
-    "galleryBackground": "/portfolio_jordan/images/projects/ancient-ruins/ancient-ruins.webp"
+    "galleryBackground": "site://images/studio/5f5db0accc8c625c55ac22172769e03bc4e723816e5990a9a33e0ded87341807.webp"
   }
 }
