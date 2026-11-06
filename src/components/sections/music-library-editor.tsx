@@ -1,5 +1,5 @@
 import { useEffect,useState } from 'react'
-import { ArrowDown,ArrowUp,Check,ImagePlus,Music2,Pencil,Plus,Save,Trash2,Upload,X } from 'lucide-react'
+import { ArrowDown,ArrowUp,Check,ImagePlus,Pencil,Plus,Save,Trash2,Upload,X } from 'lucide-react'
 import type { MusicTrack } from '../../data/studio'
 import { AssetImage } from '../ui/asset-image'
 import { AssetClipButton } from '../ui/asset-picker'
