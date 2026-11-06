@@ -1,5 +1,5 @@
-export type BlockType = 'heading' | 'text' | 'image' | 'image-left' | 'image-right' | 'before-after' | 'gallery'
-export type Block = { id:string; type:BlockType; content:string; media?:string; after?:string; gallery?:string[] }
+export type BlockType = 'heading' | 'text' | 'image' | 'image-left' | 'image-right' | 'before-after' | 'gallery' | 'divider'
+export type Block = { id:string; type:BlockType; content:string; media?:string; after?:string; gallery?:string[]; dividerIcon?:'none'|'sparkles'|'star'|'diamond'|'circle'; dividerStyle?:'glow'|'solid'|'dashed' }
 export type ProcessStep = { id:string; label:string; image:string }
 export type CategoryIcon = 'user'|'mountain'|'box'|'sparkles'|'grid'|'palette'|'film'|'brush'|'shapes'
 export type Category = { id:string; label:string; icon:CategoryIcon; image?:string }

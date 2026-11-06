@@ -15,7 +15,8 @@ const templates:{type:BlockType;label:string;description:string}[]=[
  {type:'image-left',label:'Imagem à esquerda',description:'Imagem + texto'},
  {type:'image-right',label:'Imagem à direita',description:'Texto + imagem'},
  {type:'before-after',label:'Antes / depois',description:'Comparação arrastável'},
- {type:'gallery',label:'Múltiplas imagens',description:'Grade de imagens'}
+ {type:'gallery',label:'Múltiplas imagens',description:'Grade de imagens'},
+ {type:'divider',label:'Linha divisória',description:'Linha com ícone opcional'}
 ]
 const titleFor=(type:BlockType)=>templates.find(t=>t.type===type)?.label??type
 const blank=(category:string):Project=>({id:'project-'+Date.now().toString(36),title:'Novo projeto',category:category||'Others',year:String(new Date().getFullYear()),image:'',description:'',tools:[],featured:false,blocks:[]})
@@ -55,7 +56,7 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  const patch=(next:Partial<Project>)=>setDraft(prev=>({...prev,...next}))
  const updateBlock=(id:string,next:Partial<Block>)=>patch({blocks:draft.blocks.map(b=>b.id===id?{...b,...next}:b)})
  const addBlock=(type:BlockType,index=draft.blocks.length)=>{
-  const b:Block={id:'b-'+Math.random().toString(36).slice(2),type,content:'',gallery:type==='gallery'?['','']:undefined}
+  const b:Block={id:'b-'+Math.random().toString(36).slice(2),type,content:'',gallery:type==='gallery'?['','']:undefined,dividerIcon:type==='divider'?'sparkles':undefined,dividerStyle:type==='divider'?'glow':undefined}
   const result=[...draft.blocks];result.splice(index,0,b);patch({blocks:result});setInsertAt(null);requestAnimationFrame(()=>document.querySelector('[data-block-id="'+b.id+'"]')?.scrollIntoView({block:'nearest',behavior:'smooth'}))
  }
  const move=(from:number,to:number)=>{
@@ -104,11 +105,12 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <div className="blocks-list" onDragOver={e=>e.preventDefault()} onDrop={e=>{if(e.target===e.currentTarget){const t=e.dataTransfer.getData('application/x-jf-template') as BlockType;if(templates.some(a=>a.type===t))addBlock(t)}}}>
  {draft.blocks.map((b,i)=><section key={b.id} data-block-id={b.id} className={'edit-block '+(dragged===b.id?'dragging':'')} onDragOver={e=>e.preventDefault()} onDrop={e=>onBlockDrop(e,i)}>
  <div className="edit-block-top"><span className="drag-handle" draggable onDragStart={e=>{e.dataTransfer.setData('application/x-jf-block',b.id);setDragged(b.id)}} onDragEnd={()=>setDragged('')} title="Arrastar bloco"><GripVertical size={18}/></span><b>{i+1}. {titleFor(b.type)}</b><div><button type="button" onClick={()=>move(i,i-1)} aria-label="Mover acima"><ArrowUp size={16}/></button><button type="button" onClick={()=>move(i,i+1)} aria-label="Mover abaixo"><ArrowDown size={16}/></button><button type="button" onClick={()=>patch({blocks:draft.blocks.filter(x=>x.id!==b.id)})} aria-label="Excluir bloco"><Trash2 size={16}/></button></div></div>
- {b.type==='heading'&&<textarea aria-label="Título de seção" rows={2} value={b.content} onChange={e=>updateBlock(b.id,{content:e.target.value})}/>} 
+ {b.type==='heading'&&<TextComposer heading label="Título formatável" rows={3} value={b.content} onChange={content=>updateBlock(b.id,{content})}/>} 
  {b.type==='text'&&<TextComposer label="Conteúdo formatável" value={b.content} onChange={content=>updateBlock(b.id,{content})}/>} 
  {b.type==='image'&&<MediaField label="Imagem única" folder={'projects/'+draft.id} slot={b.id} value={b.content} onChange={content=>updateBlock(b.id,{content})} onError={setMessage}/>}
  {(b.type==='image-left'||b.type==='image-right')&&<><MediaField label="Imagem deste bloco" folder={'projects/'+draft.id} slot={b.id} value={b.media??''} onChange={media=>updateBlock(b.id,{media})} onError={setMessage}/><TextComposer label="Texto ao lado da imagem" value={b.content} onChange={content=>updateBlock(b.id,{content})} rows={4}/></>}
  {b.type==='before-after'&&<><div className="editor-two"><MediaField label="Antes" folder={'projects/'+draft.id} slot={b.id+'-before'} value={b.media??''} onChange={media=>updateBlock(b.id,{media})} onError={setMessage}/><MediaField label="Depois" folder={'projects/'+draft.id} slot={b.id+'-after'} value={b.after??''} onChange={after=>updateBlock(b.id,{after})} onError={setMessage}/></div><textarea aria-label="Legenda da comparação" rows={2} placeholder="Descrição da comparação" value={b.content} onChange={e=>updateBlock(b.id,{content:e.target.value})}/></>}
+ {b.type==='divider'&&<div className="divider-editor-fields"><div className="editor-two"><label>Ícone central<select value={b.dividerIcon??'sparkles'} onChange={e=>updateBlock(b.id,{dividerIcon:e.target.value as Block['dividerIcon']})}><option value="none">Sem ícone</option><option value="sparkles">Brilho</option><option value="star">Estrela</option><option value="diamond">Diamante</option><option value="circle">Círculo</option></select></label><label>Estilo da linha<select value={b.dividerStyle??'glow'} onChange={e=>updateBlock(b.id,{dividerStyle:e.target.value as Block['dividerStyle']})}><option value="glow">Brilho suave</option><option value="solid">Linha contínua</option><option value="dashed">Pontilhada</option></select></label></div><div className="divider-editor-preview">───── ✦ ─────</div></div>}
  {b.type==='gallery'&&<><div className="gallery-fields">{(b.gallery??[]).map((value,index)=><div key={index} className="gallery-field"><MediaField label={'Imagem '+(index+1)} folder={'projects/'+draft.id} slot={b.id+'-'+index} value={value} onChange={src=>updateBlock(b.id,{gallery:(b.gallery??[]).map((x,j)=>j===index?src:x)})} onError={setMessage}/><button type="button" onClick={()=>updateBlock(b.id,{gallery:(b.gallery??[]).filter((_,j)=>j!==index)})} className="remove-gallery-item"><X size={13}/>Remover quadro</button></div>)}</div><button type="button" className="subtle-action" onClick={()=>updateBlock(b.id,{gallery:[...(b.gallery??[]),'']})}><Plus size={15}/>Outra imagem</button></>}
  <button className="inline-add-block" type="button" onClick={()=>setInsertAt(i+1)}><Plus size={14}/>Inserir layout depois deste bloco</button>
  </section>)}</div>
