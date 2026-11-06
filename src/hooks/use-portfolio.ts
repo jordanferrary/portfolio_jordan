@@ -4,7 +4,7 @@ import { initialProjects, starterCategories, type Project, type Category } from 
 import {defaultHome,defaultMusicTracks,defaultTestimonials,type HomeContent,type Testimonial,type MusicTrack,type SocialLink,defaultSocialLinks} from '../data/studio'
 import { mediaKey,mediaRefs,readMedia,saveMediaBlob,isLocalMedia,listMediaAssets,saveCatalogItems,type LibraryAsset } from '../lib/media-store'
 const KEY='jordan-portfolio-local-v2'
-export interface PortfolioStore {projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[]}
+export interface PortfolioStore {projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean}
 function migrateLegacyImage(src:string):string{
  const match=src.match(new RegExp('(?:^|/)images/(void-wanderer|moonlit-cottage|deepwalker|astral-guardian|neon-armor|ancient-ruins)[.]webp(?:[?].*)?$'))
  return match?import.meta.env.BASE_URL+'images/projects/'+match[1]+'/'+match[1]+'.webp':src
@@ -24,11 +24,11 @@ function parseStore(raw:unknown):PortfolioStore{
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string'):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
- return {projects,categories,home,testimonials,musicTracks,socialLinks}
+ return {projects,categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false}
 }
 function load():PortfolioStore{
  try{const value=localStorage.getItem(KEY);if(value)return parseStore(JSON.parse(value) as unknown)}catch{/* keep defaults */}
- return {projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks}
+ return {projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false}
 }
 function refsFor(store:PortfolioStore):string[]{
  const refs=new Set(mediaRefs(store.projects,store.categories))
@@ -49,6 +49,7 @@ export function usePortfolio(){
  const setTestimonials=(testimonials:Testimonial[])=>save({...store,testimonials})
  const setMusicTracks=(musicTracks:MusicTrack[])=>save({...store,musicTracks})
  const setSocialLinks=(socialLinks:SocialLink[])=>save({...store,socialLinks})
+ const setShowLikeCounts=(showLikeCounts:boolean)=>save({...store,showLikeCounts})
  const exportData=async()=>{
   const zip=new JSZip()
   zip.file('portfolio.json',JSON.stringify(store,null,2))
@@ -82,5 +83,5 @@ export function usePortfolio(){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...store,saveError,update,remove,setCategories,setHome,setTestimonials,setMusicTracks,setSocialLinks,exportData,importData}
+ return {...store,saveError,update,remove,setCategories,setHome,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,exportData,importData}
 }
