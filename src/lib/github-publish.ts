@@ -139,8 +139,8 @@ export async function publishPortfolioToGitHub(
  const pending=new Map<string,Blob>()
  const refCache=new Map<string,string>()
  let totalBytes=0
- async function stageBlob(blob:Blob,kind:Kind):Promise<string>{
-  const ext=extension('',blob,kind)
+ async function stageBlob(blob:Blob,kind:Kind,sourceRef=''):Promise<string>{
+  const ext=extension(sourceRef,blob,kind)
   const sha=await fingerprint(blob)
   const relative=(kind==='audio'?'audio':'images')+'/studio/'+sha+'.'+ext
   const filePath='public/'+relative
@@ -180,7 +180,7 @@ export async function publishPortfolioToGitHub(
    if(cached)return cached
    const blob=await readMedia(value)
    if(!blob)throw new Error('Um arquivo do Studio não foi encontrado neste navegador ('+value.split('/').pop()+'). Importe-o novamente antes de publicar.')
-   const reference=await stageBlob(blob,kind)
+   const reference=await stageBlob(blob,kind,value)
    refCache.set(value,reference)
    if(kind==='image')await createVariants(reference,blob)
    return reference
