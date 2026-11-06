@@ -4,6 +4,7 @@ import type { Block,Project } from '../../data/projects'
 import { AssetImage } from '../ui/asset-image'
 import { RichText } from '../ui/rich-text'
 import { ProjectLike } from './project-like'
+import { framingStyle } from '../../lib/image-framing'
 function BeforeAfter({block,title}:{block:Block;title:string}){
  const [percent,setPercent]=useState(50)
  const [ratio,setRatio]=useState(1)
@@ -23,7 +24,7 @@ export function ProjectPage({project,onBack,editing,onEdit,showLikeCounts}:{proj
  const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery'].includes(block.type))
  const processImages=(project.processSteps??[]).filter(step=>step.image.trim().length>0)
  const needsArtworkShowcase=!hasDetailedArtwork
- return <main className={'project-page'+(needsArtworkShowcase?' project-page-artwork-only':'')}><button className="back-link" onClick={onBack}><ArrowLeft size={18}/> Back to portfolio</button><div className="project-hero"><AssetImage src={project.image} alt={project.title}/><div className="project-hero-content"><span className="eyebrow">✦ {project.category} / {project.year}</span><h1>{project.title}</h1><RichText className="project-hero-description" value={project.description}/><div className="tools">{project.tools.map(t=><span key={t}>{t}</span>)}</div>{editing&&<button className="primary-action" onClick={onEdit}><Pencil size={16}/>Editar projeto</button>}</div></div><div className="project-engagement"><ProjectLike projectId={project.id} showCount={showLikeCounts}/></div><div className="case-study">
+ return <main className={'project-page'+(needsArtworkShowcase?' project-page-artwork-only':'')}><button className="back-link" onClick={onBack}><ArrowLeft size={18}/> Back to portfolio</button><div className="project-hero"><AssetImage src={project.image} alt={project.title} style={framingStyle(project.heroFocus)}/><div className="project-hero-content"><span className="eyebrow">✦ {project.category} / {project.year}</span><h1>{project.title}</h1><RichText className="project-hero-description" value={project.description}/><div className="tools">{project.tools.map(t=><span key={t}>{t}</span>)}</div>{editing&&<button className="primary-action" onClick={onEdit}><Pencil size={16}/>Editar projeto</button>}</div></div><div className="project-engagement"><ProjectLike projectId={project.id} showCount={showLikeCounts}/></div><div className="case-study">
   {project.blocks.length>0&&<div className="story-blocks">{project.blocks.map(b=><StoryBlock key={b.id} block={b} projectTitle={project.title}/>)}</div>}
   {needsArtworkShowcase&&<section className="project-artwork-showcase" aria-label={'Artwork from '+project.title}>
    <div className="project-artwork-heading"><span>✦ FEATURED ARTWORK</span><h2>{project.title}</h2><p>{project.category}{project.year?' · '+project.year:''}</p></div>
