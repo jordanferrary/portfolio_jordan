@@ -42,3 +42,5 @@ import './styles/creative-direction.css'
 import './styles/theme-palette-editor.css'
 
 import './styles/portfolio-review.css'
+
+import './styles/project-framing.css'

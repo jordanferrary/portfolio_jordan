@@ -5,6 +5,7 @@ import { AssetClipButton } from '../ui/asset-picker'
 import { QuickEditImageButton } from '../ui/image-quick-editor'
 import { FilterIcon } from '../ui/filter-icon'
 import { TextComposer } from '../ui/text-composer'
+import { ProjectFramingEditor } from './project-framing-editor'
 import type { ProcessStep } from '../../data/projects'
 import { categoryIcons,type Block,type BlockType,type Category,type CategoryIcon,type Project } from '../../data/projects'
 import { isLocalMedia,saveUploadedMedia } from '../../lib/media-store'
@@ -46,7 +47,7 @@ function ToolTags({tools,onChange}:{tools:string[];onChange:(next:string[])=>voi
 interface Props {project:Project|null; projects:Project[];categories:Category[];onSave:(project:Project)=>void;onDelete:(id:string)=>void;onClose:()=>void;onCategories:(categories:Category[])=>void;onExport:()=>Promise<void>;onImport:(file:File)=>Promise<void>}
 export function AdminEditor({project,projects,categories,onSave,onDelete,onClose,onCategories,onExport,onImport}:Props){
  const [draft,setDraft]=useState<Project>(project??blank(categories[0]?.label))
- const [tab,setTab]=useState<'project'|'composition'|'process'|'filters'|'backup'>('project')
+ const [tab,setTab]=useState<'project'|'framing'|'composition'|'process'|'filters'|'backup'>('project')
  const [newCategory,setNewCategory]=useState('')
  const [newIcon,setNewIcon]=useState<CategoryIcon>('grid')
  const [newImage,setNewImage]=useState('')
@@ -94,17 +95,18 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  }
  const save=()=>{if(!draft.title.trim()||!draft.image.trim()){setTab('project');setMessage('Informe título e imagem de capa para salvar.');return}onSave(draft);onClose()}
  return <div className="editor-overlay project-focus-overlay" lang="pt-BR"><section className="editor-panel v2-editor" role="dialog" aria-modal="true" aria-label="Espaço de trabalho do projeto"><header className="editor-head"><div className="studio-project-identity"><div className="studio-project-thumb">{draft.image?<AssetImage src={draft.image} alt="Capa do projeto atual"/>:<ImagePlus size={24}/>}</div><div><span className="eyebrow">✦ LOCAL STUDIO · PROJETO EM FOCO</span><h2>{draft.title||'Novo projeto'}</h2><small>{draft.category} · {draft.year} · Alterações locais</small></div></div><button type="button" onClick={onClose} aria-label="Fechar editor"><X/></button></header>
- <div className="editor-tabs" role="tablist" aria-label="Áreas de edição"><button type="button" role="tab" aria-selected={tab==='project'} onClick={()=>setTab('project')}>01 · Informações</button><button type="button" role="tab" aria-selected={tab==='composition'} onClick={()=>setTab('composition')}>02 · Composição</button><button type="button" role="tab" aria-selected={tab==='process'} onClick={()=>setTab('process')}>03 · Processo</button><button type="button" role="tab" aria-selected={tab==='filters'} onClick={()=>setTab('filters')}>04 · Categorias</button><button type="button" role="tab" aria-selected={tab==='backup'} onClick={()=>setTab('backup')}>05 · Arquivos</button></div>
+ <div className="editor-tabs" role="tablist" aria-label="Áreas de edição"><button type="button" role="tab" aria-selected={tab==='project'} onClick={()=>setTab('project')}>01 · Informações</button><button type="button" role="tab" aria-selected={tab==='framing'} onClick={()=>setTab('framing')}>02 · Enquadramento</button><button type="button" role="tab" aria-selected={tab==='composition'} onClick={()=>setTab('composition')}>03 · Composição</button><button type="button" role="tab" aria-selected={tab==='process'} onClick={()=>setTab('process')}>04 · Processo</button><button type="button" role="tab" aria-selected={tab==='filters'} onClick={()=>setTab('filters')}>05 · Categorias</button><button type="button" role="tab" aria-selected={tab==='backup'} onClick={()=>setTab('backup')}>06 · Arquivos</button></div>
  <div className="editor-scroll">
  {tab==='project'&&<>
  <p className="local-warning">Edição exclusiva deste projeto. O rascunho fica neste navegador; depois de salvar, use “Publicar no GitHub” para atualizar o portfólio público.</p>
  <label>Título<input value={draft.title} onChange={e=>patch({title:e.target.value})}/></label>
  <div className="editor-two"><label>Filtro do projeto<select value={draft.category} onChange={e=>patch({category:e.target.value})}>{categories.map(c=><option key={c.id} value={c.label}>{c.label}</option>)}</select></label><label>Ano<input value={draft.year} onChange={e=>patch({year:e.target.value})}/></label></div>
- <MediaField value={draft.image} onChange={image=>patch({image})} folder={'projects/'+draft.id} slot="cover" label="Capa" onError={setMessage}/>
+ <MediaField value={draft.image} onChange={image=>patch({image})} folder={'projects/'+draft.id} slot="cover" label="Capa" onError={setMessage}/>{draft.image&&<button type="button" className="framing-shortcut" onClick={()=>setTab('framing')}>✦ Ajustar enquadramento da capa e do banner</button>}
  <div className="project-description-composer"><p>Descrição principal</p><TextComposer label="Descrição do projeto" rows={4} value={draft.description} onChange={description=>patch({description})}/></div>
  <div className="tools-control"><p>Ferramentas utilizadas</p><ToolTags tools={draft.tools} onChange={tools=>patch({tools})}/></div>
  <label className="checkbox-line"><input type="checkbox" checked={draft.featured} onChange={e=>patch({featured:e.target.checked})}/>Exibir em trabalhos de destaque</label>
  </>}
+ {tab==='framing'&&<ProjectFramingEditor image={draft.image} coverFocus={draft.coverFocus} heroFocus={draft.heroFocus} onChange={values=>patch(values)}/>}
  {tab==='composition'&&<>
  <p className="local-warning">Organize apenas a apresentação deste projeto. Os blocos abaixo formarão a página completa da obra.</p>
  {media.length>0&&<><div className="editor-section-title"><h3>Meus assets deste projeto</h3><p>Arraste estas miniaturas até um campo de imagem abaixo.</p></div><div className="asset-shelf">{media.map(src=><div key={src} className="asset-shelf-item" draggable onDragStart={event=>event.dataTransfer.setData('application/x-jf-asset',src)} title="Arraste para uma área de imagem"><AssetImage src={src} alt="Asset disponível"/></div>)}</div></>}
@@ -126,11 +128,11 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <div className="add-blocks"><button type="button" onClick={()=>setInsertAt(draft.blocks.length)}><Plus size={16}/>Adicionar bloco — escolher layout</button></div>
  </>}
  {tab==='process'&&<>
- <p className="local-warning">Estas etapas são independentes dos blocos da página. Só as imagens que o senhor escolher aparecerão na prévia lateral da galeria — sem duplicações automáticas.</p>
- <div className="editor-section-title"><h3>Etapas apresentadas na galeria</h3><p>Quantidade livre, títulos editáveis e ordem personalizada.</p></div>
+ <p className="local-warning">Estas etapas fazem parte do histórico visual da obra e aparecem na página do projeto quando não houver uma galeria editorial de imagens. Use apenas materiais reais do processo.</p>
+ <div className="editor-section-title"><h3>Etapas do processo criativo</h3><p>Quantidade livre, títulos editáveis e ordem personalizada.</p></div>
  {steps.map((step,index)=><article className="process-edit-card" key={step.id}><div className="edit-block-top"><b>Etapa {index+1}</b><div><button type="button" aria-label="Mover etapa acima" onClick={()=>moveStep(index,index-1)}><ArrowUp size={16}/></button><button type="button" aria-label="Mover etapa abaixo" onClick={()=>moveStep(index,index+1)}><ArrowDown size={16}/></button><button type="button" aria-label="Excluir etapa" onClick={()=>patch({processSteps:steps.filter(s=>s.id!==step.id)})}><Trash2 size={16}/></button></div></div><label>Nome da etapa<input value={step.label} onChange={e=>updateStep(step.id,{label:e.target.value})} placeholder="Sculpt, Retopology, Texturing, Final..."/></label><MediaField value={step.image} onChange={image=>updateStep(step.id,{image})} label={'Imagem '+step.label} folder={'projects/'+draft.id} slot={'process-'+step.id} onError={setMessage}/></article>)}
  <button type="button" className="subtle-action" onClick={addStep}><Plus size={16}/>Adicionar etapa</button>
- {steps.length===0&&<p className="editor-help">Sem etapas cadastradas: a prévia mostra apenas a arte principal e o botão View Project.</p>}
+ {steps.length===0&&<p className="editor-help">Sem etapas cadastradas: a página do projeto ainda apresenta a arte principal em tamanho maior.</p>}
  </>}
  {tab==='filters'&&<>
  <p className="local-warning">Cada filtro usa um ícone Lucide ou um arquivo na pasta lógica <strong>filter-icons/</strong>. Apenas projetos vinculados à categoria aparecerão quando ela for selecionada.</p>
