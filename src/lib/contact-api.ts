@@ -1,6 +1,6 @@
 export const contactApi=(import.meta.env.VITE_CONTACT_API_URL as string|undefined)?.trim().replace(/\/$/,'')??''
-export type ContactMessage={id:string;name:string;email:string;interests:string[];message:string;isRead:boolean;createdAt:string}
-export type NewContact={name:string;email:string;interests:string[];message:string;website?:string}
+export type ContactMessage={id:string;name:string;email:string;interests:string[];message:string;isRead:boolean;createdAt:string;avatar?:string|null}
+export type NewContact={name:string;email:string;interests:string[];message:string;website?:string;avatar?:string}
 async function jsonOrThrow(response:Response):Promise<unknown>{
  const data:unknown=await response.json().catch(()=>({}))
  if(!response.ok){
@@ -35,4 +35,28 @@ export async function markMessage(token:string,id:string,isRead:boolean):Promise
 }
 export async function deleteMessage(token:string,id:string):Promise<void>{
  await adminRequest('/admin/messages/'+encodeURIComponent(id),token,'DELETE')
+}
+
+/** Compresses an optional self-supplied photo to a small WEBP avatar without metadata. */
+export async function prepareContactAvatar(file:File):Promise<string>{
+ if(!['image/png','image/jpeg','image/webp'].includes(file.type))throw new Error('Escolha uma imagem PNG, JPG ou WEBP.')
+ if(file.size>3_000_000)throw new Error('Imagem acima de 3 MB. Use uma foto menor.')
+ const url=URL.createObjectURL(file)
+ try{
+  const img=await new Promise<HTMLImageElement>((resolve,reject)=>{
+   const el=new Image()
+   el.onload=()=>resolve(el)
+   el.onerror=()=>reject(new Error('A foto escolhida não pôde ser aberta.'))
+   el.src=url
+  })
+  const canvas=document.createElement('canvas')
+  canvas.width=96;canvas.height=96
+  const ctx=canvas.getContext('2d')
+  if(!ctx)throw new Error('Seu navegador não permite preparar a foto.')
+  const side=Math.min(img.naturalWidth,img.naturalHeight)
+  ctx.drawImage(img,(img.naturalWidth-side)/2,(img.naturalHeight-side)/2,side,side,0,0,96,96)
+  const avatar=canvas.toDataURL('image/webp',.68)
+  if(!avatar.startsWith('data:image/webp;base64,')||avatar.length>45000)throw new Error('Não foi possível otimizar esta foto.')
+  return avatar
+ }finally{URL.revokeObjectURL(url)}
 }

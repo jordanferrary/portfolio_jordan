@@ -6,7 +6,7 @@ interface Environment{
  ADMIN_TOKEN:string
  ALLOWED_ORIGIN:string
 }
-type MessageInput={name?:string;email?:string;interests?:unknown;message?:string;website?:string}
+type MessageInput={name?:string;email?:string;interests?:unknown;message?:string;website?:string;avatar?:string}
 const COOKIE='jfvisitor'
 const encoder=new TextEncoder()
 function cors(origin:string):HeadersInit{
@@ -81,19 +81,21 @@ export default {
   try{
    // Public contact form: no storage in visitor browser, no admin token exposure.
    if(path==='/contact'&&request.method==='POST'){
-    if(Number(request.headers.get('Content-Length')??'0')>8000)return reply({error:'too_large'},413,allowed)
+    if(Number(request.headers.get('Content-Length')??'0')>60000)return reply({error:'too_large'},413,allowed)
     const raw=await request.text()
-    if(raw.length>8000)return reply({error:'too_large'},413,allowed)
+    if(raw.length>60000)return reply({error:'too_large'},413,allowed)
     const data=JSON.parse(raw) as MessageInput
     if(typeof data.website==='string'&&data.website.trim())return reply({ok:true},200,allowed)
     const email=typeof data.email==='string'?data.email.trim():''
     const name=typeof data.name==='string'?data.name.trim():''
     const message=typeof data.message==='string'?data.message.trim():''
     const interests=Array.isArray(data.interests)?data.interests.filter((x):x is string=>typeof x==='string'&&x.length<=45).slice(0,10):[]
+    const avatar=typeof data.avatar==='string'?data.avatar:''
+    if(avatar&&(!/^data:image\/webp;base64,[A-Za-z0-9+/=]+$/.test(avatar)||avatar.length>45000))return reply({error:'invalid_avatar'},400,allowed)
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||email.length>150||name.length>90||message.length<10||message.length>2500||!interests.length)return reply({error:'invalid_message'},400,allowed)
     if(!await checkRate(request,env))return reply({error:'rate_limited'},429,allowed)
     const id=crypto.randomUUID()
-    await env.LIKES_DB.prepare('INSERT INTO contact_messages (id,name,email,interests,message) VALUES (?,?,?,?,?)').bind(id,name,email,JSON.stringify(interests),message).run()
+    await env.LIKES_DB.prepare('INSERT INTO contact_messages (id,name,email,interests,message,avatar) VALUES (?,?,?,?,?,?)').bind(id,name,email,JSON.stringify(interests),message,avatar).run()
     return reply({ok:true},201,allowed)
    }
    // Protected admin routes require a separate long server secret.
@@ -105,7 +107,7 @@ export default {
      return reply({unread:row?.unread??0},200,allowed)
     }
     if(path==='/admin/messages'&&request.method==='GET'){
-     const list=await env.LIKES_DB.prepare('SELECT id,name,email,interests,message,is_read AS isRead,created_at AS createdAt FROM contact_messages ORDER BY created_at DESC LIMIT 150').all<{id:string;name:string;email:string;interests:string;message:string;isRead:number;createdAt:string}>()
+     const list=await env.LIKES_DB.prepare('SELECT id,name,email,interests,message,avatar,is_read AS isRead,created_at AS createdAt FROM contact_messages ORDER BY created_at DESC LIMIT 150').all<{id:string;name:string;email:string;interests:string;message:string;avatar:string|null;isRead:number;createdAt:string}>()
      return reply({messages:(list.results??[]).map(item=>({...item,isRead:!!item.isRead,interests:JSON.parse(item.interests) as string[]}))},200,allowed)
     }
     const match=path.match(/^\/admin\/messages\/([a-f0-9-]{36})$/)

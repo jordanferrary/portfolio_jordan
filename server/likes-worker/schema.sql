@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS contact_messages (
  email TEXT NOT NULL,
  interests TEXT NOT NULL,
  message TEXT NOT NULL,
+ avatar TEXT,
  is_read INTEGER NOT NULL DEFAULT 0,
  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
