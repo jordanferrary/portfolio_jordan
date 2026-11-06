@@ -1,5 +1,6 @@
 import { useCallback,useState } from 'react'
 import { DEFAULT_THEME,normalizeThemePalette,type ThemePalette } from '../lib/theme-palette'
+import { isKnownDemoTestimonial } from '../lib/testimonial-safety'
 import publishedPackage from '../data/published-portfolio.json'
 import JSZip from 'jszip'
 import { initialProjects, starterCategories, type Project, type Category } from '../data/projects'
@@ -57,7 +58,7 @@ function parseStore(raw:unknown):PortfolioStore{
    ?obj.contact.interestOptions.filter((item):item is string=>typeof item==='string'&&item.trim().length>0).map(item=>legacyPublicTopics[item]??item)
    :defaultContact.interestOptions
  }
- const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'):[...defaultTestimonials]
+ const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'&&!isKnownDemoTestimonial(t)):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
  return {themePalette,projects,categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}

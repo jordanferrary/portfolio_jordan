@@ -1,5 +1,6 @@
 import type { PortfolioStore } from '../hooks/use-portfolio'
 import { isLocalMedia,readMedia } from './media-store'
+import { isKnownDemoTestimonial } from './testimonial-safety'
 
 /**
  * Browser-only GitHub publishing.
@@ -88,7 +89,7 @@ function stageSnapshot(store:PortfolioStore){
   projects:store.projects,
   categories:store.categories,
   home:store.home,
-  testimonials:store.testimonials,
+  testimonials:store.testimonials.filter(review=>!isKnownDemoTestimonial(review)),
   musicTracks:store.musicTracks,
   socialLinks:store.socialLinks,
   showLikeCounts:store.showLikeCounts,
