@@ -1,5 +1,5 @@
 import { useEffect,useRef,useState } from 'react'
-import { Check,Infinity as InfinityIcon,ListMusic,Pause,Play,SkipForward,X } from 'lucide-react'
+import { Check,Infinity as InfinityIcon,ListMusic,Pause,Play,X } from 'lucide-react'
 import type { MusicTrack } from '../../data/studio'
 import { useAssetSrc,AssetImage } from '../ui/asset-image'
 export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
@@ -67,7 +67,7 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
   <div className="music-card">
    <div className="music-card-top"><button type="button" className="music-cover-button" onClick={()=>setOpen(v=>!v)} aria-label="Abrir biblioteca de músicas" aria-expanded={open} title="Escolher uma música"><AssetImage src={cover} alt={current?'Capa de '+current.title:'Capa da playlist'}/></button><button type="button" className="music-main-toggle" onClick={toggle} aria-label={playing?'Pausar música':'Reproduzir música'} aria-pressed={playing} disabled={!current}>{playing?<Pause size={31} fill="currentColor"/>:<Play size={28} fill="currentColor"/>}</button></div>
    <button type="button" className="music-card-details" onClick={()=>setOpen(v=>!v)} aria-label="Escolher música"><strong title={current?.title}>{current?.title||'Sua playlist'}</strong><span title={current?.artist}>{current?.artist||'Sem música cadastrada'}</span></button>
-   <div className="music-card-footer"><button type="button" className={repeatOne?'music-repeat is-on':'music-repeat'} aria-pressed={repeatOne} aria-label={repeatOne?'Repetir esta música: ativado. Alternar para próxima música.':'Próxima música ao terminar: ativado. Alternar para repetir esta faixa.'} title={repeatOne?'∞ Repetir mesma música':'Avançar para a próxima'} onClick={()=>setRepeatOne(value=>!value)}>{repeatOne?<InfinityIcon size={17}/>:<SkipForward size={17}/>}</button><input className="music-seek" type="range" min="0" max="100" step="0.1" value={progress} onChange={e=>seek(Number(e.target.value))} disabled={!current} aria-label="Progresso da música" style={{background:'linear-gradient(to right, #a02aff '+progress+'%,#27143b '+progress+'%)'}}/></div>
+   <div className="music-card-footer"><button type="button" className={repeatOne?'music-repeat is-on':'music-repeat'} aria-pressed={repeatOne} aria-label={repeatOne?'Repetir esta música: ativado. Alternar para próxima música.':'Próxima música ao terminar: ativado. Alternar para repetir esta faixa.'} title={repeatOne?'∞ Repetir mesma música':'Avançar para a próxima'} onClick={()=>setRepeatOne(value=>!value)}><InfinityIcon size={17}/></button><input className="music-seek" type="range" min="0" max="100" step="0.1" value={progress} onChange={e=>seek(Number(e.target.value))} disabled={!current} aria-label="Progresso da música" style={{background:'linear-gradient(to right, #a02aff '+progress+'%,#27143b '+progress+'%)'}}/></div>
    {error&&<p className="music-card-error" role="status">{error}</p>}
   </div>
  </div>
