@@ -15,6 +15,7 @@ import {ContactPage} from './components/sections/contact-page'
 const ContactEditor=lazy(()=>import('./components/sections/contact-editor').then(m=>({default:m.ContactEditor})))
 const HomeEditor=lazy(()=>import('./components/sections/home-editor').then(m=>({default:m.HomeEditor})))
 import { AssetLibraryProvider } from './components/ui/asset-library-context'
+import { ImageVariantProvider } from './components/ui/asset-image'
 import { usePortfolio } from './hooks/use-portfolio'
 const GitHubPublishEditor=lazy(()=>import('./components/sections/github-publish-editor').then(m=>({default:m.GitHubPublishEditor})))
 const SiteIdentityEditor=lazy(()=>import('./components/sections/site-identity-editor').then(m=>({default:m.SiteIdentityEditor})))
@@ -71,7 +72,7 @@ export function App(){
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
- return <AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
+ return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
  {page==='portfolio'&&<Gallery projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground} onEditBackground={()=>setGalleryBackgroundEditorOpen(true)}/>}
  {page==='project'&&project&&<ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts}/>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
@@ -94,5 +95,5 @@ export function App(){
  {editing&&homeEditorOpen&&<HomeEditor initialTab={homeEditorTab} showLikeCounts={portfolio.showLikeCounts} onShowLikeCounts={portfolio.setShowLikeCounts} home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} links={portfolio.socialLinks} onLinks={portfolio.setSocialLinks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
  {editing&&editor!==undefined&&<AdminEditor key={editor?.id??'new'} project={editor} projects={portfolio.projects} categories={portfolio.categories} onSave={portfolio.update} onDelete={portfolio.remove} onClose={()=>setEditor(undefined)} onCategories={portfolio.setCategories} onExport={portfolio.exportData} onImport={portfolio.importData}/>}
  </Suspense>
- </div></AssetLibraryProvider>
+ </div></AssetLibraryProvider></ImageVariantProvider>
 }
