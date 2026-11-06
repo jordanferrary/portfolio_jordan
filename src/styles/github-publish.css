@@ -64,3 +64,14 @@
  .github-publish-editor .editor-scroll{padding:17px;gap:16px}
  .github-publish-editor .github-publish-overview{padding:13px}
 }
+
+/* Inline token onboarding: available only when opening the publishing editor. */
+.github-token-help{margin-top:15px;padding:13px 15px;border:1px solid #745099;border-radius:13px;background:linear-gradient(120deg,#28183a,#180e29);color:#d9c1e8;font-size:12px;line-height:1.65}
+.github-token-help summary{cursor:pointer;font-weight:700;color:#f2deff;list-style:auto}
+.github-token-help[open] summary{margin-bottom:13px}
+.github-token-help ol{margin:0 0 12px;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.github-token-help li::marker{color:#c78cf3;font-weight:700}
+.github-token-help p{margin:10px 0}
+.github-token-help a{display:inline-flex;align-items:center;gap:4px;color:#cf9fff;text-decoration:underline;text-underline-offset:3px}
+.github-token-help code{overflow-wrap:anywhere}
+.github-token-help summary:focus-visible{outline:2px solid #ce9eff;outline-offset:3px}
