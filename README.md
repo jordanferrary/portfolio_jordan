@@ -132,3 +132,13 @@ O GitHub Pages está acessível publicamente pelo link de testes, mesmo que o po
 - **Visitantes fora do modo de edição:** enquanto não houver backend, não há confirmação falsa de envio. Se um endereço `mailto:` estiver configurado nas redes, o formulário pode abrir o aplicativo de e-mail do visitante; caso contrário, o contato é direcionado aos links sociais.
 
 **Contato real:** o Worker em `server/likes-worker` já possui a API de mensagens, metadados em D1 e armazenamento privado de anexos em R2. Para ativar envios entre dispositivos, precisa ser implantado com banco, bucket, segredos e `VITE_CONTACT_API_URL`. O PIN do Studio é adequado à prévia local, mas não é autenticação segura para ler mensagens de outras pessoas em um servidor.
+
+
+## Mídia leve: WebP, vídeos e Studio sob demanda (2026-11)
+
+- **Upload automático:** imagens PNG, JPG, WebP ou AVIF importadas pelos controles do Studio são convertidas **no navegador** para WebP, com lado máximo de 2048 px e qualidade aproximada de 82%. O arquivo enviado pelo usuário não é sobrescrito no computador. A versão gerada entra no IndexedDB e no fluxo normal de backup/publicação. O tamanho final pode variar conforme o conteúdo.
+- **Conversor manual:** após desbloquear o Local Studio, vá a **Ferramentas → Conteúdo → Conversor WebP** para escolher 1024, 1600, 2048 ou 4096 px e qualidade de 55–95%. Baixe o WebP sem depender de sites externos.
+- **Vídeos nos projetos:** em **Composição → Vídeo incorporado**, adicione um link válido do YouTube (incluindo Shorts) ou Vimeo, com miniatura personalizada opcional. Um card 16:9 é mostrado inicialmente; o iframe do player é criado **somente após o clique**, para evitar o download inicial do player pesado. Vídeos permanecem hospedados na plataforma de origem.
+- **Separação do Studio:** editores, menu de ferramentas e biblioteca de seleção de mídias são carregados via importação dinâmica apenas quando necessários. A tela de PIN é baixada somente quando o atalho de acesso é acionado. A aplicação pública continua carregando apenas o código necessário às páginas.
+- **Importante:** o PIN é uma barreira visual em JavaScript, não autenticação segura. Este code-splitting reduz os downloads iniciais, mas não impede que alguém inspecione o código público ou baixe os chunks manualmente. O Studio não deve conter dados privados nem segredos de servidor.
+- **Limite desta entrega:** a otimização de upload produz uma versão WebP por arquivo, não um conjunto de resoluções responsivas (srcset). Miniaturas separadas e zoom de alta resolução podem ser adicionados em uma etapa própria.
