@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-06T08:22:27.180Z-67aecaea-7eb9-4fb6-b08c-2e79d316b730",
+  "revision": "2026-11-06T08:36:47.311Z-d342908c-9dac-4cb6-a05c-d8773e997ae8",
   "store": {
     "projects": [
       {
@@ -9,7 +9,7 @@
         "category": "Props",
         "year": "2026",
         "image": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png",
-        "description": "Um pequeno universo onde fantasia, ==cores== e criatividade se encontram. **Room of the Palhacito** é um diorama 3D estilizado que explora uma atmosfera lúdica e acolhedora, combinando elementos circenses, formas cartunescas e detalhes encantadores.\n\nA composição valoriza o contraste entre cores vibrantes, texturas expressivas e iluminação suave, criando um ambiente cheio de personalidade, no qual cada elemento contribui para uma identidade visual única.",
+        "description": " A whimsical little world where fantasy, color, and creativity come together. ==Room of the Palhacito== is a stylized 3D diorama that explores a playful and cozy atmosphere, blending circus-inspired elements, cartoon-like shapes, and charming details.\n\nThrough vibrant colors, expressive textures, and soft lighting, the scene captures a sense of wonder and imagination, bringing a unique and personality-filled environment to life.",
         "tools": [
           "Blender",
           "Substance Painter",
@@ -21,11 +21,6 @@
             "id": "b-54ng20cikjv",
             "type": "image",
             "content": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png"
-          },
-          {
-            "id": "b-nfom6b8430d",
-            "type": "text",
-            "content": "Um pequeno universo onde fantasia, cores e criatividade se encontram. **Room of the Palhacito** é um diorama 3D estilizado que explora uma atmosfera lúdica e acolhedora, combinando elementos circenses, formas cartunescas e detalhes encantadores.\n\nA composição valoriza o contraste entre cores vibrantes, texturas expressivas e iluminação suave, criando um ambiente cheio de personalidade, no qual cada elemento contribui para uma identidade visual única."
           },
           {
             "id": "b-zdh6t2l9edc",
@@ -58,6 +53,28 @@
             "content": "",
             "media": "site://images/studio/87eb9b94f2355c69589f0e57336aaf4a2f490f8d005433af058c67a428cbcdc4.png",
             "after": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png"
+          }
+        ],
+        "processSteps": [
+          {
+            "id": "step-ggemcg4iglm",
+            "label": "Blockout",
+            "image": "site://images/studio/94bb38b9b8644e4d0251a7298eb7f1e704dc44eabafc4a831b58013001ba0420.png"
+          },
+          {
+            "id": "step-fg18wkr98xp",
+            "label": "Texturing",
+            "image": "site://images/studio/87eb9b94f2355c69589f0e57336aaf4a2f490f8d005433af058c67a428cbcdc4.png"
+          },
+          {
+            "id": "step-5wm4n37ogx",
+            "label": "Rendering",
+            "image": "site://images/studio/706fa3dd5611b6ee165a6137e4c4b207699a7d64b1b1551a766dd5c23d8e7ed7.png"
+          },
+          {
+            "id": "step-mpzg67dgkm",
+            "label": "Post-pro",
+            "image": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png"
           }
         ]
       }
