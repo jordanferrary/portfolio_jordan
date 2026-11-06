@@ -194,3 +194,10 @@
 }
 @media(max-width:480px){.home-featured-cards{gap:7px}.home-work-link{border-radius:12px}.home-panel-heading h2{font-size:12px}.home-route .home-dashboard{padding-top:55px}.home-intro .home-blurb{font-size:13px}.home-about-panel{width:100%}}
 @media(prefers-reduced-motion:reduce){.home-work-link img,.music-widget .music-progress span{transition:none}}
+
+/* Mobile music remains accessible above the bottom navigation */
+@media(max-width:750px){
+ .music-widget{display:flex;position:fixed;left:13px;bottom:88px;width:128px;z-index:45}
+ .music-widget .actual-player{transform:none}
+ .music-popover{left:0;bottom:70px;width:min(290px,calc(100vw - 26px))}
+}

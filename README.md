@@ -55,3 +55,15 @@ GitHub Actions gera o build com `GITHUB_PAGES=true`; o Vite usa a base `/reactte
 
 O conteúdo foi reconstruído a partir do screenshot e referências Figma compartilhados. Medições exatas das camadas não foram exportadas, portanto não foi possível validar fidelidade pixel a pixel.
 
+
+## Revisão da Home e do Studio
+
+- Home desktop (largura >= 1100px e altura >= 570px) se adapta à altura da viewport sem rolagem interna. Para telas menores, a rolagem permanece por acessibilidade.
+- Mini About, Focus e depoimentos em carrossel. O editor “Editar Home, feedbacks e músicas” aparece após Ctrl + \\ e o PIN de demonstração. Depoimentos não são inventados; cadastre apenas relatos reais.
+- Player usa áudio HTML nativo com loop; clique na capa para escolher entre faixas. Os controles Play/Pause nunca fazem download. Sem músicas cadastradas, o Play é desabilitado. A reprodução automática pode ser bloqueada pelo navegador até haver interação.
+- O Studio aceita Markdown simples com botões Negrito, Itálico, Subtítulos H2/H3 e visualização; o texto é renderizado de maneira segura (sem HTML livre).
+- “Adicionar bloco” abre a biblioteca de layouts exatamente no ponto de inserção. As etapas da prévia de projetos são cadastradas individualmente na aba “Processo”.
+- O backup ZIP agora inclui as imagens do processo e as faixas e imagens configuradas localmente.
+
+### Pendência visual
+O frame de Home foi reproduzido a partir do screenshot anexado. A arte original de fundo da referência não está entre os assets fornecidos e o Figma não pôde ser inspecionado por completo nesta sessão. O editor da Home permite trocar essa imagem pela exportação correta.

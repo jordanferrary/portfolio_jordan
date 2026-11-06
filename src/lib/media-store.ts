@@ -31,9 +31,9 @@ export async function saveUploadedMedia(file:File,folder:string,slot:string):Pro
  await saveMediaBlob(ref,file)
  return ref
 }
-export function mediaRefs(projects:{image:string;blocks:{media?:string;after?:string;gallery?:string[];content:string;type:string}[]}[],categories:{image?:string}[]){
+export function mediaRefs(projects:{image:string;blocks:{media?:string;after?:string;gallery?:string[];content:string;type:string}[];processSteps?:{image:string}[]}[],categories:{image?:string}[]){
  const all=new Set<string>()
- for(const project of projects){all.add(project.image);for(const b of project.blocks){if(b.media)all.add(b.media);if(b.after)all.add(b.after);for(const a of b.gallery??[])all.add(a);if(b.type==='image')all.add(b.content)}}
+ for(const project of projects){all.add(project.image);for(const step of project.processSteps??[])all.add(step.image);for(const b of project.blocks){if(b.media)all.add(b.media);if(b.after)all.add(b.after);for(const a of b.gallery??[])all.add(a);if(b.type==='image')all.add(b.content)}}
  for(const c of categories)if(c.image)all.add(c.image)
  return [...all].filter(isLocalMedia)
 }

@@ -55,7 +55,7 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  const updateBlock=(id:string,next:Partial<Block>)=>patch({blocks:draft.blocks.map(b=>b.id===id?{...b,...next}:b)})
  const addBlock=(type:BlockType,index=draft.blocks.length)=>{
   const b:Block={id:'b-'+Math.random().toString(36).slice(2),type,content:'',gallery:type==='gallery'?['','']:undefined}
-  const result=[...draft.blocks];result.splice(index,0,b);patch({blocks:result});setInsertAt(null)
+  const result=[...draft.blocks];result.splice(index,0,b);patch({blocks:result});setInsertAt(null);requestAnimationFrame(()=>document.querySelector('[data-block-id="'+b.id+'"]')?.scrollIntoView({block:'nearest',behavior:'smooth'}))
  }
  const move=(from:number,to:number)=>{
   if(from<0||to<0||from>=draft.blocks.length||to>=draft.blocks.length||from===to)return
@@ -101,7 +101,7 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <div className="template-gallery">{templates.map(t=><button type="button" key={t.type} className="template-tile" draggable onDragStart={e=>e.dataTransfer.setData('application/x-jf-template',t.type)} onClick={()=>addBlock(t.type)}><span className={'template-sketch '+t.type} aria-hidden="true"><i/><i/><i/></span><b>{t.label}</b><small>{t.description}</small></button>)}</div>
  <div className="editor-section-title"><h3>Composição do projeto</h3><p>Arraste pela alça para reordenar; use as setas como alternativa.</p></div>
  <div className="blocks-list" onDragOver={e=>e.preventDefault()} onDrop={e=>{if(e.target===e.currentTarget){const t=e.dataTransfer.getData('application/x-jf-template') as BlockType;if(templates.some(a=>a.type===t))addBlock(t)}}}>
- {draft.blocks.map((b,i)=><section key={b.id} className={'edit-block '+(dragged===b.id?'dragging':'')} onDragOver={e=>e.preventDefault()} onDrop={e=>onBlockDrop(e,i)}>
+ {draft.blocks.map((b,i)=><section key={b.id} data-block-id={b.id} className={'edit-block '+(dragged===b.id?'dragging':'')} onDragOver={e=>e.preventDefault()} onDrop={e=>onBlockDrop(e,i)}>
  <div className="edit-block-top"><span className="drag-handle" draggable onDragStart={e=>{e.dataTransfer.setData('application/x-jf-block',b.id);setDragged(b.id)}} onDragEnd={()=>setDragged('')} title="Arrastar bloco"><GripVertical size={18}/></span><b>{i+1}. {titleFor(b.type)}</b><div><button type="button" onClick={()=>move(i,i-1)} aria-label="Mover acima"><ArrowUp size={16}/></button><button type="button" onClick={()=>move(i,i+1)} aria-label="Mover abaixo"><ArrowDown size={16}/></button><button type="button" onClick={()=>patch({blocks:draft.blocks.filter(x=>x.id!==b.id)})} aria-label="Excluir bloco"><Trash2 size={16}/></button></div></div>
  {b.type==='heading'&&<textarea aria-label="Título de seção" rows={2} value={b.content} onChange={e=>updateBlock(b.id,{content:e.target.value})}/>} 
  {b.type==='text'&&<TextComposer label="Conteúdo formatável" value={b.content} onChange={content=>updateBlock(b.id,{content})}/>} 
