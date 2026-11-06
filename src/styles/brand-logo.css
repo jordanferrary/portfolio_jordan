@@ -1,0 +1,40 @@
+/* Custom brand image and in-context editing action. */
+.sidebar .brand-wrap{position:relative;flex:0 0 auto;width:66px;height:70px;display:grid;place-items:center}
+.sidebar .brand-wrap>.brand{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-width:0;min-height:0;padding:5px;line-height:1;border:0;background:transparent;cursor:pointer}
+.sidebar .brand-wrap>.brand>span{letter-spacing:-6px;text-indent:-6px}
+.sidebar .brand-wrap .brand-logo{display:block;width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 0 12px #9e3fff63)}
+.sidebar .brand-wrap .brand-edit-button{
+ position:absolute;z-index:5;right:-7px;bottom:3px;
+ display:grid;place-items:center;
+ width:27px;height:27px;padding:0;border-radius:50%;
+ border:1px solid #b168e8;
+ color:#f4dfff;background:#431568;
+ box-shadow:0 3px 12px #06030ba8;
+ cursor:pointer;
+}
+.sidebar .brand-wrap .brand-edit-button:hover{background:#762caa}
+.brand-logo-editor{width:min(535px,100%)}
+.brand-logo-hint{font-size:13px;line-height:1.65;color:#c8afd9;margin:0 0 19px}
+.brand-logo-preview-surface{display:flex;align-items:center;gap:19px;padding:21px;border:1px solid #613c84;border-radius:18px;background:radial-gradient(circle at 15% 10%,#3a1553,#130a20 70%)}
+.brand-logo-preview-frame{width:94px;height:106px;flex:0 0 94px;display:flex;align-items:center;justify-content:center;padding:13px;border:1px solid #8b3dbd;border-radius:35px;background:#12091c;color:#af45f3;box-shadow:0 0 25px #7b28ce4a}
+.brand-logo-preview-frame img{display:block;width:100%;height:100%;object-fit:contain}
+.brand-logo-preview-frame span{font-size:29px;font-weight:800;letter-spacing:-6px;text-indent:-6px;text-shadow:0 0 18px #b339ff}
+.brand-logo-preview-copy{display:flex;flex-direction:column;gap:7px}
+.brand-logo-preview-copy strong{color:#f2e1ff;font-size:15px}
+.brand-logo-preview-copy small{color:#b09ac4;line-height:1.5;font-size:11px}
+.brand-logo-actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin:19px 0 13px}
+.brand-logo-actions .media-upload-button{display:inline-flex;flex-direction:row;align-items:center;gap:8px;background:#351a4b;border:1px solid #8550a8;border-radius:13px;padding:10px 12px;font-size:12px;cursor:pointer;margin:0}
+.brand-logo-actions .media-upload-button input[type=file]{display:none}
+.brand-logo-reset{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;color:#cdb2df;background:transparent;border:1px solid #674485;border-radius:12px;font-size:12px}
+.brand-logo-reset:hover{border-color:#bd80e6;color:#f8e9ff}
+.brand-logo-tip{display:flex;align-items:start;gap:10px;margin-top:18px;color:#a58fb8}
+.brand-logo-tip p{margin:0;font-size:11px;line-height:1.6}
+.brand-logo-tip svg{flex:0 0 17px}
+@media(max-width:600px){
+ .sidebar .brand-wrap{width:40px;height:50px}
+ .sidebar .brand-wrap>.brand{padding:3px}
+ .sidebar .brand-wrap>.brand>span{font-size:21px}
+ .sidebar .brand-wrap .brand-edit-button{width:22px;height:22px;right:-8px;bottom:0}
+ .sidebar .brand-wrap .brand-edit-button svg{width:11px;height:11px}
+ .brand-logo-preview-surface{padding:15px}
+}

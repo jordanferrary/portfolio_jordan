@@ -28,3 +28,5 @@ import './styles/contact-clean.css'
 import './styles/gallery-background.css'
 
 import './styles/github-publish.css'
+
+import './styles/brand-logo.css'
