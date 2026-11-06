@@ -1,26 +1,27 @@
-import { useEffect,useState } from 'react'
+import { lazy,Suspense,useEffect,useState } from 'react'
 import { Home,Grid2X2,UserRound,Mail,Image as ImageIcon,Heart,Music,Share2,Layers,Palette,Plus,MessageSquare } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
 import { SocialBar } from './components/layout/social-bar'
 import { Gallery } from './components/sections/gallery'
-import { GalleryBackgroundEditor } from './components/sections/gallery-background-editor'
-import { BrandLogoEditor } from './components/sections/brand-logo-editor'
+const GalleryBackgroundEditor=lazy(()=>import('./components/sections/gallery-background-editor').then(m=>({default:m.GalleryBackgroundEditor})))
+const BrandLogoEditor=lazy(()=>import('./components/sections/brand-logo-editor').then(m=>({default:m.BrandLogoEditor})))
 import { ProjectPage } from './components/sections/project-page'
-import { AdminEditor } from './components/sections/admin-editor'
-import { AdminGate } from './components/sections/admin-gate'
+const AdminEditor=lazy(()=>import('./components/sections/admin-editor').then(m=>({default:m.AdminEditor})))
+const AdminGate=lazy(()=>import('./components/sections/admin-gate').then(m=>({default:m.AdminGate})))
 import { HomePage } from './components/sections/home-page'
 import { AboutPage } from './components/sections/about-page'
-import { AboutEditor } from './components/sections/about-editor'
+const AboutEditor=lazy(()=>import('./components/sections/about-editor').then(m=>({default:m.AboutEditor})))
 import {ContactPage} from './components/sections/contact-page'
-import {ContactEditor} from './components/sections/contact-editor'
-import { HomeEditor } from './components/sections/home-editor'
+const ContactEditor=lazy(()=>import('./components/sections/contact-editor').then(m=>({default:m.ContactEditor})))
+const HomeEditor=lazy(()=>import('./components/sections/home-editor').then(m=>({default:m.HomeEditor})))
 import { AssetLibraryProvider } from './components/ui/asset-picker'
 import { usePortfolio } from './hooks/use-portfolio'
-import { GitHubPublishEditor } from './components/sections/github-publish-editor'
-import { SiteIdentityEditor } from './components/sections/site-identity-editor'
-import { ThemePaletteEditor } from './components/sections/theme-palette-editor'
+const GitHubPublishEditor=lazy(()=>import('./components/sections/github-publish-editor').then(m=>({default:m.GitHubPublishEditor})))
+const SiteIdentityEditor=lazy(()=>import('./components/sections/site-identity-editor').then(m=>({default:m.SiteIdentityEditor})))
+const ThemePaletteEditor=lazy(()=>import('./components/sections/theme-palette-editor').then(m=>({default:m.ThemePaletteEditor})))
 import { applyThemePalette } from './lib/theme-palette'
 import { StudioDock,type StudioAction } from './components/sections/studio-dock'
+const ImageConverter=lazy(()=>import('./components/sections/image-converter').then(m=>({default:m.ImageConverter})))
 import type { Project } from './data/projects'
 function route():Page|'project'{const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':(['inicio','portfolio','sobre','contato'].includes(part)?part as Page:'inicio')}
 export function App(){
@@ -36,6 +37,7 @@ export function App(){
  const [logoEditorOpen,setLogoEditorOpen]=useState(false)
  const [siteIdentityOpen,setSiteIdentityOpen]=useState(false)
  const [themePaletteOpen,setThemePaletteOpen]=useState(false)
+ const [imageConverterOpen,setImageConverterOpen]=useState(false)
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
  const navigate=(next:Page)=>{location.hash='/'+next;setPage(next);window.scrollTo(0,0)}
@@ -53,6 +55,7 @@ export function App(){
   {id:'gallery',label:'Galeria',description:'Imagem de fundo da galeria',section:'Páginas',icon:Grid2X2,onClick:()=>setGalleryBackgroundEditorOpen(true)},
   {id:'new-project',label:'Novo projeto',description:'Criar e compor uma nova obra',section:'Projetos',icon:Plus,onClick:()=>setEditor(null)},
   ...(page==='project'&&project?[{id:'active-project',label:'Editar obra atual',description:project.title,section:'Projetos' as const,icon:Layers,onClick:()=>setEditor(project)}]:[]),
+  {id:'image-converter',label:'Conversor WebP',description:'Compactar, redimensionar e baixar imagens',section:'Conteúdo',icon:ImageIcon,onClick:()=>setImageConverterOpen(true)},
   {id:'music',label:'Músicas',description:'Faixas, capas e ordem da playlist',section:'Conteúdo',icon:Music,onClick:()=>openHomeTab('music')},
   {id:'reviews',label:'Feedbacks',description:'Depoimentos reais e autoria',section:'Conteúdo',icon:MessageSquare,onClick:()=>openHomeTab('feedback')},
   {id:'social',label:'Redes sociais',description:'Links, ícones e plataformas',section:'Conteúdo',icon:Share2,onClick:()=>openHomeTab('socials')},
@@ -77,7 +80,9 @@ export function App(){
  </div>
  {editing&&<StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onNewProject={()=>setEditor(null)} onPublish={()=>setGitHubPublishOpen(true)} onExport={portfolio.exportData} onLock={()=>{setEditing(false);setEditor(undefined)}} actions={studioActions}/>} 
   {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
+ <Suspense fallback={null}>
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
+ {editing&&imageConverterOpen&&<ImageConverter onClose={()=>setImageConverterOpen(false)}/>}
  {editing&&themePaletteOpen&&<ThemePaletteEditor value={portfolio.themePalette} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}
  {editing&&siteIdentityOpen&&<SiteIdentityEditor value={{siteFavicon:portfolio.siteFavicon,seoTitle:portfolio.seoTitle,seoDescription:portfolio.seoDescription}} homeBanner={portfolio.home.background} onSave={portfolio.setSiteIdentity} onEditBanner={()=>openHomeTab('home')} onClose={()=>setSiteIdentityOpen(false)}/>}
  {editing&&logoEditorOpen&&<BrandLogoEditor value={{siteLogo:portfolio.siteLogo,siteLogoHover:portfolio.siteLogoHover,siteLogoSize:portfolio.siteLogoSize,siteLogoHoverScale:portfolio.siteLogoHoverScale}} onSave={portfolio.setBranding} onClose={()=>setLogoEditorOpen(false)}/>}
@@ -87,5 +92,6 @@ export function App(){
  {editing&&aboutEditorOpen&&<AboutEditor value={portfolio.about} onSave={portfolio.setAbout} onClose={()=>setAboutEditorOpen(false)}/>}
  {editing&&homeEditorOpen&&<HomeEditor initialTab={homeEditorTab} showLikeCounts={portfolio.showLikeCounts} onShowLikeCounts={portfolio.setShowLikeCounts} home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} links={portfolio.socialLinks} onLinks={portfolio.setSocialLinks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
  {editing&&editor!==undefined&&<AdminEditor key={editor?.id??'new'} project={editor} projects={portfolio.projects} categories={portfolio.categories} onSave={portfolio.update} onDelete={portfolio.remove} onClose={()=>setEditor(undefined)} onCategories={portfolio.setCategories} onExport={portfolio.exportData} onImport={portfolio.importData}/>}
+ </Suspense>
  </div></AssetLibraryProvider>
 }
