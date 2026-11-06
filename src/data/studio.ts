@@ -1,4 +1,5 @@
 import type { Project } from './projects'
+import { bundledAsset } from '../lib/default-assets'
 export interface Testimonial { id:string; author:string; role:string; quote:string }
 export interface MusicTrack { id:string; title:string; artist:string; src:string; cover?:string }
 export type SocialIcon = 'github'|'instagram'|'behance'|'youtube'|'linkedin'|'twitter'|'facebook'|'twitch'|'dribbble'|'discord'|'tiktok'|'pinterest'|'reddit'|'artstation'|'globe'|'mail'|'custom'
@@ -26,8 +27,8 @@ export const defaultHome:HomeContent = {
  titleFirst:'The artist\nbehind the',
  titleSecond:'worlds.',
  introduction:"I'm Jordan Ferrary, a 3D artist focused on bringing ideas to life through art, modeling and creativity.",
- avatar:import.meta.env.BASE_URL+'images/profile/avatar.webp',
- background:import.meta.env.BASE_URL+'images/hero/hero-character.webp',
+ avatar:bundledAsset('profile/avatar.webp'),
+ background:bundledAsset('hero/hero-character.webp'),
  available:true,
  aboutTagline:'Turning imagination into reality.',
  specialties:['3D Modeling','LookDev','Stylized Art','Animation'],
@@ -77,3 +78,6 @@ export const defaultContact:ContactSettings={
  allowAvatar:false,
  allowAttachments:true
 }
+
+/** The portfolio banner is configured independently from the Home wallpaper. */
+export const defaultGalleryBackground=bundledAsset('hero/hero-character.webp')
