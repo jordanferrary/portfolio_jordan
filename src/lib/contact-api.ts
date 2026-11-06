@@ -2,9 +2,14 @@ export const contactApi=(import.meta.env.VITE_CONTACT_API_URL as string|undefine
 export type AttachmentInfo={id:string;name:string;size:number;type:string}
 export type ContactMessage={id:string;name:string;email:string;interests:string[];message:string;isRead:boolean;createdAt:string;avatar?:string|null;attachments?:AttachmentInfo[]}
 export type NewContact={name:string;email:string;interests:string[];message:string;website?:string;avatar?:string}
-async function jsonOrThrow(response:Response):Promise<unknown>{
+async function jsonOrThrow(response:Response,visitor=false):Promise<unknown>{
  const data:unknown=await response.json().catch(()=>({}))
  if(!response.ok){
+  if(visitor){
+   if(response.status===429)throw new Error('Too many messages sent. Please try again later.')
+   if(response.status===503)throw new Error('Messaging is not available yet. Please use a social link to reach out.')
+   throw new Error('Could not send your message. Please try again.')
+  }
   if(response.status===401)throw new Error('Chave de acesso inválida.')
   if(response.status===429)throw new Error('Muitas mensagens enviadas. Tente novamente mais tarde.')
   if(response.status===503)throw new Error('Servidor ainda não configurado.')
@@ -13,12 +18,12 @@ async function jsonOrThrow(response:Response):Promise<unknown>{
  return data
 }
 export async function sendContact(data:NewContact,attachments:File[]=[]):Promise<void>{
- if(!contactApi)throw new Error('O envio de mensagens ainda não está configurado.')
+ if(!contactApi)throw new Error('Messaging is not available yet.')
  const form=new FormData()
  form.set('payload',JSON.stringify(data))
  for(const file of attachments)form.append('attachments',file,file.name)
  const response=await fetch(contactApi+'/contact',{method:'POST',body:form})
- await jsonOrThrow(response)
+ await jsonOrThrow(response,true)
 }
 async function adminRequest(path:string,token:string,method='GET',body?:object):Promise<unknown>{
  if(!contactApi)throw new Error('Caixa de entrada indisponível: configure o servidor primeiro.')
@@ -75,14 +80,14 @@ export const contactAttachmentLimit=3
 export const contactAttachmentMaxBytes=4*1024*1024
 export const contactAttachmentTotalBytes=8*1024*1024
 export function validateAttachments(files:File[]):string|undefined{
- if(files.length>contactAttachmentLimit)return 'Escolha no máximo 3 arquivos.'
+ if(files.length>contactAttachmentLimit)return 'Please select no more than 3 files.'
  const total=files.reduce((sum,file)=>sum+file.size,0)
- if(total>contactAttachmentTotalBytes)return 'Os anexos não podem ultrapassar 8 MB no total.'
+ if(total>contactAttachmentTotalBytes)return 'Attachments must not exceed 8 MB in total.'
  for(const file of files){
-  if(file.size>contactAttachmentMaxBytes)return 'Cada anexo deve ter até 4 MB.'
+  if(file.size>contactAttachmentMaxBytes)return 'Each attachment must be 4 MB or smaller.'
   const validType=['image/jpeg','image/png','image/webp','application/pdf'].includes(file.type)
   const validName=/\.(jpe?g|png|webp|pdf)$/i.test(file.name)
-  if(!validType||!validName)return 'São aceitos JPG, PNG, WEBP ou PDF.'
+  if(!validType||!validName)return 'Supported formats: JPG, PNG, WEBP and PDF.'
  }
  return undefined
 }
