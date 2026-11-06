@@ -38,7 +38,7 @@ export function TextComposer({value,onChange,label,rows=5}:Props){
    <button type="button" title="Texto comum" aria-label="Texto comum" onMouseDown={e=>e.preventDefault()} onClick={()=>apply('normal')}><RemoveFormatting size={16}/></button>
    <button type="button" className={preview?'active':''} aria-pressed={preview} onClick={()=>setPreview(p=>!p)} title="Mostrar prévia">{preview?<Type size={16}/>:<Eye size={16}/>}</button>
   </div>
-  {preview?<div className="composer-preview"><RichText value={value}/><button type="button" onClick={()=>setPreview(false)}>Voltar à edição</button></div>:<textarea ref={input} value={value} onChange={e=>onChange(e.target.value)} rows={rows} aria-label={label} placeholder="Escreva seu texto. Selecione um trecho e clique no estilo desejado."/ >}
+  {preview?<div className="composer-preview"><RichText value={value}/><button type="button" onClick={()=>setPreview(false)}>Voltar à edição</button></div>:<textarea ref={input} value={value} onChange={e=>onChange(e.target.value)} rows={rows} aria-label={label} placeholder="Escreva seu texto. Selecione um trecho e clique no estilo desejado."/>}
   <small>Selecione palavras para **negrito** ou *itálico*. Use os botões H2/H3 para subtítulos na mesma seção.</small>
  </div>
 }

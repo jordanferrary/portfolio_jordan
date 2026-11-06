@@ -2,6 +2,8 @@ import { useMemo,useState, type DragEvent } from 'react'
 import { ArrowDown,ArrowUp,Download,GripVertical,ImagePlus,Plus,Save,Trash2,Upload,X } from 'lucide-react'
 import { AssetImage } from '../ui/asset-image'
 import { FilterIcon } from '../ui/filter-icon'
+import { TextComposer } from '../ui/text-composer'
+import type { ProcessStep } from '../../data/projects'
 import { categoryIcons,type Block,type BlockType,type Category,type CategoryIcon,type Project } from '../../data/projects'
 import { isLocalMedia,saveUploadedMedia } from '../../lib/media-store'
 
@@ -41,18 +43,19 @@ function ToolTags({tools,onChange}:{tools:string[];onChange:(next:string[])=>voi
 interface Props {project:Project|null; projects:Project[];categories:Category[];onSave:(project:Project)=>void;onDelete:(id:string)=>void;onClose:()=>void;onCategories:(categories:Category[])=>void;onExport:()=>Promise<void>;onImport:(file:File)=>Promise<void>}
 export function AdminEditor({project,projects,categories,onSave,onDelete,onClose,onCategories,onExport,onImport}:Props){
  const [draft,setDraft]=useState<Project>(project??blank(categories[0]?.label))
- const [tab,setTab]=useState<'project'|'filters'|'backup'>('project')
+ const [tab,setTab]=useState<'project'|'process'|'filters'|'backup'>('project')
  const [newCategory,setNewCategory]=useState('')
  const [newIcon,setNewIcon]=useState<CategoryIcon>('grid')
  const [newImage,setNewImage]=useState('')
  const [message,setMessage]=useState('')
  const [dragged,setDragged]=useState('')
  const [pending,setPending]=useState(false)
+ const [insertAt,setInsertAt]=useState<number|null>(null)
  const patch=(next:Partial<Project>)=>setDraft(prev=>({...prev,...next}))
  const updateBlock=(id:string,next:Partial<Block>)=>patch({blocks:draft.blocks.map(b=>b.id===id?{...b,...next}:b)})
  const addBlock=(type:BlockType,index=draft.blocks.length)=>{
   const b:Block={id:'b-'+Math.random().toString(36).slice(2),type,content:'',gallery:type==='gallery'?['','']:undefined}
-  const result=[...draft.blocks];result.splice(index,0,b);patch({blocks:result})
+  const result=[...draft.blocks];result.splice(index,0,b);patch({blocks:result});setInsertAt(null)
  }
  const move=(from:number,to:number)=>{
   if(from<0||to<0||from>=draft.blocks.length||to>=draft.blocks.length||from===to)return
@@ -65,7 +68,12 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
   if(source){move(draft.blocks.findIndex(b=>b.id===source),index);setDragged('')}
   else if(templates.some(t=>t.type===type))addBlock(type,index)
  }
- const media=useMemo(()=>[...new Set([draft.image,...draft.blocks.flatMap(b=>[b.type==='image'?b.content:b.media??'',b.after??'',...(b.gallery??[])])].filter(Boolean))],[draft])
+ const media=useMemo(()=>[...new Set([draft.image,...draft.blocks.flatMap(b=>[b.type==='image'?b.content:b.media??'',b.after??'',...(b.gallery??[])]),...(draft.processSteps??[]).map(s=>s.image)].filter(Boolean))],[draft])
+ const steps=draft.processSteps??[]
+ const addStep=()=>patch({processSteps:[...steps,{id:'step-'+Math.random().toString(36).slice(2),label:'Etapa '+(steps.length+1),image:''}]})
+ const updateStep=(id:string,next:Partial<ProcessStep>)=>patch({processSteps:steps.map(s=>s.id===id?{...s,...next}:s)})
+ const moveStep=(from:number,to:number)=>{if(to<0||to>=steps.length)return;const arr=[...steps];const [item]=arr.splice(from,1);arr.splice(to,0,item);patch({processSteps:arr})}
+
  const setCategory=(id:string,next:Partial<Category>)=>onCategories(categories.map(c=>c.id===id?{...c,...next}:c))
  const uploadCategoryIcon=async(file:File,id:string)=>{try{const src=await saveUploadedMedia(file,'filter-icons',id);setCategory(id,{image:src});setMessage('Ícone de filtro salvo localmente.')}catch(e){setMessage(e instanceof Error?e.message:'Falha no upload')}}
  const createCategory=()=>{
@@ -78,7 +86,7 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  }
  const save=()=>{if(!draft.title.trim()||!draft.image.trim()){setTab('project');setMessage('Informe título e imagem de capa para salvar.');return}onSave(draft);onClose()}
  return <div className="editor-overlay"><section className="editor-panel v2-editor" role="dialog" aria-modal="true" aria-label="Editor visual"><header className="editor-head"><div><span className="eyebrow">✦ LOCAL STUDIO</span><h2>{project?'Editar projeto':'Criar projeto'}</h2></div><button type="button" onClick={onClose} aria-label="Fechar editor"><X/></button></header>
- <div className="editor-tabs" role="tablist" aria-label="Áreas de edição"><button type="button" role="tab" aria-selected={tab==='project'} onClick={()=>setTab('project')}>Projeto</button><button type="button" role="tab" aria-selected={tab==='filters'} onClick={()=>setTab('filters')}>Filtros</button><button type="button" role="tab" aria-selected={tab==='backup'} onClick={()=>setTab('backup')}>Arquivos</button></div>
+ <div className="editor-tabs" role="tablist" aria-label="Áreas de edição"><button type="button" role="tab" aria-selected={tab==='project'} onClick={()=>setTab('project')}>Projeto</button><button type="button" role="tab" aria-selected={tab==='process'} onClick={()=>setTab('process')}>Processo</button><button type="button" role="tab" aria-selected={tab==='filters'} onClick={()=>setTab('filters')}>Filtros</button><button type="button" role="tab" aria-selected={tab==='backup'} onClick={()=>setTab('backup')}>Arquivos</button></div>
  <div className="editor-scroll">
  {tab==='project'&&<>
  <p className="local-warning">Projetos e mídias salvos neste navegador. As imagens ficam organizadas internamente por projeto; o ZIP exporta essas pastas. Publicação online exige backend.</p>
@@ -95,13 +103,22 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <div className="blocks-list" onDragOver={e=>e.preventDefault()} onDrop={e=>{if(e.target===e.currentTarget){const t=e.dataTransfer.getData('application/x-jf-template') as BlockType;if(templates.some(a=>a.type===t))addBlock(t)}}}>
  {draft.blocks.map((b,i)=><section key={b.id} className={'edit-block '+(dragged===b.id?'dragging':'')} onDragOver={e=>e.preventDefault()} onDrop={e=>onBlockDrop(e,i)}>
  <div className="edit-block-top"><span className="drag-handle" draggable onDragStart={e=>{e.dataTransfer.setData('application/x-jf-block',b.id);setDragged(b.id)}} onDragEnd={()=>setDragged('')} title="Arrastar bloco"><GripVertical size={18}/></span><b>{i+1}. {titleFor(b.type)}</b><div><button type="button" onClick={()=>move(i,i-1)} aria-label="Mover acima"><ArrowUp size={16}/></button><button type="button" onClick={()=>move(i,i+1)} aria-label="Mover abaixo"><ArrowDown size={16}/></button><button type="button" onClick={()=>patch({blocks:draft.blocks.filter(x=>x.id!==b.id)})} aria-label="Excluir bloco"><Trash2 size={16}/></button></div></div>
- {(b.type==='heading'||b.type==='text')&&<textarea aria-label={'Conteúdo de '+titleFor(b.type)} rows={b.type==='text'?5:2} placeholder={b.type==='heading'?'Título da etapa':'Conte a história dessa etapa'} value={b.content} onChange={e=>updateBlock(b.id,{content:e.target.value})}/>}
+ {b.type==='heading'&&<textarea aria-label="Título de seção" rows={2} value={b.content} onChange={e=>updateBlock(b.id,{content:e.target.value})}/>} 
+ {b.type==='text'&&<TextComposer label="Conteúdo formatável" value={b.content} onChange={content=>updateBlock(b.id,{content})}/>} 
  {b.type==='image'&&<MediaField label="Imagem única" folder={'projects/'+draft.id} slot={b.id} value={b.content} onChange={content=>updateBlock(b.id,{content})} onError={setMessage}/>}
- {(b.type==='image-left'||b.type==='image-right')&&<><MediaField label="Imagem deste bloco" folder={'projects/'+draft.id} slot={b.id} value={b.media??''} onChange={media=>updateBlock(b.id,{media})} onError={setMessage}/><textarea aria-label="Descrição da imagem" rows={4} placeholder="Descrição ao lado da imagem..." value={b.content} onChange={e=>updateBlock(b.id,{content:e.target.value})}/></>}
+ {(b.type==='image-left'||b.type==='image-right')&&<><MediaField label="Imagem deste bloco" folder={'projects/'+draft.id} slot={b.id} value={b.media??''} onChange={media=>updateBlock(b.id,{media})} onError={setMessage}/><TextComposer label="Texto ao lado da imagem" value={b.content} onChange={content=>updateBlock(b.id,{content})} rows={4}/></>}
  {b.type==='before-after'&&<><div className="editor-two"><MediaField label="Antes" folder={'projects/'+draft.id} slot={b.id+'-before'} value={b.media??''} onChange={media=>updateBlock(b.id,{media})} onError={setMessage}/><MediaField label="Depois" folder={'projects/'+draft.id} slot={b.id+'-after'} value={b.after??''} onChange={after=>updateBlock(b.id,{after})} onError={setMessage}/></div><textarea aria-label="Legenda da comparação" rows={2} placeholder="Descrição da comparação" value={b.content} onChange={e=>updateBlock(b.id,{content:e.target.value})}/></>}
  {b.type==='gallery'&&<><div className="gallery-fields">{(b.gallery??[]).map((value,index)=><div key={index} className="gallery-field"><MediaField label={'Imagem '+(index+1)} folder={'projects/'+draft.id} slot={b.id+'-'+index} value={value} onChange={src=>updateBlock(b.id,{gallery:(b.gallery??[]).map((x,j)=>j===index?src:x)})} onError={setMessage}/><button type="button" onClick={()=>updateBlock(b.id,{gallery:(b.gallery??[]).filter((_,j)=>j!==index)})} className="remove-gallery-item"><X size={13}/>Remover quadro</button></div>)}</div><button type="button" className="subtle-action" onClick={()=>updateBlock(b.id,{gallery:[...(b.gallery??[]),'']})}><Plus size={15}/>Outra imagem</button></>}
+ <button className="inline-add-block" type="button" onClick={()=>setInsertAt(i+1)}><Plus size={14}/>Inserir layout depois deste bloco</button>
  </section>)}</div>
- <div className="add-blocks"><button type="button" onClick={()=>addBlock('image')}><Plus size={16}/>Adicionar bloco</button></div>
+ <div className="add-blocks"><button type="button" onClick={()=>setInsertAt(draft.blocks.length)}><Plus size={16}/>Adicionar bloco — escolher layout</button></div>
+ </>}
+ {tab==='process'&&<>
+ <p className="local-warning">Estas etapas são independentes dos blocos da página. Só as imagens que o senhor escolher aparecerão na prévia lateral da galeria — sem duplicações automáticas.</p>
+ <div className="editor-section-title"><h3>Etapas apresentadas na galeria</h3><p>Quantidade livre, títulos editáveis e ordem personalizada.</p></div>
+ {steps.map((step,index)=><article className="process-edit-card" key={step.id}><div className="edit-block-top"><b>Etapa {index+1}</b><div><button type="button" aria-label="Mover etapa acima" onClick={()=>moveStep(index,index-1)}><ArrowUp size={16}/></button><button type="button" aria-label="Mover etapa abaixo" onClick={()=>moveStep(index,index+1)}><ArrowDown size={16}/></button><button type="button" aria-label="Excluir etapa" onClick={()=>patch({processSteps:steps.filter(s=>s.id!==step.id)})}><Trash2 size={16}/></button></div></div><label>Nome da etapa<input value={step.label} onChange={e=>updateStep(step.id,{label:e.target.value})} placeholder="Sculpt, Retopology, Texturing, Final..."/></label><MediaField value={step.image} onChange={image=>updateStep(step.id,{image})} label={'Imagem '+step.label} folder={'projects/'+draft.id} slot={'process-'+step.id} onError={setMessage}/></article>)}
+ <button type="button" className="subtle-action" onClick={addStep}><Plus size={16}/>Adicionar etapa</button>
+ {steps.length===0&&<p className="editor-help">Sem etapas cadastradas: a prévia mostra apenas a arte principal e o botão View Project.</p>}
  </>}
  {tab==='filters'&&<>
  <p className="local-warning">Cada filtro usa um ícone Lucide ou um arquivo na pasta lógica <strong>filter-icons/</strong>. Apenas projetos vinculados à categoria aparecerão quando ela for selecionada.</p>
@@ -112,5 +129,7 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  </>}
  {tab==='backup'&&<><p className="local-warning">O modo local não altera os arquivos públicos do GitHub. Exporte o ZIP para obter seu conteúdo e as imagens agrupadas em <strong>public/images/projects/&lt;id&gt;/</strong> e <strong>public/images/filter-icons/</strong>. Importar o ZIP restaura o Studio neste navegador.</p><div className="backup-actions"><button type="button" disabled={pending} onClick={async()=>{setPending(true);try{await onExport();setMessage('Backup ZIP gerado.')}catch{setMessage('Não foi possível exportar o backup.')}finally{setPending(false)}}}><Download size={17}/>Exportar pacote ZIP</button><label className="file-import"><Upload size={17}/>Restaurar ZIP/JSON<input type="file" accept=".zip,.json,application/zip,application/json" onChange={async e=>{const f=e.target.files?.[0];if(!f)return;setPending(true);try{await onImport(f);setMessage('Backup restaurado! Feche e reabra o editor para recarregar os dados.')}catch(err){setMessage(err instanceof Error?err.message:'Arquivo de backup inválido.')}finally{setPending(false)}}}/></label></div><p className="editor-help">Mídias enviadas por você ficam no IndexedDB deste navegador. Um ZIP é útil para backup e transferência, mas não publica nada automaticamente.</p></>}
  {message&&<p className="editor-status" role="status">{message}</p>}
- </div><footer>{project&&<button type="button" className="delete-action" onClick={()=>{if(window.confirm('Excluir o projeto deste navegador?')){onDelete(project.id);onClose()}}}><Trash2 size={16}/>Excluir</button>}<button type="button" className="save-action" onClick={save}><Save size={17}/>Salvar projeto</button></footer></section></div>
+ </div>
+ {insertAt!==null&&<div className="quick-insert-popover" role="dialog" aria-label="Escolher layout de bloco"><div className="quick-insert-head"><b>Qual layout deseja adicionar?</b><button onClick={()=>setInsertAt(null)} aria-label="Fechar escolha"><X size={18}/></button></div><div className="quick-insert-grid">{templates.map(t=><button type="button" key={t.type} onClick={()=>{addBlock(t.type,insertAt);setTab('project')}}><span className={'template-sketch '+t.type} aria-hidden="true"><i/><i/><i/></span><b>{t.label}</b></button>)}</div></div>}
+ <footer>{project&&<button type="button" className="delete-action" onClick={()=>{if(window.confirm('Excluir o projeto deste navegador?')){onDelete(project.id);onClose()}}}><Trash2 size={16}/>Excluir</button>}<button type="button" className="add-footer-block" onClick={()=>{setTab('project');setInsertAt(draft.blocks.length)}}><Plus size={16}/>Escolher bloco</button><button type="button" className="save-action" onClick={save}><Save size={17}/>Salvar projeto</button></footer></section></div>
 }

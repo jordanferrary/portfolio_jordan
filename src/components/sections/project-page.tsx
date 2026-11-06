@@ -2,15 +2,16 @@ import { useState } from 'react'
 import { ArrowLeft,ArrowUpRight,Layers3,Pencil } from 'lucide-react'
 import type { Block,Project } from '../../data/projects'
 import { AssetImage } from '../ui/asset-image'
+import { RichText } from '../ui/rich-text'
 function BeforeAfter({block,title}:{block:Block;title:string}){
  const [percent,setPercent]=useState(50)
- return <div className="comparison-block"><div className="comparison-images"><AssetImage src={block.media} alt={title+' antes'}/><div className="comparison-after" style={{clipPath:'inset(0 '+(100-percent)+'% 0 0)'}}><AssetImage src={block.after} alt={title+' depois'}/></div><span className="compare-label left">Before</span><span className="compare-label right">After</span><div className="compare-line" style={{left:percent+'%'}}><span>↔</span></div><input type="range" min="0" max="100" value={percent} onChange={e=>setPercent(Number(e.target.value))} aria-label="Comparar antes e depois"/></div>{block.content&&<p className="media-caption">{block.content}</p>}</div>
+ return <div className="comparison-block"><div className="comparison-images"><AssetImage src={block.media} alt={title+' antes'}/><div className="comparison-after" style={{clipPath:'inset(0 '+(100-percent)+'% 0 0)'}}><AssetImage src={block.after} alt={title+' depois'}/></div><span className="compare-label left">Before</span><span className="compare-label right">After</span><div className="compare-line" style={{left:percent+'%'}}><span>↔</span></div><input type="range" min="0" max="100" value={percent} onChange={e=>setPercent(Number(e.target.value))} aria-label="Comparar antes e depois"/></div>{block.content&&<RichText className="media-caption" value={block.content}/>}</div>
 }
 function StoryBlock({block,projectTitle}:{block:Block;projectTitle:string}){
  if(block.type==='heading')return <section className="story-block block-heading"><h2>{block.content}</h2></section>
- if(block.type==='text')return <section className="story-block block-text"><p>{block.content}</p></section>
+ if(block.type==='text')return <section className="story-block block-text"><RichText value={block.content}/></section>
  if(block.type==='image')return <section className="story-block block-image"><AssetImage src={block.content} alt={'Arte de '+projectTitle} loading="lazy"/></section>
- if(block.type==='image-left'||block.type==='image-right')return <section className={'story-block story-split '+block.type}><AssetImage src={block.media} alt={'Etapa de '+projectTitle} loading="lazy"/><p>{block.content}</p></section>
+ if(block.type==='image-left'||block.type==='image-right')return <section className={'story-block story-split '+block.type}><AssetImage src={block.media} alt={'Etapa de '+projectTitle} loading="lazy"/><RichText value={block.content}/></section>
  if(block.type==='before-after')return <section className="story-block"><BeforeAfter block={block} title={projectTitle}/></section>
  if(block.type==='gallery')return <section className="story-block story-multi-images">{(block.gallery??[]).filter(Boolean).map((source,i)=><AssetImage key={source+i} src={source} alt={projectTitle+' — imagem '+(i+1)} loading="lazy"/>)}</section>
  return null
