@@ -115,3 +115,7 @@ O frame de Home foi reproduzido a partir do screenshot anexado. A arte original 
 - O formulário permite foto de perfil **opcional, fornecida pelo remetente**, guardada na caixa de entrada. Se não houver foto, o sistema exibe iniciais em um avatar de cor própria. Não é possível obter automaticamente uma foto privada da conta de e-mail de alguém apenas pelo endereço.
 - No painel de mensagens, as exclusões individuais já existiam. Agora há o botão **Limpar lidas** com confirmação para gerir vários contatos.
 - Para envios reais entre navegadores, continue com a ativação do Worker/D1 documentada em `server/likes-worker/README.md`. A interface não afirma sucesso antes de o servidor responder.
+
+
+### Envio alternativo enquanto o backend não é ativado
+É possível adicionar a rede social **E-mail** com um endereço `mailto:seu-email@dominio.com` em **Local Studio → Redes sociais**. Se a API de mensagens ainda não estiver configurada, o formulário poderá abrir o aplicativo de e-mail do visitante com nome, e-mail, interesses e texto preenchidos. O visitante ainda deve confirmar o envio no próprio aplicativo; fotos opcionais não são anexadas nesse modo e não aparecem no sininho. A caixa de entrada do site exige a API/D1 para trabalhar entre dispositivos.
