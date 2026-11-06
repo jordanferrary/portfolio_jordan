@@ -9,7 +9,7 @@ const KEY='jordan-portfolio-local-v2'
 const PENDING_KEY='jordan-portfolio-publish-pending-v1'
 const bundled=publishedPackage as {schema:number;revision:string;store:unknown}
 export const currentPublishedRevision=bundled.revision||'initial'
-export interface PortfolioStore {projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
+export interface PortfolioStore {siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
 export function clampBrandScale(value:unknown,fallback:number,min:number,max:number):number{
  const number=typeof value==='number'?value:Number(value)
  return Number.isFinite(number)?Math.max(min,Math.min(max,Math.round(number))):fallback
@@ -38,6 +38,9 @@ function parseStore(raw:unknown):PortfolioStore{
  const home={...defaultHome,...(obj.home??{}),avatar:normalizeBundledImage(obj.home?.avatar??defaultHome.avatar),background:normalizeBundledImage(obj.home?.background??defaultHome.background)}
  const galleryBackground=normalizeBundledImage(obj.galleryBackground??obj.home?.background??defaultGalleryBackground)
  const siteLogo=typeof obj.siteLogo==='string'?normalizeBundledImage(obj.siteLogo):''
+ const siteFavicon=typeof obj.siteFavicon==='string'?normalizeBundledImage(obj.siteFavicon):''
+ const seoTitle=typeof obj.seoTitle==='string'&&obj.seoTitle.trim()?obj.seoTitle:'Jordan Ferrary — Creative Portfolio'
+ const seoDescription=typeof obj.seoDescription==='string'&&obj.seoDescription.trim()?obj.seoDescription:'Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'
  const siteLogoHover=typeof obj.siteLogoHover==='string'?normalizeBundledImage(obj.siteLogoHover):''
  const siteLogoSize=clampBrandScale(obj.siteLogoSize,100,65,180)
  const siteLogoHoverScale=clampBrandScale(obj.siteLogoHoverScale,110,100,170)
@@ -55,13 +58,13 @@ function parseStore(raw:unknown):PortfolioStore{
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
- return {projects,categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale}
+ return {projects,categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
 }
 function publishedStore():PortfolioStore{
  if(bundled.schema===1&&bundled.store){
   try{return parseStore(bundled.store)}catch{/* preserve original defaults when a malformed content file is committed */}
  }
- return {projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,siteLogo:'',siteLogoHover:'',siteLogoSize:100,siteLogoHoverScale:110}
+ return {projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,siteLogo:'',siteLogoHover:'',siteLogoSize:100,siteLogoHoverScale:110,siteFavicon:'',seoTitle:'Jordan Ferrary — Creative Portfolio',seoDescription:'Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'}
 }
 function load():PortfolioStore{
  try{
@@ -85,6 +88,7 @@ function refsFor(store:PortfolioStore):string[]{
  if(isLocalMedia(store.galleryBackground))refs.add(store.galleryBackground)
  if(isLocalMedia(store.siteLogo))refs.add(store.siteLogo)
  if(isLocalMedia(store.siteLogoHover))refs.add(store.siteLogoHover)
+ if(isLocalMedia(store.siteFavicon))refs.add(store.siteFavicon)
  if(isLocalMedia(store.about.portrait))refs.add(store.about.portrait)
  if(isLocalMedia(store.about.secondaryImage))refs.add(store.about.secondaryImage)
  for(const t of store.musicTracks){if(isLocalMedia(t.src))refs.add(t.src);if(t.cover&&isLocalMedia(t.cover))refs.add(t.cover)}
@@ -125,6 +129,7 @@ export function usePortfolio(editing=false){
  }
  const setGalleryBackground=(galleryBackground:string)=>save({...store,galleryBackground})
  const setBranding=(values:Pick<PortfolioStore,'siteLogo'|'siteLogoHover'|'siteLogoSize'|'siteLogoHoverScale'>)=>save({...store,...values,siteLogoSize:clampBrandScale(values.siteLogoSize,100,65,180),siteLogoHoverScale:clampBrandScale(values.siteLogoHoverScale,110,100,170)})
+ const setSiteIdentity=(values:Pick<PortfolioStore,'siteFavicon'|'seoTitle'|'seoDescription'>)=>save({...store,...values,seoTitle:values.seoTitle.trim().slice(0,110),seoDescription:values.seoDescription.trim().slice(0,240)})
  const setAbout=(about:AboutContent)=>save({...store,about})
  const setContact=(contact:ContactSettings)=>save({...store,contact})
  const setTestimonials=(testimonials:Testimonial[])=>save({...store,testimonials})
@@ -164,5 +169,5 @@ export function usePortfolio(editing=false){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setCategories,setHome,setGalleryBackground,setBranding,setAbout,setContact,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setCategories,setHome,setGalleryBackground,setBranding,setSiteIdentity,setAbout,setContact,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }

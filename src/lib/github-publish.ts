@@ -98,7 +98,10 @@ function stageSnapshot(store:PortfolioStore){
   siteLogo:store.siteLogo,
   siteLogoHover:store.siteLogoHover,
   siteLogoSize:store.siteLogoSize,
-  siteLogoHoverScale:store.siteLogoHoverScale
+  siteLogoHoverScale:store.siteLogoHoverScale,
+  siteFavicon:store.siteFavicon,
+  seoTitle:store.seoTitle,
+  seoDescription:store.seoDescription
  }
  return JSON.parse(JSON.stringify(publicData)) as PortfolioStore
 }
@@ -168,6 +171,7 @@ export async function publishPortfolioToGitHub(
  snapshot.galleryBackground=await stage(snapshot.galleryBackground,'image')
  snapshot.siteLogo=await stage(snapshot.siteLogo,'image')
  snapshot.siteLogoHover=await stage(snapshot.siteLogoHover,'image')
+ snapshot.siteFavicon=await stage(snapshot.siteFavicon,'image')
  snapshot.about.portrait=await stage(snapshot.about.portrait,'image')
  snapshot.about.secondaryImage=await stage(snapshot.about.secondaryImage,'image')
  for(const music of snapshot.musicTracks){
