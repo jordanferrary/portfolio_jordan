@@ -95,7 +95,7 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <label>Título<input value={draft.title} onChange={e=>patch({title:e.target.value})}/></label>
  <div className="editor-two"><label>Filtro do projeto<select value={draft.category} onChange={e=>patch({category:e.target.value})}>{categories.map(c=><option key={c.id} value={c.label}>{c.label}</option>)}</select></label><label>Ano<input value={draft.year} onChange={e=>patch({year:e.target.value})}/></label></div>
  <MediaField value={draft.image} onChange={image=>patch({image})} folder={'projects/'+draft.id} slot="cover" label="Capa" onError={setMessage}/>
- <label>Descrição principal<textarea rows={4} value={draft.description} onChange={e=>patch({description:e.target.value})}/></label>
+ <div className="project-description-composer"><p>Descrição principal</p><TextComposer label="Descrição do projeto" rows={4} value={draft.description} onChange={description=>patch({description})}/></div>
  <div className="tools-control"><p>Ferramentas utilizadas</p><ToolTags tools={draft.tools} onChange={tools=>patch({tools})}/></div>
  <label className="checkbox-line"><input type="checkbox" checked={draft.featured} onChange={e=>patch({featured:e.target.checked})}/>Exibir em trabalhos de destaque</label>
  {media.length>0&&<><div className="editor-section-title"><h3>Meus assets deste projeto</h3><p>Arraste estas miniaturas até um campo de imagem abaixo.</p></div><div className="asset-shelf">{media.map(src=><div key={src} className="asset-shelf-item" draggable onDragStart={event=>event.dataTransfer.setData('application/x-jf-asset',src)} title="Arraste para uma área de imagem"><AssetImage src={src} alt="Asset disponível"/></div>)}</div></>}

@@ -61,3 +61,12 @@
  .case-study{margin-top:37px!important}
  .project-engagement{margin-top:13px}
 }
+
+/* Main project summaries also support the Studio's rich text formatting. */
+.project-description-composer{margin:14px 0 20px}
+.project-description-composer>p{font-size:13px;color:#c8a5de;margin:0 0 9px}
+.project-hero-content .project-hero-description{font-size:15px;line-height:1.7;color:#dfd1e8;max-width:570px}
+.project-hero-content .project-hero-description p{margin:0 0 9px}
+.inline-preview-content .preview-description{font-size:14px;line-height:1.5;color:#d1c1e0}
+.inline-preview-content .preview-description h2{font-size:21px}
+.inline-preview-content .preview-description h3{font-size:17px}

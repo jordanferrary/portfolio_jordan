@@ -50,9 +50,10 @@ async function visitor(req:Request,env:Environment):Promise<{id:string;cookie?:s
 }
 export default {
  async fetch(request:Request,env:Environment):Promise<Response>{
-  const origin=request.headers.get('Origin')??''
+  const origin=request.headers.get('Origin')
   const allowed=env.ALLOWED_ORIGIN.replace(/\/$/,'')
-  if(!origin||origin!==allowed)return new Response('Origin not allowed',{status:403})
+  const sameOrigin=new URL(request.url).origin===allowed
+  if(origin!==allowed&&!(origin===null&&sameOrigin))return new Response('Origin not allowed',{status:403})
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:cors(allowed)})
   if(!['GET','POST'].includes(request.method))return reply({error:'method_not_allowed'},405,allowed)
   if(!env.COOKIE_SECRET||env.COOKIE_SECRET.length<32)return reply({error:'server_not_configured'},503,allowed)
