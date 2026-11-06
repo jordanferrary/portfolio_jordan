@@ -1,5 +1,493 @@
 {
   "schema": 1,
-  "revision": "initial",
-  "store": null
+  "revision": "2026-11-06T07:04:45.618Z-da1572cb-1cc9-471d-a5a3-3ee2dba6c576",
+  "store": {
+    "projects": [
+      {
+        "id": "moonlit-cottage",
+        "title": "Moonlit Cottage",
+        "category": "Environments",
+        "year": "2026",
+        "image": "/portfolio_jordan/images/projects/moonlit-cottage/moonlit-cottage.webp",
+        "description": "A stylized fantasy cottage with warm windows and a cinematic nighttime atmosphere.",
+        "tools": [
+          "Blender",
+          "Lighting"
+        ],
+        "featured": true,
+        "blocks": [
+          {
+            "id": "moonlit-cottage-intro",
+            "type": "heading",
+            "content": "Behind the project"
+          },
+          {
+            "id": "moonlit-cottage-story",
+            "type": "text",
+            "content": "A stylized fantasy cottage with warm windows and a cinematic nighttime atmosphere."
+          },
+          {
+            "id": "moonlit-cottage-visual",
+            "type": "image",
+            "content": "/portfolio_jordan/images/projects/moonlit-cottage/moonlit-cottage.webp"
+          },
+          {
+            "id": "moonlit-cottage-process",
+            "type": "heading",
+            "content": "Creative process"
+          },
+          {
+            "id": "moonlit-cottage-details",
+            "type": "text",
+            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
+          }
+        ],
+        "processSteps": []
+      },
+      {
+        "id": "astral-guardian",
+        "title": "Astral Guardian",
+        "category": "Stylized",
+        "year": "2025",
+        "image": "/portfolio_jordan/images/projects/astral-guardian/astral-guardian.webp",
+        "description": "A fantasy-inspired stylized character exploration.",
+        "tools": [
+          "Blender"
+        ],
+        "featured": false,
+        "blocks": [
+          {
+            "id": "astral-guardian-intro",
+            "type": "heading",
+            "content": "Behind the project"
+          },
+          {
+            "id": "astral-guardian-story",
+            "type": "text",
+            "content": "A fantasy-inspired stylized character exploration."
+          },
+          {
+            "id": "astral-guardian-visual",
+            "type": "image",
+            "content": "/portfolio_jordan/images/projects/astral-guardian/astral-guardian.webp"
+          },
+          {
+            "id": "astral-guardian-process",
+            "type": "heading",
+            "content": "Creative process"
+          },
+          {
+            "id": "astral-guardian-details",
+            "type": "text",
+            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
+          }
+        ],
+        "processSteps": []
+      },
+      {
+        "id": "neon-armor",
+        "title": "Neon Armor",
+        "category": "Props",
+        "year": "2025",
+        "image": "/portfolio_jordan/images/projects/neon-armor/neon-armor.webp",
+        "description": "Hard-surface shapes, modular forms and glowing purple accents.",
+        "tools": [
+          "Blender"
+        ],
+        "featured": false,
+        "blocks": [
+          {
+            "id": "neon-armor-intro",
+            "type": "heading",
+            "content": "Behind the project"
+          },
+          {
+            "id": "neon-armor-story",
+            "type": "text",
+            "content": "Hard-surface shapes, modular forms and glowing purple accents."
+          },
+          {
+            "id": "neon-armor-visual",
+            "type": "image",
+            "content": "/portfolio_jordan/images/projects/neon-armor/neon-armor.webp"
+          },
+          {
+            "id": "neon-armor-process",
+            "type": "heading",
+            "content": "Creative process"
+          },
+          {
+            "id": "neon-armor-details",
+            "type": "text",
+            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
+          }
+        ],
+        "processSteps": []
+      },
+      {
+        "id": "ancient-ruins",
+        "title": "Ancient Ruins",
+        "category": "Environments",
+        "year": "2025",
+        "image": "/portfolio_jordan/images/projects/ancient-ruins/ancient-ruins.webp",
+        "description": "An atmospheric study of monumental ancient architecture.",
+        "tools": [
+          "Blender"
+        ],
+        "featured": false,
+        "blocks": [
+          {
+            "id": "ancient-ruins-intro",
+            "type": "heading",
+            "content": "Behind the project"
+          },
+          {
+            "id": "ancient-ruins-story",
+            "type": "text",
+            "content": "An atmospheric study of monumental ancient architecture."
+          },
+          {
+            "id": "ancient-ruins-visual",
+            "type": "image",
+            "content": "/portfolio_jordan/images/projects/ancient-ruins/ancient-ruins.webp"
+          },
+          {
+            "id": "ancient-ruins-process",
+            "type": "heading",
+            "content": "Creative process"
+          },
+          {
+            "id": "ancient-ruins-details",
+            "type": "text",
+            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
+          }
+        ],
+        "processSteps": []
+      },
+      {
+        "id": "deepwalker",
+        "title": "Deepwalker",
+        "category": "Characters",
+        "year": "2026",
+        "image": "/portfolio_jordan/images/projects/deepwalker/deepwalker.webp",
+        "description": "An underwater-inspired stylized character exploring silhouette, materials and personality.",
+        "tools": [
+          "ZBrush",
+          "Blender"
+        ],
+        "featured": true,
+        "blocks": [
+          {
+            "id": "deepwalker-intro",
+            "type": "heading",
+            "content": "Behind the project"
+          },
+          {
+            "id": "deepwalker-story",
+            "type": "text",
+            "content": "An underwater-inspired stylized character exploring silhouette, materials and personality."
+          },
+          {
+            "id": "deepwalker-visual",
+            "type": "image",
+            "content": "/portfolio_jordan/images/projects/deepwalker/deepwalker.webp"
+          },
+          {
+            "id": "deepwalker-process",
+            "type": "heading",
+            "content": "Creative process"
+          },
+          {
+            "id": "deepwalker-details",
+            "type": "text",
+            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
+          }
+        ],
+        "processSteps": []
+      },
+      {
+        "id": "project-mw4e618j",
+        "title": "Novo projeto",
+        "category": "Props",
+        "year": "2026",
+        "image": "/portfolio_jordan/images/projects/astral-guardian/astral-guardian.webp",
+        "description": "",
+        "tools": [],
+        "featured": false,
+        "blocks": [
+          {
+            "id": "b-z4v77536ijt",
+            "type": "heading",
+            "content": "==**Titulo**=="
+          },
+          {
+            "id": "b-0daxu5hnbsz",
+            "type": "divider",
+            "content": "",
+            "dividerIcon": "sparkles",
+            "dividerStyle": "glow"
+          },
+          {
+            "id": "b-yi7jft7crnf",
+            "type": "text",
+            "content": "==Lorem ipsum== dolor sit amet, consectetur adipiscing elit. Vivamus lobortis nunc nec lorem pretium, et pellentesque turpis posuere. Fusce ultricies consectetur posuere. Sed at rhoncus arcu, eu tincidunt eros. Pellentesque porttitor a nibh nec cursus. Quisque ut dolor euismod, fermentum ligula posuere, feugiat purus. Cras congue ligula magna, quis porttitor risus faucibus in. Aenean gravida rutrum eleifend. Ut tristique neque ac mi posuere tristique. Nam vel vestibulum nulla, id accumsan mauris.\n\nNam hendrerit tellus non augue tempor, ut cursus augue posuere. Integer lacus leo, fringilla consectetur mattis et, ornare eget arcu. Cras viverra, diam eu condimentum iaculis, orci risus tempor augue, malesuada vulputate elit arcu et ex. Nulla facilisi. Vivamus sagittis, mi at porta finibus, turpis sem semper eros, sed sodales turpis massa sed sapien. Etiam ornare laoreet elit rutrum ullamcorper. Quisque vel dapibus tortor, quis bibendum dolor. Quisque urna mauris, sollicitudin et malesuada et, laoreet at diam."
+          },
+          {
+            "id": "b-uikxj2nt46",
+            "type": "divider",
+            "content": "",
+            "dividerIcon": "star",
+            "dividerStyle": "solid"
+          },
+          {
+            "id": "b-ighruy3me2t",
+            "type": "image",
+            "content": "/portfolio_jordan/images/hero/hero-character.webp"
+          },
+          {
+            "id": "b-aowjn0egcvc",
+            "type": "divider",
+            "content": "",
+            "dividerIcon": "diamond",
+            "dividerStyle": "dashed"
+          },
+          {
+            "id": "b-9yzbqrk7tpp",
+            "type": "image-left",
+            "content": "*Lorem ipsum dolor sit amet*, consectetur adipiscing elit. Donec in dignissim justo. Praesent et finibus lorem, a facilisis ante. Morbi non suscipit sem. Sed vel feugiat est. Etiam eget eros purus. Aliquam pretium, odio nec sagittis fermentum, elit ante venenatis eros, non gravida velit purus sed lacus. Nam bibendum non purus in porttitor. Morbi pharetra libero ut fringilla efficitur. In imperdiet cursus purus, et hendrerit lorem bibendum id. Integer auctor id libero sit amet fringilla. Nullam efficitur imperdiet nulla in sollicitudin. Curabitur vehicula orci sit amet turpis vulputate, in placerat diam placerat. Aenean non sem a orci posuere faucibus eu in nibh. Integer dapibus egestas aliquam. **Fusce rutrum nisi vel posuere imperdiet.**",
+            "media": "/portfolio_jordan/images/projects/deepwalker/deepwalker.webp"
+          },
+          {
+            "id": "b-xrvib6os3ps",
+            "type": "divider",
+            "content": "",
+            "dividerIcon": "circle",
+            "dividerStyle": "solid"
+          },
+          {
+            "id": "b-i6efadh3v1",
+            "type": "image-right",
+            "content": "*Lorem ipsum dolor sit amet*, consectetur adipiscing elit. Donec in dignissim justo. Praesent et finibus lorem, a facilisis ante. Morbi non suscipit sem. Sed vel feugiat est. Etiam eget eros purus. Aliquam pretium, odio nec sagittis fermentum, elit ante venenatis eros, non gravida velit purus sed lacus. Nam bibendum non purus in porttitor. Morbi pharetra libero ut fringilla efficitur. In imperdiet cursus purus, et hendrerit lorem bibendum id. Integer auctor id libero sit amet fringilla. Nullam efficitur imperdiet nulla in sollicitudin. Curabitur vehicula orci sit amet turpis vulputate, in placerat diam placerat. Aenean non sem a orci posuere faucibus eu in nibh. Integer dapibus egestas aliquam. **Fusce rutrum nisi vel posuere imperdiet.**",
+            "media": "/portfolio_jordan/images/projects/void-wanderer/void-wanderer.webp"
+          },
+          {
+            "id": "b-5khjwz9ntlm",
+            "type": "before-after",
+            "content": "eu estou amando isso",
+            "media": "site://images/studio/a68aa0534ca1697b6f53d3c3bc4b2d5b7a8c59f23e430156d82bf192e429bc20.jpg",
+            "after": "site://images/studio/a68aa0534ca1697b6f53d3c3bc4b2d5b7a8c59f23e430156d82bf192e429bc20.jpg"
+          },
+          {
+            "id": "b-3tz2dronxqw",
+            "type": "gallery",
+            "content": "",
+            "gallery": [
+              "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg",
+              "site://images/studio/4beba119132b5d4d841e5c69040a4b5ec98e4baa10717e021e6a9db26fd704fc.jpg",
+              "/portfolio_jordan/images/projects/ancient-ruins/ancient-ruins.webp",
+              "/portfolio_jordan/images/profile/avatar.webp"
+            ]
+          }
+        ],
+        "processSteps": [
+          {
+            "id": "step-p21xgrdjobt",
+            "label": "Etapa 1",
+            "image": "site://images/studio/4beba119132b5d4d841e5c69040a4b5ec98e4baa10717e021e6a9db26fd704fc.jpg"
+          },
+          {
+            "id": "step-5x9z9disb5n",
+            "label": "Etapa 2",
+            "image": "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg"
+          },
+          {
+            "id": "step-0761hlc62hwf",
+            "label": "Etapa 3",
+            "image": "/portfolio_jordan/images/projects/void-wanderer/void-wanderer.webp"
+          },
+          {
+            "id": "step-9c01gluv31g",
+            "label": "Etapa 4",
+            "image": "site://images/studio/4beba119132b5d4d841e5c69040a4b5ec98e4baa10717e021e6a9db26fd704fc.jpg"
+          }
+        ]
+      },
+      {
+        "id": "project-mw4ctf88",
+        "title": "Novo projeto",
+        "category": "Props",
+        "year": "2026",
+        "image": "/portfolio_jordan/images/projects/deepwalker/deepwalker.webp",
+        "description": "",
+        "tools": [],
+        "featured": false,
+        "blocks": [],
+        "processSteps": []
+      },
+      {
+        "id": "void-wanderer",
+        "title": "Void Wanderer",
+        "category": "Characters",
+        "year": "2026",
+        "image": "/portfolio_jordan/images/projects/void-wanderer/void-wanderer.webp",
+        "description": "A character study focused on style, expression and mood. This project explores a more introspective and mysterious aesthetic.",
+        "tools": [
+          "ZBrush",
+          "Blender",
+          "Texturing"
+        ],
+        "featured": true,
+        "blocks": [
+          {
+            "id": "void-wanderer-intro",
+            "type": "heading",
+            "content": "Behind the project"
+          },
+          {
+            "id": "void-wanderer-story",
+            "type": "text",
+            "content": "A character study focused on style, expression and mood. This project explores a more introspective and mysterious aesthetic."
+          },
+          {
+            "id": "void-wanderer-visual",
+            "type": "image",
+            "content": "/portfolio_jordan/images/projects/void-wanderer/void-wanderer.webp"
+          },
+          {
+            "id": "void-wanderer-process",
+            "type": "heading",
+            "content": "Creative process"
+          },
+          {
+            "id": "void-wanderer-details",
+            "type": "text",
+            "content": "Explore the sculpt, topology, materials, lighting and final presentation of this work."
+          }
+        ],
+        "processSteps": []
+      }
+    ],
+    "categories": [
+      {
+        "id": "props",
+        "label": "Props",
+        "icon": "box"
+      },
+      {
+        "id": "stylized",
+        "label": "Stylized",
+        "icon": "sparkles"
+      },
+      {
+        "id": "others",
+        "label": "Others",
+        "icon": "grid"
+      },
+      {
+        "id": "enviroment-lgi",
+        "label": "enviroment",
+        "icon": "mountain"
+      }
+    ],
+    "home": {
+      "eyebrow": "3D Artist & Digital Creator",
+      "titleFirst": "The artist\nbehind the",
+      "titleSecond": "worlds.",
+      "introduction": "I'm Jordan Ferrary, a 3D artist focused on bringing ideas to life through art, modeling and creativity.",
+      "avatar": "/portfolio_jordan/images/profile/avatar.webp",
+      "background": "/portfolio_jordan/images/hero/hero-character.webp",
+      "available": true,
+      "aboutTagline": "Turning imagination into reality.",
+      "specialties": [
+        "3D Modeling",
+        "LookDev",
+        "Stylized Art",
+        "Animation"
+      ],
+      "focusItems": [
+        "3D Art & Characters",
+        "Games & Interactive",
+        "Stylized Assets & Environments"
+      ]
+    },
+    "testimonials": [
+      {
+        "id": "review-mw4agj2p",
+        "author": "",
+        "role": "",
+        "quote": ""
+      }
+    ],
+    "musicTracks": [
+      {
+        "id": "track-mw4bndwq-8yb",
+        "title": "Pokemon lofi",
+        "artist": "Evelyn Rivera",
+        "src": "site://audio/studio/063e328d6051261e6f9ede9fc7b768925237722494a780948d22399834c53938.m4a",
+        "cover": "site://images/studio/4beba119132b5d4d841e5c69040a4b5ec98e4baa10717e021e6a9db26fd704fc.jpg"
+      },
+      {
+        "id": "track-mw4gu144-p0z",
+        "title": "Alone Again",
+        "artist": "Chapters",
+        "src": "site://audio/studio/554783c278077543b45d86594e3476819091e487f2d364ea5e50b9bf8e93410f.mp3",
+        "cover": "site://images/studio/d2f9fee9741617031eaf0789507df503b513b963cee8598f7304d8a109e0ab46.jpg"
+      }
+    ],
+    "socialLinks": [
+      {
+        "id": "github",
+        "label": "GitHub",
+        "url": "https://github.com/jordanferrary",
+        "icon": "github"
+      },
+      {
+        "id": "behance",
+        "label": "Behance",
+        "url": "",
+        "icon": "behance"
+      },
+      {
+        "id": "instagram",
+        "label": "Instagram",
+        "url": "https://www.instagram.com/jordan_.ferrary/",
+        "icon": "instagram"
+      }
+    ],
+    "showLikeCounts": false,
+    "about": {
+      "eyebrow": "✦ Behind the art",
+      "titleFirst": "More than pixels.",
+      "titleAccent": "A creative vision.",
+      "name": "Jordan Ferrary",
+      "bio": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec in dignissim justo. Praesent et finibus lorem, a facilisis ante. Morbi non suscipit sem. Sed vel feugiat est. Etiam eget eros purus. Aliquam pretium, odio nec sagittis fermentum, elit ante venenatis eros, non gravida velit purus sed lacus. Nam bibendum non purus in porttitor. Morbi pharetra libero ut fringilla efficitur. In imperdiet cursus purus, et hendrerit lorem bibendum id. Integer auctor id libero sit amet fringilla. Nullam efficitur imperdiet nulla in sollicitudin. Curabitur vehicula orci sit amet turpis vulputate, in placerat diam placerat. Aenean non sem a orci posuere faucibus eu in nibh. Integer dapibus egestas aliquam. Fusce rutrum nisi vel posuere imperdiet.",
+      "portrait": "/portfolio_jordan/images/profile/avatar.webp",
+      "secondaryImage": "",
+      "specialties": [
+        "3D Modeling",
+        "Sculpting",
+        "Motion Design",
+        "Illustration",
+        "Game Art"
+      ]
+    },
+    "contact": {
+      "titleFirst": "Have a project",
+      "titleAccent": "in mind?",
+      "introduction": "Conte sua ideia, seus objetivos e o que procura em um artista 3D. Assim podemos encontrar a melhor direção criativa para o projeto.",
+      "greeting": "Olá! Conte um pouco sobre o que deseja criar. Preencha suas informações e envie referências, se quiser.",
+      "interestOptions": [
+        "Personagens 3D",
+        "Modelagem e sculpt",
+        "Cenários",
+        "Game Art",
+        "Motion Design",
+        "Ilustração",
+        "Outros"
+      ],
+      "allowAvatar": true,
+      "allowAttachments": true
+    },
+    "galleryBackground": "/portfolio_jordan/images/projects/ancient-ruins/ancient-ruins.webp"
+  }
 }
