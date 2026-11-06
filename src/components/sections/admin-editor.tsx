@@ -1,4 +1,4 @@
-import { useMemo,useState, type DragEvent } from 'react'
+import { useEffect,useMemo,useState, type DragEvent } from 'react'
 import { ArrowDown,ArrowUp,Download,GripVertical,ImagePlus,Plus,Save,Trash2,Upload,X } from 'lucide-react'
 import { AssetImage } from '../ui/asset-image'
 import { AssetClipButton } from '../ui/asset-picker'
@@ -46,7 +46,7 @@ function ToolTags({tools,onChange}:{tools:string[];onChange:(next:string[])=>voi
 interface Props {project:Project|null; projects:Project[];categories:Category[];onSave:(project:Project)=>void;onDelete:(id:string)=>void;onClose:()=>void;onCategories:(categories:Category[])=>void;onExport:()=>Promise<void>;onImport:(file:File)=>Promise<void>}
 export function AdminEditor({project,projects,categories,onSave,onDelete,onClose,onCategories,onExport,onImport}:Props){
  const [draft,setDraft]=useState<Project>(project??blank(categories[0]?.label))
- const [tab,setTab]=useState<'project'|'process'|'filters'|'backup'>('project')
+ const [tab,setTab]=useState<'project'|'composition'|'process'|'filters'|'backup'>('project')
  const [newCategory,setNewCategory]=useState('')
  const [newIcon,setNewIcon]=useState<CategoryIcon>('grid')
  const [newImage,setNewImage]=useState('')
@@ -54,6 +54,11 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  const [dragged,setDragged]=useState('')
  const [pending,setPending]=useState(false)
  const [insertAt,setInsertAt]=useState<number|null>(null)
+ useEffect(()=>{
+  const previous=document.body.style.overflow
+  document.body.style.overflow='hidden'
+  return ()=>{document.body.style.overflow=previous}
+ },[])
  const patch=(next:Partial<Project>)=>setDraft(prev=>({...prev,...next}))
  const updateBlock=(id:string,next:Partial<Block>)=>patch({blocks:draft.blocks.map(b=>b.id===id?{...b,...next}:b)})
  const addBlock=(type:BlockType,index=draft.blocks.length)=>{
@@ -88,19 +93,22 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
   setNewCategory('');setNewImage('');setMessage('Filtro criado. Ele aparecerá na galeria e poderá ser usado em qualquer projeto.')
  }
  const save=()=>{if(!draft.title.trim()||!draft.image.trim()){setTab('project');setMessage('Informe título e imagem de capa para salvar.');return}onSave(draft);onClose()}
- return <div className="editor-overlay" lang="pt-BR"><section className="editor-panel v2-editor" role="dialog" aria-modal="true" aria-label="Editor visual"><header className="editor-head"><div><span className="eyebrow">✦ LOCAL STUDIO</span><h2>{project?'Editar projeto':'Criar projeto'}</h2></div><button type="button" onClick={onClose} aria-label="Fechar editor"><X/></button></header>
- <div className="editor-tabs" role="tablist" aria-label="Áreas de edição"><button type="button" role="tab" aria-selected={tab==='project'} onClick={()=>setTab('project')}>Projeto</button><button type="button" role="tab" aria-selected={tab==='process'} onClick={()=>setTab('process')}>Processo</button><button type="button" role="tab" aria-selected={tab==='filters'} onClick={()=>setTab('filters')}>Filtros</button><button type="button" role="tab" aria-selected={tab==='backup'} onClick={()=>setTab('backup')}>Arquivos</button></div>
+ return <div className="editor-overlay project-focus-overlay" lang="pt-BR"><section className="editor-panel v2-editor" role="dialog" aria-modal="true" aria-label="Espaço de trabalho do projeto"><header className="editor-head"><div className="studio-project-identity"><div className="studio-project-thumb">{draft.image?<AssetImage src={draft.image} alt="Capa do projeto atual"/>:<ImagePlus size={24}/>}</div><div><span className="eyebrow">✦ LOCAL STUDIO · PROJETO EM FOCO</span><h2>{draft.title||'Novo projeto'}</h2><small>{draft.category} · {draft.year} · Alterações locais</small></div></div><button type="button" onClick={onClose} aria-label="Fechar editor"><X/></button></header>
+ <div className="editor-tabs" role="tablist" aria-label="Áreas de edição"><button type="button" role="tab" aria-selected={tab==='project'} onClick={()=>setTab('project')}>01 · Informações</button><button type="button" role="tab" aria-selected={tab==='composition'} onClick={()=>setTab('composition')}>02 · Composição</button><button type="button" role="tab" aria-selected={tab==='process'} onClick={()=>setTab('process')}>03 · Processo</button><button type="button" role="tab" aria-selected={tab==='filters'} onClick={()=>setTab('filters')}>04 · Categorias</button><button type="button" role="tab" aria-selected={tab==='backup'} onClick={()=>setTab('backup')}>05 · Arquivos</button></div>
  <div className="editor-scroll">
  {tab==='project'&&<>
- <p className="local-warning">Projetos e mídias salvos neste navegador. As imagens ficam organizadas internamente por projeto; o ZIP exporta essas pastas. Publicação online exige backend.</p>
+ <p className="local-warning">Edição exclusiva deste projeto. O rascunho fica neste navegador; depois de salvar, use “Publicar no GitHub” para atualizar o portfólio público.</p>
  <label>Título<input value={draft.title} onChange={e=>patch({title:e.target.value})}/></label>
  <div className="editor-two"><label>Filtro do projeto<select value={draft.category} onChange={e=>patch({category:e.target.value})}>{categories.map(c=><option key={c.id} value={c.label}>{c.label}</option>)}</select></label><label>Ano<input value={draft.year} onChange={e=>patch({year:e.target.value})}/></label></div>
  <MediaField value={draft.image} onChange={image=>patch({image})} folder={'projects/'+draft.id} slot="cover" label="Capa" onError={setMessage}/>
  <div className="project-description-composer"><p>Descrição principal</p><TextComposer label="Descrição do projeto" rows={4} value={draft.description} onChange={description=>patch({description})}/></div>
  <div className="tools-control"><p>Ferramentas utilizadas</p><ToolTags tools={draft.tools} onChange={tools=>patch({tools})}/></div>
  <label className="checkbox-line"><input type="checkbox" checked={draft.featured} onChange={e=>patch({featured:e.target.checked})}/>Exibir em trabalhos de destaque</label>
+ </>}
+ {tab==='composition'&&<>
+ <p className="local-warning">Organize apenas a apresentação deste projeto. Os blocos abaixo formarão a página completa da obra.</p>
  {media.length>0&&<><div className="editor-section-title"><h3>Meus assets deste projeto</h3><p>Arraste estas miniaturas até um campo de imagem abaixo.</p></div><div className="asset-shelf">{media.map(src=><div key={src} className="asset-shelf-item" draggable onDragStart={event=>event.dataTransfer.setData('application/x-jf-asset',src)} title="Arraste para uma área de imagem"><AssetImage src={src} alt="Asset disponível"/></div>)}</div></>}
- <div className="editor-section-title"><h3>Biblioteca de layouts</h3><p>Clique para adicionar. Você também pode arrastar um modelo para a sequência de blocos.</p></div>
+ <div className="editor-section-title"><h3>Blocos visuais do projeto</h3><p>Clique para adicionar. Você também pode arrastar um modelo para a sequência de blocos.</p></div>
  <div className="template-gallery">{templates.map(t=><button type="button" key={t.type} className="template-tile" draggable onDragStart={e=>e.dataTransfer.setData('application/x-jf-template',t.type)} onClick={()=>addBlock(t.type)}><span className={'template-sketch '+t.type} aria-hidden="true"><i/><i/><i/></span><b>{t.label}</b><small>{t.description}</small></button>)}</div>
  <div className="editor-section-title"><h3>Composição do projeto</h3><p>Arraste pela alça para reordenar; use as setas como alternativa.</p></div>
  <div className="blocks-list" onDragOver={e=>e.preventDefault()} onDrop={e=>{if(e.target===e.currentTarget){const t=e.dataTransfer.getData('application/x-jf-template') as BlockType;if(templates.some(a=>a.type===t))addBlock(t)}}}>
@@ -134,6 +142,6 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  {tab==='backup'&&<><p className="local-warning">O modo local não altera os arquivos públicos do GitHub. Exporte o ZIP para obter seu conteúdo e as imagens agrupadas em <strong>public/images/projects/&lt;id&gt;/</strong> e <strong>public/images/filter-icons/</strong>. Importar o ZIP restaura o Studio neste navegador.</p><div className="backup-actions"><button type="button" disabled={pending} onClick={async()=>{setPending(true);try{await onExport();setMessage('Backup ZIP gerado.')}catch{setMessage('Não foi possível exportar o backup.')}finally{setPending(false)}}}><Download size={17}/>Exportar pacote ZIP</button><label className="file-import"><Upload size={17}/>Restaurar ZIP/JSON<input type="file" accept=".zip,.json,application/zip,application/json" onChange={async e=>{const f=e.target.files?.[0];if(!f)return;setPending(true);try{await onImport(f);setMessage('Backup restaurado! Feche e reabra o editor para recarregar os dados.')}catch(err){setMessage(err instanceof Error?err.message:'Arquivo de backup inválido.')}finally{setPending(false)}}}/></label></div><p className="editor-help">Mídias enviadas por você ficam no IndexedDB deste navegador. Um ZIP é útil para backup e transferência, mas não publica nada automaticamente.</p></>}
  {message&&<p className="editor-status" role="status">{message}</p>}
  </div>
- {insertAt!==null&&<div className="quick-insert-popover" role="dialog" aria-label="Escolher layout de bloco"><div className="quick-insert-head"><b>Qual layout deseja adicionar?</b><button onClick={()=>setInsertAt(null)} aria-label="Fechar escolha"><X size={18}/></button></div><div className="quick-insert-grid">{templates.map(t=><button type="button" key={t.type} onClick={()=>{addBlock(t.type,insertAt);setTab('project')}}><span className={'template-sketch '+t.type} aria-hidden="true"><i/><i/><i/></span><b>{t.label}</b></button>)}</div></div>}
- <footer>{project&&<button type="button" className="delete-action" onClick={()=>{if(window.confirm('Excluir o projeto deste navegador?')){onDelete(project.id);onClose()}}}><Trash2 size={16}/>Excluir</button>}<button type="button" className="add-footer-block" onClick={()=>{setTab('project');setInsertAt(draft.blocks.length)}}><Plus size={16}/>Escolher bloco</button><button type="button" className="save-action" onClick={save}><Save size={17}/>Salvar projeto</button></footer></section></div>
+ {insertAt!==null&&<div className="quick-insert-popover" role="dialog" aria-label="Escolher layout de bloco"><div className="quick-insert-head"><b>Qual layout deseja adicionar?</b><button onClick={()=>setInsertAt(null)} aria-label="Fechar escolha"><X size={18}/></button></div><div className="quick-insert-grid">{templates.map(t=><button type="button" key={t.type} onClick={()=>{addBlock(t.type,insertAt);setTab('composition')}}><span className={'template-sketch '+t.type} aria-hidden="true"><i/><i/><i/></span><b>{t.label}</b></button>)}</div></div>}
+ <footer>{project&&<button type="button" className="delete-action" onClick={()=>{if(window.confirm('Excluir o projeto deste navegador?')){onDelete(project.id);onClose()}}}><Trash2 size={16}/>Excluir</button>}<span className="studio-project-save-hint">Rascunho local · Publique depois de revisar</span>{tab==='composition'&&<button type="button" className="add-footer-block" onClick={()=>setInsertAt(draft.blocks.length)}><Plus size={16}/>Novo bloco</button>}<button type="button" className="save-action" onClick={save}><Save size={17}/>Salvar alterações</button></footer></section></div>
 }

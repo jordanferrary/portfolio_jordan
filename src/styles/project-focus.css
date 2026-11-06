@@ -1,0 +1,43 @@
+/* A truly distraction-free project workspace; the underlying page is not shown. */
+.project-focus-overlay{z-index:96!important;background:#090611!important;backdrop-filter:none!important;justify-content:center!important;align-items:center!important;padding:clamp(8px,2.1vw,30px)!important;isolation:isolate}
+.project-focus-overlay::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% -40%,#5f1c8a30,transparent 65%);pointer-events:none}
+.project-focus-overlay .v2-editor{position:relative!important;width:min(1260px,100%)!important;height:100%!important;max-height:960px!important;border:1px solid #7745a0!important;border-radius:22px!important;background:#100a1b!important;box-shadow:0 35px 90px #000c,0 0 40px #5d249334!important;overflow:hidden;isolation:isolate}
+.project-focus-overlay .editor-head{display:flex;align-items:center;justify-content:space-between;padding:17px clamp(15px,3vw,35px);min-height:102px;background:linear-gradient(100deg,#1c0f2b,#100b1b);border-bottom:1px solid #3d2753}
+.project-focus-overlay .editor-head h2{font-size:clamp(17px,2vw,24px);margin:4px 0 3px;color:#f7e9ff;max-width:600px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.project-focus-overlay .editor-head .eyebrow{font-size:10px;letter-spacing:.1em;color:#c283e7}
+.studio-project-identity{display:flex;align-items:center;gap:15px;min-width:0}
+.studio-project-identity>div:last-child{min-width:0}
+.studio-project-identity small{display:block;color:#a895bb;font-size:11px}
+.studio-project-thumb{width:70px;height:66px;flex:0 0 70px;display:grid;place-items:center;border:1px solid #74449b;border-radius:12px;background:#201030;overflow:hidden;color:#c991f1}
+.studio-project-thumb img{height:100%;width:100%;object-fit:cover}
+.project-focus-overlay .editor-head>button{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:10px;background:#2e1a43;border:1px solid #62427e;color:#f0d5ff}
+.project-focus-overlay .editor-tabs{display:flex;gap:5px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;flex:0 0 auto;padding:12px clamp(12px,3vw,34px);background:#140b22;border-bottom:1px solid #402656;scrollbar-width:thin}
+.project-focus-overlay .editor-tabs button{border-radius:10px;flex:0 0 auto;min-width:unset;padding:12px 17px;white-space:nowrap;color:#bfa4ce;font-size:12px;border:1px solid transparent;background:transparent}
+.project-focus-overlay .editor-tabs button[aria-selected="true"]{border-color:#9a56d2;color:#fff;background:#492064;box-shadow:0 0 12px #9e46d51f}
+.project-focus-overlay .editor-scroll{width:100%;max-width:920px;margin:0 auto;padding:28px clamp(15px,3vw,38px);flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-color:#6e358e #160d22}
+.project-focus-overlay .editor-scroll .local-warning{border:1px solid #523571;border-radius:13px;background:#251333;padding:13px 16px;color:#d7b5ed;margin-bottom:22px}
+.project-focus-overlay .editor-scroll .editor-section-title{margin-top:24px}
+.project-focus-overlay .editor-scroll .media-upload-zone{border-radius:13px}
+.project-focus-overlay .editor-scroll .edit-block{border:1px solid #583773;border-radius:15px;background:#1d112c;margin:11px 0}
+.project-focus-overlay .editor-scroll label{max-width:100%}
+.project-focus-overlay footer{flex:0 0 auto;display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:14px clamp(15px,3vw,35px);background:#160c23;border-top:1px solid #492c61}
+.project-focus-overlay .studio-project-save-hint{margin-right:auto;color:#a48bb7;font-size:11px}
+.project-focus-overlay footer button.save-action{min-width:160px;justify-content:center}
+.project-focus-overlay .v2-editor .quick-insert-popover{max-width:800px!important;left:50%!important;right:auto!important;transform:translateX(-50%);bottom:75px!important;width:calc(100% - 45px)!important;max-height:60dvh!important}
+@media(max-width:720px){
+ .project-focus-overlay{padding:0!important}
+ .project-focus-overlay .v2-editor{border:0!important;border-radius:0!important;height:100dvh!important;max-height:100dvh!important}
+ .project-focus-overlay .editor-head{min-height:78px;padding:10px 14px}
+ .studio-project-thumb{width:48px;height:48px;flex-basis:48px}
+ .project-focus-overlay .editor-head .eyebrow{font-size:9px}
+ .project-focus-overlay .editor-head h2{font-size:17px}
+ .project-focus-overlay .editor-head small{font-size:10px}
+ .project-focus-overlay .editor-tabs{padding:9px;gap:2px}
+ .project-focus-overlay .editor-tabs button{padding:10px;font-size:11px}
+ .project-focus-overlay .editor-scroll{padding:18px 13px}
+ .project-focus-overlay footer{padding:10px;gap:8px;flex-wrap:wrap}
+ .project-focus-overlay .studio-project-save-hint{display:none}
+ .project-focus-overlay footer button.save-action{min-width:0}
+ .project-focus-overlay .v2-editor .quick-insert-popover{width:calc(100% - 12px)!important;max-height:54dvh!important}
+}
+@media(prefers-reduced-motion:reduce){.project-focus-overlay *{scroll-behavior:auto!important}}
