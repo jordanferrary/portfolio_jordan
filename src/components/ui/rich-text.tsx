@@ -1,4 +1,5 @@
 import type {ReactNode} from 'react'
+import { protectArtistName } from './protected-name'
 /** Small, safe formatting syntax: **bold**, *italic*, ==purple==. React escapes user text. */
 export function inlineFormat(value:string):ReactNode[]{
  const out:ReactNode[]=[]
@@ -18,7 +19,7 @@ export function inlineFormat(value:string):ReactNode[]{
   const start=cursor
   cursor++
   while(cursor<value.length&&!value.startsWith('**',cursor)&&!value.startsWith('==',cursor)&&value[cursor]!=='*')cursor++
-  out.push(<span key={key++}>{value.slice(start,cursor)}</span>)
+  out.push(<span key={key++}>{protectArtistName(value.slice(start,cursor))}</span>)
  }
  return out
 }
