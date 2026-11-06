@@ -1,5 +1,5 @@
 import {useState,type FormEvent} from 'react'
-import {ArrowUpRight,CheckCircle2,ImagePlus,Mail,MessageCircle,Paperclip,Pencil,Send,Sparkles,Trash2,X} from 'lucide-react'
+import {ArrowUpRight,CheckCircle2,ImagePlus,MessageCircle,Paperclip,Pencil,Send,Sparkles,Trash2,X} from 'lucide-react'
 import type {SocialLink,ContactSettings} from '../../data/studio'
 import {safeSocialUrl,SocialMark} from '../ui/social-mark'
 import {contactApi,prepareContactAvatar,sendContact,validateAttachments} from '../../lib/contact-api'
