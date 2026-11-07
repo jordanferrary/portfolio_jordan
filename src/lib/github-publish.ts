@@ -89,6 +89,7 @@ function stageSnapshot(store:PortfolioStore){
  // Deep clone so the form keeps local media previews during deployment.
  const publicData:PortfolioStore={
   imageVariants:store.imageVariants??{},
+  customPages:store.customPages??[],
   projects:store.projects,
   categories:store.categories,
   home:store.home,
@@ -200,6 +201,15 @@ export async function publishPortfolioToGitHub(
   return value
  }
  onProgress('Preparando os projetos, capas, artes e trilhas...')
+ for(const page of snapshot.customPages){
+  page.heroImage=await stage(page.heroImage,'image')
+  for(const block of page.blocks){
+   if(block.type==='image')block.content=await stage(block.content,'image')
+   if(block.media)block.media=await stage(block.media,'image')
+   if(block.after)block.after=await stage(block.after,'image')
+   if(block.gallery)for(let i=0;i<block.gallery.length;i++)block.gallery[i]=await stage(block.gallery[i],'image')
+  }
+ }
  for(const project of snapshot.projects){
   project.image=await stage(project.image,'image')
   for(const step of project.processSteps??[])step.image=await stage(step.image,'image')
