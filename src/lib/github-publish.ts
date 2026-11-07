@@ -283,6 +283,18 @@ export async function publishPortfolioToGitHub(
     hiddenOutput:n!.hiddenOutput,outputBias:n!.outputBias,
     learned:typeof n!.learned==='number'?Math.max(0,Math.min(1e6,n!.learned)):0
    }:undefined
+   // A confirmed new GitHub revision is one meaningful milestone. Include
+   // its reward in the snapshot itself so a reload never loses publication XP.
+   const rewardKey='pub-'+encodeURIComponent(revision).slice(0,100)
+   const rewarded=safeBrain.rewardedPages&&typeof safeBrain.rewardedPages==='object'
+    ?safeBrain.rewardedPages as Record<string,number>:{}
+   rewarded[rewardKey]=Math.floor(Date.now()/86400000)
+   safeBrain.rewardedPages=Object.fromEntries(Object.entries(rewarded).slice(-80))
+   safeBrain.xp=Math.min(1e12,(typeof safeBrain.xp==='number'?safeBrain.xp:0)+10)
+   safeBrain.interactions=Math.min(1e12,(typeof safeBrain.interactions==='number'?safeBrain.interactions:0)+1)
+   safeBrain.lastAction='publish'
+   safeBrain.lastRewardAction='publish'
+   safeBrain.lastRewardAt=Date.now()
    entries.push({path:ALQUIMAGO_MEMORY_PATH,mode:'100644',type:'blob',
     content:JSON.stringify({schema:2,updatedAt:new Date().toISOString(),brain:safeBrain,
      ...(neural?{neural}:{}),
