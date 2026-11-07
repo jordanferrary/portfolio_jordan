@@ -10,7 +10,7 @@ export const customPageIconOptions:{value:CustomPageIcon;label:string}[]=[
 ]
 export type PageButtonAction='copy'|'url-current'|'url-new'
 export type ShowcaseItem={id:string;image:string;name:string;description:string;portfolioUrl:string;linkLabel?:string;showLink?:boolean}
-export type SlideTransition='fade'|'slide'|'zoom'
+export type SlideTransition='fade'|'slide'|'zoom'|'none'
 export type SlideItem={id:string;image:string;caption:string}
 export type PageBlock=Omit<Block,'type'> &{
  type:BlockType|'action'|'showcase'|'slideshow'
@@ -87,7 +87,7 @@ export function normalizeCustomPages(input:unknown):CustomPage[]{
     showcaseFit:block.showcaseFit==='contain'?'contain':'cover',
     slideItems:Array.isArray(block.slideItems)?block.slideItems.slice(0,80).filter((entry):entry is SlideItem=>Boolean(entry&&typeof entry==='object'&&typeof entry.image==='string')).map(entry=>({id:typeof entry.id==='string'?entry.id:'slide-'+crypto.randomUUID(),image:entry.image,caption:typeof entry.caption==='string'?entry.caption.slice(0,500):''})):[],
     slideAutoplay:block.slideAutoplay===true,
-    slideTransition:['fade','slide','zoom'].includes(block.slideTransition??'')?block.slideTransition:'fade',
+    slideTransition:['fade','slide','zoom','none'].includes(block.slideTransition??'')?block.slideTransition:'fade',
     slideInterval:typeof block.slideInterval==='number'&&Number.isFinite(block.slideInterval)?Math.max(1500,Math.min(30000,Math.round(block.slideInterval))):5000,
     slideHeight:typeof block.slideHeight==='number'&&Number.isFinite(block.slideHeight)?Math.max(180,Math.min(640,Math.round(block.slideHeight))):520,
     slideFit:block.slideFit==='cover'?'cover':'contain',
