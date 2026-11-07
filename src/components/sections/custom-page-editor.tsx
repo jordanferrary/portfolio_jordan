@@ -85,6 +85,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
    id:'block-'+crypto.randomUUID(),type,content:'',
    gallery:type==='gallery'?['','']:undefined,
    showcaseItems:type==='showcase'?[]:undefined,
+   showcaseFit:type==='showcase'?'contain':undefined,
    slideItems:type==='slideshow'?[]:undefined,
    slideAutoplay:false,slideTransition:'fade',slideInterval:5000,
    slideHeight:520,slideFit:'contain',slideShowPauseButton:false,
@@ -203,6 +204,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
      {block.type==='gallery'&&<><div className="custom-page-gallery-fields">{(block.gallery??[]).map((src,j)=><div key={j} className="custom-page-gallery-item"><PageMediaField value={src} onChange={value=>patchBlock(block.id,{gallery:(block.gallery??[]).map((item,k)=>k===j?value:item)})} folder={folder} slot={block.id+'-'+j} label={'Imagem '+(j+1)} onError={setError}/><button type="button" className="subtle-action" onClick={()=>patchBlock(block.id,{gallery:(block.gallery??[]).filter((_,k)=>k!==j)})}><X size={14}/> Remover imagem</button></div>)}</div><button type="button" className="custom-page-add-image" onClick={()=>patchBlock(block.id,{gallery:[...(block.gallery??[]),'']})}><Plus size={15}/> Adicionar imagem</button></>}
      {block.type==='showcase'&&<div className="custom-page-rich-gallery-editor">
       <p className="editor-help">Galeria interativa para certificados, concursos, artistas, coleções ou outros destaques. Cada item pode ter título, imagem e descrição. O painel de detalhes só abre ao clicar em um item; links são opcionais e os nomes não recebem numeração automática. Use URLs diretas de imagens públicas para evitar armazenamento adicional.</p>
+      <label>Enquadramento das miniaturas<select value={block.showcaseFit??'cover'} onChange={e=>patchBlock(block.id,{showcaseFit:e.target.value as 'cover'|'contain'})}><option value="contain">Mostrar imagem inteira (recomendado para certificados)</option><option value="cover">Preencher os cards (recomendado para artes)</option></select></label>
       {(block.showcaseItems??[]).map((item,index)=><div className="custom-page-rich-gallery-entry" key={item.id}>
        <div className="custom-page-rich-gallery-head"><strong>{item.name.trim()||'Item sem título'}</strong><button type="button" onClick={()=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).filter(x=>x.id!==item.id)})}><Trash2 size={15}/> Remover</button></div>
        <label>Título do item<input value={item.name} onChange={e=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).map(x=>x.id===item.id?{...x,name:e.target.value}:x)})} placeholder="Ex.: Certificado de conclusão, obra ou participante"/></label>
