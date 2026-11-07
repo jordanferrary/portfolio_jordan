@@ -123,7 +123,7 @@ try{
   const gallery=element(app.StoryBlock,{projectTitle:'Test',block:{id:'b2',type:'gallery',content:'',galleryMode:'artists',galleryEntries:[{id:'g1',image:'https://example.com/a.webp',artist:'',title:'Certificate',description:'Valid work',portfolioUrl:''}]}})
   assert.match(gallery,/artist-showcase-grid/);assert.doesNotMatch(gallery,/artist-showcase-detail-copy/)
  })
- check('Project clean artwork has a single visible title in the hero, never a repeated caption',()=>=>{
+ check('Project clean artwork has a single visible title in the hero, never a repeated caption',()=>{
   const project={id:'smoke-project',title:'Unique Project Title',category:'3D',year:'2026',image:'https://example.com/cover.webp',description:'A portfolio project',tools:[],blocks:[],processSteps:[]}
   const html=element(app.ProjectPage,{project,onBack:()=>{},editing:false,onEdit:()=>{},showLikeCounts:false})
   assert.match(html,/<h1>Unique Project Title<\/h1>/)
