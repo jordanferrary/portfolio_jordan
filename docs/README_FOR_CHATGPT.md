@@ -37,8 +37,9 @@ Responder ao proprietário em português com objetividade. Não redesenhar os el
 
 
 ## Atualização: biblioteca e modelos 3D
-- Existe uma ferramenta de **Gerenciar arquivos** no Local Studio: `src/components/sections/media-manager.tsx` remove imagens e áudios órfãos do IndexedDB.
-- Na interface de publicação, `src/lib/github-media.ts` fornece inventário dos arquivos em `public/images/`, `public/audio/`, `public/models/`, `public/videos/` ou `public/assets/`. A exclusão é selecionada manualmente, validada pelo publicador e enviada via Git tree com `sha:null` no mesmo commit de conteúdo.
+- **Gerenciar arquivos** no Local Studio (`src/components/sections/media-manager.tsx`) agora abre na aba **Arquivos do GitHub**, com miniaturas e filtros de **todas as subpastas públicas**, mesmo mídias fora dos projetos. `getPublicRepositoryMedia(store)` consulta a árvore publicamente **sem token**; `repositoryMediaPreviewUrl(path)` usa raw.githubusercontent.com para miniaturas. A aba **Arquivos locais** trata IndexedDB.
+- Seleções da galeria pública são encaminhadas via estado do `src/app.tsx` para `GitHubPublishEditor` (`stagedDeletionPaths`). O token só é exigido para efetivar a publicação, que valida novamente os caminhos, o uso e as proteções e cria o commit com `sha:null` para apagar arquivos. O formulário exibe confirmação mesmo sem uma segunda consulta autenticada.
+- As imagens dos **projetos de exemplo antigos** deixaram de ser protegidas por regra fixa; elas podem aparecer como órfãs, embora ainda possam constar em códigos de fallback. Mantenha proteção contra exclusão automática e avise sobre referências em CSS, código e URLs antigas.
 - A detecção de uso não varre todo CSS ou links externos. Nunca recomende exclusão automática indiscriminada. Consulte [README_MEDIA_CLEANUP.md](README_MEDIA_CLEANUP.md).
 - Bloco `model`: URL direta de `.glb` ou `.gltf` com miniatura opcional; `ProjectModel` busca o web component `model-viewer` somente ao clicar. `.fbx` não é suportado de modo nativo: usar Blender para convertê-lo para GLB.
 - Bloco `video`: recebeu representação visual mais distinta no seletor de blocos e no card.
