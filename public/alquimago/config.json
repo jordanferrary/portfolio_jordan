@@ -71,8 +71,8 @@
   },
   "llm": {
     "provider": "gemini",
-    "enabled": false,
-    "endpoint": "",
+    "enabled": true,
+    "endpoint": "/api/assistant",
     "consentRequired": true
   }
 }
