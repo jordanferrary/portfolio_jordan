@@ -25,8 +25,6 @@
 .video-block-editor{display:flex;flex-direction:column;gap:13px}.video-block-editor>label{display:flex;flex-direction:column;gap:8px;font-size:12px;color:#d1b5e4}.video-block-editor>label>input{width:100%;min-width:0;padding:11px;background:#160b28;color:#fff;border:1px solid #65418a;border-radius:10px}
 
 /* Image inspection actions keep the existing violet/graphite art direction. */
-.project-zoom-hero{display:inline-flex;gap:8px;align-items:center;justify-content:center;margin-top:13px;padding:9px 13px;border:1px solid #9d63ce;border-radius:11px;background:#2c153fdd;color:#ead3fa;font-size:12px;cursor:zoom-in}
-.project-zoom-hero:hover{background:#4d256d;border-color:#c98eff}
 .comparison-zoom-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:8px}
 .comparison-zoom-actions button{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;background:#211332;border:1px solid #6c4686;border-radius:9px;color:#dfc1f2;font-size:11px;cursor:zoom-in}
 .comparison-zoom-actions button:hover{background:#492164;border-color:#ad70d7}
