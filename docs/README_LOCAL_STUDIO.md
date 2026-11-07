@@ -14,7 +14,7 @@ As imagens importadas pelo Studio são convertidas **automaticamente** para WebP
 **Ferramentas → Conteúdo → Conversor WebP** oferece exportação manual em 1024, 1600, 2048 ou 4096 px com qualidade regulável. Ele gera um arquivo WebP para baixar, sem serviço externo.
 
 ## 4. Ajustar e inspecionar imagens
-A aba **Enquadramento** determina como cada capa aparece na galeria e no banner; ela não altera a imagem original. Na página do projeto, clique na imagem para abrir o visualizador: roda do mouse ou pinça para ampliar, arraste para examinar, botões +/−, reset e Esc para fechar.
+A aba **Enquadramento** tem apenas **dois conjuntos de controles independentes**: **Capa** (usado na galeria e na Home) e **Banner** (usado na página interna). A Home aparece como **prévia somente visual** dentro da configuração da capa, sem um terceiro conjunto de controles ou arraste próprio. A imagem original não é alterada. Na página do projeto, clique na imagem para ampliar no visualizador.
 
 Na comparação antes/depois, utilize os botões **Inspect Before/After** para examinar cada imagem individualmente.
 
@@ -36,7 +36,7 @@ Rascunhos em Local Studio pertencem ao navegador até a publicação. Não limpe
 O inventário suporta imagens, áudio e também outros formatos de mídia quando presentes no repositório (vídeos MP4/WebM e modelos GLB/glTF/FBX). Consulte [Limpeza de mídias](README_MEDIA_CLEANUP.md).
 
 ## 9. Músicas com capa de referência
-Em **Home → Músicas**, importe MP3, WAV, OGG ou M4A que você tenha direito de publicar. Se o nome estiver como `Artista - Música.mp3`, os campos são sugeridos e **continuam editáveis**. Uma URL do YouTube pode fornecer apenas a miniatura pública; o áudio precisa ser enviado como arquivo próprio. Não há conversor de vídeo do YouTube para MP3 dentro do Studio.
+Em **Home → Músicas**, importe MP3, WAV, OGG ou M4A que você tenha direito de publicar. Se o nome estiver como `Artista - Música.mp3`, os campos são sugeridos e **continuam editáveis**. A capa pode ser: **imagem importada**, **imagem da biblioteca**, **URL HTTPS direta de qualquer imagem pública** ou **miniatura extraída apenas como referência de um link do YouTube**. O campo de URL tem prévia no próprio Studio e independe completamente do YouTube. Links de páginas de sites não funcionam como URL direta de imagem; alguns servidores bloqueiam exibição externa. Os links externos são mantidos remotos no player público. Não há conversor de vídeo do YouTube para MP3 dentro do Studio.
 
 ## 10. Modelo 3D e vídeo
 Em **Projeto → Composição**, escolha **Vídeo incorporado** ou **Modelo 3D interativo**. Ambos têm miniatura e só carregam o conteúdo pesado após clique. Para o modelo, use URL HTTPS direta `.glb` ou `.gltf`. FBX deve ser convertido para GLB, de preferência no Blender com as texturas embutidas. O link deve permitir CORS.
