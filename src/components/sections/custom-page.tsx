@@ -6,6 +6,7 @@ import {safePageHref} from '../../data/custom-pages'
 import {AssetImage} from '../ui/asset-image'
 import {RichText} from '../ui/rich-text'
 import {StoryBlock} from './project-page'
+import {ArtistShowcase,PageSlideshow} from './page-media-blocks'
 
 function PageAction({block}: {block:PageBlock}){
  const [message,setMessage]=useState('')
@@ -49,7 +50,7 @@ export function CustomPageView({page,editing,onEdit}:{page:CustomPage;editing:bo
    <span className="custom-page-hero-watermark" aria-hidden="true">✦</span>
   </header>
   <div className="custom-page-body">
-   {page.blocks.length?<div className="story-blocks custom-page-story">{page.blocks.map(block=>block.type==='action'?<PageAction key={block.id} block={block}/>:<StoryBlock key={block.id} block={block as Block} projectTitle={page.title}/>)}</div>:
+   {page.blocks.length?<div className="story-blocks custom-page-story">{page.blocks.map(block=>block.type==='action'?<PageAction key={block.id} block={block}/>:block.type==='showcase'?<ArtistShowcase key={block.id} block={block}/>:block.type==='slideshow'?<PageSlideshow key={block.id} block={block}/>:<StoryBlock key={block.id} block={block as Block} projectTitle={page.title}/>)}</div>:
     <div className="custom-page-empty"><Sparkles size={27}/><p>{editing?'This page is ready for your content. Open the editor to add sections.':'More content is coming soon.'}</p>{editing&&<button type="button" onClick={onEdit}>Add content</button>}</div>}
   </div>
   <footer className="custom-page-footer"><span>✦ JORDAN FERRARY</span><a href="#/portfolio">Explore the portfolio <ArrowUpRight size={15}/></a></footer>
