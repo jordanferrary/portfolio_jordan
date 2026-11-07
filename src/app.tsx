@@ -70,7 +70,11 @@ export function App(){
   {id:'new-custom-page',label:'Nova página',description:'Cursos, recursos, guias, downloads e outros',section:'Páginas',icon:Plus,onClick:()=>setCustomPageEditorTarget('new')},
   {id:'new-project',label:'Novo projeto',description:'Criar e compor uma nova obra',section:'Projetos',icon:Plus,onClick:()=>setEditor(null)},
   ...(page==='project'&&project?[{id:'active-project',label:'Editar obra atual',description:project.title,section:'Projetos' as const,icon:Layers,onClick:()=>setEditor(project)}]:[]),
-  {id:'alquimago-skin3d',label:'Skin 3D do Alquimago',description:'Importar GLB, validar Shape Keys e visualizar expressões',section:'Conteúdo',icon:Palette,onClick:()=>setSkin3DOpen(true)},
+  {id:'alquimago-grimorio',label:'Abrir Grimório',description:'Conversar com Gemini e acessar treinamento local',section:'Familiar',icon:MessageSquare,onClick:()=>{
+    const familiar=document.querySelector('alquimago-familiar') as (HTMLElement & {state?:{open:boolean;tab:number};render?:()=>void})|null
+    if(familiar?.state){familiar.state.open=true;familiar.state.tab=5;familiar.render?.()}
+   }},
+  {id:'alquimago-skin3d',label:'Ateliê do Alquimago',description:'Modelo GLB, emoções, respiração e enquadramento',section:'Familiar',icon:Palette,onClick:()=>setSkin3DOpen(true)},
   {id:'media-manager',label:'Gerenciar arquivos',description:'Excluir imagens e áudios antigos, locais ou publicados',section:'Conteúdo',icon:ImageIcon,onClick:()=>setMediaManagerOpen(true)},
   {id:'image-converter',label:'Conversor WebP',description:'Compactar, redimensionar e baixar imagens',section:'Conteúdo',icon:ImageIcon,onClick:()=>setImageConverterOpen(true)},
   {id:'music',label:'Músicas',description:'Faixas, capas e ordem da playlist',section:'Conteúdo',icon:Music,onClick:()=>openHomeTab('music')},
@@ -91,7 +95,11 @@ export function App(){
  },[editing])
  useEffect(()=>{applyThemePalette(portfolio.themePalette)},[portfolio.themePalette])
  useEffect(()=>{
-  if(!editing)return
+  // Installed mascot is public; Gemini chat and creator tools are only shown
+  // once Local Studio is unlocked. This is UI gating, not API authentication.
+  document.documentElement.dataset.alquimagoStudio=editing?'true':'false'
+ },[editing])
+ useEffect(()=>{
   // Use the actual release SHA for the script URL. Cloudflare builds do not
   // receive VITE_BUILD_SHA, and a fixed fallback previously froze the cache.
   let active=true
