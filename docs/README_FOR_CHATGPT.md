@@ -43,3 +43,10 @@ Responder ao proprietário em português com objetividade. Não redesenhar os el
 - Bloco `model`: URL direta de `.glb` ou `.gltf` com miniatura opcional; `ProjectModel` busca o web component `model-viewer` somente ao clicar. `.fbx` não é suportado de modo nativo: usar Blender para convertê-lo para GLB.
 - Bloco `video`: recebeu representação visual mais distinta no seletor de blocos e no card.
 - Biblioteca de músicas: título e artista continuam editáveis; nomes no padrão `Artista - Música` geram sugestões; é possível usar thumbnail público do YouTube. Não há downloader/extrator de áudio do YouTube.
+
+
+## Player editorial de YouTube (2026-11)
+
+`src/components/ui/project-video.tsx` preserva miniatura com clique para ativar. Para URLs YouTube, importa dinamicamente `src/components/ui/youtube-custom-player.tsx` e `src/lib/youtube-player-api.ts`, que registra o `YT.Player` no iframe existente com `enablejsapi=1`. O progresso em milissegundos não é inferido: `getCurrentTime`/`getDuration` retornam segundos sincronizados, mostrados na timeline roxa **externa**. O iframe conserva seus controles originais. Se a API adicional falhar, o vídeo ainda pode ser controlado pelo YouTube. A API só é baixada após a interação do visitante. Não sobreponha UI aos controles internos; preserve branding e funcionalidade da plataforma.
+
+`src/data/projects.ts` agora inclui `videoTitle?:string` em `Block`. O editor permite escolher título descritivo próprio da apresentação, com fallback para o nome do projeto; isso não edita nem substitui os metadados do YouTube. O Vimeo continua com controles nativos e caption visual externa.
