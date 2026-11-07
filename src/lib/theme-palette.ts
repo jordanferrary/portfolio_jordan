@@ -1,17 +1,23 @@
-/** The four art-direction controls exposed to the owner. All small details derive from these. */
-export type ThemePalette={primary:string;secondary:string;background:string;surface:string}
+/** Seven art-direction controls. Existing four-color palettes migrate without losing choices. */
+export type ThemePalette={primary:string;secondary:string;background:string;surface:string;text:string;muted:string;border:string}
 export type ThemeColorKey=keyof ThemePalette
 export const DEFAULT_THEME:ThemePalette={
  primary:'#A234FA',
  secondary:'#CB89FF',
  background:'#090611',
- surface:'#170D26'
+ surface:'#170D26',
+ text:'#F8F3FF',
+ muted:'#B7A0CD',
+ border:'#7335A7'
 }
 export const PALETTE_FIELDS:{key:ThemeColorKey;label:string;description:string}[]=[
  {key:'primary',label:'Cor principal',description:'Botões, foco, marca e elementos de destaque'},
  {key:'secondary',label:'Cor secundária',description:'Detalhes luminosos, indicadores e contraste visual'},
  {key:'background',label:'Fundo do site',description:'Base escura das páginas e atmosfera geral'},
- {key:'surface',label:'Superfícies',description:'Cards, janelas e áreas elevadas'}
+ {key:'surface',label:'Superfícies',description:'Cards, janelas e áreas elevadas'},
+ {key:'text',label:'Texto principal',description:'Títulos, textos e ícones de maior destaque'},
+ {key:'muted',label:'Texto secundário',description:'Descrições, legendas e informações auxiliares'},
+ {key:'border',label:'Bordas e divisórias',description:'Contornos dos cards, linhas e separadores'}
 ]
 export function normalizeHexColor(value:unknown):string|null{
  if(typeof value!=='string')return null
@@ -50,7 +56,10 @@ export function normalizeThemePalette(raw:unknown):ThemePalette{
   primary:previous.primary??DEFAULT_THEME.primary,
   secondary:previous.secondary??DEFAULT_THEME.secondary,
   background:previous.background??DEFAULT_THEME.background,
-  surface:previous.surface??DEFAULT_THEME.surface
+  surface:previous.surface??DEFAULT_THEME.surface,
+  text:normalizeHexColor(value.text)??DEFAULT_THEME.text,
+  muted:normalizeHexColor(value.muted)??DEFAULT_THEME.muted,
+  border:normalizeHexColor(value.border)??DEFAULT_THEME.border
  }
 }
 export function applyThemePalette(palette:ThemePalette):void{
@@ -58,4 +67,7 @@ export function applyThemePalette(palette:ThemePalette):void{
  for(const field of PALETTE_FIELDS)target.setProperty('--jf-'+field.key,palette[field.key])
  target.setProperty('--color-primary',palette.primary)
  target.setProperty('--color-background',palette.background)
+ target.setProperty('--color-text',palette.text)
+ target.setProperty('--color-muted',palette.muted)
+ target.setProperty('--color-border',palette.border)
 }
