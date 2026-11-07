@@ -6,6 +6,7 @@ import {isCleanableFile,isProtectedAsset,referencedMediaPaths} from './github-me
 import {githubWorkerProxy,isGitHubWorkerCredential} from './github-auth'
 import {ALQUIMAGO_SKIN_MEDIA,ALQUIMAGO_SKIN_PATH} from './alquimago-3d'
 import {readAlquimagoStageDraft,normalizeAlquimagoStage} from './alquimago-3d-stage'
+import {readAnimationDraft,normalizeAnimationProfile} from './alquimago-animation-profile'
 
 /**
  * Browser-only GitHub publishing.
@@ -423,7 +424,7 @@ export async function publishPortfolioToGitHub(
   if(typeof candidate.selectedSkin==='string'&&/^[a-zA-Z0-9_-]{1,35}$/.test(candidate.selectedSkin)){
    const file=await api<{content:string}>(cleanToken,ROOT+'/contents/public/alquimago/config.json?ref='+BRANCH)
    const config=JSON.parse(decodeBase64Utf8(file.content)) as {
-    appearance?:{selectedSkin?:string;skins?:Array<{id?:unknown}>;stage3d?:unknown}
+    appearance?:{selectedSkin?:string;skins?:Array<{id?:unknown}>;stage3d?:unknown;animation3d?:unknown}
    }
    if(candidate.selectedSkin==='custom-3d'){
     const local=await readMedia(ALQUIMAGO_SKIN_MEDIA)
@@ -451,6 +452,12 @@ export async function publishPortfolioToGitHub(
        JSON.stringify(normalizeAlquimagoStage(config.appearance.stage3d))!==JSON.stringify(stageDraft)){
       config.appearance.stage3d=stageDraft
       configChanged=true
+    }
+    const animationDraft=readAnimationDraft()
+    if(candidate.selectedSkin==='custom-3d'&&animationDraft&&
+      JSON.stringify(normalizeAnimationProfile(config.appearance.animation3d))!==JSON.stringify(animationDraft)){
+     config.appearance.animation3d=animationDraft
+     configChanged=true
     }
     if(configChanged)entries.push({
      path:'public/alquimago/config.json',mode:'100644',type:'blob',
