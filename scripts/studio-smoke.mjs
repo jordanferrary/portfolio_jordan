@@ -22,6 +22,7 @@ const entry=[
  "export {classifyAudioSource,audioSourceError} from './src/lib/audio-source.ts'",
  "export {MusicPlayer} from './src/components/layout/music-player.tsx'",
  "export {parseModelUrl} from './src/lib/model-embed.ts'",
+ "export {masonryColumnCount,distributeMasonry} from './src/lib/masonry.ts'",
  "export {HomePage} from './src/components/sections/home-page.tsx'",
  "export {ProjectFramingEditor} from './src/components/sections/project-framing-editor.tsx'",
  "export {MusicLibraryEditor} from './src/components/sections/music-library-editor.tsx'",
@@ -80,6 +81,20 @@ try{
   assert.match(html,/Especialidades do rodapé/)
   assert.match(html,/Adicionar especialidade/)
   assert.match(html,/Salvar página/)
+ })
+ check('Mobile portfolio balances two artwork columns at 320-430px viewports',()=>{
+  // Typical content widths after the site's 14px left/right padding.
+  assert.equal(app.masonryColumnCount(320-28),2)
+  assert.equal(app.masonryColumnCount(375-28),2)
+  assert.equal(app.masonryColumnCount(430-28),2)
+  assert.equal(app.masonryColumnCount(250),2)
+  assert.equal(app.masonryColumnCount(249),1)
+  assert.equal(app.masonryColumnCount(661),3)
+  assert.equal(app.masonryColumnCount(921),4)
+  const projects=Array.from({length:8},(_,i)=>({id:'p'+i,title:'Project '+i,blocks:[],tools:[]}))
+  const columns=app.distributeMasonry(projects,app.masonryColumnCount(292))
+  assert.equal(columns.length,2)
+  assert.deepEqual(columns.flat().map(item=>item.project.id).sort(),projects.map(p=>p.id).sort())
  })
  check('Home featured cards apply the same cover framing as the project gallery',()=>{
   const project={id:'smoke',title:'Smoke Test',image:'https://example.com/cover.webp',featured:true,coverFocus:{x:28,y:72,zoom:1.6}}
