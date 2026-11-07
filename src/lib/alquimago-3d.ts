@@ -1,5 +1,5 @@
 import {readMedia} from './media-store'
-import {readAlquimagoStage,writeAlquimagoStage,normalizeAlquimagoStage,type AlquimagoStage} from './alquimago-3d-stage'
+import {readAlquimagoStage,writeAlquimagoStage,normalizeAlquimagoStage,applyPublishedAlquimagoStage,type AlquimagoStage} from './alquimago-3d-stage'
 
 export const ALQUIMAGO_SKIN_MEDIA='media://alquimago/skin/custom.glb'
 export const ALQUIMAGO_SKIN_PATH='public/alquimago/skins/custom.glb'
@@ -187,6 +187,12 @@ function styleAlquimago(){
 }
 
 export function registerAlquimago3D():void{
+ // The familiar's own config normalizer intentionally omits stage3d.
+ // Read the already-public manifest separately so visitors see the published framing.
+ void fetch('/alquimago/config.json',{cache:'no-store'})
+  .then(response=>response.ok?response.json():null)
+  .then(body=>applyPublishedAlquimagoStage(body?.appearance?.stage3d))
+  .catch(()=>{/* default viewport remains available */})
  const observer=new MutationObserver(styleAlquimago)
  observer.observe(document.documentElement,{childList:true,subtree:true})
  window.addEventListener('alquimago:skin3d-imported',()=>{
