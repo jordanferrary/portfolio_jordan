@@ -15,6 +15,8 @@ export type PageBlock=Omit<Block,'type'> &{
  buttonAction?:PageButtonAction
  buttonStyle?:'primary'|'outline'
  buttonNote?:string
+ buttonAlign?:'left'|'center'|'right'
+ buttonWidth?:'auto'|'full'
 }
 export interface CustomPage{
  id:string
@@ -25,6 +27,9 @@ export interface CustomPage{
  title:string
  subtitle:string
  heroImage:string
+ heroPositionX:number
+ heroPositionY:number
+ layout:'standard'|'wide'
  blocks:PageBlock[]
 }
 const blockTypes=new Set<string>(['heading','text','image','image-left','image-right','before-after','gallery','divider','video','model','action'])
@@ -32,7 +37,7 @@ const iconSet=new Set<string>(customPageIconOptions.map(option=>option.value))
 const buttonActions=new Set<string>(['copy','url-current','url-new'])
 /** Stable IDs keep links working when a page title or navigation label changes. */
 export function newCustomPage():CustomPage{
- return {id:'page-'+crypto.randomUUID(),navLabel:'New page',icon:'sparkles',showInNav:true,eyebrow:'✦ CREATIVE SPACE',title:'New page',subtitle:'',heroImage:'',blocks:[]}
+ return {id:'page-'+crypto.randomUUID(),navLabel:'New page',icon:'sparkles',showInNav:true,eyebrow:'✦ CREATIVE SPACE',title:'New page',subtitle:'',heroImage:'',heroPositionX:50,heroPositionY:50,layout:'standard',blocks:[]}
 }
 /** Accept only simple http(s), mailto, or an internal hash route. No executable URLs. */
 export function safePageHref(value:string):string|null{
@@ -66,7 +71,9 @@ export function normalizeCustomPages(input:unknown):CustomPage[]{
     buttonAction:buttonActions.has(block.buttonAction??'')?block.buttonAction:'copy',
     buttonLabel:typeof block.buttonLabel==='string'?block.buttonLabel:'Copy',
     buttonNote:typeof block.buttonNote==='string'?block.buttonNote:'',
-    buttonStyle:block.buttonStyle==='outline'?'outline':'primary'
+    buttonStyle:block.buttonStyle==='outline'?'outline':'primary',
+    buttonAlign:['left','center','right'].includes(block.buttonAlign??'')?block.buttonAlign:'left',
+    buttonWidth:block.buttonWidth==='full'?'full':'auto'
    })
   }
   list.push({
@@ -78,6 +85,9 @@ export function normalizeCustomPages(input:unknown):CustomPage[]{
    title:typeof value.title==='string'?value.title.slice(0,160):'New page',
    subtitle:typeof value.subtitle==='string'?value.subtitle.slice(0,1200):'',
    heroImage:typeof value.heroImage==='string'?normalizeBundledImage(value.heroImage):'',
+   heroPositionX:typeof value.heroPositionX==='number'?Math.min(100,Math.max(0,value.heroPositionX)):50,
+   heroPositionY:typeof value.heroPositionY==='number'?Math.min(100,Math.max(0,value.heroPositionY)):50,
+   layout:value.layout==='wide'?'wide':'standard',
    blocks
   })
  }
