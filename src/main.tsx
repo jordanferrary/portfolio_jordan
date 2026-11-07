@@ -46,3 +46,5 @@ import './styles/project-framing.css'
 import './styles/contact-social.css'
 
 import './styles/media-extras.css'
+
+import './styles/project-model.css'
