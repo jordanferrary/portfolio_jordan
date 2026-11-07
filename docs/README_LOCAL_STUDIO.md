@@ -31,7 +31,7 @@ Rascunhos em Local Studio pertencem ao navegador até a publicação. Não limpe
 
 
 ## 8. Excluir arquivos antigos
-**Ferramentas → Gerenciar arquivos** abre a biblioteca de arquivos do navegador, separando os que estão em uso dos órfãos. Selecione os que não precisa, confirme e exclua apenas os dados locais. Para a pasta `public/images/` ou áudios já publicados, use **Abrir arquivos publicados**, informe o token e clique em **Analisar arquivos do GitHub**. Arquivos em uso e padrões não podem ser selecionados. Depois de marcar os arquivos sem uso, confirme e clique em **Publicar**; as exclusões ocorrerão no novo commit. Faça backup antes.
+**Ferramentas → Gerenciar arquivos** abre por padrão **Arquivos do GitHub**, mostrando miniaturas de todas as imagens das subpastas `public/images/` (e demais mídias) mesmo que não apareçam em projetos. A visualização é pública e **não exige token**. Filtre por pasta, pesquise, selecione imagens sem uso e clique em **Excluir no GitHub**; a publicação abre com os caminhos selecionados. Confira a confirmação, informe o token e publique para realizar a exclusão. A aba **Arquivos locais** mostra mídias guardadas no navegador, que podem ser excluídas separadamente. Imagens em uso e recursos essenciais são protegidos; arquivos antigos de projetos de exemplo podem ser selecionados quando não utilizados. Faça um backup antes.
 
 O inventário suporta imagens, áudio e também outros formatos de mídia quando presentes no repositório (vídeos MP4/WebM e modelos GLB/glTF/FBX). Consulte [Limpeza de mídias](README_MEDIA_CLEANUP.md).
 
