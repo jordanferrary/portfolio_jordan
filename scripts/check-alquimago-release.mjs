@@ -12,6 +12,7 @@ const sha=createHash('sha1').update(expected).update(source).digest('hex');
 // update and verify the standalone widget installed in this repository.
 assert.match(marker.version,/^\d+\.\d+\.\d+$/);
 assert.match(marker.bundleBlobSha,/^[a-f0-9]{40}$/);
+if(marker.upstreamCommit)assert.match(marker.upstreamCommit,/^[a-f0-9]{40}$/);
 assert.equal(sha,marker.bundleBlobSha,'O arquivo do Alquimago não corresponde à versão liberada.');
 assert.ok(text.includes('ALQUIMAGO v'+marker.version),'Marcador de release não confere.');
 assert.ok(text.includes("version: '"+marker.version+"'"),'Versão interna do widget não confere.');
@@ -19,7 +20,9 @@ assert.ok(!/^import\s.*from\s/m.test(text),'O bundle contém imports ESM não pr
 for(const feature of [
  'function answerFollowUp(', 'function calculateBasic(', 'function recognizeStudioCommand(',
  'function seedNeuralModel(', 'this.pendingQuestion=pendingFromReply(response)',
- 'function tickCortex(', 'class AlquimagoFamiliar extends HTMLElement'
+ 'function tickCortex(', 'function answerFromKnowledge(', 'function normalizeKnowledge(',
+ 'function askLanguageModel(', 'const ALQUIMAGO_PRETRAINED=', 'this.lastProjectId=response.projectId',
+ 'class AlquimagoFamiliar extends HTMLElement'
 ]){
  assert.ok(text.includes(feature),'Funcionalidade ausente no bundle: '+feature);
 }
