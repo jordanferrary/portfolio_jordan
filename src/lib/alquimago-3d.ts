@@ -139,11 +139,18 @@ export function registerAlquimago3D():void{
     if(dead)return
     console.error('Alquimago 3D:',error)
     canvas.remove()
-    const hint=document.createElement('span')
-    hint.textContent='3D indisponível'
-    hint.style.cssText='font:11px system-ui;color:#f5d9ff'
-    host.append(hint)
-    window.dispatchEvent(new CustomEvent('alquimago:skin3d-error'))
+    const familiar=(host.getRootNode() as ShadowRoot).host as (HTMLElement&{
+      selectedSkin?:string;skin?:{type:string;src:string;shapeKeys?:Record<string,string>};
+      applySkin?:()=>void;render?:()=>void
+    })|undefined
+    // A missing file or unsupported WebGL should never leave the mascot blank.
+    if(familiar?.isConnected&&familiar.selectedSkin==='custom-3d'){
+      familiar.selectedSkin='padrao'
+      familiar.skin={type:'svg',src:''}
+      familiar.applySkin?.()
+      familiar.render?.()
+    }
+    window.dispatchEvent(new CustomEvent('alquimago:skin3d-error',{detail:{message:'O modelo 3D não carregou. A skin original foi restaurada.'}}))
    }
   }
   void init()
