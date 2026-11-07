@@ -93,8 +93,8 @@ export function App(){
   if(host.Alquimago)mount()
   else{
    script=document.createElement('script')
-   script.src=import.meta.env.BASE_URL+'alquimago/alquimago.js'
-   script.dataset.config=import.meta.env.BASE_URL+'alquimago/config.json'
+   script.src=import.meta.env.BASE_URL+'alquimago/alquimago.js?v=0.4.0'
+   script.dataset.config=import.meta.env.BASE_URL+'alquimago/config.json?v=0.4.0'
    script.async=true
    script.addEventListener('load',mount,{once:true})
    document.body.appendChild(script)
