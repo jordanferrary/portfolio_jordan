@@ -1,29 +1,31 @@
 import {lazy,Suspense,useEffect,useRef,useState} from 'react'
-import {ArrowLeft,ArrowRight,ArrowUpRight,Maximize2,Pause,Play} from 'lucide-react'
+import {ArrowLeft,ArrowRight,ArrowUpRight,Maximize2,Pause,Play,X} from 'lucide-react'
 import {AssetImage} from '../ui/asset-image'
 import {safePageHref,type PageBlock} from '../../data/custom-pages'
 const ArtLightbox=lazy(()=>import('../ui/art-lightbox').then(module=>({default:module.ArtLightbox})))
 
-/** External images remain remote: no upload to the portfolio repository. */
+/** Independent images can belong to artists, awards, certificates or any collection. */
 export function ArtistShowcase({block}:{block:PageBlock}){
  const items=(block.showcaseItems??[]).filter(item=>item.image.trim())
- const [selected,setSelected]=useState(0)
+ const [selectedId,setSelectedId]=useState<string|null>(null)
  const [zoom,setZoom]=useState(false)
- useEffect(()=>{setSelected(0);setZoom(false)},[block.id])
+ useEffect(()=>{setSelectedId(null);setZoom(false)},[block.id])
+ const current=items.find(item=>item.id===selectedId)??null
+ const destination=current?safePageHref(current.portfolioUrl):null
  if(!items.length)return null
- const current=items[Math.min(selected,items.length-1)]
- const portfolio=safePageHref(current.portfolioUrl)
- return <section className="artist-showcase" aria-label="Galeria de artistas">
-  <div className="artist-showcase-grid">{items.map((item,index)=><button type="button" key={item.id} className={'artist-showcase-card'+(current.id===item.id?' active':'')} onClick={()=>setSelected(index)} aria-label={'Ver detalhes de '+(item.name||'artista '+(index+1))} aria-pressed={current.id===item.id}>
-   <AssetImage src={item.image} alt={item.name||'Arte do participante'} loading="lazy" sizes="(max-width: 700px) 45vw, 240px"/>
-   <span>{item.name||'Artist '+(index+1)}</span>
+ return <section className={'artist-showcase'+(current?' is-open':'')} aria-label="Interactive gallery">
+  <div className="artist-showcase-grid">{items.map(item=><button type="button" key={item.id} className={'artist-showcase-card'+(current?.id===item.id?' active':'')} onClick={()=>{setZoom(false);setSelectedId(previous=>previous===item.id?null:item.id)}} aria-label={'View details: '+(item.name||'Untitled item')} aria-pressed={current?.id===item.id}>
+   <AssetImage src={item.image} alt={item.name||'Gallery item'} loading="lazy" sizes="(max-width: 700px) 45vw, 240px" style={{objectFit:block.showcaseFit==='contain'?'contain':'cover'}}/>
+   {item.name&&<span>{item.name}</span>}
   </button>)}</div>
-  <aside className="artist-showcase-detail">
-   <button type="button" className="artist-showcase-zoom" onClick={()=>setZoom(true)} aria-label="Ampliar arte selecionada"><AssetImage src={current.image} alt={current.name||'Arte selecionada'}/><span><Maximize2 size={16}/> Zoom</span></button>
-   <div className="artist-showcase-detail-copy"><span className="artist-showcase-kicker">✦ FEATURED ARTIST</span><h3>{current.name||'Featured artist'}</h3>{current.description&&<p>{current.description}</p>}
-   {portfolio?<a className="artist-showcase-portfolio" href={portfolio} target="_blank" rel="noopener noreferrer">View portfolio <ArrowUpRight size={17}/></a>:<span className="artist-showcase-portfolio disabled">Portfolio unavailable</span>}</div>
-  </aside>
-  {zoom&&<Suspense fallback={null}><ArtLightbox src={current.image} alt={current.name||'Artwork'} onClose={()=>setZoom(false)}/></Suspense>}
+  {current&&<aside className="artist-showcase-detail" aria-label={'Details: '+(current.name||'Selected item')}>
+   <button type="button" className="artist-showcase-close" onClick={()=>{setSelectedId(null);setZoom(false)}} aria-label="Close details"><X size={18}/></button>
+   <button type="button" className="artist-showcase-zoom" onClick={()=>setZoom(true)} aria-label="Enlarge selected image"><AssetImage src={current.image} alt={current.name||'Selected item'}/><span><Maximize2 size={16}/> Zoom</span></button>
+   <div className="artist-showcase-detail-copy"><span className="artist-showcase-kicker">✦ ITEM DETAILS</span>{current.name&&<h3>{current.name}</h3>}{current.description&&<p>{current.description}</p>}
+    {current.showLink!==false&&destination&&<a className="artist-showcase-portfolio" href={destination} target="_blank" rel="noopener noreferrer">{current.linkLabel?.trim()||'View portfolio'} <ArrowUpRight size={17}/></a>}
+   </div>
+  </aside>}
+  {zoom&&current&&<Suspense fallback={null}><ArtLightbox src={current.image} alt={current.name||'Gallery item'} onClose={()=>setZoom(false)}/></Suspense>}
  </section>
 }
 
