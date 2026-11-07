@@ -326,9 +326,8 @@ export async function publishPortfolioToGitHub(
    }
    let behavior:Record<string,unknown>|undefined
    if(bh?.schema===1){
-    const rewardBias=Array.isArray(bh.rewardBias)
-     ?Array.from({length:16},(_,i)=>bounded(bh.rewardBias?.[i],-4,4,0))
-     :Array(16).fill(0)
+    const rawBias=Array.isArray(bh.rewardBias)?bh.rewardBias as unknown[]:[]
+    const rewardBias=Array.from({length:16},(_,i)=>bounded(rawBias[i],-4,4,0))
     const rawContext=bh.contextWeights&&typeof bh.contextWeights==='object'&&!Array.isArray(bh.contextWeights)
      ?bh.contextWeights as Record<string,unknown>:{}
     const contextWeights:Record<string,number[]>={}
