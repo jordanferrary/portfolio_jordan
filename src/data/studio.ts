@@ -75,5 +75,17 @@ export const defaultContact:ContactSettings={
  footerTags:['3D ART','CHARACTERS','ENVIRONMENTS','CREATIVE DIRECTION'],
 }
 
+/** Normalize Contact footer tags. Empty array deliberately hides the entire ribbon. */
+export function normalizeContactTags(input:unknown,fallback:string[]=defaultContact.footerTags):string[]{
+ if(!Array.isArray(input))return [...fallback]
+ const seen=new Set<string>()
+ return input.filter((value):value is string=>typeof value==='string').map(value=>value.trim().slice(0,38)).filter(value=>{
+  const key=value.toLocaleLowerCase('en')
+  if(!value||seen.has(key))return false
+  seen.add(key)
+  return true
+ }).slice(0,18)
+}
+
 /** The portfolio banner is configured independently from the Home wallpaper. */
 export const defaultGalleryBackground=bundledAsset('hero/hero-character.webp')
