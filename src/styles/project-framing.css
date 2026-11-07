@@ -48,3 +48,10 @@
 }
 .site-shell .project-hero>img{object-position:50% 50%;transform:scale(var(--jf-frame-zoom,1));transition:transform .45s ease,object-position .4s ease}
 @media(prefers-reduced-motion:reduce){.site-shell .gallery-card .card-preview>img,.site-shell .project-hero>img{transition:none}}
+
+
+/* Same coverFocus drives gallery cards and landscape featured artwork on Home. */
+.framing-canvas-home{aspect-ratio:1.55/1;max-height:310px}
+.framing-dual-layout>.framing-view:last-child{grid-column:1/-1}
+.framing-dual-layout>.framing-view:last-child .framing-canvas-home{max-width:660px;margin-inline:auto}
+@media(max-width:750px){.framing-dual-layout{grid-template-columns:1fr}.framing-dual-layout>.framing-view:last-child{grid-column:auto}}
