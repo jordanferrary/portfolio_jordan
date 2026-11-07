@@ -4,7 +4,7 @@
  * claim to replace interactive browser, accessibility or visual-regression tests.
  */
 import assert from 'node:assert/strict'
-import {mkdtemp,writeFile,rm} from 'node:fs/promises'
+import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {pathToFileURL,fileURLToPath} from 'node:url'
 import {build} from 'esbuild'
@@ -44,6 +44,8 @@ try{
  const bundle=join(cache,'entry.mjs')
  await writeFile(bundle,output.outputFiles.find(file=>file.path.endsWith('.js'))?.contents??output.outputFiles[0].contents)
  const app=await import(pathToFileURL(bundle).href)
+ const awaitCss=await readFile(join(root,'src/styles/theme-coverage.css'),'utf8')
+ const awaitMain=await readFile(join(root,'src/main.tsx'),'utf8')
  const element=(Component,props)=>renderToStaticMarkup(React.createElement(Component,props))
  check('Image framing clamps input, preserves zoom and object position',()=>{
   assert.deepEqual(app.normalizeFraming({x:120,y:-7,zoom:7}),{x:100,y:0,zoom:2.5})
@@ -56,13 +58,25 @@ try{
   assert.equal(app.contrastRatio('#000000','#FFFFFF'),21)
   assert.ok(app.contrastRatio('#F8F3FF','#090611')>4.5)
   assert.equal(app.normalizeThemePalette({primary:'#ff0000'}).primary,'#FF0000')
+  assert.equal(app.normalizeThemePalette({primary:'#ff0000'}).text,app.DEFAULT_THEME.text)
+  assert.equal(app.normalizeThemePalette({primary:'#ff0000',text:'#dddddd',border:'#abcdef'}).border,'#ABCDEF')
  })
- check('Theme application updates all four editable CSS variables',()=>{
+ check('Theme application updates all seven editable CSS variables',()=>{
   const seen={}
   globalThis.document={documentElement:{style:{setProperty:(name,value)=>{seen[name]=value}}}}
   app.applyThemePalette({primary:'#AABBCC',secondary:'#BBCCDD',background:'#101010',surface:'#202020'})
-  for(const key of ['primary','secondary','background','surface'])assert.ok(seen['--jf-'+key])
+  for(const key of ['primary','secondary','background','surface','text','muted','border'])assert.ok(seen['--jf-'+key])
   delete globalThis.document
+ })
+ check('Public styles consume all seven palette variables across major routes',()=>{
+  const css=awaitCss
+  const main=awaitMain
+  assert.match(main,/styles\/theme-coverage\.css/)
+  for(const token of ['primary','secondary','background','surface','text','muted','border'])
+   assert.match(css,new RegExp('--jf-'+token+'\\b'))
+  for(const selector of ['.home-intro h1','.gallery-heading h1','.project-hero:after','.about-information','.contact-social-directory','.custom-page-hero','.music-widget .music-card'])
+   assert.ok(css.includes(selector),'Missing palette coverage for '+selector)
+  assert.doesNotMatch(css,/\.editor-overlay[\s.{:]|\.theme-palette-editor[\s.{:]/)
  })
  check('Contact specialties support add, remove, duplicate removal and hidden ribbon',()=>{
   assert.deepEqual(app.normalizeContactTags(['  MOTION DESIGN  ','3D ART','motion design','']),['MOTION DESIGN','3D ART'])
@@ -167,6 +181,7 @@ try{
  check('Palette editor exposes real-time contrast checks and editable tokens',()=>{
   const html=element(app.ThemePaletteEditor,{value:app.DEFAULT_THEME,onSave:()=>{},onClose:()=>{}})
   assert.match(html,/Legibilidade real/);assert.match(html,/Cor principal/)
+  assert.match(html,/Texto principal/);assert.match(html,/Texto secundário/);assert.match(html,/Bordas e divisórias/)
  })
  check('Like remains keyboard-accessible and does not fabricate shared counts',()=>{
   const html=element(app.ProjectLike,{projectId:'smoke-test',showCount:true})
