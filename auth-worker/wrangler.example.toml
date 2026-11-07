@@ -13,3 +13,7 @@ SESSION_SAMESITE = "None"
 [[kv_namespaces]]
 binding = "SESSIONS"
 id = "REPLACE_WITH_YOUR_KV_ID"
+
+# Optional owner-only generative assistant. May incur Cloudflare usage charges.
+[ai]
+binding = "AI"
