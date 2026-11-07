@@ -28,7 +28,7 @@ O pipeline de GitHub Pages roda os testes antes do deploy: falhas impedem public
 | Ferramenta | Cenário e resultado esperado |
 |---|---|
 | Home | Alterar título, disponibilidade, especialidades, Focus e imagens; sair e voltar; confirmar rascunho persistente |
-| Enquadramento de projeto | Ajustar capa, Home e banner; comparar os três previews com galeria, destaque da Home e página do projeto; mover e ampliar; confirmar hover preservando o ajuste |
+| Enquadramento de projeto | Ajustar a **capa uma única vez** e confirmar prévias da galeria e da Home simultaneamente; a Home deve ser somente leitura, sem controles repetidos. Alterar o banner separadamente e confirmar que não move a capa. Conferir hover e zoom. |
 | Projetos | Criar, renomear, duplicar se disponível, editar, reordenar e excluir com confirmação; testar imagem de capa obrigatória |
 | Composição | Inserir cada template antes/depois; arrastar, usar setas e remover; testar textos ricos, imagens, antes/depois, vídeo e modelo 3D |
 | Galeria com detalhes | Alternar grade simples/galeria interativa; cadastrar imagem, crédito, descrição e link; o painel deve começar fechado |
