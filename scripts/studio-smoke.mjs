@@ -27,7 +27,7 @@ const entry=[
  "export {ContactEditor} from './src/components/sections/contact-editor.tsx'",
  "export {ThemePaletteEditor} from './src/components/sections/theme-palette-editor.tsx'",
  "export {ProjectLike} from './src/components/sections/project-like.tsx'",
- "export {StoryBlock} from './src/components/sections/project-page.tsx'"
+ "export {StoryBlock,ProjectPage} from './src/components/sections/project-page.tsx'"
 ].join('\n')
 let checks=0
 const check=(name,fn)=>{fn();checks++;process.stdout.write('  ✓ '+name+'\n')}
@@ -122,6 +122,14 @@ try{
   assert.match(slideshow,/page-slideshow/);assert.match(slideshow,/page-slideshow-arrow/)
   const gallery=element(app.StoryBlock,{projectTitle:'Test',block:{id:'b2',type:'gallery',content:'',galleryMode:'artists',galleryEntries:[{id:'g1',image:'https://example.com/a.webp',artist:'',title:'Certificate',description:'Valid work',portfolioUrl:''}]}})
   assert.match(gallery,/artist-showcase-grid/);assert.doesNotMatch(gallery,/artist-showcase-detail-copy/)
+ })
+ check('Project clean artwork has a single visible title in the hero, never a repeated caption',()=>=>{
+  const project={id:'smoke-project',title:'Unique Project Title',category:'3D',year:'2026',image:'https://example.com/cover.webp',description:'A portfolio project',tools:[],blocks:[],processSteps:[]}
+  const html=element(app.ProjectPage,{project,onBack:()=>{},editing:false,onEdit:()=>{},showLikeCounts:false})
+  assert.match(html,/<h1>Unique Project Title<\/h1>/)
+  assert.doesNotMatch(html,/<h2>Unique Project Title<\/h2>/)
+  assert.doesNotMatch(html,/<figcaption>Unique Project Title<\/figcaption>/)
+  assert.match(html,/project-artwork-frame/)
  })
  check('Palette editor exposes real-time contrast checks and editable tokens',()=>{
   const html=element(app.ThemePaletteEditor,{value:app.DEFAULT_THEME,onSave:()=>{},onClose:()=>{}})
