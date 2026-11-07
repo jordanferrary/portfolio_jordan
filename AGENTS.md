@@ -49,3 +49,7 @@ O PIN do Local Studio é apenas UX; não o descreva como autenticação segura. 
 - `src/components/ui/project-video.tsx`: miniatura de vídeo cinematográfico. O iframe só aparece após clique.
 - `src/components/sections/music-library-editor.tsx`: cadastro de áudio importado, sugestão de metadados do nome do arquivo e capa pública de YouTube; **não implementa extração de MP3 de vídeos do YouTube**.
 - Leia [docs/README_MEDIA_CLEANUP.md](docs/README_MEDIA_CLEANUP.md) antes de alterar regras de exclusão. Não remova automaticamente mídia que só pareça órfã; fontes podem estar referenciadas por CSS, links antigos ou outros documentos.
+
+
+## Personalização do YouTube
+`src/lib/youtube-player-api.ts` e `src/components/ui/youtube-custom-player.tsx` implementam controles **externos** carregados apenas após clique, mantendo o iframe original com UI nativa. O bloco aceita `videoTitle?:string`. Não tente estilizar o interior do iframe, cobrir branding/controles nativos, remover anúncios ou quebrar funções como legendas e configurações. O Vimeo conserva player nativo.
