@@ -16,6 +16,8 @@ const BRANCH='main'
 const API='https://api.github.com'
 const ROOT='/repos/'+OWNER+'/'+REPO
 const CONTENT_PATH='src/data/published-portfolio.json'
+const ALQUIMAGO_MEMORY_PATH='public/alquimago/project-memory.json'
+const ALQUIMAGO_CONTEXT_PATH='public/alquimago/project-context.json'
 const MAX_NEW_MEDIA_BYTES=80*1024*1024
 type Kind='image'|'audio'
 type TreeEntry={path:string;mode:'100644';type:'blob';sha?:string|null;content?:string}
@@ -242,6 +244,35 @@ export async function publishPortfolioToGitHub(
  const revision=new Date().toISOString()+'-'+crypto.randomUUID()
  const manifest=JSON.stringify({schema:1,revision,store:snapshot},null,2)+'\n'
  const entries:TreeEntry[]=[{path:CONTENT_PATH,mode:'100644',type:'blob',content:manifest}]
+ // Project metadata is public and versioned in the very same commit as the site.
+ // Never include drafts, form contents, credentials, browser history or private file content.
+ const context=JSON.stringify({
+  schema:1,revision,updatedAt:new Date().toISOString(),
+  site:{type:'react-portfolio',editor:'Local Studio'},
+  counts:{projects:snapshot.projects.length,pages:snapshot.customPages.length,categories:snapshot.categories.length},
+  description:'Resumo público do projeto gerado automaticamente durante a publicação.'
+ },null,2)+'\n'
+ entries.push({path:ALQUIMAGO_CONTEXT_PATH,mode:'100644',type:'blob',content:context})
+ // A public, numeric-only familiar snapshot is optional. Visitor state stays on
+ // each visitor's device; only the editor's own local state is considered here.
+ try{
+  const raw=localStorage.getItem('alquimago:memory:v2:studio')
+  if(raw){
+   const loaded=JSON.parse(raw) as {schema?:number;brain?:Record<string,unknown>}
+   if(loaded.schema===2&&loaded.brain&&typeof loaded.brain==='object'){
+    const safeBrain:Record<string,number|string>={}
+    for(const key of ['energy','curiosity','focus','affinity','xp','interactions']){
+     const value=loaded.brain[key]
+     if(typeof value==='number'&&Number.isFinite(value))safeBrain[key]=Math.max(0,Math.min(1e12,value))
+    }
+    const action=loaded.brain.lastAction
+    if(typeof action==='string'&&['pet','play','focus','rest','study','summon'].includes(action))safeBrain.lastAction=action
+    entries.push({path:ALQUIMAGO_MEMORY_PATH,mode:'100644',type:'blob',
+     content:JSON.stringify({schema:2,updatedAt:new Date().toISOString(),brain:safeBrain,description:'Estado público do familiar no editor, sem dados de visitantes.'},null,2)+'\n'})
+   }
+  }
+ }catch{/* Corrupt or unavailable storage never interrupts normal site publishing. */}
+
  const usedPaths=referencedMediaPaths(snapshot)
  const cleanups=[...new Set(deletePaths)]
  for(const path of cleanups){
