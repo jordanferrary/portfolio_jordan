@@ -14,6 +14,7 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
  const [audioFile,setAudioFile]=useState<File|null>(null)
  const [coverFile,setCoverFile]=useState<File|null>(null)
  const [coverPreview,setCoverPreview]=useState('')
+ const [coverLoadError,setCoverLoadError]=useState(false)
  const [busy,setBusy]=useState(false)
  const [error,setError]=useState('')
  const [videoReference,setVideoReference]=useState('')
@@ -32,14 +33,16 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
   return ()=>URL.revokeObjectURL(url)
  },[coverFile])
  const update=(value:Partial<TrackDraft>)=>setDraft(p=>p?{...p,...value}:p)
- const edit=(track:MusicTrack)=>{setDraft({id:track.id,title:track.title,artist:track.artist,src:track.src,cover:track.cover??''});setAudioFile(null);setCoverFile(null);setVideoReference('');setError('')}
- const create=()=>{setDraft(fresh());setAudioFile(null);setCoverFile(null);setVideoReference('');setError('')}
+ const edit=(track:MusicTrack)=>{setDraft({id:track.id,title:track.title,artist:track.artist,src:track.src,cover:track.cover??''});setAudioFile(null);setCoverFile(null);setCoverLoadError(false);setVideoReference('');setError('')}
+ const create=()=>{setDraft(fresh());setAudioFile(null);setCoverFile(null);setCoverLoadError(false);setVideoReference('');setError('')}
  const save=async()=>{
   if(!draft)return
   if(!draft.title.trim()||!draft.artist.trim()){setError('Informe o título e o artista.');return}
   if(!draft.src&&!audioFile){setError('Adicione um arquivo de áudio ou uma URL direta.');return}
   const publishedAudio=/^site:\/\/audio\/studio\/[a-f0-9]{64}\.(mp3|wav|ogg|m4a)$/i.test(draft.src)
   if(!audioFile&&!isLocalMedia(draft.src)&&!publishedAudio&&!/^https?:\/\//i.test(draft.src)){setError('Use um arquivo importado, uma faixa já publicada ou uma URL https:// direta.');return}
+  const requestedCover=draft.cover.trim()
+  if(!coverFile&&requestedCover&&!isLocalMedia(requestedCover)&&!/^site:\/\/images\//.test(requestedCover)&&!/^https:\/\//i.test(requestedCover)&&!requestedCover.startsWith('/')){setError('Para capa online, use um link direto HTTPS de imagem (https://...).');return}
   setBusy(true);setError('')
   try{
    const src=audioFile?await saveUploadedAudio(audioFile):draft.src.trim()
@@ -59,9 +62,10 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
    <div className="music-track-form-head"><b>{tracks.some(t=>t.id===draft.id)?'Editar música':'Nova música'}</b><button aria-label="Cancelar edição" onClick={()=>setDraft(null)}><X size={18}/></button></div>
    <div className="music-track-fields"><label>Nome da música<input value={draft.title} maxLength={90} onChange={e=>update({title:e.target.value})} placeholder="Ex.: Midnight" required/></label><label>Artista<input value={draft.artist} maxLength={90} onChange={e=>update({artist:e.target.value})} placeholder="Ex.: Luna Studio" required/></label></div>
    <div className="music-track-image">
-    <div className="music-track-cover-preview">{coverPreview?<img src={coverPreview} alt="Nova capa"/>:draft.cover?<AssetImage src={draft.cover} alt="Capa atual"/>:<div className="music-no-cover"><ImagePlus size={24}/><small>Sem capa</small></div>}</div>
-    <div className="music-cover-actions"><b>Imagem da capa</b><label className="media-upload-button"><Upload size={15}/>Importar capa<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={e=>{setCoverFile(e.target.files?.[0]??null);e.target.value=''}}/></label><AssetClipButton folder="music" onSelect={cover=>{setCoverFile(null);update({cover})}}/>{draft.cover&&!coverFile&&<QuickEditImageButton source={draft.cover} folder="music" onSave={cover=>update({cover})}/>}{(coverFile||draft.cover)&&<button onClick={()=>{setCoverFile(null);update({cover:''})}}><X size={14}/>Remover capa</button>}</div>
-   <div className="music-youtube-reference"><label>Miniatura de um vídeo do YouTube (opcional)<input type="url" placeholder="https://www.youtube.com/watch?v=..." value={videoReference} onChange={e=>setVideoReference(e.target.value)}/></label>{youtubePreview?.provider==='youtube'&&<div className="music-youtube-preview"><img src={youtubePreview.thumbnail} alt="Prévia da miniatura do YouTube" loading="lazy"/><button type="button" onClick={()=>{setCoverFile(null);update({cover:youtubePreview.thumbnail})}}>Usar esta miniatura</button></div>}<p className="editor-help">O link serve apenas para obter uma imagem de capa pública, não para extrair áudio. Nome da faixa e artista continuam totalmente editáveis.</p></div>
+    <div className="music-track-cover-preview">{coverPreview?<img src={coverPreview} alt="Nova capa"/>:draft.cover?<AssetImage src={draft.cover} alt="Prévia da capa da música" onError={()=>setCoverLoadError(true)} onLoad={()=>setCoverLoadError(false)}/>:<div className="music-no-cover"><ImagePlus size={24}/><small>Sem capa</small></div>}{coverLoadError&&!coverPreview&&draft.cover&&<div className="music-cover-url-error" role="status">Não foi possível carregar esta imagem. Confira se o link é direto e público.</div>}</div>
+    <div className="music-cover-actions"><b>Imagem da capa</b><label className="media-upload-button"><Upload size={15}/>Importar capa<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={e=>{setCoverFile(e.target.files?.[0]??null);e.target.value=''}}/></label><AssetClipButton folder="music" onSelect={cover=>{setCoverFile(null);setCoverLoadError(false);update({cover})}}/>{draft.cover&&!coverFile&&<QuickEditImageButton source={draft.cover} folder="music" onSave={cover=>update({cover})}/>}{(coverFile||draft.cover)&&<button onClick={()=>{setCoverFile(null);update({cover:''})}}><X size={14}/>Remover capa</button>}</div>
+   <div className="music-cover-direct-link"><label>URL direta da capa (qualquer imagem pública)<input type="url" inputMode="url" placeholder="https://exemplo.com/capas/album.webp" value={isLocalMedia(draft.cover)||draft.cover.startsWith('site://')?'':draft.cover} onChange={e=>{setCoverFile(null);setCoverLoadError(false);update({cover:e.target.value})}}/></label><p className="editor-help">Aceita imagens de sites, CDNs e serviços de hospedagem (JPG, PNG, WebP etc.). Use o endereço da imagem, não o endereço de uma página. A capa é exibida no player sem importar o arquivo para o GitHub; o site de origem precisa permitir exibição externa.</p></div>
+   <div className="music-youtube-reference"><label>Miniatura de um vídeo do YouTube (opcional)<input type="url" placeholder="https://www.youtube.com/watch?v=..." value={videoReference} onChange={e=>setVideoReference(e.target.value)}/></label>{youtubePreview?.provider==='youtube'&&<div className="music-youtube-preview"><img src={youtubePreview.thumbnail} alt="Prévia da miniatura do YouTube" loading="lazy"/><button type="button" onClick={()=>{setCoverFile(null);setCoverLoadError(false);update({cover:youtubePreview.thumbnail})}}>Usar esta miniatura</button></div>}<p className="editor-help">O link serve apenas para obter uma imagem de capa pública, não para extrair áudio. Nome da faixa e artista continuam totalmente editáveis.</p></div>
    </div>
    <div className="music-audio-input"><b>Arquivo de áudio</b><label className="audio-upload"><Upload size={17}/>{audioFile?'Substituir arquivo':'Importar MP3, WAV, OGG ou M4A'}<input type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,audio/m4a,.mp3,.wav,.ogg,.m4a" onChange={e=>{importAudio(e.target.files?.[0]??null);e.target.value=''}}/></label>{audioFile?<span className="music-audio-file"><Check size={15}/>{audioFile.name}</span>:isLocalMedia(draft.src)?<span className="music-audio-file"><Check size={15}/>Áudio salvo neste navegador</span>:null}<label>Ou URL direta do arquivo<input value={isLocalMedia(draft.src)?'':draft.src} placeholder={isLocalMedia(draft.src)?'Áudio local selecionado':'https://site.com/musica.m4a'} onChange={e=>{update({src:e.target.value});setAudioFile(null)}}/></label></div>
    {error&&<p role="alert" className="music-editor-error">{error}</p>}
