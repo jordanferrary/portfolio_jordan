@@ -53,7 +53,7 @@ Regras:
 6. Exportar → **glTF 2.0** → Format: **glTF Binary (.glb)**.
 7. Ative **Shape Keys / Morph Targets** e os atributos de mesh necessários. Exporte materiais/texturas; as opções exatas mudam conforme a versão do Blender.
 8. Verifique o modelo exportado em um visualizador glTF. Se parecer invertido, corrija a orientação na fonte e exporte novamente.
-9. No Local Studio → Ferramentas → **Skin 3D do Alquimago**, selecione o GLB. O editor valida versão GLB 2, peso e nomes das Shape Keys.
+9. Abra o Alquimago → **Interagir** → configurações avançadas → **Aparência** e clique em **Importar modelo 3D (.glb)**. O botão abre o Ateliê de skins 3D (solicitando desbloqueio do Local Studio se necessário). Também é possível acessar Local Studio → Ferramentas → **Conteúdo → Skin 3D do Alquimago**. O editor valida versão GLB 2, peso e nomes das Shape Keys.
 10. Visualize no familiar, teste as expressões e só então clique em **Publicar skin e alterações**.
 
 ## 4. Publicação e armazenamento
