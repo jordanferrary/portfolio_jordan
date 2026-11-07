@@ -100,9 +100,9 @@ Ao desbloquear o Local Studio com **Ctrl + \\**, o Alquimago aparece na tela. El
 
 Os arquivos de integração ficam em `public/alquimago/`: `alquimago.js` (widget local), `config.json` (regras), `project-context.json` (resumo público do projeto) e `project-memory.json` (snapshot numérico público opcional do familiar do editor). Não é necessário executar um novo processo de instalação nem adicionar etapas para publicar o portfólio.
 
-O mascote salva XP, energia e demais atributos em `localStorage` usando o namespace `studio`. Atualizar o código ou publicar o site normalmente não apaga essa memória no mesmo navegador e domínio. Limpar dados do site ou trocar de dispositivo pode apagá-la; use **Exportar memória** e **Restaurar** para transferir ou guardar um backup.
+Desde a v0.5, o Alquimago do Studio utiliza **memória de rascunho em execução**, não persistência automática local. O XP, os atributos e os pesos aprendidos só se tornam permanentes quando o proprietário publica no GitHub. Recarregar recupera o snapshot público mais recente. A opção Exportar memória também permite backup manual.
 
-Ao usar **Publicar no GitHub** com o token temporário já empregado pelo Studio, o publicador também inclui no mesmo commit um contexto público atualizado do projeto e, se existir memória local do editor, um snapshot **apenas numérico**, sem textos privados. Rascunhos salvos localmente **não** fazem commits automaticamente. Dados de interação de visitantes não são compartilhados no repositório.
+Ao usar **Publicar no GitHub** com o token temporário já empregado pelo Studio, o publicador também inclui no mesmo commit um contexto público atualizado do projeto e, quando o familiar está carregado e pronto, o seu snapshot **numérico ao vivo**, com atributos e pesos neurais, sem textos privados. Rascunhos salvos localmente **não** fazem commits automaticamente. Dados de interação de visitantes não são compartilhados no repositório.
 
 O recurso **Arquivos** lê apenas arquivos de texto públicos que forem explicitamente indicados em `config.json`. Não lê o código privado de outros repositórios nem acessa o disco do computador pelo navegador. A integração atual não é um agente de IA autônomo.
 
@@ -115,7 +115,7 @@ Ao atualizar o widget da sua própria instalação, verifique a versão de `publ
 - O Studio envia ao mascote apenas o tipo de seção e as contagens de projetos e páginas, sem conteúdo de rascunhos.
 - Ações repetidas não rendem XP ilimitado. Carinho não rende XP; cada rota rende uma vez ao dia ao escolher explorá-la; uma publicação GitHub confirmada concede XP uma vez por revisão.
 - **IA** abre ChatGPT ou Gemini a pedido e prepara um prompt para colar. Não controla conversas, sessões ou abas externas.
-- A memória local continua isolada por dispositivo/namespace e não é apagada por publicação normal. O projeto público guarda apenas o snapshot numérico permitido no fluxo já existente.
+- Histórico v0.3: a memória era local. Na v0.5 do Studio, ela é temporária até publicar; instalações independentes podem continuar no modo `local`.
 
 
 ### Alquimago 0.4 — verificação de atualização e interações reais
@@ -124,15 +124,15 @@ O mascote é carregado **somente** depois que o Local Studio é desbloqueado. Ao
 
 **Carinho sem clique:** movimente o mouse algumas vezes para a esquerda e para a direita sobre o chapéu. A animação de coração confirma que o gesto foi reconhecido. Um deslize curto com o botão pressionado funciona em telas sensíveis ao toque; um arraste longo move o personagem. Clique no personagem para abrir **Conversar**; clique com o botão direito para abrir as ações. A rodinha do mouse gira o familiar.
 
-**Diálogo:** a aba **Conversar** contém um campo de texto, respostas locais programadas, botões rápidos e histórico salvo no navegador. Tente "oi", "como faço carinho?", "quanto XP tenho?", "tem sugestões pro site?" e "abre a galeria". O Alquimago não é uma IA generativa e não consegue ler conversas em outras abas.
+**Diálogo:** a aba **Conversar** contém um campo de texto, classificação neural de intenção e respostas locais, botões rápidos e histórico temporário no Studio. Tente "oi", "como faço carinho?", "quanto XP tenho?", "tem sugestões pro site?" e "abre a galeria". O Alquimago não é uma IA generativa e não consegue ler conversas em outras abas.
 
-**Atualização:** a integração carrega `public/alquimago/alquimago.js?v=0.4.0` e `config.json?v=0.4.0`. O identificador de versão reduz a chance de o navegador manter o JavaScript antigo em cache; para aparecer no site, o workflow **Deploy React to GitHub Pages** precisa concluir a compilação e o deploy. O histórico de diálogo fica em armazenamento local, separado das snapshots públicas de XP.
+**Atualização:** o identificador de cache passa a ser o SHA do build do GitHub, e não uma versão fixa. Histórico: a v0.4 utilizava `?v=0.4.0`. O identificador de versão reduz a chance de o navegador manter o JavaScript antigo em cache; para aparecer no site, o workflow **Deploy React to GitHub Pages** precisa concluir a compilação e o deploy. O histórico de diálogo fica em armazenamento local, separado das snapshots públicas de XP.
 
 
 ### Atualização de versão, cache e dados locais — Alquimago 0.4.1
 
-- **Ctrl + F5** força o navegador a recarregar arquivos, mas **não** zera `localStorage`. Isso é deliberado: XP e conversa do mascote devem sobreviver a atualizações do site.
-- Em **Alquimago → Cuidado → Reiniciar dados locais**, o usuário pode zerar XP, humor, posição e conversa **somente da instalação atual**, após confirmação. O portfólio, outros usuários e o GitHub não são alterados. O reset grava uma memória-base vazia para que o snapshot antigo do repositório não volte a preenchê-la.
+- **Ctrl + F5** atualiza arquivos sem limpar `localStorage` do navegador. Porém, no modo `publish` da v0.5, o Alquimago descarta o rascunho de XP, conversa e aprendizado da sessão e recupera o último snapshot publicado.
+- Em **Alquimago → Cuidado → Zerar rascunho do mago**, o usuário pode zerar XP, humor, posição, conversa e aprendizado **temporariamente**, após confirmação. Deve publicar para manter o zero. O portfólio, outros usuários e o GitHub não são alterados. O reset grava uma memória-base vazia para que o snapshot antigo do repositório não volte a preenchê-la.
 - Em **Local Studio → Ferramentas → Gerenciamento → Voltar à versão publicada**, o editor oferece uma ação separada, com confirmação, para descartar **rascunhos do portfólio** guardados neste navegador. Antes disso, use **Backup ZIP** se precisar preservar algum rascunho.
 - A central de ferramentas mostra o **Build** (SHA curto do GitHub Actions) e a **revisão do conteúdo publicado**. Eles permitem distinguir deploy novo de dados locais antigos.
 - O script do Alquimago recebe `?v=<SHA do build>` a cada publicação; assim, uma versão JavaScript antiga não deve ser reutilizada só porque ficou no cache.
@@ -141,3 +141,13 @@ O mascote é carregado **somente** depois que o Local Studio é desbloqueado. Ao
 ### Correções da interface pública
 
 A Home usa `focus-entry` no painel *Project Focus*, isolando ícones/textos das antigas regras de fundo aplicadas a `focus-item`. A página Contato utiliza uma composição compacta em desktop, com rolagem apenas caso o conteúdo não caiba; o layout móvel continua responsivo. Nenhuma alteração remove redes sociais ou configurações publicadas.
+
+## Alquimago v0.5 — modelo neural e publicação deliberada
+
+- Visual: o grimório é um painel opaco, com tamanho limitado pela janela e **rolagem interna**; telas pequenas continuam mostrando o cabeçalho e o botão de fechar.
+- Diálogo: o classificador de intenções usa uma rede neural local **96 → 24 → 12**, treinada previamente com expressões comuns. Agora reconhece **OIE**, além de saudações e perguntas sobre o site.
+- Aprendizado: na aba **Conversar**, a pessoa pode indicar o sentido correto da última mensagem e selecionar **Ensinar**. Os pesos se ajustam localmente. O modelo não gera textos como um LLM: responde a assuntos definidos e encaminha perguntas complexas.
+- **Publicar alterações:** abre o mesmo editor de publicação autenticado que já existe no Local Studio. Após confirmação e commit bem-sucedido, o snapshot publicado passa a conter XP, atributos, proteção de recompensa repetida e pesos numéricos, nunca transcrição dos diálogos.
+- **Recarregar sem publicar:** volta ao estado confirmado no repositório. Não mexe no rascunho do portfólio nem exige novas etapas para salvar o site.
+- O publicador só captura o mascote quando ele está montado e com a configuração carregada. Se ele estiver indisponível, a memória pública anterior é preservada.
+- Por privacidade, não ensine senhas, tokens nem dados de outras pessoas: a rede é um protótipo que permanece separado de serviços externos.
