@@ -83,7 +83,7 @@
     "mode": "equilibrado",
     "minIntervalMs": 120000,
     "maxPerDay": 4,
-    "toy": true
+    "toy": false
   },
   "knowledge": {
     "file": "./alquimago/knowledge.json"
