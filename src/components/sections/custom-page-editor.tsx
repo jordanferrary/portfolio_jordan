@@ -87,6 +87,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
    showcaseItems:type==='showcase'?[]:undefined,
    slideItems:type==='slideshow'?[]:undefined,
    slideAutoplay:false,slideTransition:'fade',slideInterval:5000,
+   slideWidth:100,slideHeight:520,slideVisible:0,slideFit:'contain',
    dividerIcon:type==='divider'?'sparkles':undefined,
    dividerStyle:type==='divider'?'glow':undefined,
    buttonLabel:type==='action'?'Copy content':undefined,
@@ -213,6 +214,17 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
       <button type="button" className="custom-page-add-image" onClick={()=>patchBlock(block.id,{showcaseItems:[...(block.showcaseItems??[]),{id:'artist-'+crypto.randomUUID(),image:'',name:'',description:'',portfolioUrl:''} satisfies ShowcaseItem]})}><Plus size={15}/> Adicionar artista</button>
      </div>}
      {block.type==='slideshow'&&<div className="custom-page-rich-gallery-editor">
+      <div className="custom-page-slide-layout">
+       <div className="editor-section-title"><h3>Dimensões e disposição do carrossel</h3><p>A largura controla o espaço horizontal na página. Ao reduzir a altura, o modo automático exibe mais imagens por vez, respeitando o espaço disponível.</p></div>
+       <div className="custom-page-slide-layout-controls">
+        <label>Largura do carrossel · {block.slideWidth??100}%<input type="range" min="50" max="100" step="5" value={block.slideWidth??100} onChange={e=>patchBlock(block.id,{slideWidth:Number(e.target.value)})}/></label>
+        <label>Altura · {block.slideHeight??520} px<input type="range" min="180" max="640" step="20" value={block.slideHeight??520} onChange={e=>patchBlock(block.id,{slideHeight:Number(e.target.value)})}/></label>
+        <label>Imagens visíveis<select value={block.slideVisible??0} onChange={e=>patchBlock(block.id,{slideVisible:Number(e.target.value)})}><option value={0}>Automático pela altura</option>{[1,2,3,4,5].map(n=><option key={n} value={n}>{n} {n===1?'imagem':'imagens'} por vez</option>)}</select></label>
+        <label>Enquadramento<select value={block.slideFit??'contain'} onChange={e=>patchBlock(block.id,{slideFit:e.target.value as 'contain'|'cover'})}><option value="contain">Mostrar imagem completa</option><option value="cover">Preencher quadro (recortar)</option></select></label>
+       </div>
+       <div className="custom-page-slide-size-preview" aria-hidden="true"><div style={{width:(block.slideWidth??100)+'%',height:Math.round(68*(block.slideHeight??520)/520)+22}}>{Array.from({length:Math.max(1,block.slideVisible||((block.slideHeight??520)<=240?4:(block.slideHeight??520)<=320?3:(block.slideHeight??520)<=430?2:1))},(_,j)=><span key={j}/>)}</div></div>
+       <p className="editor-help">No celular, a largura se adapta à tela e a quantidade é reduzida quando necessário. Os slides existentes continuam compatíveis.</p>
+      </div>
       <div className="custom-page-button-options"><label>Reprodução automática<select value={block.slideAutoplay?'yes':'no'} onChange={e=>patchBlock(block.id,{slideAutoplay:e.target.value==='yes'})}><option value="no">Não · Manual</option><option value="yes">Sim · Automática</option></select></label><label>Transição<select value={block.slideTransition??'fade'} onChange={e=>patchBlock(block.id,{slideTransition:e.target.value as SlideTransition})}><option value="fade">Fade suave</option><option value="slide">Deslizamento</option><option value="zoom">Zoom cinematográfico</option></select></label><label>Intervalo (segundos)<input type="number" min="1.5" max="30" step=".5" value={(block.slideInterval??5000)/1000} onChange={e=>patchBlock(block.id,{slideInterval:Math.max(1500,Math.min(30000,Math.round(Number(e.target.value||5)*1000)))})}/></label></div>
       {(block.slideItems??[]).map((item,index)=><div className="custom-page-rich-gallery-entry" key={item.id}>
        <div className="custom-page-rich-gallery-head"><strong>Slide {index+1}</strong><button type="button" onClick={()=>patchBlock(block.id,{slideItems:(block.slideItems??[]).filter(x=>x.id!==item.id)})}><Trash2 size={15}/> Remover</button></div>
