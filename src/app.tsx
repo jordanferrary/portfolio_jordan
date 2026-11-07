@@ -81,6 +81,14 @@ export function App(){
   {id:'brand',label:'Logo lateral',description:'Imagem principal, hover e escala',section:'Identidade',icon:ImageIcon,onClick:()=>setLogoEditorOpen(true)},
   {id:'share',label:'Favicon e link',description:'Ícone da aba e prévia compartilhada',section:'Identidade',icon:ImageIcon,onClick:()=>setSiteIdentityOpen(true)}
  ]
+ useEffect(()=>{
+  const openSkinEditor=()=>{
+   setSkin3DOpen(true)
+   if(!editing)setGateOpen(true)
+  }
+  window.addEventListener('alquimago:request-skin-editor',openSkinEditor)
+  return ()=>window.removeEventListener('alquimago:request-skin-editor',openSkinEditor)
+ },[editing])
  useEffect(()=>{applyThemePalette(portfolio.themePalette)},[portfolio.themePalette])
  useEffect(()=>{
   if(!editing)return
@@ -171,7 +179,7 @@ export function App(){
  {editing&&<Suspense fallback={null}><StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onNewProject={()=>setEditor(null)} onPublish={()=>setGitHubPublishOpen(true)} onExport={portfolio.exportData} onRestorePublished={portfolio.restorePublished} publishedRevision={currentPublishedRevision} onLock={()=>{setEditing(false);setEditor(undefined)}} actions={studioActions}/></Suspense>} 
   {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  <Suspense fallback={null}>
- {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
+ {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>{setGateOpen(false);setSkin3DOpen(false)}}/>}
  {editing&&imageConverterOpen&&<ImageConverter onClose={()=>setImageConverterOpen(false)}/>}
  {editing&&customPageEditorTarget!==null&&<CustomPageEditor key={customPageEditorTarget} initialPageId={customPageEditorTarget} pages={portfolio.customPages} onSavePages={portfolio.setCustomPages} onNavigatePage={navigateCustomPage} onClose={()=>setCustomPageEditorTarget(null)}/>}
  {editing&&skin3DOpen&&<Alquimago3DEditor onClose={()=>setSkin3DOpen(false)} onPublish={()=>setGitHubPublishOpen(true)}/>}
