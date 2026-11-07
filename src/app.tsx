@@ -93,8 +93,10 @@ export function App(){
   if(host.Alquimago)mount()
   else{
    script=document.createElement('script')
-   script.src=import.meta.env.BASE_URL+'alquimago/alquimago.js?v=0.4.0'
-   script.dataset.config=import.meta.env.BASE_URL+'alquimago/config.json?v=0.4.0'
+   // Every GitHub deployment has a unique versioned URL, independent of browser cache.
+   const buildKey=encodeURIComponent(import.meta.env.VITE_BUILD_SHA||'0.4.1')
+   script.src=import.meta.env.BASE_URL+'alquimago/alquimago.js?v='+buildKey
+   script.dataset.config=import.meta.env.BASE_URL+'alquimago/config.json?v='+buildKey
    script.async=true
    script.addEventListener('load',mount,{once:true})
    document.body.appendChild(script)
