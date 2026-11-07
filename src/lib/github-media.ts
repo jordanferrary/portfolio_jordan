@@ -2,14 +2,14 @@ import type {PortfolioStore} from '../hooks/use-portfolio'
 
 export type RepositoryMedia={path:string;bytes:number;kind:'Imagem'|'Áudio'|'Vídeo'|'Modelo 3D';used:boolean;protected:boolean}
 const SOURCE='https://api.github.com/repos/jordanferrary/portfolio_jordan'
-const ALLOWED=/^public\/(images|audio|models|videos|assets)\/[a-zA-Z0-9/_ .-]+\.(png|jpe?g|webp|avif|gif|svg|mp3|wav|ogg|m4a|flac|mp4|webm|glb|gltf|fbx)$/i
+const ALLOWED=/^public\/(images|audio|models|videos|assets)\/.+\.(png|jpe?g|webp|avif|gif|svg|mp3|wav|ogg|m4a|flac|mp4|webm|glb|gltf|fbx)$/i
 const fallbackProtected=new Set([
  'public/images/hero/hero-character.webp',
  'public/images/profile/avatar.webp',
  'public/images/music/album-cover.webp',
  ...['void-wanderer','moonlit-cottage','deepwalker','astral-guardian','neon-armor','ancient-ruins'].map(id=>'public/images/projects/'+id+'/'+id+'.webp')
 ])
-export function isCleanableFile(path:string){return ALLOWED.test(path)&&!path.includes('..')}
+export function isCleanableFile(path:string){return ALLOWED.test(path)&&!path.includes('\\')&&!/[\x00-\x1f]/.test(path)&&!path.split('/').some(part=>!part||part==='.'||part==='..')}
 export function isProtectedAsset(path:string){return fallbackProtected.has(path)}
 export function mediaPathFromRef(value:string):string|undefined{
  if(!value)return
@@ -43,19 +43,36 @@ export function referencedMediaPaths(store:PortfolioStore):Set<string>{
  }
  return result
 }
-export async function getRepositoryMedia(token:string,store:PortfolioStore):Promise<RepositoryMedia[]>{
- if(!token.trim())throw new Error('Informe o token para consultar o repositório.')
+/** This repository is public: thumbnails and the inventory do not need a GitHub token. */
+export function repositoryMediaPreviewUrl(path:string):string{
+ if(!isCleanableFile(path))return ''
+ return 'https://raw.githubusercontent.com/jordanferrary/portfolio_jordan/main/'+path.split('/').map(encodeURIComponent).join('/')
+}
+async function readRepositoryMedia(store:PortfolioStore,token?:string):Promise<RepositoryMedia[]>{
+ const headers:Record<string,string>={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+ if(token?.trim())headers.Authorization='Bearer '+token.trim()
  const response=await fetch(SOURCE+'/git/trees/main?recursive=1',{
-  headers:{Authorization:'Bearer '+token.trim(),Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},
-  cache:'no-store',referrerPolicy:'no-referrer'
+  headers,cache:'no-store',referrerPolicy:'no-referrer'
  })
- if(!response.ok)throw new Error('Não foi possível consultar os arquivos (HTTP '+response.status+'). Confira o token e seu acesso ao repositório.')
+ if(!response.ok){
+  if(!token&&response.status===403)throw new Error('O GitHub limitou temporariamente as consultas públicas. Tente novamente mais tarde ou consulte pelo token na tela de publicação.')
+  throw new Error('Não foi possível consultar os arquivos (HTTP '+response.status+').'+(token?' Confira o token e o acesso ao repositório.':' Confira sua conexão e tente novamente.'))
+ }
  const tree=await response.json() as {truncated?:boolean;tree?:{path:string;type:string;size?:number}[]}
- if(tree.truncated||!Array.isArray(tree.tree))throw new Error('A lista do GitHub está incompleta. Nenhum arquivo será excluído.')
+ if(tree.truncated||!Array.isArray(tree.tree))throw new Error('A listagem de pastas do GitHub está incompleta. Nenhuma exclusão deve ser feita.')
  const used=referencedMediaPaths(store)
  return tree.tree.filter(entry=>entry.type==='blob'&&isCleanableFile(entry.path)).map(entry=>{
   const path=entry.path
   const kind:RepositoryMedia['kind']=/\.(mp3|wav|ogg|m4a|flac)$/i.test(path)?'Áudio':/\.(glb|gltf|fbx)$/i.test(path)?'Modelo 3D':/\.(mp4|webm)$/i.test(path)?'Vídeo':'Imagem'
   return {path,bytes:entry.size??0,kind,used:used.has(path),protected:isProtectedAsset(path)}
  }).sort((a,b)=>Number(a.used||a.protected)-Number(b.used||b.protected)||a.path.localeCompare(b.path))
+}
+/** Public, unauthenticated inventory for Local Studio. Does not write or delete anything. */
+export function getPublicRepositoryMedia(store:PortfolioStore):Promise<RepositoryMedia[]>{
+ return readRepositoryMedia(store)
+}
+/** Optional authenticated inventory, used in the GitHub publish confirmation. */
+export function getRepositoryMedia(token:string,store:PortfolioStore):Promise<RepositoryMedia[]>{
+ if(!token.trim())throw new Error('Informe o token de publicação para consultar com autenticação.')
+ return readRepositoryMedia(store,token)
 }
