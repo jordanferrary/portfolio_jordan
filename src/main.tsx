@@ -50,3 +50,6 @@ import './styles/media-extras.css'
 import './styles/project-model.css'
 
 import './styles/custom-pages.css'
+
+// Load last: visitor-facing palette overrides older fixed violet/graphite values.
+import './styles/theme-coverage.css'
