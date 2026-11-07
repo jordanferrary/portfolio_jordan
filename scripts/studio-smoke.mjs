@@ -64,7 +64,7 @@ try{
  check('Theme application updates all seven editable CSS variables',()=>{
   const seen={}
   globalThis.document={documentElement:{style:{setProperty:(name,value)=>{seen[name]=value}}}}
-  app.applyThemePalette({primary:'#AABBCC',secondary:'#BBCCDD',background:'#101010',surface:'#202020'})
+  app.applyThemePalette({...app.DEFAULT_THEME,primary:'#AABBCC',secondary:'#BBCCDD',background:'#101010',surface:'#202020'})
   for(const key of ['primary','secondary','background','surface','text','muted','border'])assert.ok(seen['--jf-'+key])
   delete globalThis.document
  })
