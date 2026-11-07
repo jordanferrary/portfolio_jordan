@@ -53,3 +53,14 @@ Na central de ferramentas escolha **Páginas → Nova página** ou **Minhas pág
 O bloco **Botão de ação** aceita três funções: **copiar** texto, chave PIX ou prompt; **abrir link na mesma aba**; ou **abrir link em nova aba**. É possível ajustar aparência, alinhamento e largura do botão. Copiar PIX não processa pagamentos. O conteúdo de copiar é público; não use para armazenar senhas ou credenciais.
 
 Em **Minhas páginas**, reordene, duplique, oculte do menu ou exclua páginas. Ocultar não impede acesso por link direto. O endereço `#/page/page-<uuid>` permanece quando renomear a página. Saiba mais em [README_CUSTOM_PAGES.md](README_CUSTOM_PAGES.md).
+
+
+## Galeria de artistas e slides (páginas personalizadas)
+
+No Local Studio, abra **Minhas páginas → Editar → Composição**.
+
+- **Galeria de artistas**: adicione cada participante com nome, descrição, URL direta da imagem e link do portfólio. As miniaturas são selecionáveis; a arte selecionada aparece em destaque com zoom e botão **View portfolio**. As imagens são referenciadas externamente, não copiadas para o GitHub. O servidor de origem deve permitir carregamento público da imagem e manter a URL ativa. Dê crédito e obtenha autorização de exibição dos participantes.
+- **Slides**: adicione imagens e legendas, reordene os slides, escolha reprodução manual ou automática, transição *fade*, *slide* ou *zoom*, e intervalo de 1,5 a 30 segundos. O visitante pode avançar, voltar, selecionar slides, pausar/reproduzir e ampliar a imagem. Respeita preferência de movimento reduzido.
+- Imagens de slides adicionadas pela biblioteca local seguem o fluxo normal de publicação; imagens externas continuam referenciadas pela URL.
+- **Salvar página** grava o rascunho local. **Publicar no GitHub** é necessário para disponibilizar ao público.
+
