@@ -1,7 +1,72 @@
 {
   "schema": 1,
-  "revision": "2026-11-06T20:21:05.813Z-99cfdf76-ad86-471b-aa5b-2d021072cf4e-social-first-contact",
+  "revision": "2026-11-07T00:09:53.588Z-1a01896d-2d26-454f-af1d-1ce88ac29778",
   "store": {
+    "imageVariants": {
+      "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
+        "small": "site://images/studio/165b20f3577848aa9326ba33d8afe82c469b3f302a8b40f1feeabb44b449d75c.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/7cb18e5b14ea4a23bab739d715bebfc49da25a52c11a29ff7fc0ca4ae94936c8.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2000
+      },
+      "site://images/studio/87eb9b94f2355c69589f0e57336aaf4a2f490f8d005433af058c67a428cbcdc4.png": {
+        "small": "site://images/studio/ca08c384fb75d0e79d1d9767a54f5bb3013e09edc0b617e22e9ccd122fa67a7d.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/1e9fd03e202a5045da8dd8730585392d5c6bb44d100188c3201c13596c909c02.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2000
+      },
+      "site://images/studio/706fa3dd5611b6ee165a6137e4c4b207699a7d64b1b1551a766dd5c23d8e7ed7.png": {
+        "small": "site://images/studio/25d29b4814ef68a2a31ff1da7a817d4c5237d428146af24df977279b5d68cb3a.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/8cfe9f93c079e2de27a98fbdee4d2263a137a0e254a8b86ec602765f69de5456.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2000
+      },
+      "site://images/studio/4fc607041ab62bb61900e73b1fcb2102fa344203d935cc3c0caaecdff9645ea8.png": {
+        "small": "site://images/studio/de3b749af5fc6e6219a5756e914748fa0bfb411b968fac45e79f7794f049cd89.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/b02d1bc5fafcf989dcd3aaa66cf9df18f8fd1a929f10c97c27fa804c846465f3.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2000
+      },
+      "site://images/studio/c1954c5571f0961167228e30ec3982087e814fb7a3c88ad40246ec8a8f7709eb.png": {
+        "small": "site://images/studio/310674489dfe9e1618425c76ff85bb557a36f7e07e1fa8c4d8d9c05124a6adb9.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/063975d4d278155163b549974633a407b44b80a08853894927a3e4b0ce664076.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2000
+      },
+      "site://images/studio/ffd3728ce1cc4769ff3e8b713c5bd5b032a2321e993c16f903de74b24b34f30b.png": {
+        "small": "site://images/studio/110a6d5c7e6276b21f7c3f8cf27999632cff8cc9efbe9b794b647bf3ff0200ea.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/8f685ef803f96b859a9a499391d5d67f35926920eee873ec93a2ffec8bd9df60.webp",
+        "mediumWidth": 960,
+        "largeWidth": 1258
+      },
+      "site://images/studio/621a3a8870a6b1eb0d69a61443efdef28c8287a2c7ae0f8962352c91e3d8d444.png": {
+        "small": "site://images/studio/708dc2ea2a69a8c6c4d2f04f726fb34393dbf816e51c77d44bed0b1723f3a914.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/7a623f3af6c6868b753a32d6051f3c8ec408d2e8ff291a1b841d1e627ce02159.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2000
+      },
+      "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg": {
+        "small": "site://images/studio/6bd4105a93d951ca70c71293b6681e4b60c44b1a0114cacb305e5a0f05438ee1.webp",
+        "smallWidth": 360,
+        "medium": "site://images/studio/2e523d4d70ba12ce7170484d1acfb6bdaf86e1d14b5d9975021cf6b307ad3d5d.webp",
+        "mediumWidth": 720,
+        "largeWidth": 900
+      },
+      "site://images/studio/5f5db0accc8c625c55ac22172769e03bc4e723816e5990a9a33e0ded87341807.webp": {
+        "small": "site://images/studio/fe6bf3533142e9e51dd4ff7417397b909a0d57e21d73b5c986b4b6d6c7a03688.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/fb0b178ec424e7d181edaba141228021a6b5eabe1da953bb457de2c690ff3711.webp",
+        "mediumWidth": 960,
+        "largeWidth": 1200
+      }
+    },
     "projects": [
       {
         "id": "project-mw4oyna3",
@@ -53,6 +118,11 @@
             "content": "",
             "media": "site://images/studio/87eb9b94f2355c69589f0e57336aaf4a2f490f8d005433af058c67a428cbcdc4.png",
             "after": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png"
+          },
+          {
+            "id": "b-v3t4ga80b3q",
+            "type": "video",
+            "content": "https://www.youtube.com/live/rFZHOHl-L8A?si=VOUbQeieVGdFcalV"
           }
         ],
         "processSteps": [
@@ -76,7 +146,17 @@
             "label": "Post-pro",
             "image": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png"
           }
-        ]
+        ],
+        "coverFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        },
+        "heroFocus": {
+          "x": 50,
+          "y": 72,
+          "zoom": 1
+        }
       },
       {
         "id": "project-mw4y57pk",
@@ -88,7 +168,17 @@
         "tools": [],
         "featured": true,
         "blocks": [],
-        "processSteps": []
+        "processSteps": [],
+        "coverFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        },
+        "heroFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        }
       },
       {
         "id": "project-mw4yafaa",
@@ -100,7 +190,17 @@
         "tools": [],
         "featured": false,
         "blocks": [],
-        "processSteps": []
+        "processSteps": [],
+        "coverFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        },
+        "heroFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        }
       },
       {
         "id": "project-mw4y09kv",
@@ -112,7 +212,17 @@
         "tools": [],
         "featured": false,
         "blocks": [],
-        "processSteps": []
+        "processSteps": [],
+        "coverFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        },
+        "heroFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        }
       },
       {
         "id": "project-mw4y7bfq",
@@ -124,7 +234,17 @@
         "tools": [],
         "featured": false,
         "blocks": [],
-        "processSteps": []
+        "processSteps": [],
+        "coverFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        },
+        "heroFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        }
       },
       {
         "id": "project-mw4ygym0",
@@ -136,7 +256,17 @@
         "tools": [],
         "featured": false,
         "blocks": [],
-        "processSteps": []
+        "processSteps": [],
+        "coverFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        },
+        "heroFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        }
       },
       {
         "id": "project-mw4vi9s4",
@@ -152,7 +282,17 @@
         ],
         "featured": true,
         "blocks": [],
-        "processSteps": []
+        "processSteps": [],
+        "coverFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        },
+        "heroFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        }
       }
     ],
     "categories": [
@@ -250,18 +390,7 @@
       "titleFirst": "Have a project",
       "titleAccent": "in mind?",
       "introduction": "For collaborations, commissions, or questions about my work, reach out through my social profiles. Let’s start a conversation.",
-      "greeting": "Choose a platform below to explore my work or get in touch.",
-      "interestOptions": [
-        "3D Characters",
-        "3D Modeling & Sculpting",
-        "Environments",
-        "Game Art",
-        "Motion Design",
-        "Illustration",
-        "Other"
-      ],
-      "allowAvatar": true,
-      "allowAttachments": true
+      "greeting": "Choose a platform below to explore my work or get in touch."
     },
     "galleryBackground": "site://images/studio/5f5db0accc8c625c55ac22172769e03bc4e723816e5990a9a33e0ded87341807.webp",
     "siteLogo": "site://images/studio/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5.png",
