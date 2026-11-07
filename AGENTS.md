@@ -65,3 +65,9 @@ O projeto usa `src/components/ui/project-video.tsx` para miniatura clicável e i
 - Páginas devem entrar no `PortfolioStore.customPages` (rascunho, migração, ZIP e publicação) e ter imagens integradas ao publicador e biblioteca. Blocos de copiar ficam visíveis no manifesto público: **nunca** armazenar tokens, senhas ou chaves secretas.
 - Para links de botões usar somente `safePageHref` e âncoras nativas para garantir `noopener noreferrer` quando abrir outra aba. Nada de JavaScript arbitrário, HTML injetável ou cobrança PIX automática.
 - Leia `docs/README_CUSTOM_PAGES.md` antes de modificar o construtor.
+
+
+## Direção de arte — carrossel de imagens
+- O carrossel de páginas personalizadas em `src/components/sections/page-media-blocks.tsx` **deve sempre acompanhar 100% da largura do conteúdo**; não restaurar ajuste de largura horizontal ou contagem manual de itens. A altura (`slideHeight`) determina automaticamente a quantidade de imagens visíveis, limitada pela largura real via ResizeObserver.
+- **Nunca** adicionar barra inferior, descrição, contador de imagens ou pontos de navegação abaixo do carrossel. As setas laterais e zoom individual permanecem.
+- A propriedade `slideShowPauseButton?:boolean` controla apenas o botão pequeno de pausa/reprodução, flutuante no canto inferior direito da imagem. Padrão desativado, configurável em Local Studio → Composição → Slides.
