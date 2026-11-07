@@ -7,7 +7,7 @@ import {normalizeCustomPages,type CustomPage} from '../data/custom-pages'
 import publishedPackage from '../data/published-portfolio.json'
 import { initialProjects, starterCategories, type Project, type Category } from '../data/projects'
 import { normalizeBundledImage } from '../lib/default-assets'
-import {defaultHome,defaultMusicTracks,defaultTestimonials,type HomeContent,type Testimonial,type MusicTrack,type SocialLink,defaultSocialLinks,type AboutContent,defaultAbout,type ContactSettings,defaultContact,defaultGalleryBackground} from '../data/studio'
+import {defaultHome,defaultMusicTracks,defaultTestimonials,type HomeContent,type Testimonial,type MusicTrack,type SocialLink,defaultSocialLinks,type AboutContent,defaultAbout,type ContactSettings,defaultContact,defaultGalleryBackground,normalizeContactTags} from '../data/studio'
 import { mediaKey,mediaRefs,readMedia,saveMediaBlob,isLocalMedia,listMediaAssets,saveCatalogItems,type LibraryAsset } from '../lib/media-store'
 const KEY='jordan-portfolio-local-v2'
 const PENDING_KEY='jordan-portfolio-publish-pending-v1'
@@ -53,7 +53,7 @@ function parseStore(raw:unknown):PortfolioStore{
    ?defaultContact.introduction:typeof obj.contact?.introduction==='string'?obj.contact.introduction:defaultContact.introduction,
   greeting:(obj.contact?.greeting?.startsWith('Olá!')||obj.contact?.greeting==='Tell me about your project and share any references you have in mind.')
    ?defaultContact.greeting:typeof obj.contact?.greeting==='string'?obj.contact.greeting:defaultContact.greeting,
-  footerTags:Array.isArray(obj.contact?.footerTags)?obj.contact.footerTags.filter((tag):tag is string=>typeof tag==='string').map(tag=>tag.trim().slice(0,38)).filter(Boolean).slice(0,18):[...defaultContact.footerTags]
+  footerTags:normalizeContactTags(obj.contact?.footerTags)
  }
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'&&!isKnownDemoTestimonial(t)):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
