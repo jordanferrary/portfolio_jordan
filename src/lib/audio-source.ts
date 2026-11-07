@@ -11,7 +11,7 @@ function isHostOrSubdomain(host:string,base:string):boolean{
 export function classifyAudioSource(value:string):AudioSourceKind{
  const source=value.trim()
  if(!source)return 'missing'
- if(/^media:\/\/[a-z0-9/-]+$/i.test(source))return 'local'
+ if(/^media:\/\/[a-z0-9/._-]+$/i.test(source))return 'local'
  if(/^site:\/\/audio\/studio\/[a-f0-9]{64}\.(mp3|wav|ogg|m4a)$/i.test(source))return 'published'
  try{
   const url=new URL(source)
