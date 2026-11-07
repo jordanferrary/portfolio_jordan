@@ -12,7 +12,8 @@
   },
   "memory": {
     "namespace": "studio",
-    "remoteSnapshot": "./alquimago/project-memory.json"
+    "remoteSnapshot": "./alquimago/project-memory.json",
+    "mode": "publish"
   },
   "project": {
     "files": [
