@@ -192,3 +192,49 @@
 @media(prefers-reduced-motion:reduce){
  .gallery-page .gallery-card{scroll-behavior:auto}
 }
+
+
+/* Mobile portfolio: two real masonry columns, with cards legible at 320px screens.
+   Keep CSS and src/lib/masonry.ts breakpoints in sync. */
+@media(max-width:600px){
+ .gallery-page .gallery-body{width:100%;min-width:0}
+ .gallery-page .gallery-body .masonry{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px!important;
+  min-width:0;
+ }
+ .gallery-page .gallery-body .masonry-column{gap:9px!important;min-width:0}
+ .gallery-page .gallery-card{border-radius:15px!important;min-width:0}
+ .gallery-page .gallery-card .category-badge{
+  left:7px;top:7px;gap:5px;padding:5px 7px;
+  max-width:calc(100% - 44px);font-size:9px;line-height:1.25;
+ }
+ .gallery-page .gallery-card .category-badge svg{width:12px;height:12px;flex-shrink:0}
+ .gallery-page .gallery-card .project-copy{
+  left:9px;bottom:9px;right:35px;gap:3px;
+ }
+ .gallery-page .gallery-card .project-copy b{
+  font-size:clamp(11px,3vw,13px);line-height:1.24;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  line-clamp:2;overflow:hidden;
+ }
+ .gallery-page .gallery-card .project-copy small{
+  font-size:9px;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+ }
+ .gallery-page .gallery-card .card-open{
+  right:7px;bottom:8px;width:27px;height:27px;
+ }
+ .gallery-page .toolbar{align-items:stretch;gap:10px;margin-bottom:16px}
+ .gallery-page .toolbar .chips{
+  width:100%;max-width:100%;flex-wrap:nowrap;overflow-x:auto;
+  overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  gap:7px;padding-bottom:5px;scrollbar-width:none;
+ }
+ .gallery-page .toolbar .chips::-webkit-scrollbar{display:none}
+ .gallery-page .toolbar .chips button{flex:0 0 auto}
+}
+@media(max-width:360px){
+ .gallery-page .gallery-card .project-copy b{font-size:11px}
+ .gallery-page .gallery-card .project-copy small{font-size:8px}
+ .gallery-page .gallery-card .category-badge{font-size:8px}
+}
