@@ -14,6 +14,5 @@ SESSION_SAMESITE = "None"
 binding = "SESSIONS"
 id = "REPLACE_WITH_YOUR_KV_ID"
 
-# Optional owner-only generative assistant. May incur Cloudflare usage charges.
-[ai]
-binding = "AI"
+# Cloudflare hosts only the secure proxy. Model provider: Google Gemini.
+# Keep provider credentials in server-side secrets; never in a VITE_* variable.
