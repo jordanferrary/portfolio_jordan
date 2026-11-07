@@ -79,3 +79,10 @@ O projeto usa `src/components/ui/project-video.tsx` para miniatura clicável e i
 - `ShowcaseItem.showLink` e `ShowcaseItem.linkLabel` controlam respectivamente a exibição e o texto do botão no painel, individualmente. Itens antigos sem `showLink` mantêm comportamento compatível; itens novos começam sem CTA. Se não há URL válida, não renderizar botão desativado.
 - `PageBlock.showcaseFit` permite miniaturas `contain` para certificados ou `cover` para arte; **o painel de detalhes e o modal de zoom devem preservar a imagem completa**.
 - O visualizador `ArtLightbox` deve usar dimensionamento proporcional na tela, sem depender do tamanho intrínseco do grid. Em 100%, mostrar toda a imagem e limpar qualquer deslocamento de pan. Não substituir original por thumbnail da biblioteca responsiva.
+
+
+## Paleta global de sete cores — preservar abrangência
+
+A paleta de `src/lib/theme-palette.ts` possui **sete** cores (`primary`, `secondary`, `background`, `surface`, `text`, `muted`, `border`). `normalizeThemePalette` deve aceitar os backups antigos com quatro campos, sem apagar personalizações. `ThemePaletteEditor` altera o site ao vivo e restaura o valor anterior ao cancelar. Contraste WCAG deve usar o texto efetivamente configurado.
+
+A folha `src/styles/theme-coverage.css` **deve ser carregada por último em `src/main.tsx`**. Ela cobre o site público, incluindo Home, galeria, projetos, Sobre, Contact, páginas extras e player de música. Evite backgrounds, bordas e textos roxos hardcoded nesses elementos: use `--jf-primary`, `--jf-secondary`, `--jf-background`, `--jf-surface`, `--jf-text`, `--jf-muted`, `--jf-border` e derivados. Deixe a UI privada do Local Studio estável/legível. Não altere a cor de imagens do portfólio via filtros. `scripts/studio-smoke.mjs` protege os tokens e parte da cobertura CSS, não garante perfeição visual em todos os navegadores.
