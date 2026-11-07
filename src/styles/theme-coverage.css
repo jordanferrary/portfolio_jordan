@@ -1,0 +1,408 @@
+/* Global palette coverage — public site ONLY.
+   Loaded last so Studio can change the whole public identity through seven
+   CSS custom properties without recoloring uploaded artwork or admin controls.
+   Primary and secondary are intentionally separate from semantic status colors. */
+
+:root{
+ --jf-text:#F8F3FF;
+ --jf-muted:#B7A0CD;
+ --jf-border:#7335A7;
+ --jf-panel-edge:color-mix(in srgb,var(--jf-border) 70%,var(--jf-primary) 30%);
+ --jf-panel-elevated:color-mix(in srgb,var(--jf-surface) 89%,var(--jf-text) 11%);
+ --jf-glass:color-mix(in srgb,var(--jf-surface) 86%,transparent);
+ --jf-copy-soft:color-mix(in srgb,var(--jf-text) 82%,var(--jf-muted) 18%);
+ --jf-surface-deep:color-mix(in srgb,var(--jf-background) 66%,var(--jf-surface) 34%);
+ --jf-surface-tint:color-mix(in srgb,var(--jf-surface) 77%,var(--jf-primary) 23%);
+}
+
+/* Fundamental public typography, outlines, and navigation. */
+.site-shell{color:var(--jf-text)!important}
+.site-shell :is(.home-intro h1,.gallery-heading h1,.about-page-header h1,
+ .about-information h2,.contact-social-intro h1,.contact-social-directory-head h2,
+ .project-hero-content h1,.project-artwork-heading h2,.project-artwork-process-heading h3,
+ .custom-page-hero h1,.custom-page-story .block-heading h2,
+ .home-panel-heading h2,.home-about-panel h2,.block-heading h2,
+ .contact-social-card-info strong,.custom-page-story h2,.custom-page-story h3){
+ color:var(--jf-text)!important;
+}
+.site-shell :is(.home-blurb,.home-profile-role,.home-tagline,.home-specialties small,
+ .home-bottom-panels .feedback-content p,.home-bottom-panels .feedback-empty,
+ .gallery-heading p:not(.eyebrow),.filter-details,.project-copy small,
+ .about-information .about-bio,.contact-social-description,.contact-social-message p,
+ .contact-social-directory-head p,.contact-social-card-info small,.contact-social-bottomline,
+ .project-hero-description,.block-text p,.media-caption,
+ .project-artwork-heading p,.project-artwork-process-heading p,
+ .project-artwork-process-grid figcaption,.custom-page-subtitle,
+ .custom-page-action-note,.custom-page-footer,.music-card-details span){
+ color:var(--jf-muted)!important;
+}
+.site-shell :is(.home-eyebrow,.gallery-heading .eyebrow,.about-page-header .eyebrow,
+ .about-eyebrow,.contact-social-intro>.eyebrow,.custom-page-eyebrow,
+ .project-artwork-heading>span,.project-hero-content .eyebrow,
+ .custom-page-footer a,.home-panel-heading button,.work-arrow){
+ color:var(--jf-secondary)!important;
+}
+.site-shell .sidebar{
+ border-color:var(--jf-border)!important;
+}
+.site-shell .side-link:not(.current){
+ color:var(--jf-muted)!important;
+}
+.site-shell .side-link:not(.current) .side-icon{
+ border-color:var(--jf-panel-edge)!important;
+ background:var(--jf-surface-deep)!important;
+ color:var(--jf-copy-soft)!important;
+}
+.site-shell .side-link.current{color:var(--jf-text)!important}
+.site-shell .side-link.current .side-icon{color:var(--jf-text)!important}
+.site-shell .side-link:hover:not(.current) .side-icon{
+ border-color:var(--jf-primary)!important;
+ background:var(--jf-surface-tint)!important;
+}
+.site-shell .socials a{
+ border-color:var(--jf-panel-edge)!important;
+ background:var(--jf-glass)!important;
+ color:var(--jf-secondary)!important;
+}
+.site-shell .socials a:hover{
+ border-color:var(--jf-primary)!important;
+ background:var(--jf-surface-tint)!important;
+}
+.site-shell .social-link.social-unconfigured{opacity:.65}
+
+/* Home: no changes to source artwork. All surrounding elements use the palette. */
+.site-shell .home-explore{color:var(--jf-text)!important}
+.site-shell .home-explore>span{
+ background:linear-gradient(135deg,var(--jf-secondary),var(--jf-primary))!important;
+ color:var(--jf-background)!important;
+ box-shadow:0 0 16px var(--jf-primary-glow);
+}
+.site-shell .home-avatar-ring{background:var(--jf-surface)!important}
+.site-shell .home-specialties{
+ border-color:var(--jf-panel-edge)!important;
+}
+.site-shell .home-specialties span{
+ border-color:var(--jf-border)!important;
+ background:var(--jf-surface-tint)!important;
+ color:var(--jf-text)!important;
+}
+.site-shell .home-work-link{
+ border-color:var(--jf-panel-edge)!important;
+ background:var(--jf-surface)!important;
+}
+.site-shell .home-panel-heading h2,.site-shell .home-work .work-title{
+ color:var(--jf-text)!important;
+}
+.site-shell .home-bottom-panels .focus-item{
+ border-color:var(--jf-panel-edge)!important;
+ background:color-mix(in srgb,var(--jf-surface) 82%,transparent)!important;
+ color:var(--jf-copy-soft)!important;
+}
+.site-shell .home-bottom-panels .focus-item:hover{
+ background:var(--jf-surface-tint)!important;
+ border-color:var(--jf-primary)!important;
+}
+.site-shell .home-featured-panel .no-featured{
+ border-color:var(--jf-panel-edge)!important;
+ background:var(--jf-surface-deep)!important;
+ color:var(--jf-muted)!important;
+}
+.site-shell .feedback-controls button{
+ border-color:var(--jf-panel-edge)!important;
+ background:var(--jf-surface-tint)!important;
+ color:var(--jf-text)!important;
+}
+.site-shell .feedback-controls button:hover{border-color:var(--jf-primary)!important}
+
+/* Gallery: heading, pills, hero wash, cards and metadata. */
+.site-shell .gallery-banner:after{
+ background:linear-gradient(90deg,var(--jf-background),transparent 41%),
+ linear-gradient(0deg,var(--jf-background),transparent 48%)!important;
+}
+.site-shell .gallery-card .image-shade{
+ background:linear-gradient(transparent,color-mix(in srgb,var(--jf-background) 92%,transparent))!important;
+}
+.site-shell .gallery-card .category-badge{
+ border-color:var(--jf-border)!important;
+ background:color-mix(in srgb,var(--jf-surface) 83%,transparent)!important;
+ color:var(--jf-text)!important;
+}
+.site-shell .gallery-card .project-copy b{color:var(--jf-text)!important}
+.site-shell .chips button:not(.active),
+.site-shell .filter-button:not(.active){
+ color:var(--jf-muted)!important;
+}
+.site-shell .search{color:var(--jf-secondary)!important}
+.site-shell .search input{
+ color:var(--jf-text)!important;
+ caret-color:var(--jf-primary);
+}
+.site-shell .search input::placeholder{color:var(--jf-muted)!important}
+.site-shell .search-group .filter-button svg{color:currentColor}
+.site-shell .gallery-sort-tip{
+ border-color:var(--jf-panel-edge)!important;
+ background:var(--jf-surface-deep)!important;
+ color:var(--jf-muted)!important;
+}
+
+/* Project case studies: decorative surfaces, ribbons, text and interactive media. */
+.site-shell .project-page .back-link,.site-shell .project-end{
+ color:var(--jf-secondary)!important;
+}
+.site-shell .project-hero:after{
+ background:linear-gradient(90deg,
+ color-mix(in srgb,var(--jf-background) 96%,transparent),
+ color-mix(in srgb,var(--jf-background) 72%,transparent) 53%,
+ transparent 100%)!important;
+}
+.site-shell .project-hero-content .tools span,
+.site-shell .about-skills span{
+ color:var(--jf-text)!important;
+ border-color:var(--jf-border)!important;
+ background:var(--jf-surface-tint)!important;
+}
+.site-shell .project-artwork-frame{
+ border-color:var(--jf-border)!important;
+ background:
+ radial-gradient(ellipse at 50% 0%,var(--jf-primary-soft),transparent 72%),
+ linear-gradient(145deg,var(--jf-surface),var(--jf-background))!important;
+}
+.site-shell .project-artwork-process-grid figure,
+.site-shell .story-split{
+ border-color:var(--jf-panel-edge)!important;
+ background:var(--jf-surface-deep)!important;
+}
+.site-shell .story-split :is(p,strong),.site-shell .story-block .rich-text{
+ color:var(--jf-copy-soft);
+}
+.site-shell .story-block .rich-text :is(h2,h3,h4,strong){color:var(--jf-text)}
+.site-shell .project-artwork-process-grid figure>img,
+.site-shell .block-image img{
+ background:var(--jf-background)!important;
+}
+.site-shell .project-like{
+ border-color:var(--jf-border)!important;
+ background:linear-gradient(125deg,var(--jf-surface-tint),var(--jf-surface-deep))!important;
+ color:var(--jf-muted)!important;
+}
+.site-shell .project-like:hover,.site-shell .project-like.is-liked{
+ border-color:var(--jf-primary)!important;
+ color:var(--jf-secondary)!important;
+}
+.site-shell .project-end{
+ border-color:var(--jf-border)!important;
+ background:var(--jf-surface-deep)!important;
+}
+.site-shell .project-end:hover{
+ border-color:var(--jf-primary)!important;
+ background:var(--jf-surface-tint)!important;
+}
+.site-shell .comparison-block .comparison-images,
+.site-shell .project-video-frame,
+.site-shell .project-model-frame{
+ border-color:var(--jf-border)!important;
+ background:radial-gradient(ellipse at 55% 45%,var(--jf-surface-tint),var(--jf-background) 85%)!important;
+}
+.site-shell .project-video-play,.site-shell .project-model-launch{
+ border-color:var(--jf-secondary)!important;
+ background:var(--jf-primary)!important;
+}
+.site-shell .project-video-source,.site-shell .project-model-hint{
+ color:var(--jf-secondary)!important;
+}
+.site-shell .project-model-fallback{
+ border-color:var(--jf-panel-edge)!important;
+ background:linear-gradient(145deg,var(--jf-surface-tint),var(--jf-background))!important;
+ color:var(--jf-secondary)!important;
+}
+.site-shell .art-divider-line{background:linear-gradient(90deg,transparent,var(--jf-border),var(--jf-primary),transparent)!important}
+.site-shell .art-divider-symbol{color:var(--jf-secondary)!important}
+
+/* About: textual hierarchy and arts surrounding surface. */
+.site-shell .about-information{
+ border-color:var(--jf-border)!important;
+ background:linear-gradient(145deg,
+ color-mix(in srgb,var(--jf-surface) 84%,transparent),
+ color-mix(in srgb,var(--jf-background) 84%,transparent))!important;
+}
+.site-shell .about-information h3{color:var(--jf-secondary)!important}
+.site-shell .about-art-primary,.site-shell .about-art-secondary{
+ border-color:var(--jf-border)!important;
+}
+.site-shell .about-page-edit{
+ border-color:var(--jf-border)!important;
+ background:var(--jf-surface-tint)!important;
+ color:var(--jf-text)!important;
+}
+
+/* Social-first Contact: typography, directory and all service cards. */
+.site-shell .contact-social-intro .contact-social-description{color:var(--jf-muted)!important}
+.site-shell .contact-social-intro h1{color:var(--jf-text)!important}
+.site-shell .contact-social-intro h1 em{
+ background:linear-gradient(115deg,
+ color-mix(in srgb,var(--jf-secondary) 57%,var(--jf-text)) -36%,
+ var(--jf-primary) 48%,var(--jf-secondary) 120%)!important;
+ -webkit-background-clip:text!important;
+ background-clip:text!important;
+ -webkit-text-fill-color:transparent;
+}
+.site-shell .contact-social-message strong{color:var(--jf-text)!important}
+.site-shell .contact-social-message p{color:var(--jf-muted)!important}
+.site-shell .contact-social-portfolio-link{color:var(--jf-secondary)!important}
+.site-shell .contact-social-directory{
+ border-color:var(--jf-border)!important;
+ background:
+ radial-gradient(ellipse 90% 65% at 100% 0%,var(--jf-primary-soft),transparent 70%),
+ linear-gradient(145deg,var(--jf-panel-elevated),var(--jf-surface-deep))!important;
+}
+.site-shell .contact-social-directory-head h2{color:var(--jf-text)!important}
+.site-shell .contact-social-directory-head p,
+.site-shell .contact-social-card-info small{color:var(--jf-muted)!important}
+.site-shell .contact-social-card{
+ border-color:var(--jf-panel-edge)!important;
+ background:linear-gradient(130deg,var(--jf-panel-elevated),var(--jf-surface-deep))!important;
+ color:var(--jf-text)!important;
+}
+.site-shell .contact-social-card:hover{
+ border-color:var(--jf-primary)!important;
+ box-shadow:0 12px 35px var(--jf-primary-glow)!important;
+}
+.site-shell .contact-social-card-icon{
+ border-color:var(--jf-border)!important;
+ background:var(--jf-surface-tint)!important;
+ color:var(--jf-secondary)!important;
+}
+.site-shell .contact-social-card-featured .contact-social-card-icon{
+ background:var(--jf-primary)!important;
+ color:var(--jf-text)!important;
+}
+.site-shell .contact-social-card-arrow{
+ color:var(--jf-secondary)!important;
+ background:var(--jf-primary-soft)!important;
+ border-color:var(--jf-border)!important;
+}
+.site-shell .contact-social-directory-footer,.site-shell .contact-social-bottomline{
+ border-color:var(--jf-panel-edge)!important;
+ color:var(--jf-muted)!important;
+}
+.site-shell .contact-social-empty{
+ border-color:var(--jf-border)!important;
+ color:var(--jf-muted)!important;
+}
+
+/* Dynamic pages, portfolios built using custom blocks, external artist galleries. */
+.site-shell .custom-page-hero{
+ border-color:var(--jf-border)!important;
+ background:radial-gradient(ellipse at 78% 35%,var(--jf-surface-tint),var(--jf-background))!important;
+}
+.site-shell .custom-page-hero::after{
+ background:linear-gradient(90deg,
+ color-mix(in srgb,var(--jf-background) 96%,transparent),
+ color-mix(in srgb,var(--jf-background) 82%,transparent) 38%,
+ color-mix(in srgb,var(--jf-background) 32%,transparent) 85%),
+ linear-gradient(0deg,var(--jf-background),transparent 67%)!important;
+}
+.site-shell .custom-page-eyebrow{color:var(--jf-secondary)!important}
+.site-shell .custom-page-subtitle{color:var(--jf-muted)!important}
+.site-shell .custom-page-action-note{color:var(--jf-muted)!important}
+.site-shell .custom-page-cta:not(.outline){
+ border-color:var(--jf-primary)!important;
+ background:linear-gradient(115deg,var(--jf-primary),var(--jf-surface-tint))!important;
+}
+.site-shell .custom-page-cta.outline{
+ border-color:var(--jf-border)!important;
+ background:var(--jf-surface-deep)!important;
+ color:var(--jf-secondary)!important;
+}
+.site-shell .custom-page-empty{
+ border-color:var(--jf-border)!important;
+ background:var(--jf-surface-deep)!important;
+ color:var(--jf-muted)!important;
+}
+.site-shell .custom-page-footer{border-color:var(--jf-border)!important;color:var(--jf-muted)!important}
+.site-shell .custom-page-footer a{color:var(--jf-secondary)!important}
+.site-shell .artist-showcase-card{
+ border-color:var(--jf-border)!important;
+ background:var(--jf-surface-deep)!important;
+}
+.site-shell .artist-showcase-card.active,.site-shell .artist-showcase-card:hover{
+ border-color:var(--jf-primary)!important;
+}
+.site-shell .artist-showcase-detail{
+ border-color:var(--jf-border)!important;
+ background:linear-gradient(155deg,var(--jf-surface),var(--jf-background))!important;
+}
+.site-shell .artist-showcase-detail-copy h3{color:var(--jf-text)!important}
+.site-shell .artist-showcase-detail-copy p{color:var(--jf-muted)!important}
+.site-shell .artist-showcase-portfolio{
+ border-color:var(--jf-primary)!important;
+ background:linear-gradient(110deg,var(--jf-primary),var(--jf-surface-tint))!important;
+}
+.site-shell .page-slideshow{
+ border-color:var(--jf-border)!important;
+ background:var(--jf-background)!important;
+}
+.site-shell .page-slideshow-image{border-color:var(--jf-panel-edge)!important}
+.site-shell .page-slideshow-arrow,
+.site-shell .page-slideshow-floating-play{
+ border-color:var(--jf-border)!important;
+ background:var(--jf-glass)!important;
+ color:var(--jf-text)!important;
+}
+
+/* Public sidebar player, playlist, controls — not the Studio music editor. */
+.site-shell .music-widget .music-card{
+ border-color:var(--jf-border)!important;
+ background:linear-gradient(145deg,var(--jf-panel-elevated),var(--jf-background))!important;
+}
+.site-shell .music-widget .music-card::before{
+ background:linear-gradient(155deg,var(--jf-surface-deep),var(--jf-background))!important;
+}
+.site-shell .music-widget .music-cover-button{
+ border-color:var(--jf-primary)!important;
+ background:var(--jf-surface-tint)!important;
+}
+.site-shell .music-widget .music-main-toggle{
+ border-color:var(--jf-primary)!important;
+ background:var(--jf-primary)!important;
+ color:var(--jf-text)!important;
+}
+.site-shell .music-widget .music-card-details strong{color:var(--jf-text)!important}
+.site-shell .music-widget .music-card-details span{color:var(--jf-muted)!important}
+.site-shell .music-widget .music-repeat,.site-shell .music-widget .music-volume-toggle{
+ border-color:var(--jf-border)!important;
+ background:var(--jf-surface-tint)!important;
+ color:var(--jf-muted)!important;
+}
+.site-shell .music-widget .music-repeat.is-on{color:var(--jf-secondary)!important;border-color:var(--jf-primary)!important}
+.site-shell .music-widget .music-popover{
+ border-color:var(--jf-border)!important;
+ background:linear-gradient(145deg,var(--jf-panel-elevated),var(--jf-background))!important;
+}
+.site-shell .music-widget .music-track{color:var(--jf-text)!important}
+.site-shell .music-widget .music-track.selected{
+ border-color:var(--jf-primary)!important;
+ background:var(--jf-surface-tint)!important;
+}
+.site-shell .music-widget .music-track-details small{color:var(--jf-muted)!important}
+.site-shell .music-widget .music-seek{
+ accent-color:var(--jf-primary)!important;
+}
+.site-shell .music-widget .music-seek::-webkit-slider-thumb{
+ background:var(--jf-primary)!important;
+ box-shadow:0 0 12px var(--jf-primary-glow)!important;
+}
+.site-shell .music-widget .music-seek::-moz-range-thumb{
+ background:var(--jf-primary)!important;
+ box-shadow:0 0 12px var(--jf-primary-glow)!important;
+}
+.site-shell .music-widget .music-volume-inline input[type=range]{
+ accent-color:var(--jf-primary)!important;
+}
+
+/* Do not color the Local Studio. All selectors intentionally target visitor components. */
+@media(prefers-reduced-motion:reduce){
+ .site-shell .music-widget .music-card,
+ .site-shell .home-explore,
+ .site-shell .gallery-card{transition:none!important}
+}
