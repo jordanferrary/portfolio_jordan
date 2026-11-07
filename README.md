@@ -77,3 +77,11 @@ Consulte [Limpeza de mídias](docs/README_MEDIA_CLEANUP.md), [Pipeline de mídia
 ### Vídeos integrados com apresentação limpa
 
 O card de vídeo exibe uma miniatura personalizada até o clique. Depois, o YouTube ou Vimeo é reproduzido no player oficial, com seus controles nativos. Abaixo do vídeo há somente um link discreto **Watch on YouTube/Vimeo**. O painel externo de progresso e título foi removido por decisão de direção de arte. Em **Projeto → Composição → Vídeo incorporado**, o título permanece editável para acessibilidade e identificação do iframe.
+
+## Construtor de páginas personalizadas
+
+O Local Studio agora inclui **Páginas → Nova página / Minhas páginas**. Cada página pode ser criada, editada, duplicada, reordenada, ocultada do menu e removida. As páginas publicadas aparecem na barra lateral entre **Portfolio** e **About**, com ícones configuráveis e navegação responsiva no celular. URLs estáveis usam a rota `#/page/page-<uuid>`.
+
+O editor permite composição em blocos (títulos, textos formatados, imagens, antes/depois, galerias, vídeos, modelos 3D e divisórias), capa com enquadramento, largura de conteúdo e **botões de ação**: copiar um texto/chave PIX/prompt, abrir URL na aba atual ou abrir URL em uma nova aba. Os botões aceitam estilo e alinhamento, e validam links para não executar URLs perigosas. A chave ou prompt configurado é **conteúdo público**, nunca local seguro para credenciais. A funcionalidade de PIX copia apenas o texto; não processa pagamentos.
+
+As páginas entram no mesmo rascunho local, ZIP, pipeline de mídias, publicação GitHub e limpeza de arquivos. Consulte [Guia completo do construtor de páginas](docs/README_CUSTOM_PAGES.md).
