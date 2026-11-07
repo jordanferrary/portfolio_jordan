@@ -1,13 +1,14 @@
 import {readMedia} from './media-store'
+import {applyPublishedAnimationProfile,readAnimationProfile,type AnimationProfile} from './alquimago-animation-profile'
 import {readAlquimagoStage,writeAlquimagoStage,normalizeAlquimagoStage,applyPublishedAlquimagoStage,type AlquimagoStage} from './alquimago-3d-stage'
 
 export const ALQUIMAGO_SKIN_MEDIA='media://alquimago/skin/custom.glb'
 export const ALQUIMAGO_SKIN_PATH='public/alquimago/skins/custom.glb'
 export const ALQUIMAGO_REQUIRED_SHAPES=['Idle','Blink','Happy','Curious','Talk','Sleep','Pet','Surprised','Focused','Sad'] as const
-export const ALQUIMAGO_OPTIONAL_SHAPES=['Tired','Angry','Confused','Excited','Shy','Love','Proud','Thinking','Worried','Laugh','Yawn','LookLeft','LookRight','LookUp','LookDown'] as const
+export const ALQUIMAGO_OPTIONAL_SHAPES=['Breath','Tired','Angry','Confused','Excited','Shy','Love','Proud','Thinking','Worried','Laugh','Yawn','LookLeft','LookRight','LookUp','LookDown'] as const
 export const ALQUIMAGO_SHAPES=[...ALQUIMAGO_REQUIRED_SHAPES,...ALQUIMAGO_OPTIONAL_SHAPES] as const
 export const ALQUIMAGO_SHAPE_MAP:Record<string,string>={
- idle:'Idle',blink:'Blink',happy:'Happy',curious:'Curious',talk:'Talk',
+ breath:'Breath',idle:'Idle',blink:'Blink',happy:'Happy',curious:'Curious',talk:'Talk',
  sleep:'Sleep',pet:'Pet',surprised:'Surprised',focused:'Focused',sad:'Sad',
  tired:'Tired',angry:'Angry',confused:'Confused',excited:'Excited',shy:'Shy',
  love:'Love',proud:'Proud',thinking:'Thinking',worried:'Worried',laugh:'Laugh',
@@ -191,7 +192,7 @@ export function registerAlquimago3D():void{
  // Read the already-public manifest separately so visitors see the published framing.
  void fetch('/alquimago/config.json',{cache:'no-store'})
   .then(response=>response.ok?response.json():null)
-  .then(body=>applyPublishedAlquimagoStage(body?.appearance?.stage3d))
+  .then(body=>{applyPublishedAlquimagoStage(body?.appearance?.stage3d);applyPublishedAnimationProfile(body?.appearance?.animation3d)})
   .catch(()=>{/* default viewport remains available */})
  const observer=new MutationObserver(styleAlquimago)
  observer.observe(document.documentElement,{childList:true,subtree:true})
@@ -219,6 +220,8 @@ export function registerAlquimago3D():void{
      applySkin?:()=>void;render?:()=>void
     }:null
   let settings=readAlquimagoStage(familiar)
+  let animation=readAnimationProfile()
+  const onProfileChanged=(event:Event)=>{const next=(event as CustomEvent<AnimationProfile>).detail;if(next)animation=next}
   const reduced=matchMedia('(prefers-reduced-motion: reduce)')
   host.classList.add('alquimago-3d-stage')
   const surface=document.createElement('span')
@@ -248,7 +251,11 @@ export function registerAlquimago3D():void{
     camera.aspect=width/height
     camera.updateProjectionMatrix()
    }
-   if(camera)camera.position.z=4/settings.zoom
+   if(camera){
+    const distance=4/settings.zoom,yaw=settings.cameraYaw*Math.PI/180
+    camera.position.set(settings.focusX+Math.sin(yaw)*distance,settings.focusY+0.08,Math.cos(yaw)*distance)
+    camera.lookAt(settings.focusX,settings.focusY,0)
+   }
   }
   applyStage(settings)
   let gripStart:{x:number;y:number;width:number;height:number}|null=null
@@ -301,10 +308,15 @@ export function registerAlquimago3D():void{
    if(detail?.type==='published')preview={name:'proud',until:performance.now()+2600}
   }
   window.addEventListener('alquimago:stage3d-changed',onStageChanged)
+  window.addEventListener('alquimago:animation-profile',onProfileChanged)
   window.addEventListener('pointermove',onPointer,{passive:true})
   window.addEventListener('alquimago:activity',onActivity)
   host.addEventListener('wheel',onWheel,{capture:true,passive:false})
   const map=(name:string)=>shapeKeys[name]||ALQUIMAGO_SHAPE_MAP[name]||name
+  const timing=(id:string)=>{
+   const proper=ALQUIMAGO_SHAPES.find(key=>key.toLowerCase()===id.toLowerCase())
+   return animation.shapes[proper||'Idle']
+  }
   const mapped=(name:string)=>name.toLowerCase().replace(/[^a-z]/g,'')
   async function init(){
    try{
@@ -339,20 +351,43 @@ export function registerAlquimago3D():void{
     const animate=(now:number)=>{
      if(dead||!renderer||!scene||!camera||!model)return
      if(!document.hidden){
-      const t=(now-start)/1000,energy=familiar?.state?.brain?.energy
+      const elapsed=now-start,t=elapsed/1000,energy=familiar?.state?.brain?.energy
       const tired=typeof energy==='number'&&energy<34
       const raw=preview&&now<preview.until?preview.name:mood
       const expression=tired&&raw==='idle'?'tired':raw
       const chosen=new Map<string,number>()
-      if(expression==='idle')chosen.set(map('idle'),0.12)
-      else chosen.set(map(expression),expression==='pet'?1:0.9)
-      if(tired&&expression!=='sleep'&&expression!=='pet'&&expression!=='talk')chosen.set(map('tired'),0.55)
-      if(expression==='pet')chosen.set(map('love'),0.3)
-      if(expression==='focused')chosen.set(map('thinking'),0.25)
-      if(expression==='happy')chosen.set(map('excited'),0.18)
-      if(tired && t%14<1.1)chosen.set(map('yawn'),Math.sin((t%14)/1.1*Math.PI)*0.75)
-      const blink=(t%5.1)<0.15?Math.sin((t%5.1)/0.15*Math.PI):0
-      chosen.set(map('blink'),expression==='sleep'?1:blink)
+      const set=(name:string,value:number)=>{
+       const key=map(name),intensity=timing(name).intensity
+       chosen.set(key,Math.min(1,Math.max(0,value*intensity)))
+      }
+      if(expression==='idle')set('idle',0.55)
+      else if(expression!=='breath')set(expression,1)
+      if(tired&&expression!=='sleep'&&expression!=='pet'&&expression!=='talk')set('tired',0.9)
+      if(expression==='pet')set('love',0.55)
+      if(expression==='focused')set('thinking',0.42)
+      if(expression==='happy')set('excited',0.3)
+      // Breath is an independent cyclical morph target. Emotional speed factors
+      // alter cycle duration but never overwrite the artist's base settings.
+      const brainMood=host.dataset.mood||'tranquilo'
+      const mappedMood=tired&&brainMood!=='meditando'&&brainMood!=='sonolento'?'cansado':brainMood
+      const rate=animation.breathMoodSpeed[mappedMood as keyof AnimationProfile['breathMoodSpeed']]||1
+      const breathCycle=Math.max(180,timing('breath').durationMs/rate)
+      const phase=(elapsed%breathCycle)/breathCycle
+      const breath=0.5-0.5*Math.cos(phase*Math.PI*2)
+      set('breath',expression==='breath'?1:breath)
+      const blinkTiming=timing('blink')
+      const blinkMs=elapsed%blinkTiming.intervalMs
+      const blink=blinkMs<blinkTiming.durationMs?Math.sin(blinkMs/blinkTiming.durationMs*Math.PI):0
+      set('blink',expression==='sleep'?1:blink)
+      if(tired&&expression!=='sleep'){
+       const yawnTiming=timing('yawn'),yawnMs=elapsed%yawnTiming.intervalMs
+       if(yawnMs<yawnTiming.durationMs)
+        set('yawn',Math.sin(yawnMs/yawnTiming.durationMs*Math.PI))
+      }
+      if(expression==='talk'){
+       const talkDuration=timing('talk').durationMs
+       set('talk',0.28+0.72*(0.5+0.5*Math.sin(elapsed/talkDuration*Math.PI*2)))
+      }
       gazeX+=(targetX-gazeX)*(reduced.matches?1:0.055)
       gazeY+=(targetY-gazeY)*(reduced.matches?1:0.055)
       if(settings.followPointer&&!reduced.matches){
@@ -361,9 +396,12 @@ export function registerAlquimago3D():void{
        if(gazeY<-.15)chosen.set(map('lookup'),-gazeY*0.30)
        if(gazeY>.15)chosen.set(map('lookdown'),gazeY*0.30)
       }
-      const blend=reduced.matches?1:0.16
+      const frameDelta=Math.min(70,Math.max(1,now-(animate as typeof animate & {last?:number}).last!||16))
+      ;(animate as typeof animate & {last?:number}).last=now
       for(const entry of morphs)for(const [name,index] of Object.entries(entry.dictionary)){
        const target=chosen.get(name)??0
+       const duration=timing(name).durationMs
+       const blend=reduced.matches?1:1-Math.exp(-frameDelta/(Math.max(60,duration)/4))
        entry.weights[index]+=(target-entry.weights[index])*blend
       }
       model.rotation.y=(reduced.matches?0:Math.sin(t*0.75)*0.025)+gazeX*0.12
@@ -391,16 +429,17 @@ export function registerAlquimago3D():void{
     const key=mapped(name)
     mood=Object.hasOwn(ALQUIMAGO_SHAPE_MAP,key)?key:'idle'
     if(['pet','love','surprised','laugh','yawn'].includes(mood))
-     preview={name:mood,until:performance.now()+1350}
+     preview={name:mood,until:performance.now()+timing(mood).durationMs}
    },
    previewExpression(name:string){
     const key=mapped(name)
     if(Object.hasOwn(ALQUIMAGO_SHAPE_MAP,key))
-     preview={name:key,until:performance.now()+3200}
+     preview={name:key,until:performance.now()+Math.max(1800,timing(key).durationMs)}
    },
    dispose(){
     dead=true;cancelAnimationFrame(frame)
     window.removeEventListener('alquimago:stage3d-changed',onStageChanged)
+    window.removeEventListener('alquimago:animation-profile',onProfileChanged)
     window.removeEventListener('pointermove',onPointer)
     window.removeEventListener('alquimago:activity',onActivity)
     host.removeEventListener('wheel',onWheel,true)
