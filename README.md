@@ -59,3 +59,15 @@ O PIN só esconde a interface; não autentica acessos no servidor. A autorizaç�
 O conteúdo do Studio é publicado com a API do GitHub no branch `main`, em uma única atualização atômica de dados e mídia. O GitHub Actions realiza o deploy do site. Acesse [Actions](https://github.com/jordanferrary/portfolio_jordan/actions) para conferir a compilação e o status da publicação.
 
 **Aviso:** alterações no código e documentação não garantem por si só a conclusão do build; verifique os status e execute `npm run typecheck` e `npm run build` antes de considerar a release validada.
+
+
+## Gerenciamento de mídia, vídeos e modelos 3D
+
+- **Ferramentas → Gerenciar arquivos:** examine mídias salvas no navegador (imagens e áudios), liste as não utilizadas e exclua com confirmação. A exclusão local não afeta o GitHub.
+- **Publicar → Gerenciar arquivos publicados:** após informar um token válido, consulte o inventário de `public/images/`, `public/audio/` e demais pastas públicas de mídia. Arquivos referenciados pelo conteúdo atual e arquivos padrão são protegidos; os demais podem ser selecionados para exclusão no mesmo commit de publicação. Faça backup e confira as referências antes.
+- A análise inclui **imagens, áudios e, quando existirem, vídeos MP4/WebM ou modelos GLB/glTF/FBX**. Arquivos estáticos referenciados apenas por CSS ou links antigos podem exigir revisão manual.
+- **Músicas:** continuam como arquivos MP3/WAV/OGG/M4A do proprietário, sem player incorporado de plataforma de streaming. Ao importar áudio com nome no formato `Artista - Música.mp3`, o cadastro sugere título e artista editáveis. Há opção de aproveitar a miniatura pública de um vídeo do YouTube como capa. **O site não extrai nem baixa áudio de vídeos do YouTube.**
+- **Composição → Vídeo incorporado:** o layout possui miniatura cinematográfica, claramente identificada como vídeo, e player sob demanda.
+- **Composição → Modelo 3D interativo:** use URL direta de um **GLB** (recomendado) ou **glTF**, com capa opcional. O visualizador carrega apenas após clique, suporta rotação, zoom e arraste. **FBX não é carregado diretamente; converta para GLB no Blender**. Links externos exigem suporte a CORS e acesso público.
+
+Consulte [Limpeza de mídias](docs/README_MEDIA_CLEANUP.md), [Pipeline de mídia](docs/README_MEDIA_PIPELINE.md) e [Local Studio](docs/README_LOCAL_STUDIO.md).
