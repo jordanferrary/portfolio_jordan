@@ -105,3 +105,25 @@
 .github-media-queued details{margin:10px 0;font-size:11px;color:#caa8e0}
 .github-media-queued summary{cursor:pointer}
 .github-media-queued ul{padding-left:19px;max-height:130px;overflow:auto;overflow-wrap:anywhere;color:#ae9abe}
+
+
+/* Tokenless GitHub App login, matching the Local Studio visual language. */
+.github-publish-auth{
+ display:flex;flex-direction:column;align-items:flex-start;gap:12px;
+ margin:12px 0;padding:15px;border:1px solid #8758ba;
+ border-radius:14px;background:linear-gradient(130deg,#281338,#190f28);
+}
+.github-publish-auth p{display:flex;align-items:center;gap:9px;margin:0;color:#e6cdf3;font-size:12px;line-height:1.65}
+.github-publish-auth p svg{flex-shrink:0;color:#bf8df2}
+.github-publish-auth strong{color:#fff}
+.github-publish-auth button{
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+ min-height:38px;border:1px solid #ad78e4;background:#68358f;
+ color:#fff;border-radius:10px;padding:9px 14px;font:600 12px system-ui;
+ cursor:pointer;
+}
+.github-publish-auth button:hover{background:#7e41ae}
+.github-publish-auth button:disabled{cursor:wait;opacity:.6}
+.github-publish-auth .editor-help{color:#b9a0ca;font-size:11px}
+.github-publish-auth .github-publish-error{color:#ffd4df}
+@media(max-width:540px){.github-publish-auth{padding:12px}.github-publish-auth button{width:100%}}
