@@ -30,7 +30,9 @@ const CAMERA_CONTROLS=[
 ] as const
 const MOOD_LABELS:Record<string,string>={
  tranquilo:'Tranquilo',feliz:'Feliz',animado:'Animado',curioso:'Curioso',
- concentrado:'Concentrado',sonolento:'Sonolento',meditando:'Meditando',cansado:'Cansado'
+ concentrado:'Concentrado',sonolento:'Sonolento',meditando:'Meditando',cansado:'Cansado',
+ sad:'Mouse saiu',happy:'Mouse voltou',angry:'Texto selecionado',surprised:'Movimento brusco',
+ curious:'Navegação',focused:'Clique em projeto',pet:'Carinho',tired:'Inatividade'
 }
 function familiarElement(){return document.querySelector('alquimago-familiar') as Familiar|null}
 function previewSkin(){
