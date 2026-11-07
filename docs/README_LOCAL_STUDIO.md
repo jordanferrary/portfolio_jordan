@@ -40,3 +40,8 @@ Em **Home → Músicas**, importe MP3, WAV, OGG ou M4A que você tenha direito d
 
 ## 10. Modelo 3D e vídeo
 Em **Projeto → Composição**, escolha **Vídeo incorporado** ou **Modelo 3D interativo**. Ambos têm miniatura e só carregam o conteúdo pesado após clique. Para o modelo, use URL HTTPS direta `.glb` ou `.gltf`. FBX deve ser convertido para GLB, de preferência no Blender com as texturas embutidas. O link deve permitir CORS.
+
+
+## 11. Personalizar a apresentação dos vídeos
+
+Em **Projeto → Composição → Vídeo incorporado**, preencha o link do YouTube ou Vimeo e, opcionalmente, **Título exibido abaixo do player**. A capa pode ser selecionada da biblioteca ou importada. Na página pública, antes do clique, aparece somente uma miniatura com informações editoriais; após o clique em um vídeo do YouTube, surge a timeline roxa sincronizada com reprodução, pausa, voltar ao início, tempo decorrido e duração. A barra original do YouTube continua disponível dentro do vídeo para legendas e opções avançadas. No Vimeo permanece a reprodução padrão.
