@@ -63,3 +63,10 @@ Ver [README_CUSTOM_PAGES.md](README_CUSTOM_PAGES.md). Verificar mobile com muito
 - O editor permite ajustar apenas `slideHeight` de 180 a 640 px. A largura do bloco ocupa a coluna de conteúdo e não é configurável. O número de cartões visíveis é derivado da altura (1 a 4) e limitado pela largura medida em `ResizeObserver`.
 - O renderizador `PageSlideshow` **não** mostra descrições, legendas, numeração, dots ou rodapé. O botão de pausa/reprodução existe apenas como controle flutuante dentro da área do slide se `slideShowPauseButton===true`; o padrão é falso. Preservar setas de navegação, zoom individual e as transições configuráveis.
 - As opções antigas `slideWidth` e `slideVisible` foram retiradas da interface e não influenciam mais o desenho do site, mesmo que permaneçam em backups anteriores.
+
+
+## Galeria interativa (uso geral) e enquadramento do zoom
+- `showcase` em `src/data/custom-pages.ts` e `ArtistShowcase` em `src/components/sections/page-media-blocks.tsx`: funciona para certificados, prêmios, participantes, obras e coleções; **não** exibir numeração ou rótulos forçados de artista. O painel lateral começa fechado e aparece apenas após selecionar item. Clicar no mesmo item ou no X fecha o painel.
+- `ShowcaseItem.linkLabel` e `showLink` são opções por item, editadas em `CustomPageEditor`; `showLink:false` desliga completamente o botão. Sem URL segura, não há botão/placeholder. Itens já existentes sem campo mantêm link quando válido; novos itens começam sem botão.
+- `PageBlock.showcaseFit` permite escolher `contain` para mostrar certificados inteiros nas miniaturas, ou `cover` para artes. O painel de detalhes usa `contain`.
+- `ArtLightbox` (compartilhado entre projetos, galerias e slides) usa viewport com dimensionamento `width:100%;height:100%;object-fit:contain`; a imagem original inteira deve aparecer a 100% e o pan deve resetar ao voltar a esse nível. Evite CSS de `grid` com trilhas dimensionadas pela imagem original, que pode causar recortes em imagens enormes.
