@@ -55,3 +55,13 @@ O PIN do Local Studio é apenas UX; não o descreva como autenticação segura. 
 ## Player de vídeo — preferência de direção de arte
 
 O projeto usa `src/components/ui/project-video.tsx` para miniatura clicável e iframe nativo de YouTube/Vimeo. **Não** inserir painéis com cronômetro, título ou timeline abaixo. Mantenha somente o link **Watch on YouTube/Vimeo** e preserve a identificação acessível `videoTitle?:string` no bloco. Os antigos módulos de controles externos do YouTube foram retirados por escolha do proprietário.
+
+## Construtor de páginas na navegação
+
+- O usuário pode criar páginas para cursos, recursos, guias ou outras iniciativas pelo Local Studio. **Não** hardcode novos itens por página no menu. Preserve os quatro itens fixos Home/Portfolio/About/Contact.
+- `src/data/custom-pages.ts` define `CustomPage`, `PageBlock`, `normalizeCustomPages`, `newCustomPage` e `safePageHref`. IDs de página devem ser estáveis mesmo quando o título muda.
+- `src/components/sections/custom-page-editor.tsx` é o construtor de páginas, com identidade, hero, ordenação e blocos e botões copy/link. `src/components/sections/custom-page.tsx` renderiza a página pública reaproveitando `StoryBlock` da página de projeto.
+- O menu `Sidebar` acrescenta páginas extras entre Portfolio e About e permite scroll para muitos links. A rota é `#/page/:id`. Ocultar uma página do menu **não** restringe sua leitura por URL.
+- Páginas devem entrar no `PortfolioStore.customPages` (rascunho, migração, ZIP e publicação) e ter imagens integradas ao publicador e biblioteca. Blocos de copiar ficam visíveis no manifesto público: **nunca** armazenar tokens, senhas ou chaves secretas.
+- Para links de botões usar somente `safePageHref` e âncoras nativas para garantir `noopener noreferrer` quando abrir outra aba. Nada de JavaScript arbitrário, HTML injetável ou cobrança PIX automática.
+- Leia `docs/README_CUSTOM_PAGES.md` antes de modificar o construtor.
