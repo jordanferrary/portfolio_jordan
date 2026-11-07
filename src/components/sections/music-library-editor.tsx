@@ -6,6 +6,7 @@ import { AssetClipButton } from '../ui/asset-picker'
 import {QuickEditImageButton} from '../ui/image-quick-editor'
 import { isLocalMedia,saveUploadedAudio,saveUploadedMedia } from '../../lib/media-store'
 import { parseVideoEmbed } from '../../lib/video-embed'
+import {classifyAudioSource,audioSourceError} from '../../lib/audio-source'
 type Props={tracks:MusicTrack[];onTracks:(tracks:MusicTrack[])=>void;onNotice:(message:string)=>void}
 type TrackDraft={id:string;title:string;artist:string;src:string;cover:string}
 const fresh=():TrackDraft=>({id:'track-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,5),title:'',artist:'',src:'',cover:''})
@@ -19,6 +20,8 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
  const [error,setError]=useState('')
  const [videoReference,setVideoReference]=useState('')
  const youtubePreview=parseVideoEmbed(videoReference)
+ const sourceKind=audioFile||isLocalMedia(draft?.src??'')?'local':classifyAudioSource(draft?.src??'')
+ const invalidSource=['video-page','web-page','invalid'].includes(sourceKind)
  const importAudio=(file:File|null)=>{
   setAudioFile(file)
   if(!file)return
@@ -38,9 +41,11 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
  const save=async()=>{
   if(!draft)return
   if(!draft.title.trim()||!draft.artist.trim()){setError('Informe o título e o artista.');return}
-  if(!draft.src&&!audioFile){setError('Adicione um arquivo de áudio ou uma URL direta.');return}
-  const publishedAudio=/^site:\/\/audio\/studio\/[a-f0-9]{64}\.(mp3|wav|ogg|m4a)$/i.test(draft.src)
-  if(!audioFile&&!isLocalMedia(draft.src)&&!publishedAudio&&!/^https?:\/\//i.test(draft.src)){setError('Use um arquivo importado, uma faixa já publicada ou uma URL https:// direta.');return}
+  if(!draft.src.trim()&&!audioFile){setError(audioSourceError('missing'));return}
+  if(!audioFile&&!isLocalMedia(draft.src)){
+   const kind=classifyAudioSource(draft.src)
+   if(kind!=='direct'&&kind!=='published'){setError(audioSourceError(kind));return}
+  }
   const requestedCover=draft.cover.trim()
   if(!coverFile&&requestedCover&&!isLocalMedia(requestedCover)&&!/^site:\/\/images\//.test(requestedCover)&&!/^https:\/\//i.test(requestedCover)&&!requestedCover.startsWith('/')){setError('Para capa online, use um link direto HTTPS de imagem (https://...).');return}
   setBusy(true);setError('')
@@ -67,7 +72,7 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
    </div>
    <div className="music-cover-direct-link"><label>URL direta da capa (qualquer imagem pública)<input type="url" inputMode="url" placeholder="https://exemplo.com/capas/album.webp" value={isLocalMedia(draft.cover)||draft.cover.startsWith('site://')?'':draft.cover} onChange={e=>{setCoverFile(null);setCoverLoadError(false);update({cover:e.target.value})}}/></label><p className="editor-help">Aceita imagens de sites, CDNs e serviços de hospedagem (JPG, PNG, WebP etc.). Use o endereço da imagem, não o endereço de uma página. A capa é exibida no player sem importar o arquivo para o GitHub; o site de origem precisa permitir exibição externa.</p></div>
    <div className="music-youtube-reference"><label>Miniatura de um vídeo do YouTube (opcional)<input type="url" placeholder="https://www.youtube.com/watch?v=..." value={videoReference} onChange={e=>setVideoReference(e.target.value)}/></label>{youtubePreview?.provider==='youtube'&&<div className="music-youtube-preview"><img src={youtubePreview.thumbnail} alt="Prévia da miniatura do YouTube" loading="lazy"/><button type="button" onClick={()=>{setCoverFile(null);setCoverLoadError(false);update({cover:youtubePreview.thumbnail})}}>Usar esta miniatura</button></div>}<p className="editor-help">O link serve apenas para obter uma imagem de capa pública, não para extrair áudio. Nome da faixa e artista continuam totalmente editáveis.</p></div>
-   <div className="music-audio-input"><b>Arquivo de áudio</b><label className="audio-upload"><Upload size={17}/>{audioFile?'Substituir arquivo':'Importar MP3, WAV, OGG ou M4A'}<input type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,audio/m4a,.mp3,.wav,.ogg,.m4a" onChange={e=>{importAudio(e.target.files?.[0]??null);e.target.value=''}}/></label>{audioFile?<span className="music-audio-file"><Check size={15}/>{audioFile.name}</span>:isLocalMedia(draft.src)?<span className="music-audio-file"><Check size={15}/>Áudio salvo neste navegador</span>:null}<label>Ou URL direta do arquivo<input value={isLocalMedia(draft.src)?'':draft.src} placeholder={isLocalMedia(draft.src)?'Áudio local selecionado':'https://site.com/musica.m4a'} onChange={e=>{update({src:e.target.value});setAudioFile(null)}}/></label></div>
+   <div className="music-audio-input"><b>Arquivo de áudio</b><label className="audio-upload"><Upload size={17}/>{audioFile?'Substituir arquivo':'Importar MP3, WAV, OGG ou M4A'}<input type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,audio/m4a,.mp3,.wav,.ogg,.m4a" onChange={e=>{importAudio(e.target.files?.[0]??null);e.target.value=''}}/></label>{audioFile?<span className="music-audio-file"><Check size={15}/>{audioFile.name}</span>:isLocalMedia(draft.src)?<span className="music-audio-file"><Check size={15}/>Áudio salvo neste navegador</span>:null}<label>Ou URL direta do arquivo<input value={isLocalMedia(draft.src)?'':draft.src} placeholder={isLocalMedia(draft.src)?'Áudio local selecionado':'https://site.com/musica.m4a'} onChange={e=>{update({src:e.target.value});setAudioFile(null)}}/></label>{invalidSource&&draft.src.trim()&&<div className="music-source-warning" role="alert"><strong>Link não reproduzível</strong><p>{audioSourceError(sourceKind)}</p>{sourceKind==='video-page'&&parseVideoEmbed(draft.src)?.provider==='youtube'&&<button type="button" onClick={()=>{setVideoReference(draft.src);update({src:''})}}>Usar este vídeo somente para a miniatura</button>}</div>}<p className="editor-help">Este campo é para o arquivo de áudio propriamente dito, não links de páginas de vídeos. Arquivos próprios podem ser importados acima.</p></div>
    {error&&<p role="alert" className="music-editor-error">{error}</p>}
    <div className="music-form-actions"><button type="button" onClick={()=>setDraft(null)} disabled={busy}>Cancelar</button><button type="button" className="save-action" disabled={busy} onClick={()=>void save()}><Save size={16}/>{busy?'Salvando...':'Salvar música'}</button></div>
   </section>}
