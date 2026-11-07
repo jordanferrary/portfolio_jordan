@@ -78,6 +78,15 @@ try{
    assert.ok(css.includes(selector),'Missing palette coverage for '+selector)
   assert.doesNotMatch(css,/\.editor-overlay[\s.{:]|\.theme-palette-editor[\s.{:]/)
  })
+ check('Project Focus stays free of palette strips and Contact uses its own route layout',()=>{
+  const html=element(app.HomePage,{home:app.defaultHome,testimonials:[],projects:[],editing:false,onOpenProject:()=>{},onEditProject:()=>{},onEditHome:()=>{},onNavigatePortfolio:()=>{}})
+  assert.match(html,/class="focus-entry"/)
+  assert.doesNotMatch(html,/class="focus-item"/)
+  assert.match(awaitCss,/\.home-focus-panel \.focus-entry/)
+  assert.match(awaitCss,/\.site-shell\.contact-route/)
+  // Public palette CSS must never override editor overlays: deployment guard.
+  assert.doesNotMatch(awaitCss,/\.editor-overlay[\\s.{:]|\.theme-palette-editor[\\s.{:]/)
+ })
  check('Contact specialties support add, remove, duplicate removal and hidden ribbon',()=>{
   assert.deepEqual(app.normalizeContactTags(['  MOTION DESIGN  ','3D ART','motion design','']),['MOTION DESIGN','3D ART'])
   assert.deepEqual(app.normalizeContactTags([]),[])
