@@ -1,0 +1,18 @@
+.project-model-block{width:100%;max-width:1050px;margin:0 auto}
+.project-model-frame{width:100%;aspect-ratio:16/10;position:relative;overflow:hidden;background:radial-gradient(ellipse at 55% 44%,#321c47 0%,#0a0812 84%);border:1px solid #754793;border-radius:20px}
+.project-model-poster{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.project-model-poster>img{position:absolute;width:100%;height:100%;object-fit:cover;opacity:.73;filter:saturate(.85)}
+.project-model-fallback{display:grid;place-items:center;width:150px;height:150px;border:1px solid #9b67c555;border-radius:28px;background:linear-gradient(155deg,#65338d65,#100c17);box-shadow:inset 0 1px #dcc3fc2b,0 18px 60px #0a051555;color:#c591f1;transform:rotate(-5deg)}
+.project-model-corner,.project-model-format{position:absolute;z-index:1;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.12em}
+.project-model-corner{left:19px;top:17px;color:#eacbff}
+.project-model-format{right:19px;bottom:19px;color:#c29dd8}
+.project-model-launch{position:absolute;z-index:1;bottom:16px;left:17px;display:flex;align-items:center;gap:9px;padding:12px 16px;background:#7e2bb5;border:1px solid #d5a5ff;border-radius:13px;font-size:12px;font-weight:750;box-shadow:0 10px 30px #09031499;transition:transform .2s}
+.project-model-poster:hover .project-model-launch{transform:translateY(-3px)}
+.project-model-stage,.project-model-canvas{width:100%;height:100%;display:block}
+.project-model-loading{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 14px;border-radius:12px;background:#190c25d9;color:#ead4fa;font-size:12px;pointer-events:none}
+.project-model-error{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;background:#160b23ee;color:#e9d5fa;text-align:center;font-size:13px}
+.project-model-error a{display:flex;align-items:center;gap:6px;color:#d6a8ff}
+.project-model-hint{display:flex;align-items:center;justify-content:center;gap:7px;margin:10px 0;color:#ac92bd;font-size:11px}
+.project-model-invalid{margin:20px auto;padding:30px;border:1px solid #664580;border-radius:16px;text-align:center;color:#c4a6db;font-size:13px}
+@media(max-width:600px){.project-model-frame{aspect-ratio:4/5}.project-model-launch{padding:10px 12px}}
+@media(prefers-reduced-motion:reduce){.project-model-launch{transition:none}}
