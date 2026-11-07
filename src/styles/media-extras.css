@@ -73,3 +73,36 @@
 .local-media-published h3{font-size:14px;margin:0 0 6px;color:#efd9ff}
 .local-media-published p{font-size:11px;line-height:1.6;color:#c9abdc;margin:0 0 13px}
 @media(max-width:560px){.local-media-manager .editor-scroll{padding:13px}.local-media-row{gap:8px;padding:8px}.local-media-icon{height:42px;width:42px;flex-basis:42px}}
+
+/* Complete GitHub media explorer: mirrors public/images/* without changing the site's gallery. */
+.media-manager-tabs{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.media-manager-tabs button{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px 13px;border:1px solid #684387;border-radius:12px;background:#1a1127;color:#b99acb;font-size:12px;font-weight:700;cursor:pointer}
+.media-manager-tabs button[aria-selected=true]{background:linear-gradient(140deg,#542178,#302047);border-color:#af75d9;color:#fff;box-shadow:inset 0 1px #ddadff2d}
+.media-manager-tabs button span{font-size:10px;padding:3px 7px;background:#13091d80;border-radius:7px;color:#debcf2}
+.media-manager-filters{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.media-manager-filters>select{min-width:140px;flex:1;padding:9px 10px;border:1px solid #61417e;border-radius:10px;background:#1a1028;color:#e5cbed;font-size:11px}
+.media-manager-search{display:flex;align-items:center;gap:8px;flex:1;min-width:160px;padding:0 10px;border:1px solid #61417e;border-radius:10px;background:#1a1028;color:#b991da}
+.media-manager-search input{min-width:0;width:100%;padding:9px 0;background:transparent;border:0;outline:none;color:#f1deff;font-size:11px}
+.media-manager-refresh{display:grid;place-items:center;width:35px;height:35px;flex-shrink:0;background:#2f1845;color:#e2bdff;border:1px solid #785297;border-radius:10px;cursor:pointer}
+.media-manager-refresh:disabled{opacity:.5}
+.media-repo-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(174px,1fr));gap:12px;align-items:stretch}
+.media-repo-card{min-width:0;overflow:hidden;border:1px solid #5a3974;border-radius:14px;background:linear-gradient(145deg,#21142f,#140b20);display:flex;flex-direction:column}
+.media-repo-card:hover{border-color:#9264b2}
+.media-repo-preview{position:relative;aspect-ratio:4/3;background:radial-gradient(circle at center,#38224e,#110c1a);min-height:145px}
+.media-repo-preview>a{display:grid;place-items:center;width:100%;height:100%;overflow:hidden}
+.media-repo-preview img{display:block;width:100%;height:100%;object-fit:contain;transition:transform .18s ease}
+.media-repo-preview>a:hover img{transform:scale(1.04)}
+.media-repo-icon{height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;color:#b48ad2}
+.media-repo-icon audio{width:min(96%,220px);height:37px}
+.media-repo-status{position:absolute;left:9px;top:9px;display:inline-flex;align-items:center;padding:5px 8px;background:#56237ddd;border:1px solid #a16cc6;border-radius:7px;font-size:9px;font-weight:800;letter-spacing:.02em;color:#f2ddff}
+.media-repo-status.in-use{background:#161022e8;border-color:#654881;color:#c2a8d0}
+.media-repo-details{display:flex;flex-direction:column;gap:5px;flex:1;padding:11px 11px 10px}
+.media-repo-details strong{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;color:#f1e0ff;font-size:11px;font-weight:750}
+.media-repo-details>small{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;color:#ac91c2;font-size:10px}
+.media-repo-meta{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:auto;padding-top:8px;border-top:1px solid #60417778}
+.media-repo-meta>span{font-size:9px;color:#bb9ccd}
+.media-repo-meta>label{display:flex;align-items:center;gap:5px;font-size:10px;color:#e9cafd;cursor:pointer}
+.media-repo-meta input{accent-color:#ad60dd;width:15px;height:15px}
+.media-repo-card.is-protected .media-repo-meta>label{opacity:.5;cursor:not-allowed}
+@media(max-width:580px){.media-manager-tabs button{padding:9px 7px;font-size:10px;gap:5px}.media-repo-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.media-repo-preview{min-height:112px}.media-repo-details{padding:8px}.media-repo-meta{flex-wrap:wrap}.media-manager-filters>select{flex-basis:100%}}
+@media(prefers-reduced-motion:reduce){.media-repo-preview img{transition:none}}
