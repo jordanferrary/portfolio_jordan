@@ -39,3 +39,7 @@ A ferramenta **Gerenciar arquivos** apresenta a aba GitHub pública por padrão,
 ## Player com identidade visual discreta
 
 O tipo `video` aceita `videoTitle?:string` e capa opcional. `ProjectVideo` mostra a miniatura até o clique e depois um iframe oficial YouTube/Vimeo. Os controles nativos permanecem ativos e o único elemento abaixo é o link **Watch on YouTube/Vimeo**. A barra personalizada antiga, o módulo `YouTubeCustomPlayer` e a API JS do YouTube foram removidos para reduzir peso e evitar redundâncias.
+
+## Imagens de páginas adicionais
+
+`PortfolioStore.customPages` é incluído na serialização da publicação e na lista de referências do backup ZIP. `github-publish.ts` percorre `page.heroImage` e blocos de imagem, `media`, `after` e `gallery` antes do commit, com estágio e variantes WebP como para projetos. A biblioteca `AssetLibraryProvider` e `AssetPicker` incluem referências de páginas sob `pages/<id>`. A detecção de uso no `github-media.ts` percorre o manifesto completo, incluindo páginas dinâmicas. O conteúdo de um botão de copiar é dado público no manifesto.
