@@ -5,6 +5,7 @@ import { AssetImage } from '../ui/asset-image'
 import { AssetClipButton } from '../ui/asset-picker'
 import {QuickEditImageButton} from '../ui/image-quick-editor'
 import { isLocalMedia,saveUploadedAudio,saveUploadedMedia } from '../../lib/media-store'
+import { parseVideoEmbed } from '../../lib/video-embed'
 type Props={tracks:MusicTrack[];onTracks:(tracks:MusicTrack[])=>void;onNotice:(message:string)=>void}
 type TrackDraft={id:string;title:string;artist:string;src:string;cover:string}
 const fresh=():TrackDraft=>({id:'track-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,5),title:'',artist:'',src:'',cover:''})
@@ -15,6 +16,15 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
  const [coverPreview,setCoverPreview]=useState('')
  const [busy,setBusy]=useState(false)
  const [error,setError]=useState('')
+ const [videoReference,setVideoReference]=useState('')
+ const youtubePreview=parseVideoEmbed(videoReference)
+ const importAudio=(file:File|null)=>{
+  setAudioFile(file)
+  if(!file)return
+  const name=file.name.replace(/\.(mp3|wav|ogg|m4a)$/i,'').trim()
+  const pieces=name.split(/\s+[-–—]\s+/)
+  setDraft(previous=>previous?{...previous,artist:previous.artist||((pieces.length>1)?pieces[0]:''),title:previous.title||((pieces.length>1)?pieces.slice(1).join(' - '):name)}:previous)
+ }
  useEffect(()=>{
   if(!coverFile){setCoverPreview('');return}
   const url=URL.createObjectURL(coverFile)
@@ -22,8 +32,8 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
   return ()=>URL.revokeObjectURL(url)
  },[coverFile])
  const update=(value:Partial<TrackDraft>)=>setDraft(p=>p?{...p,...value}:p)
- const edit=(track:MusicTrack)=>{setDraft({id:track.id,title:track.title,artist:track.artist,src:track.src,cover:track.cover??''});setAudioFile(null);setCoverFile(null);setError('')}
- const create=()=>{setDraft(fresh());setAudioFile(null);setCoverFile(null);setError('')}
+ const edit=(track:MusicTrack)=>{setDraft({id:track.id,title:track.title,artist:track.artist,src:track.src,cover:track.cover??''});setAudioFile(null);setCoverFile(null);setVideoReference('');setError('')}
+ const create=()=>{setDraft(fresh());setAudioFile(null);setCoverFile(null);setVideoReference('');setError('')}
  const save=async()=>{
   if(!draft)return
   if(!draft.title.trim()||!draft.artist.trim()){setError('Informe o título e o artista.');return}
@@ -51,8 +61,9 @@ export function MusicLibraryEditor({tracks,onTracks,onNotice}:Props){
    <div className="music-track-image">
     <div className="music-track-cover-preview">{coverPreview?<img src={coverPreview} alt="Nova capa"/>:draft.cover?<AssetImage src={draft.cover} alt="Capa atual"/>:<div className="music-no-cover"><ImagePlus size={24}/><small>Sem capa</small></div>}</div>
     <div className="music-cover-actions"><b>Imagem da capa</b><label className="media-upload-button"><Upload size={15}/>Importar capa<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={e=>{setCoverFile(e.target.files?.[0]??null);e.target.value=''}}/></label><AssetClipButton folder="music" onSelect={cover=>{setCoverFile(null);update({cover})}}/>{draft.cover&&!coverFile&&<QuickEditImageButton source={draft.cover} folder="music" onSave={cover=>update({cover})}/>}{(coverFile||draft.cover)&&<button onClick={()=>{setCoverFile(null);update({cover:''})}}><X size={14}/>Remover capa</button>}</div>
+   <div className="music-youtube-reference"><label>Miniatura de um vídeo do YouTube (opcional)<input type="url" placeholder="https://www.youtube.com/watch?v=..." value={videoReference} onChange={e=>setVideoReference(e.target.value)}/></label>{youtubePreview?.provider==='youtube'&&<div className="music-youtube-preview"><img src={youtubePreview.thumbnail} alt="Prévia da miniatura do YouTube" loading="lazy"/><button type="button" onClick={()=>{setCoverFile(null);update({cover:youtubePreview.thumbnail})}}>Usar esta miniatura</button></div>}<p className="editor-help">O link serve apenas para obter uma imagem de capa pública, não para extrair áudio. Nome da faixa e artista continuam totalmente editáveis.</p></div>
    </div>
-   <div className="music-audio-input"><b>Arquivo de áudio</b><label className="audio-upload"><Upload size={17}/>{audioFile?'Substituir arquivo':'Importar MP3, WAV, OGG ou M4A'}<input type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,audio/m4a,.mp3,.wav,.ogg,.m4a" onChange={e=>{setAudioFile(e.target.files?.[0]??null);e.target.value=''}}/></label>{audioFile?<span className="music-audio-file"><Check size={15}/>{audioFile.name}</span>:isLocalMedia(draft.src)?<span className="music-audio-file"><Check size={15}/>Áudio salvo neste navegador</span>:null}<label>Ou URL direta do arquivo<input value={isLocalMedia(draft.src)?'':draft.src} placeholder={isLocalMedia(draft.src)?'Áudio local selecionado':'https://site.com/musica.m4a'} onChange={e=>{update({src:e.target.value});setAudioFile(null)}}/></label></div>
+   <div className="music-audio-input"><b>Arquivo de áudio</b><label className="audio-upload"><Upload size={17}/>{audioFile?'Substituir arquivo':'Importar MP3, WAV, OGG ou M4A'}<input type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,audio/m4a,.mp3,.wav,.ogg,.m4a" onChange={e=>{importAudio(e.target.files?.[0]??null);e.target.value=''}}/></label>{audioFile?<span className="music-audio-file"><Check size={15}/>{audioFile.name}</span>:isLocalMedia(draft.src)?<span className="music-audio-file"><Check size={15}/>Áudio salvo neste navegador</span>:null}<label>Ou URL direta do arquivo<input value={isLocalMedia(draft.src)?'':draft.src} placeholder={isLocalMedia(draft.src)?'Áudio local selecionado':'https://site.com/musica.m4a'} onChange={e=>{update({src:e.target.value});setAudioFile(null)}}/></label></div>
    {error&&<p role="alert" className="music-editor-error">{error}</p>}
    <div className="music-form-actions"><button type="button" onClick={()=>setDraft(null)} disabled={busy}>Cancelar</button><button type="button" className="save-action" disabled={busy} onClick={()=>void save()}><Save size={16}/>{busy?'Salvando...':'Salvar música'}</button></div>
   </section>}
