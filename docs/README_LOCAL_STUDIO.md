@@ -107,3 +107,12 @@ Ao usar **Publicar no GitHub** com o token temporário já empregado pelo Studio
 O recurso **Arquivos** lê apenas arquivos de texto públicos que forem explicitamente indicados em `config.json`. Não lê o código privado de outros repositórios nem acessa o disco do computador pelo navegador. A integração atual não é um agente de IA autônomo.
 
 Ao atualizar o widget da sua própria instalação, verifique a versão de `public/alquimago/alquimago.js` e não substitua os arquivos de memória por conteúdo de exemplo.
+
+
+### Alquimago 0.3 — interações e sugestões
+- O familiar tem novo visual arcano, animações e gesto de carinho: toque rápido ou deslize curto sobre o personagem. Para mover, arraste por uma distância maior.
+- A aba **Insights** reconhece a seção atual e aponta problemas estruturais públicos (como imagens sem alt e links quebrados observáveis). Não monitora valores digitados, formulários ou conversas privadas.
+- O Studio envia ao mascote apenas o tipo de seção e as contagens de projetos e páginas, sem conteúdo de rascunhos.
+- Ações repetidas não rendem XP ilimitado. Carinho não rende XP; cada rota rende uma vez ao dia ao escolher explorá-la; uma publicação GitHub confirmada concede XP uma vez por revisão.
+- **IA** abre ChatGPT ou Gemini a pedido e prepara um prompt para colar. Não controla conversas, sessões ou abas externas.
+- A memória local continua isolada por dispositivo/namespace e não é apagada por publicação normal. O projeto público guarda apenas o snapshot numérico permitido no fluxo já existente.
