@@ -1,6 +1,9 @@
 import type { ImageFraming } from '../lib/image-framing'
-export type BlockType = 'heading' | 'text' | 'image' | 'image-left' | 'image-right' | 'before-after' | 'gallery' | 'divider' | 'video' | 'model'
-export type Block = { id:string; type:BlockType; content:string; videoTitle?:string; media?:string; after?:string; gallery?:string[]; dividerIcon?:'none'|'sparkles'|'star'|'diamond'|'circle'; dividerStyle?:'glow'|'solid'|'dashed'; beforeLabel?:string; afterLabel?:string }
+export type BlockType = 'heading' | 'text' | 'image' | 'image-left' | 'image-right' | 'before-after' | 'gallery' | 'divider' | 'video' | 'model' | 'slideshow'
+export type GalleryEntry = {id:string;image:string;artist:string;title:string;description:string;portfolioUrl:string}
+export type SlideEntry = {id:string;image:string;title:string;caption:string}
+export type SlideEffect = 'fade'|'slide'|'zoom'|'none'
+export type Block = { id:string; type:BlockType; content:string; videoTitle?:string; media?:string; after?:string; gallery?:string[];galleryEntries?:GalleryEntry[];galleryMode?:'simple'|'artists';slides?:SlideEntry[];slideAutoplay?:boolean;slideEffect?:SlideEffect;slideInterval?:number; dividerIcon?:'none'|'sparkles'|'star'|'diamond'|'circle'; dividerStyle?:'glow'|'solid'|'dashed'; beforeLabel?:string; afterLabel?:string }
 export type ProcessStep = { id:string; label:string; image:string }
 export type CategoryIcon = 'user'|'mountain'|'box'|'sparkles'|'grid'|'palette'|'film'|'brush'|'shapes'
 export type Category = { id:string; label:string; icon:CategoryIcon; image?:string }
