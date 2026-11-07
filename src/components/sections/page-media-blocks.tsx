@@ -59,7 +59,7 @@ export function PageSlideshow({block}:{block:PageBlock}){
   }
   window.addEventListener('resize',measure)
   return ()=>window.removeEventListener('resize',measure)
- },[width])
+ },[width,items.length])
  useEffect(()=>{
   if(!playing||items.length<2||zoomedId)return
   const timer=window.setInterval(()=>setIndex(i=>(i+1)%items.length),interval)
