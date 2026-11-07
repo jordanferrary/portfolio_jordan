@@ -73,6 +73,6 @@ O conteúdo do Studio é publicado com a API do GitHub no branch `main`, em uma 
 Consulte [Limpeza de mídias](docs/README_MEDIA_CLEANUP.md), [Pipeline de mídia](docs/README_MEDIA_PIPELINE.md) e [Local Studio](docs/README_LOCAL_STUDIO.md).
 
 
-### Controles personalizados para vídeos do YouTube
+### Vídeos integrados com apresentação limpa
 
-O card continua exibindo somente a miniatura até o visitante clicar. Após a ativação, um pequeno módulo carrega a API oficial de iframe do YouTube sob demanda e exibe, **fora do iframe**, uma barra de progresso roxa com tempo atual, duração, reproduzir/pausar, reiniciar e título na tipografia do site. Os controles nativos permanecem disponíveis para legendas, configurações e tela cheia, pois o conteúdo interno não pode ser livremente estilizado. Em **Projeto → Composição → Vídeo incorporado**, o título exibido no portfólio é editável. O Vimeo conserva seu player nativo.
+O card de vídeo exibe uma miniatura personalizada até o clique. Depois, o YouTube ou Vimeo é reproduzido no player oficial, com seus controles nativos. Abaixo do vídeo há somente um link discreto **Watch on YouTube/Vimeo**. O painel externo de progresso e título foi removido por decisão de direção de arte. Em **Projeto → Composição → Vídeo incorporado**, o título permanece editável para acessibilidade e identificação do iframe.
