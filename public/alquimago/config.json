@@ -8,7 +8,28 @@
   "appearance": {
     "accent": "#b58aff",
     "gold": "#f9d891",
-    "position": "bottom-right"
+    "position": "bottom-right",
+    "skins": [
+      {
+        "id": "padrao",
+        "label": "Alquimago — original",
+        "type": "svg",
+        "src": "",
+        "shapeKeys": {
+          "idle": "Idle",
+          "blink": "Blink",
+          "happy": "Happy",
+          "curious": "Curious",
+          "talk": "Talk",
+          "sleep": "Sleep",
+          "pet": "Pet",
+          "surprised": "Surprised",
+          "focused": "Focused",
+          "sad": "Sad"
+        }
+      }
+    ],
+    "selectedSkin": "padrao"
   },
   "memory": {
     "namespace": "studio",
@@ -28,5 +49,14 @@
       "Só leia recursos públicos explicitamente listados.",
       "Não envie tokens ou informações privadas para modelos de IA."
     ]
+  },
+  "language": {
+    "code": "pt-BR",
+    "file": ""
+  },
+  "proactive": {
+    "projectHover": true,
+    "delayMs": 1050,
+    "cooldownMs": 50000
   }
 }
