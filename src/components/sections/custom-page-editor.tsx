@@ -10,7 +10,7 @@ import {ProjectModel} from '../ui/project-model'
 import {parseVideoEmbed} from '../../lib/video-embed'
 import {parseModelUrl} from '../../lib/model-embed'
 import {isLocalMedia,saveUploadedMedia} from '../../lib/media-store'
-import {customPageIconOptions,newCustomPage,normalizeCustomPages,safePageHref,type CustomPage,type CustomPageIcon,type PageBlock,type PageButtonAction} from '../../data/custom-pages'
+import {customPageIconOptions,newCustomPage,normalizeCustomPages,safePageHref,type CustomPage,type CustomPageIcon,type PageBlock,type PageButtonAction,type ShowcaseItem,type SlideItem,type SlideTransition} from '../../data/custom-pages'
 
 type Props={
  pages:CustomPage[]
@@ -32,7 +32,9 @@ const templates:{type:Kind;title:string;description:string;Icon:LucideIcon}[]=[
  {type:'video',title:'Vídeo',description:'YouTube ou Vimeo',Icon:Clapperboard},
  {type:'model',title:'Modelo 3D',description:'GLB ou glTF',Icon:BoxIcon},
  {type:'divider',title:'Divisor',description:'Separar seções',Icon:Minus},
- {type:'action',title:'Botão de ação',description:'Copiar ou abrir link',Icon:Link2}
+ {type:'action',title:'Botão de ação',description:'Copiar ou abrir link',Icon:Link2},
+ {type:'showcase',title:'Galeria de artistas',description:'Artes, créditos e portfólios',Icon:GalleryHorizontal},
+ {type:'slideshow',title:'Slides',description:'Transições e reprodução',Icon:Clapperboard}
 ]
 function PageMediaField({value,onChange,folder,slot,label,onError}:{value:string;onChange:(value:string)=>void;folder:string;slot:string;label:string;onError:(message:string)=>void}){
  const [busy,setBusy]=useState(false)
@@ -80,6 +82,9 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
   const block:PageBlock={
    id:'block-'+crypto.randomUUID(),type,content:'',
    gallery:type==='gallery'?['','']:undefined,
+   showcaseItems:type==='showcase'?[]:undefined,
+   slideItems:type==='slideshow'?[]:undefined,
+   slideAutoplay:false,slideTransition:'fade',slideInterval:5000,
    dividerIcon:type==='divider'?'sparkles':undefined,
    dividerStyle:type==='divider'?'glow':undefined,
    buttonLabel:type==='action'?'Copy content':undefined,
@@ -192,6 +197,28 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
      {block.type==='image'&&<PageMediaField value={block.content} onChange={content=>patchBlock(block.id,{content})} folder={folder} slot={block.id} label="Imagem de destaque" onError={setError}/>}
      {(block.type==='image-left'||block.type==='image-right')&&<><PageMediaField value={block.media??''} onChange={media=>patchBlock(block.id,{media})} folder={folder} slot={block.id} label="Imagem lateral" onError={setError}/><TextComposer value={block.content} rows={4} onChange={content=>patchBlock(block.id,{content})} label="Texto ao lado da imagem"/></>}
      {block.type==='gallery'&&<><div className="custom-page-gallery-fields">{(block.gallery??[]).map((src,j)=><div key={j} className="custom-page-gallery-item"><PageMediaField value={src} onChange={value=>patchBlock(block.id,{gallery:(block.gallery??[]).map((item,k)=>k===j?value:item)})} folder={folder} slot={block.id+'-'+j} label={'Imagem '+(j+1)} onError={setError}/><button type="button" className="subtle-action" onClick={()=>patchBlock(block.id,{gallery:(block.gallery??[]).filter((_,k)=>k!==j)})}><X size={14}/> Remover imagem</button></div>)}</div><button type="button" className="custom-page-add-image" onClick={()=>patchBlock(block.id,{gallery:[...(block.gallery??[]),'']})}><Plus size={15}/> Adicionar imagem</button></>}
+     {block.type==='showcase'&&<div className="custom-page-rich-gallery-editor">
+      <p className="editor-help">Galeria externa para concursos, colaborações e participantes. Use links diretos para imagens (HTTPS); as artes não serão enviadas ao repositório. Clique em um card no site para ver os detalhes e use Zoom para ampliar.</p>
+      {(block.showcaseItems??[]).map((item,index)=><div className="custom-page-rich-gallery-entry" key={item.id}>
+       <div className="custom-page-rich-gallery-head"><strong>Artista {index+1}</strong><button type="button" onClick={()=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).filter(x=>x.id!==item.id)})}><Trash2 size={15}/> Remover</button></div>
+       <div className="editor-two"><label>Nome do artista<input value={item.name} onChange={e=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).map(x=>x.id===item.id?{...x,name:e.target.value}:x)})} placeholder="Nome do participante"/></label><label>Link do portfólio<input type="url" value={item.portfolioUrl} onChange={e=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).map(x=>x.id===item.id?{...x,portfolioUrl:e.target.value}:x)})} placeholder="https://artstation.com/..."/></label></div>
+       <label>URL direta da imagem<input type="url" value={item.image} onChange={e=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).map(x=>x.id===item.id?{...x,image:e.target.value}:x)})} placeholder="https://site.com/artwork.webp"/></label>
+       {item.image&&<div className="custom-page-external-preview"><AssetImage src={item.image} alt={'Prévia '+item.name}/></div>}
+       <label>Descrição da arte ou do artista<textarea rows={3} value={item.description} onChange={e=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).map(x=>x.id===item.id?{...x,description:e.target.value}:x)})} placeholder="Sobre a obra, colocação, técnica..."/></label>
+       <div className="custom-page-item-order"><button type="button" disabled={index===0} onClick={()=>{const items=[...(block.showcaseItems??[])];[items[index-1],items[index]]=[items[index],items[index-1]];patchBlock(block.id,{showcaseItems:items})}}>↑ Subir</button><button type="button" disabled={index===(block.showcaseItems??[]).length-1} onClick={()=>{const items=[...(block.showcaseItems??[])];[items[index+1],items[index]]=[items[index],items[index+1]];patchBlock(block.id,{showcaseItems:items})}}>↓ Descer</button></div>
+      </div>)}
+      <button type="button" className="custom-page-add-image" onClick={()=>patchBlock(block.id,{showcaseItems:[...(block.showcaseItems??[]),{id:'artist-'+crypto.randomUUID(),image:'',name:'',description:'',portfolioUrl:''} satisfies ShowcaseItem]})}><Plus size={15}/> Adicionar artista</button>
+     </div>}
+     {block.type==='slideshow'&&<div className="custom-page-rich-gallery-editor">
+      <div className="custom-page-button-options"><label>Reprodução automática<select value={block.slideAutoplay?'yes':'no'} onChange={e=>patchBlock(block.id,{slideAutoplay:e.target.value==='yes'})}><option value="no">Não · Manual</option><option value="yes">Sim · Automática</option></select></label><label>Transição<select value={block.slideTransition??'fade'} onChange={e=>patchBlock(block.id,{slideTransition:e.target.value as SlideTransition})}><option value="fade">Fade suave</option><option value="slide">Deslizamento</option><option value="zoom">Zoom cinematográfico</option></select></label><label>Intervalo (segundos)<input type="number" min="1.5" max="30" step=".5" value={(block.slideInterval??5000)/1000} onChange={e=>patchBlock(block.id,{slideInterval:Math.max(1500,Math.min(30000,Math.round(Number(e.target.value||5)*1000)))})}/></label></div>
+      {(block.slideItems??[]).map((item,index)=><div className="custom-page-rich-gallery-entry" key={item.id}>
+       <div className="custom-page-rich-gallery-head"><strong>Slide {index+1}</strong><button type="button" onClick={()=>patchBlock(block.id,{slideItems:(block.slideItems??[]).filter(x=>x.id!==item.id)})}><Trash2 size={15}/> Remover</button></div>
+       <PageMediaField value={item.image} onChange={image=>patchBlock(block.id,{slideItems:(block.slideItems??[]).map(x=>x.id===item.id?{...x,image}:x)})} folder={folder} slot={block.id+'-slide-'+item.id} label="Imagem do slide" onError={setError}/>
+       <label>Legenda<input value={item.caption} onChange={e=>patchBlock(block.id,{slideItems:(block.slideItems??[]).map(x=>x.id===item.id?{...x,caption:e.target.value}:x)})} placeholder="Descrição opcional"/></label>
+       <div className="custom-page-item-order"><button type="button" disabled={index===0} onClick={()=>{const items=[...(block.slideItems??[])];[items[index-1],items[index]]=[items[index],items[index-1]];patchBlock(block.id,{slideItems:items})}}>↑ Subir</button><button type="button" disabled={index===(block.slideItems??[]).length-1} onClick={()=>{const items=[...(block.slideItems??[])];[items[index+1],items[index]]=[items[index],items[index+1]];patchBlock(block.id,{slideItems:items})}}>↓ Descer</button></div>
+      </div>)}
+      <button type="button" className="custom-page-add-image" onClick={()=>patchBlock(block.id,{slideItems:[...(block.slideItems??[]),{id:'slide-'+crypto.randomUUID(),image:'',caption:''} satisfies SlideItem]})}><Plus size={15}/> Adicionar slide</button>
+     </div>}
      {block.type==='before-after'&&<><div className="editor-two"><PageMediaField value={block.media??''} onChange={media=>patchBlock(block.id,{media})} folder={folder} slot={block.id+'-before'} label="Antes" onError={setError}/><PageMediaField value={block.after??''} onChange={after=>patchBlock(block.id,{after})} folder={folder} slot={block.id+'-after'} label="Depois" onError={setError}/></div><div className="editor-two"><label>Legenda Antes<input value={block.beforeLabel??'Before'} onChange={e=>patchBlock(block.id,{beforeLabel:e.target.value})}/></label><label>Legenda Depois<input value={block.afterLabel??'After'} onChange={e=>patchBlock(block.id,{afterLabel:e.target.value})}/></label></div><TextComposer value={block.content} onChange={content=>patchBlock(block.id,{content})} rows={2} label="Legenda da comparação"/></>}
      {block.type==='divider'&&<div className="editor-two"><label>Ícone central<select value={block.dividerIcon??'sparkles'} onChange={e=>patchBlock(block.id,{dividerIcon:e.target.value as PageBlock['dividerIcon']})}><option value="sparkles">Brilho</option><option value="star">Estrela</option><option value="diamond">Diamante</option><option value="circle">Círculo</option><option value="none">Sem ícone</option></select></label><label>Estilo da linha<select value={block.dividerStyle??'glow'} onChange={e=>patchBlock(block.id,{dividerStyle:e.target.value as PageBlock['dividerStyle']})}><option value="glow">Brilho</option><option value="solid">Contínua</option><option value="dashed">Pontilhada</option></select></label></div>}
      {block.type==='video'&&<><label>Link do YouTube / Vimeo<input type="url" value={block.content} onChange={e=>patchBlock(block.id,{content:e.target.value})} placeholder="https://www.youtube.com/watch?v=..."/></label><label>Nome exibido no player (opcional)<input value={block.videoTitle??''} onChange={e=>patchBlock(block.id,{videoTitle:e.target.value})}/></label><PageMediaField value={block.media??''} onChange={media=>patchBlock(block.id,{media})} folder={folder} slot={block.id+'-video'} label="Miniatura do vídeo" onError={setError}/>{parseVideoEmbed(block.content)&&<div className="custom-page-inline-preview"><ProjectVideo url={block.content} poster={block.media} title={block.videoTitle||draft.title}/></div>}{block.content&&!parseVideoEmbed(block.content)&&<p role="alert" className="editor-status">Use um endereço de YouTube ou Vimeo.</p>}</>}
