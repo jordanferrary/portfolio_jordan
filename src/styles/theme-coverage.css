@@ -539,5 +539,4 @@
  }
 }
 
-/* The editor has content of variable height: never cut its panels. */
-.site-shell.contact-route .editor-overlay{overflow:auto}
+/* Editor overlay styles intentionally remain in Studio-only stylesheets. */
