@@ -1,7 +1,7 @@
 import { useEffect,useRef,useState } from 'react'
 import { Check,Palette,RotateCcw,Save,Sparkles,X } from 'lucide-react'
 import { ChromaticPicker } from '../ui/chromatic-picker'
-import { applyThemePalette,DEFAULT_THEME,PALETTE_FIELDS,type ThemeColorKey,type ThemePalette } from '../../lib/theme-palette'
+import { applyThemePalette,contrastRatio,DEFAULT_THEME,PALETTE_FIELDS,type ThemeColorKey,type ThemePalette } from '../../lib/theme-palette'
 
 type Props={value:ThemePalette;onSave:(theme:ThemePalette)=>void;onClose:()=>void}
 const PRESETS:{name:string;palette:ThemePalette}[]=[
@@ -11,13 +11,6 @@ const PRESETS:{name:string;palette:ThemePalette}[]=[
  {name:'Solar Flare',palette:{primary:'#FF8145',secondary:'#FFCE54',background:'#130A0E',surface:'#281719'}},
  {name:'Moonlight',palette:{primary:'#B4AAFF',secondary:'#91DFFF',background:'#090B19',surface:'#1C1C34'}}
 ]
-function luminance(hex:string){
- const values=[1,3,5].map(i=>{
-  const n=parseInt(hex.slice(i,i+2),16)/255
-  return n<=.04045?n/12.92:((n+.055)/1.055)**2.4
- })
- return .2126*values[0]+.7152*values[1]+.0722*values[2]
-}
 export function ThemePaletteEditor({value,onSave,onClose}:Props){
  const [draft,setDraft]=useState<ThemePalette>(()=>({...value}))
  const [active,setActive]=useState<ThemeColorKey>('primary')
@@ -27,7 +20,9 @@ export function ThemePaletteEditor({value,onSave,onClose}:Props){
  useEffect(()=>{applyThemePalette(draft)},[draft])
  const setColor=(color:string)=>setDraft(prev=>({...prev,[active]:color}))
  const save=()=>{saved.current=true;onSave(draft);onClose()}
- const lowContrast=luminance(draft.background)>.22||luminance(draft.surface)>.28
+ const contrastBackground=contrastRatio('#F8F3FF',draft.background)
+ const contrastSurface=contrastRatio('#F8F3FF',draft.surface)
+ const lowContrast=contrastBackground<4.5||contrastSurface<4.5
  return <div className="editor-overlay" lang="pt-BR" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section className="editor-panel theme-palette-editor" role="dialog" aria-modal="true" aria-label="Direção de arte e cores do portfólio">
    <header><div><span className="eyebrow">✦ ESTÚDIO DE CORES</span><h2>Direção de arte</h2><small>Controle as variáveis principais do site com precisão.</small></div><button type="button" aria-label="Fechar editor de cores" onClick={onClose}><X size={20}/></button></header>
@@ -53,7 +48,12 @@ export function ThemePaletteEditor({value,onSave,onClose}:Props){
      <div className="theme-color-workspace">
       <div className="theme-current-label"><div><span>EDITANDO</span><h3>{PALETTE_FIELDS.find(f=>f.key===active)?.label}</h3></div><span className="theme-active-swatch" style={{background:draft[active]}}/></div>
       <ChromaticPicker value={draft[active]} onChange={setColor}/>
-      {lowContrast&&<p className="theme-contrast-note" role="status">Atenção: fundos muito claros podem reduzir a legibilidade, já que a tipografia do site é clara.</p>}
+      <div className="theme-contrast-audit" role="status" aria-label="Verificação de contraste dos textos">
+       <strong>Legibilidade real (WCAG AA)</strong>
+       <p><span>Texto × fundo</span><b className={contrastBackground>=4.5?'passes':'fails'}>{contrastBackground.toFixed(1)}:1 · {contrastBackground>=4.5?'Aprovado':'Baixo contraste'}</b></p>
+       <p><span>Texto × cards</span><b className={contrastSurface>=4.5?'passes':'fails'}>{contrastSurface.toFixed(1)}:1 · {contrastSurface>=4.5?'Aprovado':'Baixo contraste'}</b></p>
+      </div>
+      {lowContrast&&<p className="theme-contrast-note" role="status">Os textos claros precisam de contraste 4,5:1 ou maior nos fundos. Você pode continuar editando, mas revise a legibilidade antes de publicar.</p>}
      </div>
     </div>
     <div className="theme-preset-area"><div><h3>Direções de cor</h3><p>Uma base rápida para experimentar — todos os valores continuam editáveis.</p></div><div className="theme-presets">{PRESETS.map(preset=><button type="button" key={preset.name} onClick={()=>setDraft({...preset.palette})} className="theme-preset"><span className="theme-preset-dots">{PALETTE_FIELDS.map(field=><i key={field.key} style={{background:preset.palette[field.key]}}/>)}</span><strong>{preset.name}</strong></button>)}</div></div>
