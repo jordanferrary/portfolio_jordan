@@ -1,0 +1,15 @@
+name = "alquimago-github-auth"
+main = "src/index.js"
+compatibility_date = "2026-11-07"
+
+# Public metadata only. All secrets must use "wrangler secret put".
+[vars]
+GH_OWNER = "jordanferrary"
+GH_REPO = "portfolio_jordan"
+FRONTEND_URL = "https://jordanferrary.github.io/portfolio_jordan/"
+SESSION_SAMESITE = "None"
+
+# Replace with an actual KV namespace ID after "wrangler kv namespace create SESSIONS".
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "REPLACE_WITH_YOUR_KV_ID"
