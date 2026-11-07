@@ -30,6 +30,7 @@ export function Alquimago3DEditor({onClose,onPublish}:Props){
   try{
    const report=await inspectAlquimagoGLB(file)
    await saveMediaBlob(ALQUIMAGO_SKIN_MEDIA,file)
+   window.dispatchEvent(new Event('alquimago:skin3d-imported'))
    setExists(true);setFound(report.found)
    showOnFamiliar()
    setMessage('Skin importada neste navegador. '+report.found.length+' Shape Keys reconhecidas. Use Publicar no Local Studio para enviar o GLB ao GitHub/Cloudflare.')
