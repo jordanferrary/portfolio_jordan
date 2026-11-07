@@ -127,3 +127,17 @@ O mascote é carregado **somente** depois que o Local Studio é desbloqueado. Ao
 **Diálogo:** a aba **Conversar** contém um campo de texto, respostas locais programadas, botões rápidos e histórico salvo no navegador. Tente "oi", "como faço carinho?", "quanto XP tenho?", "tem sugestões pro site?" e "abre a galeria". O Alquimago não é uma IA generativa e não consegue ler conversas em outras abas.
 
 **Atualização:** a integração carrega `public/alquimago/alquimago.js?v=0.4.0` e `config.json?v=0.4.0`. O identificador de versão reduz a chance de o navegador manter o JavaScript antigo em cache; para aparecer no site, o workflow **Deploy React to GitHub Pages** precisa concluir a compilação e o deploy. O histórico de diálogo fica em armazenamento local, separado das snapshots públicas de XP.
+
+
+### Atualização de versão, cache e dados locais — Alquimago 0.4.1
+
+- **Ctrl + F5** força o navegador a recarregar arquivos, mas **não** zera `localStorage`. Isso é deliberado: XP e conversa do mascote devem sobreviver a atualizações do site.
+- Em **Alquimago → Cuidado → Reiniciar dados locais**, o usuário pode zerar XP, humor, posição e conversa **somente da instalação atual**, após confirmação. O portfólio, outros usuários e o GitHub não são alterados. O reset grava uma memória-base vazia para que o snapshot antigo do repositório não volte a preenchê-la.
+- Em **Local Studio → Ferramentas → Gerenciamento → Voltar à versão publicada**, o editor oferece uma ação separada, com confirmação, para descartar **rascunhos do portfólio** guardados neste navegador. Antes disso, use **Backup ZIP** se precisar preservar algum rascunho.
+- A central de ferramentas mostra o **Build** (SHA curto do GitHub Actions) e a **revisão do conteúdo publicado**. Eles permitem distinguir deploy novo de dados locais antigos.
+- O script do Alquimago recebe `?v=<SHA do build>` a cada publicação; assim, uma versão JavaScript antiga não deve ser reutilizada só porque ficou no cache.
+- O teste do repositório proíbe seletores de overlays do Studio no CSS público da paleta. Uma regra indevida anterior foi removida para liberar o pipeline de publicação.
+
+### Correções da interface pública
+
+A Home usa `focus-entry` no painel *Project Focus*, isolando ícones/textos das antigas regras de fundo aplicadas a `focus-item`. A página Contato utiliza uma composição compacta em desktop, com rolagem apenas caso o conteúdo não caiba; o layout móvel continua responsivo. Nenhuma alteração remove redes sociais ou configurações publicadas.
