@@ -30,3 +30,20 @@
 .comparison-zoom-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:8px}
 .comparison-zoom-actions button{display:inline-flex;gap:6px;align-items:center;padding:6px 10px;background:#211332;border:1px solid #6c4686;border-radius:9px;color:#dfc1f2;font-size:11px;cursor:zoom-in}
 .comparison-zoom-actions button:hover{background:#492164;border-color:#ad70d7}
+
+
+/* Video and 3D layouts have distinct miniatures in the composition picker. */
+.template-sketch.video,.template-sketch.model{display:grid;place-items:center;position:relative;overflow:hidden;background:linear-gradient(145deg,#301848,#120c21);border:1px solid #6d3d92;border-radius:12px;color:#c997f0}
+.template-sketch.video::before{content:"▶ VIDEO";position:absolute;bottom:3px;left:8px;font-size:9px;letter-spacing:.1em;font-weight:800;color:#dfbaff}
+.template-sketch.model::before{content:"3D MODEL";position:absolute;bottom:3px;left:8px;font-size:9px;letter-spacing:.09em;font-weight:800;color:#dfbaff}
+.template-sketch.video svg,.template-sketch.model svg{position:relative;transform:translateY(-5px)}
+.project-video-frame{box-shadow:inset 0 0 0 1px #6c458b}
+.project-video-poster::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0b061800 30%,#08030dd9 100%);pointer-events:none}
+.project-video-poster .project-video-play{z-index:2}
+.project-video-badge{position:absolute;top:15px;left:16px;z-index:2;display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border:1px solid #ac71e3;border-radius:9px;background:#1a0c2bcf;color:#e9ceff;font-size:11px;font-weight:800;letter-spacing:.1em}
+.project-video-provider{z-index:2}
+.project-video-kind{position:absolute;right:15px;bottom:17px;z-index:2;font-size:11px;letter-spacing:.09em;color:#d9b3f4}
+.model-block-editor{display:flex;flex-direction:column;gap:13px}
+.model-block-editor>label{display:flex;flex-direction:column;gap:8px;font-size:12px;color:#d1b5e4}
+.model-block-editor>label>input{width:100%;min-width:0;padding:11px;background:#160b28;color:#fff;border:1px solid #65418a;border-radius:10px}
+.project-model-edit-preview{margin-top:12px}
