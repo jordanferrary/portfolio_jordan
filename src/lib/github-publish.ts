@@ -257,7 +257,7 @@ export async function publishPortfolioToGitHub(
  // Persist the live familiar ONLY inside this authenticated GitHub commit.
  // No automatic localStorage snapshot, no chat text and no credentials.
  if(familiarSnapshot&&typeof familiarSnapshot==='object'){
-  const candidate=familiarSnapshot as {schema?:unknown;brain?:unknown;neural?:unknown;selectedSkin?:unknown;preferences?:unknown}
+  const candidate=familiarSnapshot as {schema?:unknown;brain?:unknown;neural?:unknown;selectedSkin?:unknown;preferences?:unknown;behavior?:unknown}
   if(candidate.schema===2&&candidate.brain&&typeof candidate.brain==='object'){
    const brain=candidate.brain as Record<string,unknown>,safeBrain:Record<string,unknown>={}
    for(const key of ['energy','curiosity','focus','affinity','xp','interactions','lastSeen','sleepUntil','lastRewardAt']){
@@ -315,6 +315,65 @@ export async function publishPortfolioToGitHub(
     }
    }
    const preferences={version:1,weights:safeWeights}
+   // Behavior snapshot contains numeric homeostasis, bounded conditioning and
+   // action episodes only. No page titles, messages, browsing or input values.
+   const bh=candidate.behavior&&typeof candidate.behavior==='object'&&!Array.isArray(candidate.behavior)
+    ?candidate.behavior as Record<string,unknown>:null
+   const behaviorActions=['quieto','observar','dica','investigar','acenar','brilhar','brincar','meditar','celebrar','curiosidade','pensar','estudar','poção','alongar','descansar','acolher']
+   const behaviorContexts=['home','gallery','project','contact','about','custom','desktop']
+   const bounded=(v:unknown,min:number,max:number,initial:number)=>{
+    return typeof v==='number'&&Number.isFinite(v)?Math.max(min,Math.min(max,v)):initial
+   }
+   let behavior:Record<string,unknown>|undefined
+   if(bh?.schema===1){
+    const rewardBias=Array.isArray(bh.rewardBias)
+     ?Array.from({length:16},(_,i)=>bounded(bh.rewardBias?.[i],-4,4,0))
+     :Array(16).fill(0)
+    const rawContext=bh.contextWeights&&typeof bh.contextWeights==='object'&&!Array.isArray(bh.contextWeights)
+     ?bh.contextWeights as Record<string,unknown>:{}
+    const contextWeights:Record<string,number[]>={}
+    for(const context of behaviorContexts){
+     if(Array.isArray(rawContext[context])){
+      const source=rawContext[context] as unknown[]
+      contextWeights[context]=Array.from({length:16},(_,i)=>bounded(source[i],-3,3,0))
+     }
+    }
+    const adaptation:Record<string,number>={}
+    if(bh.adaptation&&typeof bh.adaptation==='object'&&!Array.isArray(bh.adaptation)){
+     for(const [name,v] of Object.entries(bh.adaptation as Record<string,unknown>))
+      if(behaviorActions.includes(name))adaptation[name]=bounded(v,0,1,0)
+    }
+    const episodes=Array.isArray(bh.episodes)?bh.episodes.slice(-32).flatMap((entry:unknown)=>{
+     if(!entry||typeof entry!=='object')return []
+     const e=entry as {action?:unknown;context?:unknown;reward?:unknown;at?:unknown}
+     if(!behaviorActions.includes(String(e.action))||!behaviorContexts.includes(String(e.context))||![-1,0,1].includes(Number(e.reward)))return []
+     return [{action:String(e.action),context:String(e.context),reward:Number(e.reward),at:bounded(e.at,0,1e13,0)}]
+    }):[]
+    const synapses:Record<string,number>={}
+    if(bh.synapses&&typeof bh.synapses==='object'&&!Array.isArray(bh.synapses)){
+     for(const [k,v] of Object.entries(bh.synapses as Record<string,unknown>).slice(-128)){
+      const index=Number(k)
+      if(Number.isInteger(index)&&index>=0&&index<16384&&typeof v==='number'&&Number.isFinite(v))
+       synapses[String(index)]=bounded(v,-.45,.45,0)
+     }
+    }
+    behavior={
+     schema:1,seed:bounded(bh.seed,1,2147483647,77),
+     energy:bounded(bh.energy,0,100,75),
+     curiosity:bounded(bh.curiosity,0,100,55),
+     stimulation:bounded(bh.stimulation,0,100,42),
+     trust:bounded(bh.trust,0,100,45),
+     rewardBias,contextWeights,adaptation,episodes,synapses,
+     lastAction:behaviorActions.includes(String(bh.lastAction))?bh.lastAction:'quieto',
+     lastActionAt:bounded(bh.lastActionAt,0,1e13,0),
+     lastDecisionAt:bounded(bh.lastDecisionAt,0,1e13,0),
+     lastRewardAt:bounded(bh.lastRewardAt,0,1e13,0),
+     feedbackCount:bounded(bh.feedbackCount,0,1e13,0),
+     autonomousCount:bounded(bh.autonomousCount,0,1e13,0),
+     lastActiveDay:bounded(bh.lastActiveDay,-1,1e9,-1),
+     lastCue:behaviorContexts.includes(String(bh.lastCue))?bh.lastCue:''
+    }
+   }
    // A confirmed new GitHub revision is one meaningful milestone. Include
    // its reward in the snapshot itself so a reload never loses publication XP.
    const rewardKey='pub-'+encodeURIComponent(revision).slice(0,100)
@@ -329,7 +388,7 @@ export async function publishPortfolioToGitHub(
    safeBrain.lastRewardAt=Date.now()
    entries.push({path:ALQUIMAGO_MEMORY_PATH,mode:'100644',type:'blob',
     content:JSON.stringify({schema:2,updatedAt:new Date().toISOString(),brain:safeBrain,
-     ...(neural?{neural}:{}),preferences,
+     ...(neural?{neural}:{}),preferences,...(behavior?{behavior}:{}),
      description:'Memória numérica pública do familiar. Nenhuma mensagem ou token é incluído.'},null,2)+'\n'})
   }
  }
