@@ -34,3 +34,12 @@ Leia `src/data/projects.ts`, `src/data/studio.ts`, `src/lib/github-publish.ts` e
 
 ## Preferência de trabalho
 Responder ao proprietário em português com objetividade. Não redesenhar os elementos sem solicitação. Entregar implementação concreta e feedback preciso; indicar riscos reais sem alarmismo.
+
+
+## Atualização: biblioteca e modelos 3D
+- Existe uma ferramenta de **Gerenciar arquivos** no Local Studio: `src/components/sections/media-manager.tsx` remove imagens e áudios órfãos do IndexedDB.
+- Na interface de publicação, `src/lib/github-media.ts` fornece inventário dos arquivos em `public/images/`, `public/audio/`, `public/models/`, `public/videos/` ou `public/assets/`. A exclusão é selecionada manualmente, validada pelo publicador e enviada via Git tree com `sha:null` no mesmo commit de conteúdo.
+- A detecção de uso não varre todo CSS ou links externos. Nunca recomende exclusão automática indiscriminada. Consulte [README_MEDIA_CLEANUP.md](README_MEDIA_CLEANUP.md).
+- Bloco `model`: URL direta de `.glb` ou `.gltf` com miniatura opcional; `ProjectModel` busca o web component `model-viewer` somente ao clicar. `.fbx` não é suportado de modo nativo: usar Blender para convertê-lo para GLB.
+- Bloco `video`: recebeu representação visual mais distinta no seletor de blocos e no card.
+- Biblioteca de músicas: título e artista continuam editáveis; nomes no padrão `Artista - Música` geram sugestões; é possível usar thumbnail público do YouTube. Não há downloader/extrator de áudio do YouTube.
