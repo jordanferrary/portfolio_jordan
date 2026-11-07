@@ -257,7 +257,7 @@ export async function publishPortfolioToGitHub(
  // Persist the live familiar ONLY inside this authenticated GitHub commit.
  // No automatic localStorage snapshot, no chat text and no credentials.
  if(familiarSnapshot&&typeof familiarSnapshot==='object'){
-  const candidate=familiarSnapshot as {schema?:unknown;brain?:unknown;neural?:unknown}
+  const candidate=familiarSnapshot as {schema?:unknown;brain?:unknown;neural?:unknown;selectedSkin?:unknown}
   if(candidate.schema===2&&candidate.brain&&typeof candidate.brain==='object'){
    const brain=candidate.brain as Record<string,unknown>,safeBrain:Record<string,unknown>={}
    for(const key of ['energy','curiosity','focus','affinity','xp','interactions','lastSeen','sleepUntil','lastRewardAt']){
@@ -316,6 +316,23 @@ export async function publishPortfolioToGitHub(
   }
  }
  
+ // A skin choice is a deliberate editor setting. Only select already
+ // registered public skins from the site's JSON; never accept arbitrary URLs.
+ if(familiarSnapshot&&typeof familiarSnapshot==='object'){
+  const candidate=familiarSnapshot as {selectedSkin?:unknown}
+  if(typeof candidate.selectedSkin==='string'&&/^[a-zA-Z0-9_-]{1,35}$/.test(candidate.selectedSkin)){
+   const file=await api<{content:string}>(cleanToken,ROOT+'/contents/public/alquimago/config.json?ref='+BRANCH)
+   const config=JSON.parse(decodeBase64Utf8(file.content)) as {
+    appearance?:{selectedSkin?:string;skins?:Array<{id?:unknown}>}
+   }
+   if(config.appearance&&Array.isArray(config.appearance.skins)&&
+      config.appearance.skins.some(skin=>skin.id===candidate.selectedSkin)&&
+      config.appearance.selectedSkin!==candidate.selectedSkin){
+    config.appearance.selectedSkin=candidate.selectedSkin
+    entries.push({path:'public/alquimago/config.json',mode:'100644',type:'blob',content:JSON.stringify(config,null,2)+'\n'})
+   }
+  }
+ }
  const usedPaths=referencedMediaPaths(snapshot)
  const cleanups=[...new Set(deletePaths)]
  for(const path of cleanups){
