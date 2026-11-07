@@ -423,7 +423,9 @@ export function registerAlquimago3D():void{
       if(expression==='happy')set('excited',0.3)
       // Breath is an independent cyclical morph target. Emotional speed factors
       // alter cycle duration but never overwrite the artist's base settings.
-      const brainMood=host.dataset.mood||'tranquilo'
+      const reaction=host.dataset.reaction||''
+      const brainMood=reaction&&Object.prototype.hasOwnProperty.call(animation.breathMoodSpeed,reaction)
+       ?reaction:host.dataset.mood||'tranquilo'
       const mappedMood=tired&&brainMood!=='meditando'&&brainMood!=='sonolento'?'cansado':brainMood
       const rate=animation.breathMoodSpeed[mappedMood as keyof AnimationProfile['breathMoodSpeed']]||1
       const breathCycle=Math.max(180,timing('breath').durationMs/rate)
