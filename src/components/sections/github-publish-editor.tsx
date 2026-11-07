@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect,useState } from 'react'
 import { AlertTriangle,CheckCircle2,CloudUpload,Download,ExternalLink,Eye,EyeOff,GitBranch,RotateCcw,ShieldCheck,X,FolderOpen,Trash2,Image as ImageIcon,Music as MusicIcon } from 'lucide-react'
 import type { PortfolioStore } from '../../hooks/use-portfolio'
 import { currentPublishedRevision } from '../../hooks/use-portfolio'
 import { publishPortfolioToGitHub,type GitHubPublishResult } from '../../lib/github-publish'
 import {getRepositoryMedia,type RepositoryMedia} from '../../lib/github-media'
+import {GITHUB_WORKER_SESSION,beginGitHubLogin,disconnectGitHubSession,hasGitHubLogin,isAuthCompletion,readGitHubSession,type GitHubSession} from '../../lib/github-auth'
 
 type Props={
  store:PortfolioStore
@@ -15,6 +16,11 @@ type Props={
 }
 export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClose,stagedDeletionPaths=[]}:Props){
  const [token,setToken]=useState('')
+ const [session,setSession]=useState<GitHubSession>({authenticated:false})
+ const [checkingSession,setCheckingSession]=useState(hasGitHubLogin())
+ const [authError,setAuthError]=useState('')
+ const configured=hasGitHubLogin()
+ const credential=session.authenticated?GITHUB_WORKER_SESSION:token.trim()
  const [visible,setVisible]=useState(false)
  const [confirmed,setConfirmed]=useState(false)
  const [busy,setBusy]=useState(false)
@@ -27,17 +33,39 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
  const [selectedPaths,setSelectedPaths]=useState<string[]>(()=>[...stagedDeletionPaths])
  const [mediaFilter,setMediaFilter]=useState<'unused'|'all'>('unused')
  const [confirmDeletion,setConfirmDeletion]=useState(false)
+ useEffect(()=>{
+  if(!configured)return
+  let active=true
+  const refresh=async()=>{
+   const status=await readGitHubSession()
+   if(!active)return
+   setSession(status);setCheckingSession(false)
+   if(status.authenticated)setAuthError('')
+  }
+  const onAuth=(event:MessageEvent)=>{if(isAuthCompletion(event))void refresh()}
+  window.addEventListener('message',onAuth)
+  void refresh()
+  return()=>{active=false;window.removeEventListener('message',onAuth)}
+ },[configured])
+ const connect=()=>{
+  setAuthError('')
+  if(!beginGitHubLogin())setAuthError('A integração segura ainda não está configurada.')
+ }
+ const disconnect=async()=>{
+  try{await disconnectGitHubSession();setSession({authenticated:false})}
+  catch(e){setAuthError(e instanceof Error?e.message:'Falha ao desconectar.')}
+ }
  const scanMedia=async()=>{
-  if(!token.trim()||mediaLoading||busy)return
+  if(!credential||mediaLoading||busy)return
   setMediaLoading(true);setMediaError('');setConfirmDeletion(false)
-  try{const files=await getRepositoryMedia(token,store);setMedia(files);setSelectedPaths(current=>current.filter(path=>files.some(item=>item.path===path&&!item.used&&!item.protected)))}
+  try{const files=await getRepositoryMedia(credential,store);setMedia(files);setSelectedPaths(current=>current.filter(path=>files.some(item=>item.path===path&&!item.used&&!item.protected)))}
   catch(e){setMedia(null);setMediaError(e instanceof Error?e.message:'Falha ao consultar as mídias.')}
   finally{setMediaLoading(false)}
  }
  const togglePath=(path:string,checked:boolean)=>setSelectedPaths(previous=>checked?[...previous,path]:previous.filter(p=>p!==path))
  const close=()=>{if(busy)return;setToken('');onClose()}
  const publish=async()=>{
-  if(!token.trim()||!confirmed||busy)return
+  if(!credential||!confirmed||busy)return
   if(selectedPaths.length>0){
    if(!confirmDeletion){setError('Confirme que deseja excluir os arquivos selecionados.');return}
    if(!window.confirm('Remover definitivamente '+selectedPaths.length+' arquivo(s) do branch main na mesma publicação? Confira o backup e as referências antes de continuar.'))return
@@ -48,7 +76,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
    // publication. Reloading without publishing discards its draft changes.
    const familiar=document.querySelector('alquimago-familiar') as (HTMLElement&{snapshot?:()=>unknown})|null
    const familiarSnapshot=familiar?.snapshot?.()??null
-   const finished=await publishPortfolioToGitHub(token,store,currentPublishedRevision,setStatus,selectedPaths,familiarSnapshot)
+   const finished=await publishPortfolioToGitHub(credential,store,currentPublishedRevision,setStatus,selectedPaths,familiarSnapshot)
    onPublished(finished.revision)
    setResult(finished)
    setStatus('As alterações estão no GitHub. O GitHub Pages publicará essa versão após o workflow concluir.')
@@ -81,8 +109,21 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
      <a href="https://github.com/jordanferrary/portfolio_jordan/actions" target="_blank" rel="noopener noreferrer">Acompanhar publicação do site <ExternalLink size={15}/></a>
     </div>:<>
      <div className="github-publish-section">
-      <div className="github-publish-section-title"><ShieldCheck size={18}/><h3>Autorizar somente esta publicação</h3></div>
-      <p>Crie um <b>fine-grained personal access token</b> do GitHub, restrito ao repositório <code>jordanferrary/portfolio_jordan</code>, com permissão <b>Contents: Read and write</b> e prazo de validade curto.</p>
+      <div className="github-publish-section-title"><ShieldCheck size={18}/><h3>Autorizar a publicação</h3></div>
+      {configured?<div className="github-publish-auth">
+       {session.authenticated?<><p><ShieldCheck size={16}/> Conectado com segurança como <strong>{session.login}</strong>. Não precisa digitar um token.</p>
+        <button type="button" onClick={()=>void disconnect()} disabled={busy}>Desconectar GitHub</button></>:
+        <><p>Entre com sua conta GitHub uma única vez. A sessão fica protegida no serviço de autenticação.</p>
+        <button type="button" onClick={connect} disabled={busy||checkingSession}><ShieldCheck size={16}/>{checkingSession?'Verificando sessão...':'Conectar com GitHub'}</button>
+        <button type="button" onClick={()=>void readGitHubSession().then(setSession)} disabled={busy}>Verificar conexão</button></>}
+       {authError&&<p role="alert" className="github-publish-error">{authError}</p>}
+       <p className="editor-help">Se a conexão não persistir, configure o serviço no mesmo domínio do site. A publicação continua exigindo sua confirmação.</p>
+      </div>:<p>Login sem token ainda não foi ativado neste site. O responsável precisa configurar o serviço GitHub App conforme o guia do repositório. O método temporário abaixo continua disponível.</p>}
+      <details className="github-token-help">
+       <summary>{configured?'Método alternativo: token temporário':'Como gerar um token temporário'}</summary>
+       <p>Este método funciona sem o serviço de autenticação. Crie um <b>fine-grained personal access token</b> do GitHub, restrito ao repositório <code>jordanferrary/portfolio_jordan</code>, com permissão <b>Contents: Read and write</b> e prazo de validade curto.</p>
+       <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Criar token restrito no GitHub <ExternalLink size={14}/></a>
+      </details>
       <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Criar token restrito no GitHub <ExternalLink size={14}/></a>
       <details className="github-token-help">
        <summary>Como gerar o token? Ver passo a passo</summary>
@@ -98,7 +139,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
        <a href="https://docs.github.com/pt/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener noreferrer">Documentação oficial do GitHub <ExternalLink size={12}/></a>
       </details>
      </div>
-     <label className="github-publish-token-label">Token temporário do GitHub
+     <label className="github-publish-token-label">{configured?'Token temporário (opcional)':'Token temporário do GitHub'}
       <div className="github-publish-token-control">
        <input value={token} type={visible?'text':'password'} autoComplete="off" autoCapitalize="off" spellCheck={false} onChange={e=>setToken(e.target.value)} placeholder="Cole o token somente aqui" disabled={busy} aria-label="Token temporário de publicação GitHub"/>
        <button type="button" onClick={()=>setVisible(v=>!v)} aria-label={visible?'Ocultar token':'Mostrar token'} disabled={busy}>{visible?<EyeOff size={17}/>:<Eye size={17}/>}</button>
@@ -106,7 +147,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
      </label>
      <p className="github-publish-security"><ShieldCheck size={14}/> A credencial fica apenas na memória desta página durante a publicação. Não é adicionada ao código, ao ZIP ou ao armazenamento do navegador.</p>
      <section className="github-media-cleanup" aria-label="Gerenciar arquivos publicados">
-      <div className="github-media-cleanup-head"><div><h3><FolderOpen size={17}/> Gerenciar arquivos publicados</h3><p>Confira imagens, capas, áudios e também vídeos ou modelos 3D existentes nas pastas públicas. Exclua somente arquivos sem referência conhecida.</p></div><button type="button" onClick={()=>void scanMedia()} disabled={busy||mediaLoading||!token.trim()}><FolderOpen size={15}/>{mediaLoading?'Analisando...':media?'Atualizar lista':'Analisar arquivos do GitHub'}</button></div>
+      <div className="github-media-cleanup-head"><div><h3><FolderOpen size={17}/> Gerenciar arquivos publicados</h3><p>Confira imagens, capas, áudios e também vídeos ou modelos 3D existentes nas pastas públicas. Exclua somente arquivos sem referência conhecida.</p></div><button type="button" onClick={()=>void scanMedia()} disabled={busy||mediaLoading||!credential}><FolderOpen size={15}/>{mediaLoading?'Analisando...':media?'Atualizar lista':'Analisar arquivos do GitHub'}</button></div>
       {mediaError&&<p className="github-publish-error" role="alert">{mediaError}</p>}
       {media&&<><div className="github-media-summary"><span>{media.length} arquivo(s) encontrado(s)</span><span>{media.filter(item=>!item.used&&!item.protected).length} candidato(s) à remoção</span><span>{selectedPaths.length} selecionado(s)</span></div><div className="github-media-filters"><button type="button" aria-pressed={mediaFilter==='unused'} onClick={()=>setMediaFilter('unused')}>Sem uso identificado</button><button type="button" aria-pressed={mediaFilter==='all'} onClick={()=>setMediaFilter('all')}>Todos os arquivos</button></div>
        <div className="github-media-list">{media.filter(item=>mediaFilter==='all'||(!item.used&&!item.protected)).map(item=><label className={'github-media-row'+(item.used||item.protected?' is-protected':'')} key={item.path}><input type="checkbox" disabled={item.used||item.protected||busy} checked={selectedPaths.includes(item.path)} onChange={e=>togglePath(item.path,e.target.checked)}/><span className="github-media-file-icon">{item.kind==='Imagem'?<ImageIcon size={19}/>:item.kind==='Áudio'?<MusicIcon size={19}/>:<FolderOpen size={19}/>}</span><span className="github-media-file-info"><strong title={item.path}>{item.path.replace(/^public\//,'')}</strong><small>{item.kind} · {(item.bytes/1048576).toFixed(2)} MB · {item.protected?'Protegido (arquivo padrão)':item.used?'Em uso pelo portfólio':'Sem referência identificada'}</small></span></label>)}
@@ -134,7 +175,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
     <p className="github-publish-footnote">Revise os textos destinados aos visitantes em inglês antes de publicar. Rascunhos antigos podem conter conteúdo em português. As alterações feitas no Local Studio continuam locais até a publicação. Mensagens privadas e curtidas compartilhadas exigem uma API separada.</p>
    </div>
    <footer><button type="button" className="subtle-action" onClick={close} disabled={busy}>{result?'Fechar':'Cancelar'}</button>
-    {!result&&<button type="button" className="save-action" onClick={()=>void publish()} disabled={busy||!token.trim()||!confirmed}><CloudUpload size={17}/>{busy?'Publicando...':'Publicar no GitHub'}</button>}
+    {!result&&<button type="button" className="save-action" onClick={()=>void publish()} disabled={busy||!credential||!confirmed}><CloudUpload size={17}/>{busy?'Publicando...':session.authenticated?'Confirmar publicação':'Publicar no GitHub'}</button>}
    </footer>
   </section>
  </div>
