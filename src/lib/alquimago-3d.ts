@@ -1,13 +1,19 @@
 import {readMedia} from './media-store'
+import {readAlquimagoStage,writeAlquimagoStage,normalizeAlquimagoStage,type AlquimagoStage} from './alquimago-3d-stage'
 
 export const ALQUIMAGO_SKIN_MEDIA='media://alquimago/skin/custom.glb'
 export const ALQUIMAGO_SKIN_PATH='public/alquimago/skins/custom.glb'
-export const ALQUIMAGO_SHAPES=['Idle','Blink','Happy','Curious','Talk','Sleep','Pet','Surprised','Focused','Sad'] as const
+export const ALQUIMAGO_REQUIRED_SHAPES=['Idle','Blink','Happy','Curious','Talk','Sleep','Pet','Surprised','Focused','Sad'] as const
+export const ALQUIMAGO_OPTIONAL_SHAPES=['Tired','Angry','Confused','Excited','Shy','Love','Proud','Thinking','Worried','Laugh','Yawn','LookLeft','LookRight','LookUp','LookDown'] as const
+export const ALQUIMAGO_SHAPES=[...ALQUIMAGO_REQUIRED_SHAPES,...ALQUIMAGO_OPTIONAL_SHAPES] as const
 export const ALQUIMAGO_SHAPE_MAP:Record<string,string>={
  idle:'Idle',blink:'Blink',happy:'Happy',curious:'Curious',talk:'Talk',
- sleep:'Sleep',pet:'Pet',surprised:'Surprised',focused:'Focused',sad:'Sad'
+ sleep:'Sleep',pet:'Pet',surprised:'Surprised',focused:'Focused',sad:'Sad',
+ tired:'Tired',angry:'Angry',confused:'Confused',excited:'Excited',shy:'Shy',
+ love:'Love',proud:'Proud',thinking:'Thinking',worried:'Worried',laugh:'Laugh',
+ yawn:'Yawn',lookleft:'LookLeft',lookright:'LookRight',lookup:'LookUp',lookdown:'LookDown'
 }
-type SkinAdapter={dispose:()=>void;setExpression:(name:string)=>void}
+type SkinAdapter={dispose:()=>void;setExpression:(name:string)=>void;previewExpression:(name:string)=>void;setStage:(settings:AlquimagoStage)=>void}
 type ThreeKit=typeof import('three')
 type GltfKit=typeof import('three/addons/loaders/GLTFLoader.js')
 let kitPromise:Promise<[ThreeKit,GltfKit]>|null=null
@@ -56,6 +62,54 @@ const LAYOUT_STYLE=String.raw`
  .chat-history{max-height:26dvh!important}
  .content{padding:10px 12px!important}
 }
+
+/* Chat – compact messenger hierarchy with intentional contrast. */
+.panel{border-radius:20px!important;border:1px solid #b783e28f!important;
+ background:linear-gradient(155deg,#2a1d3beb,#161024f7 72%)!important;
+ backdrop-filter:blur(22px);box-shadow:0 22px 70px #0d0619bd,0 0 0 1px #b18deb12!important}
+.panel-header{background:linear-gradient(100deg,#5f3d823d,transparent 85%)!important}
+.chat-history{border-radius:15px;background:linear-gradient(170deg,#120b1caa,#21142db8);
+ border:1px solid #9469b22b;padding:10px!important;scrollbar-gutter:stable}
+.chat-bubble{max-width:94%!important;border:1px solid #b68add55!important;
+ box-shadow:0 5px 16px #0a06112e!important;font-size:12px!important;line-height:1.7!important}
+.chat-bubble.from-familiar{background:linear-gradient(145deg,#3b2851,#271c37)!important;
+ border-color:#aa7bc368!important;border-radius:7px 15px 15px 15px!important}
+.chat-bubble.from-user{background:linear-gradient(145deg,#7b4ea9,#55377c)!important;
+ border-color:#c79be3a8!important;border-radius:15px 15px 7px 15px!important}
+.chat-form{padding-top:8px!important;border-top:1px solid #956fbc38}
+.chat-form input{border:1px solid #8867adbd!important;background:#130d1e!important;
+ min-height:44px!important;border-radius:13px!important;transition:border-color .2s,box-shadow .2s}
+.chat-form input:focus{border-color:#c89af8!important;box-shadow:0 0 0 3px #b17ae123!important;outline:none!important}
+.chat-send{background:linear-gradient(155deg,#a36fe0,#7147ac)!important;
+ border:1px solid #c599ebaa!important;border-radius:13px!important;transition:transform .15s,filter .15s}
+.chat-send:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.chat-suggestions{gap:6px!important}
+.chat-suggestions button{background:#422c56a8!important;border-color:#9d74b185!important;border-radius:999px!important}
+.chat-suggestions button:hover{background:#674583!important}
+.chat-suggestions button:focus-visible{outline:2px solid #e8c7ff!important}
+@media(max-width:520px){.chat-history{padding:7px!important}.chat-bubble{font-size:11.5px!important}}
+/* A framed model viewport instead of a floating canvas without controls. */
+.character.alquimago-3d-stage{
+ width:var(--jf-stage-width,206px)!important;height:var(--jf-stage-height,248px)!important;
+ border:1px solid #bc8deb8c!important;background:linear-gradient(150deg,#39234dbf,#171225e8)!important;
+ border-radius:22px!important;padding:0!important;animation:none!important;
+ transform:translate(var(--jf-stage-x,0px),var(--jf-stage-y,0px))!important;
+ box-shadow:inset 0 0 0 1px #bb8cf022,0 16px 32px #08031491,0 0 20px #9767c21b!important;
+ overflow:visible!important;filter:none!important;touch-action:none;will-change:auto
+}
+.character.alquimago-3d-stage:focus-visible{outline:2px solid #edcaff!important;outline-offset:3px}
+.alquimago-3d-surface{position:absolute;inset:3px;border-radius:18px;overflow:hidden;
+ background:radial-gradient(ellipse at 40% 24%,#75548e3d,transparent 68%);pointer-events:none}
+.alquimago-3d-surface canvas{width:100%!important;height:100%!important;display:block}
+.alquimago-3d-header{position:absolute;left:10px;top:9px;pointer-events:none;
+ font:600 9px system-ui;color:#ead7ff;letter-spacing:.07em;text-shadow:0 2px 6px #050209}
+.alquimago-3d-grip{position:absolute;right:-3px;bottom:-3px;width:26px;height:26px;touch-action:none;
+ border:1px solid #c08efa;border-radius:9px 2px 17px 2px;background:#624182;
+ cursor:nwse-resize;display:flex;align-items:center;justify-content:center;z-index:2;
+ color:#f6e6ff;pointer-events:auto;font:600 14px system-ui;box-shadow:0 3px 8px #08031391}
+.character.alquimago-3d-stage .affection-burst{display:none!important}
+@media(max-width:520px){.character.alquimago-3d-stage{max-width:calc(100vw - 32px)!important}}
+
 @media(prefers-reduced-motion:reduce){.character,.character svg{animation:none!important}}
 `;
 let skinAvailable=false
@@ -148,11 +202,104 @@ export function registerAlquimago3D():void{
   let scene:import('three').Scene|undefined
   let camera:import('three').PerspectiveCamera|undefined
   let model:import('three').Object3D|undefined
-  let morphs:Array<{mesh:import('three').Mesh;dictionary:Record<string,number>;weights:number[]}>=[]
+  let morphs:Array<{dictionary:Record<string,number>;weights:number[]}>=[] 
+  let preview:{name:string;until:number}|null=null
+  let gazeX=0,gazeY=0,targetX=0,targetY=0
+  let dims={w:0,h:0}
+  const familiar=host.getRootNode() instanceof ShadowRoot
+   ? (host.getRootNode() as ShadowRoot).host as HTMLElement&{
+     selectedSkin?:string;skin?:{type:string;src:string};
+     state?:{brain?:{energy?:number}};config?:{appearance?:{stage3d?:unknown}};
+     applySkin?:()=>void;render?:()=>void
+    }:null
+  let settings=readAlquimagoStage(familiar)
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)')
+  host.classList.add('alquimago-3d-stage')
+  const surface=document.createElement('span')
+  surface.className='alquimago-3d-surface'
   const canvas=document.createElement('canvas')
   canvas.className='alquimago-model3d'
-  canvas.style.cssText='width:116px;height:143px;display:block;pointer-events:none'
-  host.append(canvas)
+  surface.append(canvas)
+  const caption=document.createElement('span')
+  caption.className='alquimago-3d-header'
+  caption.textContent='✦ FAMILIAR 3D'
+  const grip=document.createElement('span')
+  grip.className='alquimago-3d-grip'
+  grip.setAttribute('aria-label','Redimensionar janela 3D')
+  grip.title='Arraste para ajustar o tamanho'
+  grip.textContent='↘'
+  host.append(surface,caption,grip)
+  const applyStage=(incoming:AlquimagoStage)=>{
+   settings=normalizeAlquimagoStage(incoming)
+   host.style.setProperty('--jf-stage-width',String(settings.width)+'px')
+   host.style.setProperty('--jf-stage-height',String(settings.height)+'px')
+   host.style.setProperty('--jf-stage-x',String(settings.offsetX)+'px')
+   host.style.setProperty('--jf-stage-y',String(settings.offsetY)+'px')
+   const width=Math.min(settings.width,Math.max(120,window.innerWidth-32)),height=settings.height
+   if(renderer&&camera&&(dims.w!==width||dims.h!==height)){
+    dims={w:width,h:height}
+    renderer.setSize(width,height,false)
+    camera.aspect=width/height
+    camera.updateProjectionMatrix()
+   }
+   if(camera)camera.position.z=4/settings.zoom
+  }
+  applyStage(settings)
+  let gripStart:{x:number;y:number;width:number;height:number}|null=null
+  const resizeStart=(e:PointerEvent)=>{
+   if(e.button!==0)return
+   e.stopPropagation();e.preventDefault()
+   gripStart={x:e.clientX,y:e.clientY,width:settings.width,height:settings.height}
+   grip.setPointerCapture(e.pointerId)
+  }
+  const resizeMove=(e:PointerEvent)=>{
+   if(!gripStart)return
+   e.stopPropagation();e.preventDefault()
+   applyStage(writeAlquimagoStage({...settings,
+    width:gripStart.width+e.clientX-gripStart.x,
+    height:gripStart.height+e.clientY-gripStart.y}))
+  }
+  const resizeEnd=(e:PointerEvent)=>{
+   if(!gripStart)return
+   e.stopPropagation();e.preventDefault()
+   gripStart=null
+   if(grip.hasPointerCapture(e.pointerId))grip.releasePointerCapture(e.pointerId)
+  }
+  grip.addEventListener('pointerdown',resizeStart)
+  grip.addEventListener('pointermove',resizeMove)
+  grip.addEventListener('pointerup',resizeEnd)
+  grip.addEventListener('pointercancel',resizeEnd)
+  const onStageChanged=(event:Event)=>{
+   const detail=(event as CustomEvent<AlquimagoStage>).detail
+   if(detail)applyStage(detail)
+  }
+  const onPointer=(e:PointerEvent)=>{
+   if(dead||!settings.followPointer||reduced.matches||e.pointerType==='touch'){
+    targetX=0;targetY=0;return
+   }
+   const rect=host.getBoundingClientRect()
+   const midX=(rect.left+rect.right)/2,midY=(rect.top+rect.bottom)/2
+   const dx=e.clientX-midX,dy=e.clientY-midY
+   if(Math.hypot(dx,dy)>650){targetX=0;targetY=0;return}
+   targetX=Math.max(-1,Math.min(1,dx/380))
+   targetY=Math.max(-1,Math.min(1,dy/360))
+  }
+  const onWheel=(e:WheelEvent)=>{
+   // Shift+scroll adjusts the 3D camera; regular scrolling stays available.
+   if(!e.shiftKey)return
+   e.preventDefault();e.stopImmediatePropagation()
+   applyStage(writeAlquimagoStage({...settings,zoom:settings.zoom+(e.deltaY<0?0.08:-0.08)}))
+  }
+  const onActivity=(e:Event)=>{
+   const detail=(e as CustomEvent<{type?:string}>).detail
+   if(detail?.type==='published')preview={name:'proud',until:performance.now()+2600}
+  }
+  window.addEventListener('alquimago:stage3d-changed',onStageChanged)
+  window.addEventListener('pointermove',onPointer,{passive:true})
+  window.addEventListener('alquimago:activity',onActivity)
+  host.addEventListener('wheel',onWheel,{capture:true,passive:false})
+  const map=(name:string)=>shapeKeys[name]||ALQUIMAGO_SHAPE_MAP[name]||name
+  const mapped=(name:string)=>name.toLowerCase().replace(/[^a-z]/g,'')
   async function init(){
    try{
     const [T,{GLTFLoader}]=await kit()
@@ -162,45 +309,59 @@ export function registerAlquimago3D():void{
     const asset=await new GLTFLoader().loadAsync(blobUrl||url)
     if(dead)return
     model=asset.scene
-    scene=new T.Scene()
-    scene.add(model)
+    scene=new T.Scene();scene.add(model)
     scene.add(new T.HemisphereLight(0xf6eaff,0x2c173e,2.2))
     const key=new T.DirectionalLight(0xffe7c7,2.3);key.position.set(2,3,4);scene.add(key)
     renderer=new T.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'low-power'})
-    renderer.setSize(116,143,false)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5))
     renderer.outputColorSpace=T.SRGBColorSpace
     const box=new T.Box3().setFromObject(model)
     if(box.isEmpty())throw Error('O GLB não contém malha visível.')
-    const dimension=box.getSize(new T.Vector3())
-    const center=box.getCenter(new T.Vector3())
+    const dimension=box.getSize(new T.Vector3()),center=box.getCenter(new T.Vector3())
     const max=Math.max(dimension.x,dimension.y,dimension.z,0.001)
-    model.scale.setScalar(2/max)
-    model.position.copy(center).multiplyScalar(-2/max)
-    camera=new T.PerspectiveCamera(34,116/143,0.01,100)
-    camera.position.set(0,0.15,4)
-    camera.lookAt(0,0,0)
+    model.scale.setScalar(2/max);model.position.copy(center).multiplyScalar(-2/max)
+    camera=new T.PerspectiveCamera(34,settings.width/settings.height,0.01,100)
+    camera.position.set(0,0.1,4/settings.zoom);camera.lookAt(0,0,0)
     model.traverse(node=>{
      const mesh=node as import('three').Mesh
      if(mesh.morphTargetDictionary&&mesh.morphTargetInfluences)
-      morphs.push({mesh,dictionary:mesh.morphTargetDictionary,weights:mesh.morphTargetInfluences})
+      morphs.push({dictionary:mesh.morphTargetDictionary,weights:mesh.morphTargetInfluences})
     })
+    applyStage(settings)
     const available=keys(model)
     window.dispatchEvent(new CustomEvent('alquimago:skin3d-ready',{detail:{available}}))
     const animate=(now:number)=>{
-     if(dead||!renderer||!scene||!camera)return
+     if(dead||!renderer||!scene||!camera||!model)return
      if(!document.hidden){
-      const t=(now-start)/1000
-      const blink=(t%5.1)<0.14?Math.sin((t%5.1)/0.14*Math.PI):0
-      const desired=new Map<string,number>()
-      if(mood!=='idle')desired.set(shapeKeys[mood]||ALQUIMAGO_SHAPE_MAP[mood],0.95)
-      else desired.set(shapeKeys.idle||'Idle',0.12)
-      desired.set(shapeKeys.blink||'Blink',mood==='sleep'?1:blink)
-      for(const entry of morphs)for(const [name,index] of Object.entries(entry.dictionary)){
-       const target=desired.get(name)??0
-       entry.weights[index]+=(target-entry.weights[index])*Math.min(1,0.14)
+      const t=(now-start)/1000,energy=familiar?.state?.brain?.energy
+      const tired=typeof energy==='number'&&energy<34
+      const raw=preview&&now<preview.until?preview.name:mood
+      const expression=tired&&raw==='idle'?'tired':raw
+      const chosen=new Map<string,number>()
+      if(expression==='idle')chosen.set(map('idle'),0.12)
+      else chosen.set(map(expression),expression==='pet'?1:0.9)
+      if(tired&&expression!=='sleep'&&expression!=='pet'&&expression!=='talk')chosen.set(map('tired'),0.55)
+      if(expression==='pet')chosen.set(map('love'),0.3)
+      if(expression==='focused')chosen.set(map('thinking'),0.25)
+      if(expression==='happy')chosen.set(map('excited'),0.18)
+      if(tired && t%14<1.1)chosen.set(map('yawn'),Math.sin((t%14)/1.1*Math.PI)*0.75)
+      const blink=(t%5.1)<0.15?Math.sin((t%5.1)/0.15*Math.PI):0
+      chosen.set(map('blink'),expression==='sleep'?1:blink)
+      gazeX+=(targetX-gazeX)*(reduced.matches?1:0.055)
+      gazeY+=(targetY-gazeY)*(reduced.matches?1:0.055)
+      if(settings.followPointer&&!reduced.matches){
+       if(gazeX<-.15)chosen.set(map('lookleft'),-gazeX*0.36)
+       if(gazeX>.15)chosen.set(map('lookright'),gazeX*0.36)
+       if(gazeY<-.15)chosen.set(map('lookup'),-gazeY*0.30)
+       if(gazeY>.15)chosen.set(map('lookdown'),gazeY*0.30)
       }
-      model!.rotation.y=Math.sin(t*0.8)*0.05
+      const blend=reduced.matches?1:0.16
+      for(const entry of morphs)for(const [name,index] of Object.entries(entry.dictionary)){
+       const target=chosen.get(name)??0
+       entry.weights[index]+=(target-entry.weights[index])*blend
+      }
+      model.rotation.y=(reduced.matches?0:Math.sin(t*0.75)*0.025)+gazeX*0.12
+      model.rotation.x=-gazeY*0.075
       renderer.render(scene,camera)
      }
      frame=requestAnimationFrame(animate)
@@ -209,39 +370,55 @@ export function registerAlquimago3D():void{
    }catch(error){
     if(dead)return
     console.error('Alquimago 3D:',error)
-    canvas.remove()
-    const familiar=(host.getRootNode() as ShadowRoot).host as (HTMLElement&{
-      selectedSkin?:string;skin?:{type:string;src:string;shapeKeys?:Record<string,string>};
-      applySkin?:()=>void;render?:()=>void
-    })|undefined
-    // A missing file or unsupported WebGL should never leave the mascot blank.
-    if(familiar?.isConnected&&familiar.selectedSkin==='custom-3d'){
-      familiar.selectedSkin='padrao'
-      familiar.skin={type:'svg',src:''}
-      familiar.applySkin?.()
-      familiar.render?.()
+    if(familiar?.isConnected && familiar.selectedSkin==='custom-3d'){
+     familiar.selectedSkin='padrao'
+     familiar.skin={type:'svg',src:''}
+     familiar.applySkin?.();familiar.render?.()
     }
-    window.dispatchEvent(new CustomEvent('alquimago:skin3d-error',{detail:{message:'O modelo 3D não carregou. A skin original foi restaurada.'}}))
+    window.dispatchEvent(new CustomEvent('alquimago:skin3d-error',{detail:{message:'O GLB não carregou. Skin original restaurada.'}}))
    }
   }
   void init()
   return {
-   setExpression(name:string){mood=Object.hasOwn(ALQUIMAGO_SHAPE_MAP,name)?name:'idle'},
+   setStage(next:AlquimagoStage){applyStage(next)},
+   setExpression(name:string){
+    const key=mapped(name)
+    mood=Object.hasOwn(ALQUIMAGO_SHAPE_MAP,key)?key:'idle'
+    if(['pet','love','surprised','laugh','yawn'].includes(mood))
+     preview={name:mood,until:performance.now()+1350}
+   },
+   previewExpression(name:string){
+    const key=mapped(name)
+    if(Object.hasOwn(ALQUIMAGO_SHAPE_MAP,key))
+     preview={name:key,until:performance.now()+3200}
+   },
    dispose(){
     dead=true;cancelAnimationFrame(frame)
+    window.removeEventListener('alquimago:stage3d-changed',onStageChanged)
+    window.removeEventListener('pointermove',onPointer)
+    window.removeEventListener('alquimago:activity',onActivity)
+    host.removeEventListener('wheel',onWheel,true)
+    grip.removeEventListener('pointerdown',resizeStart)
+    grip.removeEventListener('pointermove',resizeMove)
+    grip.removeEventListener('pointerup',resizeEnd)
+    grip.removeEventListener('pointercancel',resizeEnd)
     if(model)model.traverse(node=>{
      const mesh=node as import('three').Mesh
      if(mesh.geometry)mesh.geometry.dispose()
-     const mats=Array.isArray(mesh.material)?mesh.material:[mesh.material]
-     for(const mat of mats)if(mat){
-      const material=mat as import('three').MeshStandardMaterial
-      material.map?.dispose()
-      material.dispose()
+     const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material]
+     for(const material of materials)if(material){
+      const mat=material as import('three').MeshStandardMaterial
+      mat.map?.dispose();mat.dispose()
      }
     })
     renderer?.dispose()
     if(blobUrl)URL.revokeObjectURL(blobUrl)
-    canvas.remove()
+    host.classList.remove('alquimago-3d-stage')
+    host.style.removeProperty('--jf-stage-width')
+    host.style.removeProperty('--jf-stage-height')
+    host.style.removeProperty('--jf-stage-x')
+    host.style.removeProperty('--jf-stage-y')
+    surface.remove();caption.remove();grip.remove()
    }
   }
  }
