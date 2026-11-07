@@ -19,6 +19,8 @@ const entry=[
  "export {defaultContact,normalizeContactTags,defaultHome} from './src/data/studio.ts'",
  "export {normalizeCustomPages} from './src/data/custom-pages.ts'",
  "export {parseVideoEmbed} from './src/lib/video-embed.ts'",
+ "export {classifyAudioSource,audioSourceError} from './src/lib/audio-source.ts'",
+ "export {MusicPlayer} from './src/components/layout/music-player.tsx'",
  "export {parseModelUrl} from './src/lib/model-embed.ts'",
  "export {HomePage} from './src/components/sections/home-page.tsx'",
  "export {ProjectFramingEditor} from './src/components/sections/project-framing-editor.tsx'",
@@ -117,17 +119,32 @@ try{
   assert.equal(app.parseModelUrl('https://example.com/model.fbx'),null)
   assert.equal(app.parseVideoEmbed('https://www.youtube.com/watch?v=dQw4w9WgXcQ')?.provider,'youtube')
  })
+ check('Audio source diagnostics reject YouTube video pages but preserve direct audio',()=>{
+  assert.equal(app.classifyAudioSource('https://www.youtube.com/watch?v=dQw4w9WgXcQ'),'video-page')
+  assert.equal(app.classifyAudioSource('https://music.youtube.com/watch?v=dQw4w9WgXcQ'),'video-page')
+  assert.equal(app.classifyAudioSource('https://youtu.be/dQw4w9WgXcQ'),'video-page')
+  assert.equal(app.classifyAudioSource('https://example.org/audio.mp3'),'direct')
+  assert.equal(app.classifyAudioSource('https://example.org/song.m4a?token=123'),'direct')
+  assert.equal(app.classifyAudioSource('https://example.org/track.html'),'web-page')
+  assert.equal(app.classifyAudioSource('javascript:alert(1)'),'invalid')
+  assert.match(app.audioSourceError('video-page'),/MP3, WAV, OGG ou M4A/)
+ })
+ check('Legacy YouTube links display a meaningful playback error, not Audio unavailable',()=>{
+  const html=element(app.MusicPlayer,{tracks:[{id:'bad-video',title:'Video link',artist:'Test',src:'https://youtube.com/watch?v=dQw4w9WgXcQ'}]})
+  assert.match(html,/streaming\/video page/)
+  assert.doesNotMatch(html,/<audio[^>]+src="https:\/\/youtube\.com/)
+ })
  check('Project composer slideshow and detailed gallery produce interactive UI',()=>{
   const slideshow=element(app.StoryBlock,{projectTitle:'Test',block:{id:'b1',type:'slideshow',content:'',slides:[{id:'s1',image:'https://example.com/a.webp',title:'A',caption:''},{id:'s2',image:'https://example.com/b.webp',title:'B',caption:''}],slideHeight:260}})
   assert.match(slideshow,/page-slideshow/);assert.match(slideshow,/page-slideshow-arrow/)
   const gallery=element(app.StoryBlock,{projectTitle:'Test',block:{id:'b2',type:'gallery',content:'',galleryMode:'artists',galleryEntries:[{id:'g1',image:'https://example.com/a.webp',artist:'',title:'Certificate',description:'Valid work',portfolioUrl:''}]}})
   assert.match(gallery,/artist-showcase-grid/);assert.doesNotMatch(gallery,/artist-showcase-detail-copy/)
  })
- check('Project clean artwork has a single visible title in the hero, never a repeated caption',()=>{
+ check('Project artwork restores the large heading without the small duplicate caption',()=>{
   const project={id:'smoke-project',title:'Unique Project Title',category:'3D',year:'2026',image:'https://example.com/cover.webp',description:'A portfolio project',tools:[],blocks:[],processSteps:[]}
   const html=element(app.ProjectPage,{project,onBack:()=>{},editing:false,onEdit:()=>{},showLikeCounts:false})
   assert.match(html,/<h1>Unique Project Title<\/h1>/)
-  assert.doesNotMatch(html,/<h2>Unique Project Title<\/h2>/)
+  assert.match(html,/<h2>Unique Project Title<\/h2>/)
   assert.doesNotMatch(html,/<figcaption>Unique Project Title<\/figcaption>/)
   assert.match(html,/project-artwork-frame/)
  })
