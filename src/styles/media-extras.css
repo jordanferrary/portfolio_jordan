@@ -73,3 +73,13 @@
 .local-media-published h3{font-size:14px;margin:0 0 6px;color:#efd9ff}
 .local-media-published p{font-size:11px;line-height:1.6;color:#c9abdc;margin:0 0 13px}
 @media(max-width:560px){.local-media-manager .editor-scroll{padding:13px}.local-media-row{gap:8px;padding:8px}.local-media-icon{height:42px;width:42px;flex-basis:42px}}
+
+/* Matching editorial caption for videos, before and after activating the player. */
+.project-video-preview-caption{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:10px;padding:15px 18px;border:1px solid #5a3975;border-radius:16px;background:linear-gradient(135deg,#21142f,#140e1c);color:#f1dfff}
+.project-video-preview-caption>div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.project-video-preview-caption span{font-size:10px;letter-spacing:.18em;font-weight:750;color:#b982e4}
+.project-video-preview-caption strong{font:inherit;font-size:clamp(13px,1.45vw,17px);font-weight:750;line-height:1.3;overflow-wrap:anywhere;color:#f5e6ff}
+.project-video-preview-caption a{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:7px 9px;border:1px solid #734795;border-radius:10px;color:#cfabeb;font-size:11px;text-decoration:none}
+.project-video-preview-caption a:hover{color:#fff;border-color:#b47cea}
+.project-video-loading{display:grid;place-items:center;color:#cfa9eb;font-size:13px}
+@media(max-width:580px){.project-video-preview-caption{padding:13px 11px}.project-video-preview-caption a{font-size:10px}}
