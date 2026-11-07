@@ -130,3 +130,56 @@
 .sidebar .mini-player{flex-shrink:0}
 @media(max-width:900px){.sidebar .side-link-label{max-width:72px}}
 @media(max-width:600px){.sidebar .side-nav{flex:1;min-width:0;width:auto;margin:0 5px;flex-direction:row;align-items:center;justify-content:flex-start;gap:6px;padding:2px 0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scrollbar-width:none}.sidebar .side-nav::-webkit-scrollbar{display:none}.sidebar .side-link{min-width:59px;width:auto;flex:0 0 60px;scroll-snap-align:start}.sidebar .side-link-label{max-width:58px;font-size:9px}.sidebar .brand-wrap{flex:0 0 auto}}
+
+
+/* External artist exhibition: selectable cards + contextual artwork panel. */
+.artist-showcase{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.8fr);gap:22px;margin:18px 0 60px;align-items:start}
+.artist-showcase-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.artist-showcase-card{position:relative;min-width:0;aspect-ratio:4/5;border:1px solid #55386b;border-radius:17px;background:#180d24;overflow:hidden;padding:0;cursor:pointer;text-align:left;color:white;transition:border-color .2s,transform .2s,box-shadow .2s}
+.artist-showcase-card img{display:block;width:100%;height:100%;object-fit:cover}
+.artist-showcase-card::after{content:"";position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#0b0619e8)}
+.artist-showcase-card span{position:absolute;bottom:13px;left:13px;right:12px;z-index:1;font-size:12px;font-weight:700;text-shadow:0 1px 8px #000}
+.artist-showcase-card:hover,.artist-showcase-card.active{border-color:#c17dff;box-shadow:0 0 0 1px #ac58e9,0 8px 25px #7c22c92f}
+.artist-showcase-card:hover{transform:translateY(-2px)}
+.artist-showcase-detail{position:sticky;top:24px;overflow:hidden;border:1px solid #79469b;border-radius:24px;background:linear-gradient(160deg,#241233,#120b1d);box-shadow:0 20px 45px #08031170}
+.artist-showcase-zoom{display:block;position:relative;width:100%;height:280px;border:0;padding:0;background:#12091d;cursor:zoom-in;overflow:hidden;color:white}
+.artist-showcase-zoom img{width:100%;height:100%;object-fit:cover}
+.artist-showcase-zoom span{position:absolute;bottom:13px;right:14px;display:flex;align-items:center;gap:7px;padding:9px 12px;background:#170b27dc;border:1px solid #8b56a6;border-radius:11px;font-size:12px}
+.artist-showcase-detail-copy{padding:24px}
+.artist-showcase-kicker{font-size:10px;letter-spacing:.16em;color:#c77eff}
+.artist-showcase-detail h3{font-size:clamp(22px,2.4vw,32px);margin:10px 0 12px;line-height:1.12;color:#fff}
+.artist-showcase-detail p{font-size:14px;color:#c9b5d8;line-height:1.7;white-space:pre-wrap}
+.artist-showcase-portfolio{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px;padding:14px;border-radius:14px;border:1px solid #bd65ed;background:linear-gradient(90deg,#7d20c0,#351052);color:white;text-decoration:none;font-size:13px;font-weight:700}
+.artist-showcase-portfolio.disabled{opacity:.55}
+.page-slideshow{margin:18px 0 58px;border:1px solid #6d4089;border-radius:24px;overflow:hidden;background:#12091d}
+.page-slideshow-stage{position:relative;aspect-ratio:16/9;min-height:260px;overflow:hidden}
+.page-slideshow-image{display:block;position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;background:#100817;cursor:zoom-in;animation:page-slide-fade .65s ease both}
+.page-slideshow-image img{display:block;width:100%;height:100%;object-fit:contain}
+.page-slideshow.transition-slide .page-slideshow-image{animation:page-slide-enter .65s cubic-bezier(.2,.7,.3,1) both}
+.page-slideshow.transition-zoom .page-slideshow-image{animation:page-slide-zoom .75s ease both}
+.page-slideshow-zoom{position:absolute;top:16px;right:16px;color:white;background:#1b1029cc;padding:9px;border-radius:12px}
+.page-slideshow-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;display:grid;place-items:center;width:43px;height:43px;border:1px solid #9060b4;border-radius:50%;background:#1c0d2dcc;color:#fff;cursor:pointer}
+.page-slideshow-arrow.previous{left:15px}.page-slideshow-arrow.next{right:15px}
+.page-slideshow-footer{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:17px 22px}
+.page-slideshow-caption{display:flex;align-items:center;gap:18px;min-width:0;color:#c6a4db;font-size:12px}
+.page-slideshow-caption>span{white-space:nowrap;color:#ac67df;font-weight:800}
+.page-slideshow-caption p{margin:0;overflow:hidden;text-overflow:ellipsis}
+.page-slideshow-controls{display:flex;align-items:center;gap:18px}
+.page-slideshow-dots{display:flex;gap:7px;flex-wrap:wrap}
+.page-slideshow-dots button{width:8px;height:8px;border-radius:50%;border:0;background:#6c487c;padding:0;cursor:pointer}
+.page-slideshow-dots button.active{background:#c277ff;box-shadow:0 0 10px #b759f2}
+.page-slideshow-play{display:grid;place-items:center;width:36px;height:36px;border:1px solid #774c96;border-radius:10px;background:#27143b;color:#fff;cursor:pointer}
+@keyframes page-slide-fade{from{opacity:.15}to{opacity:1}}
+@keyframes page-slide-enter{from{opacity:.5;transform:translateX(7%)}to{opacity:1;transform:translateX(0)}}
+@keyframes page-slide-zoom{from{opacity:.5;transform:scale(1.08)}to{opacity:1;transform:scale(1)}}
+.custom-page-rich-gallery-editor{display:flex;flex-direction:column;gap:15px;padding:16px 0}
+.custom-page-rich-gallery-entry{display:flex;flex-direction:column;gap:12px;border:1px solid #694584;border-radius:16px;padding:17px;background:#1d112c}
+.custom-page-rich-gallery-head{display:flex;align-items:center;justify-content:space-between}
+.custom-page-rich-gallery-head button,.custom-page-item-order button{display:inline-flex;gap:6px;align-items:center;border:1px solid #6e4a86;border-radius:8px;padding:7px 10px;background:#28173a;color:#ead3fa;cursor:pointer}
+.custom-page-item-order{display:flex;gap:8px}
+.custom-page-item-order button:disabled{opacity:.4;cursor:default}
+.custom-page-external-preview{height:160px;max-width:280px;border-radius:12px;overflow:hidden}
+.custom-page-external-preview img{width:100%;height:100%;object-fit:contain}
+@media(max-width:900px){.artist-showcase{grid-template-columns:1fr}.artist-showcase-detail{position:static;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.artist-showcase-zoom{height:100%;min-height:260px}}
+@media(max-width:600px){.artist-showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.artist-showcase-detail{display:block}.artist-showcase-zoom{height:240px}.artist-showcase-detail-copy{padding:19px}.page-slideshow-stage{min-height:190px}.page-slideshow-footer{padding:13px;flex-wrap:wrap}.page-slideshow-arrow{width:36px;height:36px}}
+@media(prefers-reduced-motion:reduce){.page-slideshow-image,.page-slideshow.transition-slide .page-slideshow-image,.page-slideshow.transition-zoom .page-slideshow-image{animation:none}}
