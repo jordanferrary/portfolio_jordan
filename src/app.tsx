@@ -79,6 +79,19 @@ export function App(){
   {id:'share',label:'Favicon e link',description:'Ícone da aba e prévia compartilhada',section:'Identidade',icon:ImageIcon,onClick:()=>setSiteIdentityOpen(true)}
  ]
  useEffect(()=>{applyThemePalette(portfolio.themePalette)},[portfolio.themePalette])
+ useEffect(()=>{
+  if(!editing)return
+  // Test-mode integration: the familiar is not loaded for public visitors.
+  const existing=document.querySelector('alquimago-familiar')
+  if(existing)return
+  const script=document.createElement('script')
+  script.src=import.meta.env.BASE_URL+'alquimago/alquimago.js'
+  script.dataset.config=import.meta.env.BASE_URL+'alquimago/config.json'
+  script.async=true
+  document.body.appendChild(script)
+  return()=>{script.remove();document.querySelectorAll('alquimago-familiar').forEach(el=>el.remove())}
+ },[editing])
+
  useEffect(()=>{const sync=()=>{setPage(route());window.scrollTo(0,0)};window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync)},[])
  useEffect(()=>{
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
