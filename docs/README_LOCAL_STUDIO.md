@@ -116,3 +116,14 @@ Ao atualizar o widget da sua própria instalação, verifique a versão de `publ
 - Ações repetidas não rendem XP ilimitado. Carinho não rende XP; cada rota rende uma vez ao dia ao escolher explorá-la; uma publicação GitHub confirmada concede XP uma vez por revisão.
 - **IA** abre ChatGPT ou Gemini a pedido e prepara um prompt para colar. Não controla conversas, sessões ou abas externas.
 - A memória local continua isolada por dispositivo/namespace e não é apagada por publicação normal. O projeto público guarda apenas o snapshot numérico permitido no fluxo já existente.
+
+
+### Alquimago 0.4 — verificação de atualização e interações reais
+
+O mascote é carregado **somente** depois que o Local Studio é desbloqueado. Ao pressionar **Ctrl + R**, o React inicia novamente em modo público por segurança. Pressione **Ctrl + \\** e desbloqueie o Studio para ver o mascote. Abra o grimório e procure `v0.4` no título: se não aparecer, a página ainda pode estar servindo um deploy antigo.
+
+**Carinho sem clique:** movimente o mouse algumas vezes para a esquerda e para a direita sobre o chapéu. A animação de coração confirma que o gesto foi reconhecido. Um deslize curto com o botão pressionado funciona em telas sensíveis ao toque; um arraste longo move o personagem. Clique no personagem para abrir **Conversar**; clique com o botão direito para abrir as ações. A rodinha do mouse gira o familiar.
+
+**Diálogo:** a aba **Conversar** contém um campo de texto, respostas locais programadas, botões rápidos e histórico salvo no navegador. Tente "oi", "como faço carinho?", "quanto XP tenho?", "tem sugestões pro site?" e "abre a galeria". O Alquimago não é uma IA generativa e não consegue ler conversas em outras abas.
+
+**Atualização:** a integração carrega `public/alquimago/alquimago.js?v=0.4.0` e `config.json?v=0.4.0`. O identificador de versão reduz a chance de o navegador manter o JavaScript antigo em cache; para aparecer no site, o workflow **Deploy React to GitHub Pages** precisa concluir a compilação e o deploy. O histórico de diálogo fica em armazenamento local, separado das snapshots públicas de XP.
