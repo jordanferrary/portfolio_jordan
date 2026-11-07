@@ -42,8 +42,9 @@ O PIN do Local Studio é apenas UX; não o descreva como autenticação segura. 
 
 
 ## Novos fluxos de mídia e 3D
-- `src/lib/github-media.ts`: analisa a árvore pública do GitHub para listar imagens, áudios, modelos e vídeos; determina referências conhecidas e proíbe exclusão de arquivos padrão. Sem seleção explícita, nenhum arquivo é apagado.
-- `src/components/sections/media-manager.tsx`: remove arquivos locais órfãos do IndexedDB; não modifica o repositório.
+- `src/lib/github-media.ts`: analisa a árvore **pública** do GitHub sem token e gera URLs de miniaturas para imagens e áudios em todas as subpastas `public/images/`, `public/audio/`, etc. Detecta referências do rascunho, protege essenciais e permite selecionar antigos projetos de exemplo sem uso. Não confundir recursos que ainda aparecem em código de fallback com arquivos totalmente seguros para excluir.
+- `src/components/sections/media-manager.tsx`: aba inicial **Arquivos do GitHub**, miniaturas, filtro por pasta, busca, status de uso e seleção para **publicação com exclusão**; aba secundária **Arquivos locais**, para remover órfãos do IndexedDB.
+- `src/app.tsx` carrega caminhos selecionados para `GitHubPublishEditor`, mas a exclusão só ocorre na publicação com token e confirmação explícita.
 - `src/components/sections/github-publish-editor.tsx`: seleção opcional de paths para exclusão no mesmo commit; `src/lib/github-publish.ts` revalida caminhos, referências e permissões e usa Git tree com `sha:null`.
 - `src/components/ui/project-model.tsx` e `src/lib/model-embed.ts`: cartão 3D com carregamento por clique. Suporte GLB e glTF, URL pública com CORS. FBX deve ser convertido externamente para GLB, não prometa suporte perfeito a FBX.
 - `src/components/ui/project-video.tsx`: miniatura de vídeo cinematográfico. O iframe só aparece após clique.
