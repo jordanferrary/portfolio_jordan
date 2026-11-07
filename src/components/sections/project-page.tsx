@@ -7,6 +7,7 @@ const ArtLightbox=lazy(()=>import('../ui/art-lightbox').then(m=>({default:m.ArtL
 import { RichText } from '../ui/rich-text'
 import { ProjectVideo } from '../ui/project-video'
 import { ProjectModel } from '../ui/project-model'
+import { ArtistShowcase,PageSlideshow } from './page-media-blocks'
 import { ProjectLike } from './project-like'
 import { framingStyle } from '../../lib/image-framing'
 function BeforeAfter({block,title}:{block:Block;title:string}){
@@ -24,11 +25,13 @@ export function StoryBlock({block,projectTitle}:{block:Block;projectTitle:string
  if(block.type==='model')return <section className="story-block block-model"><ProjectModel url={block.content} poster={block.media} title={projectTitle+' 3D model'}/></section>
  if(block.type==='video')return <section className="story-block block-video"><ProjectVideo url={block.content} poster={block.media} title={block.videoTitle?.trim()||projectTitle}/></section>
  if(block.type==='divider'){const icons={sparkles:Sparkles,star:Star,diamond:Diamond,circle:Circle};const Icon=icons[block.dividerIcon as keyof typeof icons]??Sparkles;return <section className={'story-block art-divider art-divider-'+(block.dividerStyle??'glow')} role="separator" aria-label="Section divider"><span className="art-divider-line"/>{block.dividerIcon!=='none'&&<span className="art-divider-symbol"><Icon size={17}/></span>}<span className="art-divider-line"/></section>}
+ if(block.type==='gallery'&&block.galleryMode==='artists')return <section className="story-block story-linked-gallery"><ArtistShowcase block={{...block,type:'showcase',showcaseFit:'contain',showcaseItems:(block.galleryEntries??[]).map(item=>({id:item.id,image:item.image,name:item.title||item.artist,description:[item.artist,item.description].filter(Boolean).join(' · '),portfolioUrl:item.portfolioUrl,linkLabel:'View portfolio',showLink:Boolean(item.portfolioUrl)}))}}/></section>
+ if(block.type==='slideshow')return <section className="story-block story-project-slideshow"><PageSlideshow block={{...block,type:'slideshow',slideItems:(block.slides??[]).map(item=>({id:item.id,image:item.image,caption:item.caption||item.title})),slideTransition:block.slideEffect==='none'?'none':(block.slideEffect??'fade'),slideInterval:block.slideInterval,slideHeight:block.slideHeight,slideShowPauseButton:block.slideShowPauseButton,slideAutoplay:block.slideAutoplay}}/></section>
  if(block.type==='gallery')return <section className="story-block story-multi-images">{(block.gallery??[]).filter(Boolean).map((source,i)=><ZoomableArt key={source+i} src={source} alt={projectTitle+' — image '+(i+1)} loading="lazy" sizes="(max-width: 800px) 100vw, 500px"/>)}</section>
  return null
 }
 export function ProjectPage({project,onBack,editing,onEdit,showLikeCounts}:{project:Project;onBack:()=>void;editing:boolean;onEdit:()=>void;showLikeCounts:boolean}){
- const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery','video','model'].includes(block.type))
+ const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery','video','model','slideshow'].includes(block.type))
  const processImages=(project.processSteps??[]).filter(step=>step.image.trim().length>0)
  const needsArtworkShowcase=!hasDetailedArtwork
  return <main className={'project-page'+(needsArtworkShowcase?' project-page-artwork-only':'')}><button className="back-link" onClick={onBack}><ArrowLeft size={18}/> Back to portfolio</button><div className="project-hero"><AssetImage src={project.image} alt={project.title} style={framingStyle(project.heroFocus)}/><div className="project-hero-content"><span className="eyebrow">✦ {project.category} / {project.year}</span><h1>{project.title}</h1><RichText className="project-hero-description" value={project.description}/><div className="tools">{project.tools.map(t=><span key={t}>{t}</span>)}</div>{editing&&<button className="primary-action" onClick={onEdit}><Pencil size={16}/>Editar projeto</button>}</div></div><div className="project-engagement"><ProjectLike projectId={project.id} showCount={showLikeCounts}/></div><div className="case-study">
