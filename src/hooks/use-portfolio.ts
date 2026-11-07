@@ -33,7 +33,7 @@ function parseStore(raw:unknown):PortfolioStore{
   return {...c,label:englishCategory(c.label)}
  })
  for(const p of obj.projects)if(typeof p.id!=='string'||typeof p.title!=='string'||!Array.isArray(p.blocks))throw new Error('Projeto inválido')
- const projects=obj.projects.map(p=>({...p,category:englishCategory(p.category),image:normalizeBundledImage(p.image),coverFocus:normalizeFraming(p.coverFocus),heroFocus:normalizeFraming(p.heroFocus),blocks:p.blocks.map(b=>({...b,content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage)})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
+ const projects=obj.projects.map(p=>({...p,category:englishCategory(p.category),image:normalizeBundledImage(p.image),coverFocus:normalizeFraming(p.coverFocus),heroFocus:normalizeFraming(p.heroFocus),blocks:p.blocks.map(b=>({...b,content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage),galleryEntries:b.galleryEntries?.map(item=>({...item,image:normalizeBundledImage(item.image)})),slides:b.slides?.map(item=>({...item,image:normalizeBundledImage(item.image)}))})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
  const home={...defaultHome,...(obj.home??{}),avatar:normalizeBundledImage(obj.home?.avatar??defaultHome.avatar),background:normalizeBundledImage(obj.home?.background??defaultHome.background)}
  const galleryBackground=normalizeBundledImage(obj.galleryBackground??obj.home?.background??defaultGalleryBackground)
  const themePalette=normalizeThemePalette(obj.themePalette)
@@ -83,6 +83,11 @@ function load():PortfolioStore{
 }
 function refsFor(store:PortfolioStore):string[]{
  const refs=new Set(mediaRefs(store.projects,store.categories))
+ for(const project of store.projects)for(const block of project.blocks){
+  for(const item of block.galleryEntries??[])if(isLocalMedia(item.image))refs.add(item.image)
+  for(const slide of block.slides??[])if(isLocalMedia(slide.image))refs.add(slide.image)
+ }
+
  for(const page of store.customPages){
   if(isLocalMedia(page.heroImage))refs.add(page.heroImage)
   for(const block of page.blocks){
@@ -90,6 +95,7 @@ function refsFor(store:PortfolioStore):string[]{
    if(block.media&&isLocalMedia(block.media))refs.add(block.media)
    if(block.after&&isLocalMedia(block.after))refs.add(block.after)
    for(const src of block.gallery??[])if(isLocalMedia(src))refs.add(src)
+   for(const slide of block.slideItems??[])if(isLocalMedia(slide.image))refs.add(slide.image)
   }
  }
  if(isLocalMedia(store.home.avatar))refs.add(store.home.avatar)
