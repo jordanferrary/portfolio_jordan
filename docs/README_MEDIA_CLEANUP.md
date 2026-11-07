@@ -1,36 +1,44 @@
-# Gerenciamento de arquivos e exclusão de mídia
+# Gerenciamento de arquivos — Local Studio
 
-## Há dois locais diferentes para arquivos
-1. **Local Studio / IndexedDB (navegador atual)**: arquivos `media://` de imagens e áudios importados, inclusive versões ainda não publicadas.
-2. **GitHub Pages / repositório público**: arquivos dentro de `public/images/`, `public/audio/`, eventualmente `public/videos/`, `public/models/` e `public/assets/`. Após publicar, imagens/áudios importados usam `site://` e ficam principalmente em `public/images/studio/` e `public/audio/studio/`.
+O menu **Local Studio → Conteúdo → Gerenciar arquivos** agora funciona como uma biblioteca visual unificada, com duas abas:
 
-Excluir uma faixa da playlist remove seu cadastro, mas não exclui automaticamente os arquivos históricos — o gerenciador abaixo existe justamente para separá-los.
+## Arquivos do GitHub (aba inicial)
 
-## Limpar arquivos locais
-- Abra **Local Studio → Ferramentas → Gerenciar arquivos**.
-- A categoria **Sem uso** mostra itens da biblioteca local que não aparecem referenciados no conteúdo atual.
-- Selecione e confirme a exclusão. Os arquivos são excluídos do IndexedDB **deste navegador**; backups anteriores não são alterados.
-- É recomendado fazer **Backup ZIP** antes, especialmente se houver rascunhos antigos.
-- O Studio impede a seleção dos arquivos `media://` ainda referenciados na versão local atual.
+- Lê a árvore pública do repositório em `main` **sem exigir token** (somente leitura).
+- Mostra **todas as mídias compatíveis nas subpastas** `public/images/`, `public/audio/`, `public/models/`, `public/videos/` e `public/assets/`, mesmo que não estejam vinculadas a nenhum projeto.
+- Exibe miniaturas das imagens, prévia reproduzível de áudios, nome, pasta de origem, tamanho e indicação de uso.
+- Oferece filtros **Todos / Sem uso**, seleção de pasta e pesquisa por caminho.
+- Clicar na miniatura abre o original em nova aba (do repositório público).
+- Arquivos referenciados pelo rascunho atual ou marcados como essenciais não podem ser selecionados.
+- Para apagar, marque os candidatos e clique em **Excluir no GitHub (N)**. O Studio abre a tela de publicação com esses arquivos já selecionados.
+- Na publicação, confira os caminhos, insira seu **token fine-grained restrito** e marque a confirmação explícita. Os arquivos são excluídos com o conteúdo atualizado em um único commit, **somente ao publicar**.
+- Se o GitHub limitar temporariamente as consultas públicas, use **Atualizar** mais tarde ou consulte a lista autenticada na publicação.
 
-## Limpar arquivos publicados
-- Na mesma ferramenta, selecione **Abrir arquivos publicados**; ou abra **Local Studio → Publicar**.
-- Digite o token temporário do GitHub no campo já existente. Não o salve nem compartilhe.
-- Clique em **Analisar arquivos do GitHub** e escolha **Sem uso identificado** ou **Todos os arquivos**.
-- Arquivos em uso no conteúdo atual e arquivos padrão essenciais não podem ser selecionados. Inspecione manualmente os demais.
-- Marque os arquivos desnecessários, selecione a confirmação e clique em **Publicar no GitHub**.
-- O GitHub receberá um **único commit** com as mudanças de conteúdo e as exclusões. O GitHub Pages refletirá as remoções após o deploy.
+### Imagens antigas dos projetos de exemplo
 
-## Proteções e limites
-- A detecção de referências procura URLs de mídia no rascunho atual e variantes de imagens com `imageVariants`; arquivos essenciais (arte inicial, avatar padrão, covers de música padrão e arte de exemplo codificada) ficam protegidos.
-- Arquivos acessados **somente por CSS, uma URL antiga compartilhada, um link externo, documentação ou páginas estáticas não detectadas** podem aparecer como sem uso. Por isso a exclusão é sempre manual, com confirmação.
-- A lista cobre arquivos com extensões conhecidas: imagens PNG/JPG/WEBP/AVIF/GIF/SVG, áudio MP3/WAV/OGG/M4A/FLAC, vídeo MP4/WEBM e modelos GLB/GLTF/FBX em pastas de mídia públicas. Arquivos diferentes dessas categorias devem ser revisados diretamente no repositório.
-- O GitHub guarda histórico do repositório; exclusão em commit não elimina cópias de backups, versões anteriores ou cache de visitantes.
-- Se o repositório mudar enquanto a publicação está aberta, o fluxo existente de revisão impede sobrescrever uma revisão de conteúdo mais recente.
+Imagens legadas em `public/images/projects/` que não aparecem no conteúdo atual podem ser selecionadas como **Sem uso**. Elas não são mais indiscriminadamente bloqueadas. Antes de apagar, confira se não são necessárias para testar projetos de exemplo ou restaurar dados padrão. Os caminhos padrão realmente essenciais em `public/images/hero/`, `public/images/profile/` e capa musical padrão continuam protegidos.
 
-## Arquivos relevantes
-`src/components/sections/media-manager.tsx`: limpeza de IndexedDB.
-`src/lib/media-store.ts`: exclusão de blobs/catálogo.
-`src/lib/github-media.ts`: inventário e detecção de referências.
-`src/components/sections/github-publish-editor.tsx`: seleção de arquivos publicados.
-`src/lib/github-publish.ts`: deletar paths por Git tree com `sha: null` após validar as referências.
+## Arquivos locais (segunda aba)
+
+- Lista os arquivos `media://` salvos no **IndexedDB deste navegador**.
+- Use **Todos / Sem uso** e pesquisa para identificar imagens e áudio órfãos.
+- A exclusão local não modifica o GitHub nem outros dispositivos.
+- Faça **Backup ZIP** antes de limpar arquivos que talvez queira recuperar.
+
+## Regras e limites de segurança
+
+- **Nenhuma exclusão é automática.** A interface sempre exige seleção e confirmação; excluir algo publicado exige credencial e um commit.
+- A detecção de uso verifica referências do **conteúdo atual do Studio** e as variantes responsivas ainda utilizadas. O publicador revalida arquivos antes de criar o commit.
+- Referências contidas **apenas em CSS, código-fonte, documentação, imagens de fallback, links de páginas antigas ou compartilhamentos externos** podem não ser identificadas. Revise cuidadosamente cada arquivo. Em particular, arquivos dos projetos demonstrativos antigos podem continuar referenciados no código de fallback.
+- As extensões reconhecidas são PNG, JPG, JPEG, WEBP, AVIF, GIF, SVG, MP3, WAV, OGG, M4A, FLAC, MP4, WEBM, GLB, glTF e FBX nas pastas públicas de mídia. Arquivos de configuração ou demais arquivos fora dessas pastas não aparecem.
+- Apagar o arquivo no repositório não remove instantaneamente caches, histórico de Git ou versões antigas do site. Os arquivos deixam de ser publicados no deploy seguinte.
+- O token é mantido somente temporariamente na memória da tela de publicação, nunca salvo no armazenamento ou nas páginas públicas.
+
+## Arquitetura
+
+- `src/components/sections/media-manager.tsx`: interface visual das pastas públicas e armazenamento local.
+- `src/lib/github-media.ts`: leitura pública da árvore, URL de prévia, classificação, detecção de referências e proteção.
+- `src/app.tsx`: leva as seleções do gerenciador para a publicação.
+- `src/components/sections/github-publish-editor.tsx`: mostra as seleções pendentes e obtém confirmação/token.
+- `src/lib/github-publish.ts`: valida e aplica exclusões atômicas na Git tree (`sha: null`).
+- `src/lib/media-store.ts`: lista e remove blobs locais de IndexedDB.
