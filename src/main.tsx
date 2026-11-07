@@ -1,8 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './app'
+import {registerAlquimago3D} from './lib/alquimago-3d'
 import './styles/globals.css'
 import './styles/revision.css'
+registerAlquimago3D()
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>)
 
 import './styles/home-revision.css'
