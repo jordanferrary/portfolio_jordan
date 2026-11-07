@@ -6,6 +6,7 @@ import { ZoomableArt } from '../ui/zoomable-art'
 const ArtLightbox=lazy(()=>import('../ui/art-lightbox').then(m=>({default:m.ArtLightbox})))
 import { RichText } from '../ui/rich-text'
 import { ProjectVideo } from '../ui/project-video'
+import { ProjectModel } from '../ui/project-model'
 import { ProjectLike } from './project-like'
 import { framingStyle } from '../../lib/image-framing'
 function BeforeAfter({block,title}:{block:Block;title:string}){
@@ -20,13 +21,14 @@ function StoryBlock({block,projectTitle}:{block:Block;projectTitle:string}){
  if(block.type==='image')return <section className="story-block block-image"><ZoomableArt src={block.content} alt={'Artwork from '+projectTitle} loading="lazy" sizes="(max-width: 800px) 100vw, 900px"/></section>
  if(block.type==='image-left'||block.type==='image-right')return <section className={'story-block story-split '+block.type}><ZoomableArt src={block.media} alt={'Creative stage of '+projectTitle} loading="lazy" sizes="(max-width: 800px) 100vw, 500px"/><RichText value={block.content}/></section>
  if(block.type==='before-after')return <section className="story-block"><BeforeAfter block={block} title={projectTitle}/></section>
+ if(block.type==='model')return <section className="story-block block-model"><ProjectModel url={block.content} poster={block.media} title={projectTitle+' 3D model'}/></section>
  if(block.type==='video')return <section className="story-block block-video"><ProjectVideo url={block.content} poster={block.media} title={projectTitle+' video'}/></section>
  if(block.type==='divider'){const icons={sparkles:Sparkles,star:Star,diamond:Diamond,circle:Circle};const Icon=icons[block.dividerIcon as keyof typeof icons]??Sparkles;return <section className={'story-block art-divider art-divider-'+(block.dividerStyle??'glow')} role="separator" aria-label="Section divider"><span className="art-divider-line"/>{block.dividerIcon!=='none'&&<span className="art-divider-symbol"><Icon size={17}/></span>}<span className="art-divider-line"/></section>}
  if(block.type==='gallery')return <section className="story-block story-multi-images">{(block.gallery??[]).filter(Boolean).map((source,i)=><ZoomableArt key={source+i} src={source} alt={projectTitle+' — image '+(i+1)} loading="lazy" sizes="(max-width: 800px) 100vw, 500px"/>)}</section>
  return null
 }
 export function ProjectPage({project,onBack,editing,onEdit,showLikeCounts}:{project:Project;onBack:()=>void;editing:boolean;onEdit:()=>void;showLikeCounts:boolean}){
- const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery','video'].includes(block.type))
+ const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery','video','model'].includes(block.type))
  const processImages=(project.processSteps??[]).filter(step=>step.image.trim().length>0)
  const needsArtworkShowcase=!hasDetailedArtwork
  const [heroZoom,setHeroZoom]=useState(false)
