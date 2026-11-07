@@ -19,6 +19,10 @@ export function ArtLightbox({src,alt,onClose}:Props){
  const drag=useRef<{start:Point;pan:Point}|null>(null)
  const pinch=useRef<{distance:number;zoom:number}|null>(null)
  const previousFocus=useRef<HTMLElement|null>(null)
+ const onCloseRef=useRef(onClose)
+ useEffect(()=>{onCloseRef.current=onClose},[onClose])
+ // Returning to 100% must also remove a previous drag offset.
+ useEffect(()=>{if(zoom===1)setPan(previous=>previous.x===0&&previous.y===0?previous:{x:0,y:0})},[zoom])
  const changeZoom=(value:number)=>{const next=clamp(Number(value.toFixed(2)),1,5);setZoom(next);if(next===1)setPan({x:0,y:0})}
  const adjustZoom=(amount:number)=>setZoom(previous=>clamp(Number((previous+amount).toFixed(2)),1,5))
  useEffect(()=>{
@@ -27,14 +31,14 @@ export function ArtLightbox({src,alt,onClose}:Props){
   document.body.style.overflow='hidden'
   closeButton.current?.focus()
   const onKey=(event:KeyboardEvent)=>{
-   if(event.key==='Escape'){event.preventDefault();onClose()}
+   if(event.key==='Escape'){event.preventDefault();onCloseRef.current()}
    if(event.key==='+'||event.key==='='){event.preventDefault();adjustZoom(.5)}
    if(event.key==='-'){event.preventDefault();adjustZoom(-.5)}
    if(event.key==='0'){event.preventDefault();changeZoom(1)}
   }
   document.addEventListener('keydown',onKey)
   return ()=>{document.removeEventListener('keydown',onKey);document.body.style.overflow=previousOverflow;previousFocus.current?.focus()}
- },[onClose])
+ },[])
  const pointerDown=(event:ReactPointerEvent<HTMLDivElement>)=>{
   if(event.target instanceof HTMLElement&&event.target.closest('button'))return
   event.currentTarget.setPointerCapture(event.pointerId)
