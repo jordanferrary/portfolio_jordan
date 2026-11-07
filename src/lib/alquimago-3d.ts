@@ -109,6 +109,29 @@ const LAYOUT_STYLE=String.raw`
  cursor:nwse-resize;display:flex;align-items:center;justify-content:center;z-index:2;
  color:#f6e6ff;pointer-events:auto;font:600 14px system-ui;box-shadow:0 3px 8px #08031391}
 .character.alquimago-3d-stage .affection-burst{display:none!important}
+/* Public familiar is simple; creator tools live in the Studio hub. */
+:host([data-public-mode="true"]) .tabs,
+:host([data-public-mode="true"]) .arcane-advanced,
+:host([data-public-mode="true"]) .session-note{display:none!important}
+:host([data-public-mode="true"]) .panel{width:min(320px,calc(100vw - 16px))!important}
+:host([data-public-mode="true"]) .panel-header{border-bottom:1px solid #8c62a345!important}
+:host([data-public-mode="true"]) .content .actions{display:grid!important;grid-template-columns:1fr 1fr;gap:6px}
+:host([data-public-mode="true"]) .content .actions .action{border-radius:11px!important}
+:host([data-public-mode="true"]) .content .muted{font-size:11px}
+.jf-grimoire-head{margin-bottom:11px;border:1px solid #ac7ec94f;border-radius:15px;
+ background:linear-gradient(135deg,#5d36803c,#29193735);padding:12px 14px;display:flex;
+ align-items:flex-start;justify-content:space-between;gap:8px}
+.jf-grimoire-head strong{display:block;font:700 14px system-ui;color:#f4e3ff}
+.jf-grimoire-head p{font:11px/1.5 system-ui;color:#cbb3df;margin:4px 0 0}
+.jf-grimoire-pill{flex:0 0 auto;background:#623d86;border:1px solid #b886dc70;
+ color:#f0d9ff;border-radius:999px;padding:4px 7px;font:600 9px system-ui}
+.jf-mentor-tools{border:1px solid #8763a453!important;border-radius:13px;
+ padding:11px 12px;margin-top:10px;background:#22152ee3!important}
+.jf-mentor-tools summary{cursor:pointer;color:#ead0ff;font:600 11px system-ui}
+.jf-mentor-tools .arcane-ai-consent{margin-top:13px}
+.jf-mentor-tools .neural-lesson{margin-top:12px}
+.jf-mentor-tools:focus-within{border-color:#c18be8!important}
+
 @media(max-width:520px){.character.alquimago-3d-stage{max-width:calc(100vw - 32px)!important}}
 
 @media(prefers-reduced-motion:reduce){.character,.character svg{animation:none!important}}
@@ -137,6 +160,8 @@ function refreshSkinUI(root:ShadowRoot){
   importButton.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('alquimago:request-skin-editor')))
   slot.appendChild(importButton)
  }
+ const importButton=slot.querySelector('#alquimago-import-skin') as HTMLElement|null
+ if(importButton)importButton.style.display=document.documentElement.dataset.alquimagoStudio==='true'?'block':'none'
  if(!slot.querySelector('#alquimago-skin-status')){
   const tip=document.createElement('small')
   tip.id='alquimago-skin-status'
@@ -170,6 +195,35 @@ async function checkSkinAvailability(){
   if(root)refreshSkinUI(root)
  }
 }
+function enhanceGrimoire(root:ShadowRoot){
+ const content=root.getElementById('content')
+ const history=root.querySelector('.chat-history')
+ if(!content||!history||content.querySelector('.jf-grimoire-head'))return
+ const header=document.createElement('div')
+ header.className='jf-grimoire-head'
+ const title=document.createElement('div')
+ const strong=document.createElement('strong')
+ strong.textContent='✦ Grimório de conversas'
+ const description=document.createElement('p')
+ description.textContent='Diálogo, mentor e ensino — organizados no Local Studio.'
+ title.append(strong,description)
+ const pill=document.createElement('span')
+ pill.className='jf-grimoire-pill'
+ pill.textContent='MODO STUDIO'
+ header.append(title,pill)
+ content.insertBefore(header,history)
+ const mentor=document.createElement('details')
+ mentor.className='jf-mentor-tools'
+ const summary=document.createElement('summary')
+ summary.textContent='✧ Mentor Gemini e treinamento'
+ mentor.append(summary)
+ const consent=content.querySelector('.arcane-ai-consent')
+ const lesson=content.querySelector('.neural-lesson')
+ if(consent)mentor.append(consent)
+ if(lesson)mentor.append(lesson)
+ if(consent||lesson)content.append(mentor)
+}
+
 function styleAlquimago(){
  const familiar=document.querySelector('alquimago-familiar')
  const root=familiar?.shadowRoot
@@ -180,10 +234,11 @@ function styleAlquimago(){
  }
  if(!observedRoots.has(root)){
   observedRoots.add(root)
-  const shadowObserver=new MutationObserver(()=>refreshSkinUI(root))
+  const shadowObserver=new MutationObserver(()=>{refreshSkinUI(root);enhanceGrimoire(root)})
   shadowObserver.observe(root,{childList:true,subtree:true})
  }
  refreshSkinUI(root)
+ enhanceGrimoire(root)
  if(!availabilityChecked)void checkSkinAvailability()
 }
 
