@@ -177,3 +177,18 @@ A Home usa `focus-entry` no painel *Project Focus*, isolando ícones/textos das 
 - No **Local Studio**, a memória do córtex acompanha o botão **Publicar** já existente: o snapshot numérico entra no mesmo commit autenticado, sem texto de conversa. Recarregar sem publicar recupera a última memória confirmada.
 - Instalações independentes usam `behavior` no JSON de configuração. O domínio, o namespace e as permissões são definidos pelo próprio desenvolvedor.
 - O Pestinha original ainda possui vantagens em leitura autorizada de janelas do SO e rotinas físicas desktop, portanto a versão 0.7 não declara equivalência total. Consulte `docs/CEREBRO_COMPORTAMENTAL.md` no repositório Alquimago.
+
+
+## Alquimago v0.9 — respostas fundamentadas e IA opcional
+
+**Modo local, sem serviço pago:** o familiar consulta \`public/alquimago/knowledge.json\`, que contém somente informações já aprovadas para publicação (título, categoria, ano, ferramentas, descrição e destaque). Ele responde perguntas sobre obras e mantém o contexto da obra citada na conversa seguinte. Não inventa ferramenta ausente.
+
+**Publicar:** o fluxo autenticado do Studio agora gera \`knowledge.json\` no mesmo commit de \`published-portfolio.json\`, para que as informações públicas continuem sincronizadas. Recarregar sem publicar continua descartando as alterações experimentais do mascote.
+
+**Treinamento:** o modelo neural chega pré-treinado no JavaScript distribuído; ele não precisa treinar todo o corpus novamente a cada acesso. O controle **Ensinar a reconhecer uma frase** corrige a classificação da mensagem e não adiciona conhecimentos factuais nem treina um LLM remoto.
+
+**IA generativa opcional:** o código já suporta \`llm.enabled=true\` e um endpoint seguro \`/api/assistant\` no backend do proprietário. A conversa com IA só ocorre após consentimento explícito no grimório e requer autenticação, serviço implantado e configuração de custo/limites. Não há chaves ou tokens de IA no frontend; se não estiver configurado, o mascote usa apenas o modo local.
+
+**Interface:** o painel Conversar ganhou mais espaço, maior contraste, fontes legíveis, barra de rolagem estilizada e configurações técnicas recolhidas.
+
+**Segurança:** o comando “vai comprar pão” continua servindo exclusivamente para solicitar a revisão do publicador, não para autenticar ou fazer commits sozinho. Não confie em conteúdo de páginas públicas para autorizar ações administrativas.
