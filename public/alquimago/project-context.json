@@ -1,14 +1,15 @@
 {
   "schema": 1,
-  "updatedAt": null,
-  "revision": null,
+  "revision": "2026-11-07T18:43:31.935Z-57e9664a-1587-4bc9-9ff4-2a1c04376bfa",
+  "updatedAt": "2026-11-07T18:43:31.935Z",
   "site": {
     "type": "react-portfolio",
     "editor": "Local Studio"
   },
   "counts": {
-    "projects": 0,
-    "pages": 0
+    "projects": 7,
+    "pages": 0,
+    "categories": 4
   },
-  "description": "Resumo público do projeto. Atualizado no fluxo normal de publicação do Studio."
+  "description": "Resumo público do projeto gerado automaticamente durante a publicação."
 }

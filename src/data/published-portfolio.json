@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-07T03:55:20.155Z-3ff1a330-e92f-493a-aa8d-e168636d8501",
+  "revision": "2026-11-07T18:43:31.935Z-57e9664a-1587-4bc9-9ff4-2a1c04376bfa",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -416,7 +416,10 @@
       "primary": "#A234FA",
       "secondary": "#CB89FF",
       "background": "#090611",
-      "surface": "#170D26"
+      "surface": "#170D26",
+      "text": "#F8F3FF",
+      "muted": "#B7A0CD",
+      "border": "#7335A7"
     },
     "seoTitle": "Jordan Ferrary — Creative Portfolio",
     "seoDescription": "Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects."
