@@ -24,6 +24,7 @@ import { applyThemePalette } from './lib/theme-palette'
 import type {StudioAction} from './components/sections/studio-dock'
 const StudioDock=lazy(()=>import('./components/sections/studio-dock').then(m=>({default:m.StudioDock})))
 const ImageConverter=lazy(()=>import('./components/sections/image-converter').then(m=>({default:m.ImageConverter})))
+const MediaManager=lazy(()=>import('./components/sections/media-manager').then(m=>({default:m.MediaManager})))
 import type { Project } from './data/projects'
 function route():Page|'project'{const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':(['inicio','portfolio','sobre','contato'].includes(part)?part as Page:'inicio')}
 export function App(){
@@ -40,6 +41,7 @@ export function App(){
  const [siteIdentityOpen,setSiteIdentityOpen]=useState(false)
  const [themePaletteOpen,setThemePaletteOpen]=useState(false)
  const [imageConverterOpen,setImageConverterOpen]=useState(false)
+ const [mediaManagerOpen,setMediaManagerOpen]=useState(false)
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
  const navigate=(next:Page)=>{location.hash='/'+next;setPage(next);window.scrollTo(0,0)}
@@ -57,6 +59,7 @@ export function App(){
   {id:'gallery',label:'Galeria',description:'Imagem de fundo da galeria',section:'Páginas',icon:Grid2X2,onClick:()=>setGalleryBackgroundEditorOpen(true)},
   {id:'new-project',label:'Novo projeto',description:'Criar e compor uma nova obra',section:'Projetos',icon:Plus,onClick:()=>setEditor(null)},
   ...(page==='project'&&project?[{id:'active-project',label:'Editar obra atual',description:project.title,section:'Projetos' as const,icon:Layers,onClick:()=>setEditor(project)}]:[]),
+  {id:'media-manager',label:'Gerenciar arquivos',description:'Excluir imagens e áudios antigos, locais ou publicados',section:'Conteúdo',icon:ImageIcon,onClick:()=>setMediaManagerOpen(true)},
   {id:'image-converter',label:'Conversor WebP',description:'Compactar, redimensionar e baixar imagens',section:'Conteúdo',icon:ImageIcon,onClick:()=>setImageConverterOpen(true)},
   {id:'music',label:'Músicas',description:'Faixas, capas e ordem da playlist',section:'Conteúdo',icon:Music,onClick:()=>openHomeTab('music')},
   {id:'reviews',label:'Feedbacks',description:'Depoimentos reais e autoria',section:'Conteúdo',icon:MessageSquare,onClick:()=>openHomeTab('feedback')},
@@ -85,6 +88,7 @@ export function App(){
  <Suspense fallback={null}>
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
  {editing&&imageConverterOpen&&<ImageConverter onClose={()=>setImageConverterOpen(false)}/>}
+ {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>setGitHubPublishOpen(true)}/>}
  {editing&&themePaletteOpen&&<ThemePaletteEditor value={portfolio.themePalette} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}
  {editing&&siteIdentityOpen&&<SiteIdentityEditor value={{siteFavicon:portfolio.siteFavicon,seoTitle:portfolio.seoTitle,seoDescription:portfolio.seoDescription}} homeBanner={portfolio.home.background} onSave={portfolio.setSiteIdentity} onEditBanner={()=>openHomeTab('home')} onClose={()=>setSiteIdentityOpen(false)}/>}
  {editing&&logoEditorOpen&&<BrandLogoEditor value={{siteLogo:portfolio.siteLogo,siteLogoHover:portfolio.siteLogoHover,siteLogoSize:portfolio.siteLogoSize,siteLogoHoverScale:portfolio.siteLogoHoverScale}} onSave={portfolio.setBranding} onClose={()=>setLogoEditorOpen(false)}/>}
