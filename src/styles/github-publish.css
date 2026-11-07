@@ -99,3 +99,9 @@
 .github-media-confirm span{display:flex;align-items:center;gap:7px}
 .github-media-confirm input{accent-color:#b55de9}
 @media(max-width:640px){.github-media-cleanup{padding:12px}.github-media-cleanup-head button{width:100%;justify-content:center}}
+
+.github-media-queued{margin-top:12px;border:1px solid #8555a4;border-radius:12px;padding:12px;background:#27143c}
+.github-media-queued>p{margin:0 0 8px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#eccffe}
+.github-media-queued details{margin:10px 0;font-size:11px;color:#caa8e0}
+.github-media-queued summary{cursor:pointer}
+.github-media-queued ul{padding-left:19px;max-height:130px;overflow:auto;overflow-wrap:anywhere;color:#ae9abe}
