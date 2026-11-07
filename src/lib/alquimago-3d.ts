@@ -34,7 +34,7 @@ export async function inspectAlquimagoGLB(file:File):Promise<{found:string[];mis
  const missing=ALQUIMAGO_SHAPES.filter(name=>!all.includes(name))
  return {all,found:[...found],missing:[...missing]}
 }
-const LAYOUT_STYLE=String.raw\`
+const LAYOUT_STYLE=String.raw`
 /* Alquimago layout polish: dark, compact, accessible, no extra panels. */
 :host(:not([data-mode="desktop"])) .panel{width:min(415px,calc(100vw - 20px))!important}
 .panel-header{padding:14px 15px 12px!important;border-bottom:1px solid #b18cda49!important}
@@ -57,7 +57,7 @@ const LAYOUT_STYLE=String.raw\`
  .content{padding:10px 12px!important}
 }
 @media(prefers-reduced-motion:reduce){.character,.character svg{animation:none!important}}
-\`;
+`;
 function styleAlquimago(){
  const familiar=document.querySelector('alquimago-familiar');
  if(!familiar?.shadowRoot||familiar.shadowRoot.getElementById('jf-layout-v1'))return
