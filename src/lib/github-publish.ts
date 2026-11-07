@@ -257,7 +257,7 @@ export async function publishPortfolioToGitHub(
  // Persist the live familiar ONLY inside this authenticated GitHub commit.
  // No automatic localStorage snapshot, no chat text and no credentials.
  if(familiarSnapshot&&typeof familiarSnapshot==='object'){
-  const candidate=familiarSnapshot as {schema?:unknown;brain?:unknown;neural?:unknown;selectedSkin?:unknown}
+  const candidate=familiarSnapshot as {schema?:unknown;brain?:unknown;neural?:unknown;selectedSkin?:unknown;preferences?:unknown}
   if(candidate.schema===2&&candidate.brain&&typeof candidate.brain==='object'){
    const brain=candidate.brain as Record<string,unknown>,safeBrain:Record<string,unknown>={}
    for(const key of ['energy','curiosity','focus','affinity','xp','interactions','lastSeen','sleepUntil','lastRewardAt']){
@@ -297,6 +297,24 @@ export async function publishPortfolioToGitHub(
      return {intent:entry.intent,features:entry.features}
     }):[]
    }:undefined
+   // Broad category feedback only: no project names, URLs or typed phrases.
+   const prefRaw=candidate.preferences&&typeof candidate.preferences==='object'
+    ?candidate.preferences as {version?:unknown;weights?:unknown}:null
+   const prefCategories=['character','environment','game','stylized','motion','general']
+   const safeWeights:Record<string,Record<string,number>>={}
+   if(prefRaw?.version===1&&prefRaw.weights&&typeof prefRaw.weights==='object'){
+    for(const [category,entries] of Object.entries(prefRaw.weights as Record<string,unknown>)){
+     if(!prefCategories.includes(category)||!entries||typeof entries!=='object')continue
+     const weights:Record<string,number>={}
+     for(const [index,value] of Object.entries(entries as Record<string,unknown>)){
+      if(/^[0-4]$/.test(index)&&typeof value==='number'&&Number.isFinite(value)){
+       weights[index]=Math.max(-8,Math.min(8,value))
+      }
+     }
+     safeWeights[category]=weights
+    }
+   }
+   const preferences={version:1,weights:safeWeights}
    // A confirmed new GitHub revision is one meaningful milestone. Include
    // its reward in the snapshot itself so a reload never loses publication XP.
    const rewardKey='pub-'+encodeURIComponent(revision).slice(0,100)
@@ -311,7 +329,7 @@ export async function publishPortfolioToGitHub(
    safeBrain.lastRewardAt=Date.now()
    entries.push({path:ALQUIMAGO_MEMORY_PATH,mode:'100644',type:'blob',
     content:JSON.stringify({schema:2,updatedAt:new Date().toISOString(),brain:safeBrain,
-     ...(neural?{neural}:{}),
+     ...(neural?{neural}:{}),preferences,
      description:'Memória numérica pública do familiar. Nenhuma mensagem ou token é incluído.'},null,2)+'\n'})
   }
  }
