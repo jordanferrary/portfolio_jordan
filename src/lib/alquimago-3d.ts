@@ -54,7 +54,7 @@ const LAYOUT_STYLE=String.raw`
 .chat-form{display:flex!important;align-items:stretch;gap:8px!important}
 .chat-form input{min-width:0!important;flex:1!important}
 .chat-send{min-width:45px!important}
-.panel:has(.chat-form) .feedback{display:none!important}
+.shell:has(.chat-form) > .feedback{display:none!important}
 #arcane-skin-label select{min-height:38px!important}
 :host([data-mode="desktop"]) .panel{width:min(365px,100%)!important}
 @media(max-width:520px){
