@@ -41,7 +41,7 @@ export function PageSlideshow({block}:{block:PageBlock}){
  const width=Math.max(50,Math.min(100,block.slideWidth??100))
  const preferred=block.slideVisible&&block.slideVisible>0?Math.min(5,Math.round(block.slideVisible)):height<=240?4:height<=320?3:height<=430?2:1
  // Preserve usable artwork widths; on a narrow screen even a short carousel will show fewer cards.
- const widthLimit=Math.max(1,Math.floor(stageWidth/175))
+ const widthLimit=Math.max(1,Math.floor((stageWidth-30)/150))
  const visibleCount=Math.max(1,Math.min(items.length,preferred,widthLimit))
  const current=items[Math.min(index,Math.max(0,items.length-1))]
  const visible=Array.from({length:Math.min(visibleCount,items.length)},(_,offset)=>items[(index+offset)%items.length])
