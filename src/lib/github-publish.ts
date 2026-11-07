@@ -287,7 +287,8 @@ export async function publishPortfolioToGitHub(
      typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<=5)
    })
    const neural=valid?{
-    version:1,inputHidden:n!.inputHidden,hiddenBias:n!.hiddenBias,
+    version:1,seedVersion:typeof n!.seedVersion==='number'&&n!.seedVersion>=2?2:1,
+    inputHidden:n!.inputHidden,hiddenBias:n!.hiddenBias,
     hiddenOutput:n!.hiddenOutput,outputBias:n!.outputBias,
     learned:typeof n!.learned==='number'?Math.max(0,Math.min(1e6,n!.learned)):0,
     prototypes:Array.isArray(n!.prototypes)?n!.prototypes.slice(-24).filter((p:unknown)=>{
