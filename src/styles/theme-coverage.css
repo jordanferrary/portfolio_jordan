@@ -408,42 +408,46 @@
 }
 
 
-/* Visual regression fix: focus list must be icon + typography, not dark bars.
-   Keep all actual palette tokens on heading, icons and surrounding card. */
-.site-shell .home-bottom-panels .home-focus-panel .focus-items{
+/* Project Focus: deliberately avoid legacy focus-item styles that produced
+   opaque strips after applying a new palette. These are static, non-clickable rows. */
+.site-shell .home-focus-panel .focus-items{
  min-width:0;
- justify-content:space-evenly;
- gap:clamp(7px,1.5vh,14px);
+ justify-content:space-around;
+ gap:clamp(6px,1.1vh,12px);
 }
-.site-shell .home-bottom-panels .home-focus-panel .focus-item{
- width:100%;
- min-width:0;
- min-height:32px;
- padding:3px 4px!important;
- border:0!important;
- border-radius:0!important;
- background:transparent!important;
- box-shadow:none!important;
- display:flex;
+.site-shell .home-focus-panel .focus-entry{
+ display:grid;
+ grid-template-columns:29px minmax(0,1fr);
  align-items:center;
  gap:12px;
- color:var(--jf-text)!important;
+ min-width:0;
+ width:100%;
+ min-height:34px;
+ padding:4px 0;
+ border:0;
+ border-radius:0;
+ background:transparent;
+ box-shadow:none;
+ color:var(--jf-copy-soft);
 }
-.site-shell .home-bottom-panels .home-focus-panel .focus-item:hover{
- border:0!important;
- background:transparent!important;
- box-shadow:none!important;
-}
-.site-shell .home-bottom-panels .home-focus-panel .focus-item svg{
- color:var(--jf-primary)!important;
+.site-shell .home-focus-panel .focus-entry svg{
+ width:27px;height:27px;
+ color:var(--jf-primary);
+ stroke-width:2.35;
  flex-shrink:0;
- width:26px;
- height:26px;
 }
-.site-shell .home-bottom-panels .home-focus-panel .focus-item span{
- color:var(--jf-copy-soft)!important;
+.site-shell .home-focus-panel .focus-entry span{
+ min-width:0;
+ overflow-wrap:break-word;
+ font-size:clamp(11px,.9vw,13px);
  line-height:1.45;
- text-wrap:pretty;
+ color:var(--jf-copy-soft);
+}
+@media(min-width:751px) and (max-width:1099px){
+ .site-shell .home-focus-panel .focus-entry{flex:1 1 0;width:auto}
+}
+@media(max-width:750px){
+ .site-shell .home-focus-panel .focus-entry{width:100%}
 }
 
 /* Contact is a single-screen composition on sufficiently spacious desktops.
@@ -485,5 +489,55 @@
   flex:0 0 auto;
  }
 }
+
+/* Contact micro-scroll: compact the source of the overflow, rather than hiding
+   a few excess pixels behind the page. The page is scrollable when necessary. */
+@media(min-width:821px) and (min-height:720px){
+ .site-shell.contact-route>.site-main{
+  overflow-y:auto;
+  scrollbar-width:none;
+ }
+ .site-shell.contact-route>.site-main::-webkit-scrollbar{display:none}
+ .site-shell.contact-route .contact-social-page{
+  box-sizing:border-box;
+  padding-top:clamp(58px,8vh,90px)!important;
+  padding-bottom:clamp(6px,1vh,14px)!important;
+ }
+ .site-shell.contact-route .contact-social-directory-head{
+  padding-bottom:clamp(9px,1.8vh,18px);
+  margin-bottom:clamp(9px,1.8vh,18px);
+ }
+ .site-shell.contact-route .contact-social-card{
+  min-height:clamp(78px,10vh,100px);
+  padding:clamp(11px,1.5vh,15px) 14px;
+  gap:13px;
+ }
+ .site-shell.contact-route .contact-social-card-icon{
+  width:clamp(43px,5.4vh,50px);
+  height:clamp(43px,5.4vh,50px);
+  flex-basis:clamp(43px,5.4vh,50px);
+ }
+ .site-shell.contact-route .contact-social-directory-footer{
+  padding-top:clamp(8px,1.4vh,13px);
+  margin-top:clamp(8px,1.4vh,13px);
+ }
+ .site-shell.contact-route .contact-social-bottomline{
+  margin-top:clamp(8px,1.7vh,15px);
+  padding-block:clamp(5px,1.2vh,11px);
+ }
+}
+/* Additional channels should never be cropped just to avoid a scrollbar. */
+@media(min-width:821px){
+ .site-shell.contact-route:has(.contact-social-card:nth-child(n+4)){
+  height:auto;min-height:100dvh;overflow:visible;
+ }
+ .site-shell.contact-route:has(.contact-social-card:nth-child(n+4))>.site-main{
+  height:auto;min-height:100dvh;overflow:visible;
+ }
+ .site-shell.contact-route:has(.contact-social-card:nth-child(n+4)) .contact-social-page{
+  height:auto;min-height:100dvh!important;
+ }
+}
+
 /* The editor has content of variable height: never cut its panels. */
 .site-shell.contact-route .editor-overlay{overflow:auto}
