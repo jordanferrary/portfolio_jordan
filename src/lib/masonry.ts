@@ -1,5 +1,15 @@
 import type { Project } from '../data/projects'
 
+/** Responsive equal-width columns based on the actual gallery width, not the viewport.
+ * A typical 320px phone still has ~292px available and must show TWO artworks.
+ */
+export function masonryColumnCount(width:number):number{
+ if(width>=920)return 4
+ if(width>=660)return 3
+ if(width>=250)return 2
+ return 1
+}
+
 /* The CSS card variants use these actual width/height ratios. */
 export const CARD_RATIOS=[1.30,1.20,.73,.94,.84,1.03,.93] as const
 
