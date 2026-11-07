@@ -1,11 +1,50 @@
-import { Grid2X2, House, Mail, Pencil, UserRound } from 'lucide-react'
-import type { CSSProperties } from 'react'
-import { AssetImage } from '../ui/asset-image'
-import { MusicPlayer } from './music-player'
-import type { MusicTrack } from '../../data/studio'
-export type Page = 'inicio'|'portfolio'|'sobre'|'contato'
-export function Sidebar({page,navigate,tracks,siteLogo='',siteLogoHover='',siteLogoSize=100,siteLogoHoverScale=110,editing=false,onEditLogo}:{page:Page;navigate:(page:Page)=>void;tracks:MusicTrack[];siteLogo?:string;siteLogoHover?:string;siteLogoSize?:number;siteLogoHoverScale?:number;editing?:boolean;onEditLogo?:()=>void}){
- const links:[Page,typeof House,string][]=[['inicio',House,'Home'],['portfolio',Grid2X2,'Portfolio'],['sobre',UserRound,'About'],['contato',Mail,'Contact']]
+import {BookOpen,Code2,Download,FileText,FolderOpen,Gem,GraduationCap,Grid2X2,House,Layers,Link2,Mail,Pencil,Plus,Sparkles,Star,UserRound,Video} from 'lucide-react'
+import type {LucideIcon} from 'lucide-react'
+import type {CSSProperties} from 'react'
+import {AssetImage} from '../ui/asset-image'
+import {MusicPlayer} from './music-player'
+import type {MusicTrack} from '../../data/studio'
+import type {CustomPage,CustomPageIcon} from '../../data/custom-pages'
+
+export type Page='inicio'|'portfolio'|'sobre'|'contato'
+const icons:Record<CustomPageIcon,LucideIcon>={
+ book:BookOpen,graduation:GraduationCap,sparkles:Sparkles,layers:Layers,code:Code2,
+ download:Download,file:FileText,gem:Gem,folder:FolderOpen,video:Video,star:Star,link:Link2
+}
+type Props={
+ page:Page|'custom'
+ customPageId?:string
+ customPages:CustomPage[]
+ navigate:(page:Page)=>void
+ onOpenCustomPage:(id:string)=>void
+ onManagePages?:()=>void
+ tracks:MusicTrack[]
+ siteLogo?:string
+ siteLogoHover?:string
+ siteLogoSize?:number
+ siteLogoHoverScale?:number
+ editing?:boolean
+ onEditLogo?:()=>void
+}
+export function Sidebar({page,customPageId,customPages,navigate,onOpenCustomPage,onManagePages,tracks,siteLogo='',siteLogoHover='',siteLogoSize=100,siteLogoHoverScale=110,editing=false,onEditLogo}:Props){
  const brandStyle={'--brand-size':siteLogoSize/100,'--brand-hover-total':siteLogoSize*siteLogoHoverScale/10000} as CSSProperties
- return <aside className="sidebar"><div className="brand-wrap"><button className={'brand brand-logo-display'+(siteLogoHover?' has-brand-hover':'')} style={brandStyle} onClick={()=>navigate('inicio')} aria-label="Home page"><span className="brand-logo-layer brand-logo-normal">{siteLogo?<AssetImage className="brand-logo" src={siteLogo} alt=""/>:<span className="brand-monogram">JF</span>}</span>{siteLogoHover&&<span className="brand-logo-layer brand-logo-hover"><AssetImage className="brand-logo" src={siteLogoHover} alt=""/></span>}</button>{editing&&onEditLogo&&<button type="button" className="brand-edit-button" onClick={onEditLogo} aria-label="Trocar logo lateral" title="Editar logo"><Pencil size={13}/></button>}</div><nav className="side-nav" aria-label="Navegação principal">{links.map(([key,Icon,label])=><button key={key} className={page===key?'side-link current':'side-link'} onClick={()=>navigate(key)} aria-current={page===key?'page':undefined}><span className="side-icon"><Icon/></span><span>{label}</span></button>)}</nav><MusicPlayer tracks={tracks}/></aside>
+ const staticStart:{key:Page;icon:LucideIcon;label:string}[]=[{key:'inicio',icon:House,label:'Home'},{key:'portfolio',icon:Grid2X2,label:'Portfolio'}]
+ const staticEnd:{key:Page;icon:LucideIcon;label:string}[]=[{key:'sobre',icon:UserRound,label:'About'},{key:'contato',icon:Mail,label:'Contact'}]
+ const builtin=(entry:{key:Page;icon:LucideIcon;label:string})=>{
+  const Icon=entry.icon
+  return <button type="button" key={entry.key} className={page===entry.key?'side-link current':'side-link'} onClick={()=>navigate(entry.key)} aria-current={page===entry.key?'page':undefined} title={entry.label}><span className="side-icon"><Icon/></span><span className="side-link-label">{entry.label}</span></button>
+ }
+ return <aside className="sidebar"><div className="brand-wrap"><button className={'brand brand-logo-display'+(siteLogoHover?' has-brand-hover':'')} style={brandStyle} onClick={()=>navigate('inicio')} aria-label="Home page"><span className="brand-logo-layer brand-logo-normal">{siteLogo?<AssetImage className="brand-logo" src={siteLogo} alt=""/>:<span className="brand-monogram">JF</span>}</span>{siteLogoHover&&<span className="brand-logo-layer brand-logo-hover"><AssetImage className="brand-logo" src={siteLogoHover} alt=""/></span>}</button>{editing&&onEditLogo&&<button type="button" className="brand-edit-button" onClick={onEditLogo} aria-label="Trocar logo lateral" title="Editar logo"><Pencil size={13}/></button>}</div>
+  <nav className="side-nav" aria-label="Navegação principal">
+   {staticStart.map(builtin)}
+   {customPages.filter(item=>item.showInNav).map(item=>{
+    const Icon=icons[item.icon]??Sparkles
+    const selected=page==='custom'&&customPageId===item.id
+    return <button type="button" key={item.id} className={selected?'side-link current':'side-link'} onClick={()=>onOpenCustomPage(item.id)} aria-current={selected?'page':undefined} title={item.navLabel}><span className="side-icon"><Icon/></span><span className="side-link-label">{item.navLabel}</span></button>
+   })}
+   {staticEnd.map(builtin)}
+   {editing&&onManagePages&&<button type="button" className="side-link side-add-page" title="Criar ou organizar páginas" onClick={onManagePages}><span className="side-icon"><Plus/></span><span className="side-link-label">New page</span></button>}
+  </nav>
+  <MusicPlayer tracks={tracks}/>
+ </aside>
 }
