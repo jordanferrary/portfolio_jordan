@@ -81,26 +81,49 @@ export function App(){
  useEffect(()=>{applyThemePalette(portfolio.themePalette)},[portfolio.themePalette])
  useEffect(()=>{
   if(!editing)return
-  // A single Studio-only mount, including StrictMode cleanup and async script races.
+  // Use the actual release SHA for the script URL. Cloudflare builds do not
+  // receive VITE_BUILD_SHA, and a fixed fallback previously froze the cache.
   let active=true
+  let script:HTMLScriptElement|undefined
   const host=window as Window & {
    ALQUIMAGO_AUTO_MOUNT?:boolean
-   Alquimago?:{mount:(target:HTMLElement,mode:'web')=>HTMLElement}
+   Alquimago?:{version?:string;mount:(target:HTMLElement,mode:'web')=>HTMLElement}
   }
   host.ALQUIMAGO_AUTO_MOUNT=false
   const mount=()=>{if(active&&!document.querySelector('alquimago-familiar'))host.Alquimago?.mount(document.body,'web')}
-  let script:HTMLScriptElement|undefined
-  if(host.Alquimago)mount()
-  else{
+  const load=async()=>{
+   const base=import.meta.env.BASE_URL
+   const buildSha=import.meta.env.VITE_BUILD_SHA
+   let releaseHash=''
+   let releaseVersion=''
+   try{
+    const response=await fetch(base+'alquimago/release.json?check='+Date.now(),{
+     cache:'no-store',credentials:'same-origin'
+    })
+    if(response.ok){
+     const info=await response.json() as {version?:unknown;bundleBlobSha?:unknown}
+     if(typeof info.version==='string'&&/^\d+\.\d+\.\d+$/.test(info.version))releaseVersion=info.version
+     if(typeof info.bundleBlobSha==='string'&&/^[a-f0-9]{40}$/.test(info.bundleBlobSha))
+      releaseHash=info.bundleBlobSha
+    }
+   }catch{/* Offline fallback: use the site build key. */}
+   if(!active)return
+   const cacheKey=encodeURIComponent(releaseHash||buildSha||String(Date.now()))
+   if(host.Alquimago){
+    // Once a custom element is defined, it cannot be replaced in this document.
+    if(!releaseVersion||host.Alquimago.version===releaseVersion){mount();return}
+    console.warn('Alquimago: versão anterior carregada; recarregue o documento para atualizar.')
+    mount();return
+   }
    script=document.createElement('script')
-   // Every GitHub deployment has a unique versioned URL, independent of browser cache.
-   const buildKey=encodeURIComponent(import.meta.env.VITE_BUILD_SHA||'0.4.1')
-   script.src=import.meta.env.BASE_URL+'alquimago/alquimago.js?v='+buildKey
-   script.dataset.config=import.meta.env.BASE_URL+'alquimago/config.json?v='+buildKey
+   script.src=base+'alquimago/alquimago.js?v='+cacheKey
+   script.dataset.config=base+'alquimago/config.json?v='+cacheKey
    script.async=true
    script.addEventListener('load',mount,{once:true})
+   script.addEventListener('error',()=>{console.error('Alquimago: falha ao carregar a versão '+(releaseVersion||'desconhecida'))},{once:true})
    document.body.appendChild(script)
   }
+  void load()
   return()=>{
    active=false
    script?.remove()
