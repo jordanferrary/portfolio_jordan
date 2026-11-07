@@ -45,8 +45,6 @@ Responder ao proprietário em português com objetividade. Não redesenhar os el
 - Biblioteca de músicas: título e artista continuam editáveis; nomes no padrão `Artista - Música` geram sugestões; é possível usar thumbnail público do YouTube. Não há downloader/extrator de áudio do YouTube.
 
 
-## Player editorial de YouTube (2026-11)
+## Player de vídeo simplificado (2026-11)
 
-`src/components/ui/project-video.tsx` preserva miniatura com clique para ativar. Para URLs YouTube, importa dinamicamente `src/components/ui/youtube-custom-player.tsx` e `src/lib/youtube-player-api.ts`, que registra o `YT.Player` no iframe existente com `enablejsapi=1`. O progresso em milissegundos não é inferido: `getCurrentTime`/`getDuration` retornam segundos sincronizados, mostrados na timeline roxa **externa**. O iframe conserva seus controles originais. Se a API adicional falhar, o vídeo ainda pode ser controlado pelo YouTube. A API só é baixada após a interação do visitante. Não sobreponha UI aos controles internos; preserve branding e funcionalidade da plataforma.
-
-`src/data/projects.ts` agora inclui `videoTitle?:string` em `Block`. O editor permite escolher título descritivo próprio da apresentação, com fallback para o nome do projeto; isso não edita nem substitui os metadados do YouTube. O Vimeo continua com controles nativos e caption visual externa.
+`src/components/ui/project-video.tsx` mantém miniatura antes do clique e iframe oficial após a ativação. **Não** carregar a API JavaScript do YouTube, controles externos, barra de progresso ou painéis adicionais abaixo do vídeo. O único elemento inferior é um link discreto **Watch on YouTube/Vimeo**. Os módulos antigos `youtube-custom-player.tsx` e `youtube-player-api.ts` foram removidos. `Block.videoTitle?:string` permanece disponível como título acessível do iframe, com fallback para o nome do projeto. O YouTube e o Vimeo conservam seus controles nativos.
