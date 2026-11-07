@@ -186,3 +186,23 @@
  .v2-editor .filter-edit-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  .v2-editor .filter-edit-row>.asset-clip-button{min-width:0}
 }
+
+
+/* Public Internet cover artwork is an alternative to file upload and YouTube thumbnails. */
+.music-library-editor .music-cover-direct-link,
+.music-library-editor .music-youtube-reference{margin:13px 0 16px;padding:13px 15px;border:1px solid #5b397d;border-radius:14px;background:linear-gradient(135deg,#231335,#150c21)}
+.music-cover-direct-link label,
+.music-youtube-reference label{display:flex;flex-direction:column;gap:9px;color:#e8cdee;font-weight:650;font-size:12px}
+.music-cover-direct-link input[type=url],
+.music-youtube-reference input[type=url]{width:100%;min-width:0;padding:11px 12px;border:1px solid #714b92;border-radius:10px;background:#130b21;color:#f4eaff;font-size:12px;outline:0}
+.music-cover-direct-link input[type=url]:focus,
+.music-youtube-reference input[type=url]:focus{border-color:#c07af0;box-shadow:0 0 0 2px #a452eb28}
+.music-cover-direct-link .editor-help,
+.music-youtube-reference .editor-help{margin:9px 0 0;max-width:610px;line-height:1.6}
+.music-track-cover-preview{position:relative}
+.music-cover-url-error{position:absolute;inset:0;display:grid;place-items:center;padding:8px;background:#160b22ed;text-align:center;font-size:10px;line-height:1.4;color:#ffd3df}
+.music-youtube-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:13px}
+.music-youtube-preview img{width:128px;max-width:100%;aspect-ratio:16/9;object-fit:cover;border:1px solid #6e4a8b;border-radius:10px}
+.music-youtube-preview button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 13px;border:1px solid #a063cc;border-radius:10px;background:#39204f;color:#f3dcff;font-size:12px}
+.music-youtube-preview button:hover{background:#552b76}
+@media(max-width:550px){.music-library-editor .music-cover-direct-link,.music-library-editor .music-youtube-reference{padding:11px}.music-track-image{flex-wrap:wrap}}
