@@ -119,7 +119,8 @@ export async function publishPortfolioToGitHub(
  store:PortfolioStore,
  bundledRevision:string,
  onProgress:GitHubPublishProgress=()=>{},
- deletePaths:string[]=[]
+ deletePaths:string[]=[],
+ familiarSnapshot:unknown=null
 ):Promise<GitHubPublishResult>{
  const cleanToken=token.trim()
  if(!cleanToken)throw new Error('Informe um token GitHub para autorizar a publicação.')
@@ -253,26 +254,42 @@ export async function publishPortfolioToGitHub(
   description:'Resumo público do projeto gerado automaticamente durante a publicação.'
  },null,2)+'\n'
  entries.push({path:ALQUIMAGO_CONTEXT_PATH,mode:'100644',type:'blob',content:context})
- // A public, numeric-only familiar snapshot is optional. Visitor state stays on
- // each visitor's device; only the editor's own local state is considered here.
- try{
-  const raw=localStorage.getItem('alquimago:memory:v2:studio')
-  if(raw){
-   const loaded=JSON.parse(raw) as {schema?:number;brain?:Record<string,unknown>}
-   if(loaded.schema===2&&loaded.brain&&typeof loaded.brain==='object'){
-    const safeBrain:Record<string,number|string>={}
-    for(const key of ['energy','curiosity','focus','affinity','xp','interactions']){
-     const value=loaded.brain[key]
-     if(typeof value==='number'&&Number.isFinite(value))safeBrain[key]=Math.max(0,Math.min(1e12,value))
-    }
-    const action=loaded.brain.lastAction
-    if(typeof action==='string'&&['pet','play','focus','rest','study','summon'].includes(action))safeBrain.lastAction=action
-    entries.push({path:ALQUIMAGO_MEMORY_PATH,mode:'100644',type:'blob',
-     content:JSON.stringify({schema:2,updatedAt:new Date().toISOString(),brain:safeBrain,description:'Estado público do familiar no editor, sem dados de visitantes.'},null,2)+'\n'})
+ // Persist the live familiar ONLY inside this authenticated GitHub commit.
+ // No automatic localStorage snapshot, no chat text and no credentials.
+ if(familiarSnapshot&&typeof familiarSnapshot==='object'){
+  const candidate=familiarSnapshot as {schema?:unknown;brain?:unknown;neural?:unknown}
+  if(candidate.schema===2&&candidate.brain&&typeof candidate.brain==='object'){
+   const brain=candidate.brain as Record<string,unknown>,safeBrain:Record<string,unknown>={}
+   for(const key of ['energy','curiosity','focus','affinity','xp','interactions','lastSeen','sleepUntil','lastRewardAt']){
+    const value=brain[key]
+    if(typeof value==='number'&&Number.isFinite(value))safeBrain[key]=Math.max(0,Math.min(1e12,value))
    }
+   const actions=['pet','stroke','play','brew','rest','focus','study','explore','publish','summon']
+   if(typeof brain.lastAction==='string'&&actions.includes(brain.lastAction))safeBrain.lastAction=brain.lastAction
+   if(typeof brain.lastRewardAction==='string'&&actions.includes(brain.lastRewardAction))safeBrain.lastRewardAction=brain.lastRewardAction
+   if(brain.rewardedPages&&typeof brain.rewardedPages==='object'&&!Array.isArray(brain.rewardedPages)){
+    const entries=Object.entries(brain.rewardedPages as Record<string,unknown>)
+     .filter(([key,value])=>/^[A-Za-z0-9_.#%-]{1,120}$/.test(key)&&typeof value==='number'&&Number.isFinite(value)).slice(-80)
+    safeBrain.rewardedPages=Object.fromEntries(entries)
+   }
+   // Never publish messages. Synapses are validated numerical arrays only.
+   const n=candidate.neural&&typeof candidate.neural==='object'&&!Array.isArray(candidate.neural)
+    ?candidate.neural as Record<string,unknown>:null
+   const shapes:Record<string,number>={inputHidden:2304,hiddenBias:24,hiddenOutput:288,outputBias:12}
+   const valid=n?.version===1&&Object.entries(shapes).every(([key,length])=>
+    Array.isArray(n[key])&&n[key].length===length&&n[key].every((v:unknown)=>typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<=5))
+   const neural=valid?{
+    version:1,inputHidden:n!.inputHidden,hiddenBias:n!.hiddenBias,
+    hiddenOutput:n!.hiddenOutput,outputBias:n!.outputBias,
+    learned:typeof n!.learned==='number'?Math.max(0,Math.min(1e6,n!.learned)):0
+   }:undefined
+   entries.push({path:ALQUIMAGO_MEMORY_PATH,mode:'100644',type:'blob',
+    content:JSON.stringify({schema:2,updatedAt:new Date().toISOString(),brain:safeBrain,
+     ...(neural?{neural}:{}),
+     description:'Memória numérica pública do familiar. Nenhuma mensagem ou token é incluído.'},null,2)+'\n'})
   }
- }catch{/* Corrupt or unavailable storage never interrupts normal site publishing. */}
-
+ }
+ 
  const usedPaths=referencedMediaPaths(snapshot)
  const cleanups=[...new Set(deletePaths)]
  for(const path of cleanups){
