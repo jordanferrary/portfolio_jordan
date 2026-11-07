@@ -58,16 +58,87 @@ const LAYOUT_STYLE=String.raw`
 }
 @media(prefers-reduced-motion:reduce){.character,.character svg{animation:none!important}}
 `;
+let skinAvailable=false
+const observedRoots=new WeakSet<ShadowRoot>()
+let availabilityChecked=false
+let checking=false
+
+function refreshSkinUI(root:ShadowRoot){
+ const slot=root.getElementById('arcane-skin-label')
+ const select=root.getElementById('alquimago-skin-choice') as HTMLSelectElement|null
+ if(!slot||!select)return
+ const option=Array.from(select.options).find(item=>item.value==='custom-3d')
+ if(!option)return
+ const label=skinAvailable?'Minha skin 3D (GLB)':'Minha skin 3D — importe primeiro'
+ if(option.textContent!==label)option.textContent=label
+ if(option.disabled===skinAvailable)option.disabled=!skinAvailable
+ if(!slot.querySelector('#alquimago-import-skin')){
+  const importButton=document.createElement('button')
+  importButton.id='alquimago-import-skin'
+  importButton.type='button'
+  importButton.textContent='✦ Importar modelo 3D (.glb)'
+  importButton.title='Abre o Ateliê de skins 3D no Local Studio; requer acesso de edição.'
+  importButton.style.cssText='margin-top:9px;display:block;width:100%;padding:9px 10px;border:1px solid #a178db;border-radius:10px;background:#563978;color:#fff;font:600 11px system-ui;cursor:pointer'
+  importButton.addEventListener('click',()=>window.dispatchEvent(new CustomEvent('alquimago:request-skin-editor')))
+  slot.appendChild(importButton)
+ }
+ if(!slot.querySelector('#alquimago-skin-status')){
+  const tip=document.createElement('small')
+  tip.id='alquimago-skin-status'
+  tip.style.cssText='display:block;margin-top:7px;font:10px/1.45 system-ui;color:#c8b5d8'
+  tip.textContent=skinAvailable?'Skin disponível neste site ou navegador.':'Nenhum modelo 3D instalado. Importe um arquivo GLB antes de selecionar.'
+  slot.appendChild(tip)
+ }else{
+  const tip=slot.querySelector('#alquimago-skin-status')
+  const message=skinAvailable?'Skin disponível neste site ou navegador.':'Nenhum modelo 3D instalado. Importe um arquivo GLB antes de selecionar.'
+  if(tip?.textContent!==message)tip!.textContent=message
+ }
+}
+async function checkSkinAvailability(){
+ if(checking)return
+ checking=true
+ try{
+  const file=await readMedia(ALQUIMAGO_SKIN_MEDIA)
+  let available=Boolean(file)
+  if(!available){
+   const response=await fetch('/alquimago/skins/custom.glb',{method:'HEAD',cache:'no-store'})
+   const type=response.headers.get('Content-Type')?.toLowerCase()||''
+   available=response.ok&&!type.includes('text/html')&&
+    (type.includes('octet-stream')||type.includes('model/gltf-binary')||type.includes('application/gltf'))
+  }
+  skinAvailable=available
+ }catch{skinAvailable=false}
+ finally{
+  checking=false
+  availabilityChecked=true
+  const root=document.querySelector('alquimago-familiar')?.shadowRoot
+  if(root)refreshSkinUI(root)
+ }
+}
 function styleAlquimago(){
- const familiar=document.querySelector('alquimago-familiar');
- if(!familiar?.shadowRoot||familiar.shadowRoot.getElementById('jf-layout-v1'))return
- const css=document.createElement('style');css.id='jf-layout-v1';css.textContent=LAYOUT_STYLE;
- familiar.shadowRoot.append(css)
+ const familiar=document.querySelector('alquimago-familiar')
+ const root=familiar?.shadowRoot
+ if(!root)return
+ if(!root.getElementById('jf-layout-v1')){
+  const css=document.createElement('style');css.id='jf-layout-v1';css.textContent=LAYOUT_STYLE
+  root.append(css)
+ }
+ if(!observedRoots.has(root)){
+  observedRoots.add(root)
+  const shadowObserver=new MutationObserver(()=>refreshSkinUI(root))
+  shadowObserver.observe(root,{childList:true,subtree:true})
+ }
+ refreshSkinUI(root)
+ if(!availabilityChecked)void checkSkinAvailability()
 }
 
 export function registerAlquimago3D():void{
  const observer=new MutationObserver(styleAlquimago)
  observer.observe(document.documentElement,{childList:true,subtree:true})
+ window.addEventListener('alquimago:skin3d-imported',()=>{
+  availabilityChecked=false
+  void checkSkinAvailability()
+ })
  styleAlquimago()
  const world=window as typeof window & {AlquimagoSkinRenderers?:{model3d?: (args:{host:HTMLElement;url:string;shapeKeys:Record<string,string>})=>SkinAdapter}}
  world.AlquimagoSkinRenderers??={}
