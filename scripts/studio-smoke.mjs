@@ -21,6 +21,8 @@ const entry=[
  "export {parseVideoEmbed} from './src/lib/video-embed.ts'",
  "export {parseModelUrl} from './src/lib/model-embed.ts'",
  "export {HomePage} from './src/components/sections/home-page.tsx'",
+ "export {ProjectFramingEditor} from './src/components/sections/project-framing-editor.tsx'",
+ "export {MusicLibraryEditor} from './src/components/sections/music-library-editor.tsx'",
  "export {ContactPage} from './src/components/sections/contact-page.tsx'",
  "export {ContactEditor} from './src/components/sections/contact-editor.tsx'",
  "export {ThemePaletteEditor} from './src/components/sections/theme-palette-editor.tsx'",
@@ -82,6 +84,22 @@ try{
   const html=element(app.HomePage,{home:app.defaultHome,testimonials:[],projects:[project],editing:false,onOpenProject:()=>{},onEditProject:()=>{},onEditHome:()=>{},onNavigatePortfolio:()=>{}})
   assert.match(html,/object-position:28% 72%/)
   assert.match(html,/--jf-frame-zoom:1.6/)
+ })
+ check('Framing tool has one cover editor, a read-only Home preview and an independent banner',()=>{
+  const html=element(app.ProjectFramingEditor,{image:'https://example.com/art.webp',coverFocus:{x:22,y:71,zoom:1.4},heroFocus:{x:78,y:33,zoom:1.1},onChange:()=>{}})
+  assert.match(html,/Prévia na Home/)
+  assert.match(html,/Somente visualização/)
+  assert.match(html,/Capa dos projetos/)
+  assert.match(html,/Banner do projeto/)
+  assert.equal((html.match(/type="range"/g)||[]).length,6)
+  assert.equal((html.match(/class="framing-canvas /g)||[]).length,2)
+  assert.match(html,/object-position:22% 71%/)
+  assert.match(html,/object-position:78% 33%/)
+ })
+ check('Music library displays Internet cover artwork without YouTube metadata',()=>{
+  const html=element(app.MusicLibraryEditor,{tracks:[{id:'m1',title:'Own recording',artist:'Jordan',src:'https://example.com/audio.mp3',cover:'https://example.com/covers/my-art.webp'}],onTracks:()=>{},onNotice:()=>{}})
+  assert.match(html,/Own recording/)
+  assert.match(html,/https:\/\/example\.com\/covers\/my-art\.webp/)
  })
  check('Custom page items preserve explicit CTA visibility and slide preferences',()=>{
   const page={id:'page-12345678',title:'Certificates',navLabel:'Certificates',blocks:[
