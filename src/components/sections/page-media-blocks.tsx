@@ -38,8 +38,7 @@ export function PageSlideshow({block}:{block:PageBlock}){
  const interval=Math.max(1500,Math.min(30000,block.slideInterval??5000))
  const transition=block.slideTransition??'fade'
  const height=Math.max(180,Math.min(640,block.slideHeight??520))
- const width=Math.max(50,Math.min(100,block.slideWidth??100))
- const preferred=block.slideVisible&&block.slideVisible>0?Math.min(5,Math.round(block.slideVisible)):height<=240?4:height<=320?3:height<=430?2:1
+ const preferred=height<=240?4:height<=320?3:height<=430?2:1
  // Preserve usable artwork widths; on a narrow screen even a short carousel will show fewer cards.
  const widthLimit=Math.max(1,Math.floor((stageWidth-30)/150))
  const visibleCount=Math.max(1,Math.min(items.length,preferred,widthLimit))
@@ -59,7 +58,7 @@ export function PageSlideshow({block}:{block:PageBlock}){
   }
   window.addEventListener('resize',measure)
   return ()=>window.removeEventListener('resize',measure)
- },[width,items.length])
+ },[items.length]
  useEffect(()=>{
   if(!playing||items.length<2||zoomedId)return
   const timer=window.setInterval(()=>setIndex(i=>(i+1)%items.length),interval)
@@ -67,8 +66,7 @@ export function PageSlideshow({block}:{block:PageBlock}){
  },[playing,items.length,interval,zoomedId])
  if(!items.length)return null
  const move=(direction:number)=>setIndex(i=>(i+direction+items.length)%items.length)
- const countLabel=visibleCount>1?String(index+1).padStart(2,'0')+'–'+String(((index+visibleCount-1)%items.length)+1).padStart(2,'0'):String(index+1).padStart(2,'0')
- return <section className={'page-slideshow transition-'+transition} style={{width:width+'%'}} aria-label="Apresentação de imagens" aria-roledescription="carousel">
+ return <section className={'page-slideshow transition-'+transition} aria-label="Apresentação de imagens" aria-roledescription="carousel">
   <div className="page-slideshow-stage" ref={stageRef} style={{height}} aria-live="off">
    <div className="page-slideshow-track" key={current.id+'-'+visibleCount} style={{gridTemplateColumns:'repeat('+visibleCount+',minmax(0,1fr))'}}>
     {visible.map((item,offset)=><button type="button" key={item.id} className="page-slideshow-image" onClick={()=>setZoomedId(item.id)} aria-label={'Ampliar slide '+(((index+offset)%items.length)+1)}>
@@ -77,9 +75,7 @@ export function PageSlideshow({block}:{block:PageBlock}){
     </button>)}
    </div>
    {items.length>1&&<><button type="button" className="page-slideshow-arrow previous" onClick={()=>move(-1)} aria-label="Slide anterior"><ArrowLeft size={20}/></button><button type="button" className="page-slideshow-arrow next" onClick={()=>move(1)} aria-label="Próximo slide"><ArrowRight size={20}/></button></>}
-  </div>
-  <div className="page-slideshow-footer"><div className="page-slideshow-caption"><span>{countLabel} / {String(items.length).padStart(2,'0')}</span>{current.caption&&<p>{current.caption}</p>}</div>
-   <div className="page-slideshow-controls">{items.length>1&&<><div className="page-slideshow-dots">{items.map((item,i)=><button type="button" key={item.id} className={i===index?'active':''} onClick={()=>setIndex(i)} aria-label={'Ir para slide '+(i+1)} aria-current={i===index?'true':undefined}/>)}</div><button type="button" className="page-slideshow-play" onClick={()=>setPlaying(v=>!v)} aria-label={playing?'Pausar apresentação':'Reproduzir apresentação'}>{playing?<Pause size={17}/>:<Play size={17}/>}</button></>}</div>
+   {items.length>1&&block.slideShowPauseButton===true&&<button type="button" className="page-slideshow-floating-play" onClick={()=>setPlaying(value=>!value)} aria-label={playing?'Pausar apresentação':'Reproduzir apresentação'} title={playing?'Pausar':'Reproduzir'}>{playing?<Pause size={16} fill="currentColor"/>:<Play size={16} fill="currentColor"/>}</button>}
   </div>
   {zoomed&&<Suspense fallback={null}><ArtLightbox src={zoomed.image} alt={zoomed.caption||'Slide'} onClose={()=>setZoomedId(null)}/></Suspense>}
  </section>
