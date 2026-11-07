@@ -1,5 +1,5 @@
 import {useEffect,useState,type DragEvent} from 'react'
-import {ArrowDown,ArrowUp,BookOpen,Check,Copy,ExternalLink,FileText,ImagePlus,Layers,Link2,Plus,Save,Sparkles,Trash2,Upload,X,GripVertical,Clapperboard,Box as BoxIcon,GalleryHorizontal,Heading2,AlignLeft,Columns2,Minus} from 'lucide-react'
+import {ArrowDown,ArrowUp,BookOpen,Copy,ExternalLink,FileText,ImagePlus,Layers,Link2,Plus,Save,Sparkles,Trash2,Upload,X,GripVertical,Clapperboard,Box as BoxIcon,GalleryHorizontal,Heading2,AlignLeft,Columns2,Minus} from 'lucide-react'
 import type {LucideIcon} from 'lucide-react'
 import {AssetImage} from '../ui/asset-image'
 import {AssetClipButton} from '../ui/asset-picker'
