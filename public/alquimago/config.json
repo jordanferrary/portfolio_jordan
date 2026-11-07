@@ -70,6 +70,7 @@
     "file": "./alquimago/knowledge.json"
   },
   "llm": {
+    "provider": "gemini",
     "enabled": false,
     "endpoint": "",
     "consentRequired": true
