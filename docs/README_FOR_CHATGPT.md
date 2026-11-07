@@ -57,3 +57,9 @@ A partir de agora o portfólio não é somente uma galeria: **Local Studio → P
 O botão **copy** copia texto, prompts ou chave PIX com feedback, **não** processa pagamentos. Botões URL usam `safePageHref` e têm opções mesma aba/nova aba; sem esquema `javascript:` ou interpretação de código. O conteúdo do botão copiar vai para o manifesto público e não deve conter segredos. Imagens de páginas e blocos são tratadas no backup, asset picker, otimização, publicação e detecção de órfãos.
 
 Ver [README_CUSTOM_PAGES.md](README_CUSTOM_PAGES.md). Verificar mobile com muitos links, rota direta, upload de capa, cópia, URLs internas, backup ZIP e deploy após testar a build.
+
+
+## Carrossel enxuto com altura ajustável
+- O editor permite ajustar apenas `slideHeight` de 180 a 640 px. A largura do bloco ocupa a coluna de conteúdo e não é configurável. O número de cartões visíveis é derivado da altura (1 a 4) e limitado pela largura medida em `ResizeObserver`.
+- O renderizador `PageSlideshow` **não** mostra descrições, legendas, numeração, dots ou rodapé. O botão de pausa/reprodução existe apenas como controle flutuante dentro da área do slide se `slideShowPauseButton===true`; o padrão é falso. Preservar setas de navegação, zoom individual e as transições configuráveis.
+- As opções antigas `slideWidth` e `slideVisible` foram retiradas da interface e não influenciam mais o desenho do site, mesmo que permaneçam em backups anteriores.
