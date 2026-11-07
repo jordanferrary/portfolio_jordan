@@ -1,6 +1,6 @@
 
 /* New components retain the existing purple/graphite design language. */
-.rich-text .rich-accent,.block-heading .rich-accent{color:#bd53ff!important;-webkit-text-fill-color:#bd53ff!important;text-shadow:0 0 15px #a237f13a;font-weight:inherit}
+.rich-text .rich-accent,.block-heading .rich-accent{color:var(--jf-primary,#bd53ff)!important;-webkit-text-fill-color:var(--jf-primary,#bd53ff)!important;text-shadow:0 0 15px var(--jf-primary-glow,#a237f13a);font-weight:inherit}
 .story-block.block-heading .rich-text h2{font-size:clamp(25px,3.1vw,38px);letter-spacing:-.035em;line-height:1.15;font-weight:800;margin:0 0 12px}
 .story-block.block-heading .rich-text h3{font-size:clamp(21px,2.3vw,29px);letter-spacing:-.03em}
 .story-block.block-heading .rich-text h4{font-size:clamp(17px,1.7vw,22px)}
@@ -120,3 +120,19 @@
  .inline-preview .preview-meta-row .project-like{padding:7px 10px;gap:6px}
  .inline-preview .preview-meta-row .category-badge.static{padding:8px 10px;max-width:51%}
 }
+
+
+/* One short confirmation animation, triggered by the actual like action only. */
+.project-like{position:relative;isolation:isolate;overflow:visible}
+.project-like .like-heart-pop{animation:jf-like-heart-pop .65s cubic-bezier(.22,.78,.2,1) both}
+.like-spark-burst{position:absolute;inset:0;display:block;pointer-events:none;z-index:2}
+.like-spark-burst i{position:absolute;left:36px;top:50%;width:5px;height:5px;border-radius:50%;background:var(--jf-secondary,#d79bff);opacity:0;transform:translate(-50%,-50%);animation:jf-like-spark .65s ease-out forwards}
+.like-spark-burst i:nth-child(1){--spark-x:-21px;--spark-y:-25px}
+.like-spark-burst i:nth-child(2){--spark-x:0px;--spark-y:-31px;animation-delay:.035s}
+.like-spark-burst i:nth-child(3){--spark-x:24px;--spark-y:-21px;animation-delay:.07s}
+.like-spark-burst i:nth-child(4){--spark-x:27px;--spark-y:11px;animation-delay:.02s}
+.like-spark-burst i:nth-child(5){--spark-x:-23px;--spark-y:17px;animation-delay:.055s}
+.like-spark-burst i:nth-child(6){--spark-x:3px;--spark-y:27px;animation-delay:.04s}
+@keyframes jf-like-heart-pop{0%{transform:scale(.85)}35%{transform:scale(1.45)}58%{transform:scale(.93)}80%{transform:scale(1.07)}100%{transform:scale(1)}}
+@keyframes jf-like-spark{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}25%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--spark-x)),calc(-50% + var(--spark-y))) scale(.5)}}
+@media(prefers-reduced-motion:reduce){.project-like .like-heart-pop,.like-spark-burst i{animation:none!important}.like-spark-burst{display:none}}
