@@ -1,0 +1,12 @@
+# Alquimago: browser and edge must revalidate version metadata.
+/alquimago/release.json
+  Cache-Control: no-store, max-age=0, must-revalidate
+
+/alquimago/config.json
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
+/alquimago/alquimago.js
+  Cache-Control: no-cache, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: no-cache, max-age=0, must-revalidate
