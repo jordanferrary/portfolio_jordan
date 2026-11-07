@@ -75,3 +75,27 @@
 .github-token-help a{display:inline-flex;align-items:center;gap:4px;color:#cf9fff;text-decoration:underline;text-underline-offset:3px}
 .github-token-help code{overflow-wrap:anywhere}
 .github-token-help summary:focus-visible{outline:2px solid #ce9eff;outline-offset:3px}
+
+
+.github-media-cleanup{margin-top:20px;padding:16px;border:1px solid #674383;border-radius:16px;background:#1b1129}
+.github-media-cleanup-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.github-media-cleanup-head h3{display:flex;align-items:center;gap:8px;margin:0 0 6px;color:#f2dbff;font-size:14px}
+.github-media-cleanup-head p{margin:0;color:#ad92bd;font-size:11px;line-height:1.6;max-width:510px}
+.github-media-cleanup-head button{display:inline-flex;align-items:center;gap:7px;padding:9px 11px;background:#4a226a;border:1px solid #9152c1;border-radius:10px;color:#f2d9ff;font-size:11px}
+.github-media-cleanup-head button:disabled{opacity:.4}
+.github-media-summary{display:flex;flex-wrap:wrap;gap:12px;padding:13px 0;color:#cdb2df;font-size:11px}
+.github-media-filters{display:flex;gap:8px;margin-bottom:9px}
+.github-media-filters button{padding:7px 11px;border:1px solid #654083;background:#271435;border-radius:9px;color:#bda3d0;font-size:11px}
+.github-media-filters button[aria-pressed=true]{background:#56257d;border-color:#a45eda;color:#fff}
+.github-media-list{display:flex;flex-direction:column;gap:5px;max-height:300px;overflow-y:auto;padding-right:5px}
+.github-media-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid #503467;border-radius:11px;background:#120b1c;min-width:0;cursor:pointer}
+.github-media-row.is-protected{opacity:.6;cursor:default}
+.github-media-row input{width:16px;height:16px;flex-shrink:0;accent-color:#b05bea}
+.github-media-file-icon{flex:0 0 25px;color:#c590e5;display:grid;place-items:center}
+.github-media-file-info{min-width:0;display:flex;flex-direction:column;gap:2px}
+.github-media-file-info strong{font-size:11px;overflow-wrap:anywhere;color:#e9d8f7}
+.github-media-file-info small{font-size:10px;color:#a896bd}
+.github-media-confirm{display:flex;gap:9px;align-items:flex-start;margin-top:12px;color:#e5bbff;font-size:11px}
+.github-media-confirm span{display:flex;align-items:center;gap:7px}
+.github-media-confirm input{accent-color:#b55de9}
+@media(max-width:640px){.github-media-cleanup{padding:12px}.github-media-cleanup-head button{width:100%;justify-content:center}}
