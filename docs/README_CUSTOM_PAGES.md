@@ -89,3 +89,9 @@ URLs permitidas: `https://`, `http://`, `mailto:` e rotas internas válidas do p
 6. Conferir a biblioteca de mídias antes de excluir imagens utilizadas em páginas personalizadas.
 
 **Limites:** estas páginas são conteúdo estático editável, não uma plataforma LMS ou sistema de pagamentos. Recursos como acesso restrito, checkout, matrículas, vídeos privados, certificados ou contas de alunos exigem infraestrutura adicional e nunca devem ser implementados apenas escondendo conteúdo em React.
+
+
+## Galeria interativa de itens (obras, certificados e coleções)
+O bloco `showcase` pode ser usado para apresentar certificados **já obtidos**, participantes e portfólios, bem como obras ou premiações; isso **não** cria, emite ou valida certificados de cursos.
+No Studio, cada item possui título, imagem remota, descrição e link opcional. A opção **Mostrar botão no painel de detalhes** ativa/desativa o botão por item; **Texto do botão** é livre (ex.: `Ver certificado`, `Abrir portfólio`). Novos itens não têm botão por padrão. Os nomes não são numerados automaticamente.
+O painel de detalhes fica fechado até alguém clicar num item, e pode ser fechado pelo botão X ou selecionando novamente o card ativo. O enquadramento das miniaturas pode ser `contain` (certificados completos) ou `cover` (artes). O zoom abre o original com toda a imagem visível a 100%.
