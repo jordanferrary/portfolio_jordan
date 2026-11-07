@@ -46,10 +46,18 @@ if(!bundle.ok)throw Error('alquimago.js não está disponível (HTTP '+bundle.st
 const script=await bundle.text();
 const declared=script.match(/ALQUIMAGO v(\d+\.\d+\.\d+)/)?.[1]||'versão não identificada';
 set('script',declared,declared===target?'good':'bad');
-const verified=script.includes("version: '"+manifest.version+"'")&&script.includes("function answerFromKnowledge(")&&script.includes("function askLanguageModel(");
-set('integrity',verified?'Módulos novos presentes':'Arquivos divergentes',''+(verified?'good':'bad'));
+const bytes=new TextEncoder().encode(script);
+const header=new TextEncoder().encode('blob '+bytes.length+'\0');
+const concatenated=new Uint8Array(header.length+bytes.length);
+concatenated.set(header);concatenated.set(bytes,header.length);
+const digest=await crypto.subtle.digest('SHA-1',concatenated);
+const sha=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
+const verified=sha===manifest.bundleBlobSha&&
+ script.includes("version: '"+manifest.version+"'")&&
+ script.includes("function answerFromKnowledge(")&&script.includes("function askLanguageModel(");
+set('integrity',verified?'SHA do arquivo confirmado':'Arquivo diferente do manifesto',verified?'good':'bad');
 if(manifest.version===target&&declared===target&&verified)
- set('status','v0.9.0 encontrada nesta hospedagem.','good');
+ set('status','v0.9.0 confirmada nesta hospedagem.','good');
 else set('status','A hospedagem está desatualizada ou inconsistente. Confira o último deploy da Cloudflare/GitHub Pages.','bad');
 }catch(e){
 set('status',String(e.message||e),'bad');
