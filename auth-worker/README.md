@@ -36,3 +36,17 @@ Cookies com `HttpOnly`, `Secure` e `SameSite=None` podem ser bloqueados quando o
 O caminho antigo de publicação por token temporário continua disponível, inclusive quando nenhum Worker está configurado. Nunca gravamos PATs, Client Secrets, tokens de usuário, cookies ou mensagens privadas no snapshot público do Alquimago. Caso uma sessão pareça comprometida, revogue o acesso ao GitHub App e desconecte o Worker.
 
 **Estado:** a integração cliente/servidor e os testes de rotas estão no código. O Worker e o GitHub App ainda precisam ser criados, configurados e autorizados pelo proprietário antes de o login sem token funcionar.
+
+
+## Assistente com IA generativa (opcional)
+
+O Worker também oferece **POST /api/assistant**, autorizado somente para a sessão do proprietário autenticado pelo GitHub App. O navegador não recebe uma chave da Cloudflare. Somente perguntas enviadas depois de o usuário ativar o modo generativo são encaminhadas ao modelo.
+
+**Para habilitar:** adicione o binding \`[ai] binding = "AI"\` ao \`wrangler.toml\` (já documentado em \`wrangler.example.toml\`) e faça o deploy autorizado. Configure limites de orçamento no painel Cloudflare. A API usa atualmente \`@cf/google/gemma-4-26b-a4b-it\`; consulte o catálogo antes de atualizar modelos. O custo de inferência depende do plano e do uso.
+
+Por segurança:
+- O endpoint exige sessão ativa, origem autorizada, cabeçalho \`X-Alquimago-Request\` e limita cada mensagem.
+- Existe uma cota aproximada de **25 chamadas por sessão por dia** registrada no KV. Como KV pode ser eventualmente consistente, complemente com limites de gastos e de taxa da Cloudflare.
+- Só envia a pergunta, até oito mensagens recentes e metadados públicos mínimos da obra selecionada. O Worker não expõe GitHub tokens, não permite publicar código por comando da IA e não fornece ferramentas automáticas ao modelo.
+- O frontend permanece **\`llm.enabled=false\` por padrão**. Depois de testar a autenticação e os custos, edite \`public/alquimago/config.json\` para \`llm.enabled=true\` e \`llm.endpoint="https://seu-worker/api/assistant"\`. A interface disponibiliza então a caixa de consentimento **Usar IA generativa**.
+- Sem backend configurado ou sessão autorizada, o Alquimago usa somente suas respostas locais e a base pública de projetos. Ele não finge consultar uma IA.
