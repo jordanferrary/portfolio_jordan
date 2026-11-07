@@ -32,7 +32,7 @@ const check=(name,fn)=>{fn();checks++;process.stdout.write('  ✓ '+name+'\n')}
 try{
  const output=await build({
   stdin:{contents:entry,resolveDir:root,sourcefile:'studio-smoke-entry.ts',loader:'ts'},
-  bundle:true,platform:'node',format:'esm',target:'node22',packages:'external',
+  bundle:true,platform:'node',format:'esm',target:'node22',jsx:'automatic',packages:'external',
   loader:{'.css':'empty'},write:false,logLevel:'silent',
   define:{'import.meta.env.BASE_URL':JSON.stringify('/portfolio_jordan/'),'import.meta.env.VITE_LIKES_API_URL':'undefined'}
  })
