@@ -8,6 +8,7 @@ export type AlquimagoStage={
  followPointer:boolean
 }
 export const STAGE_KEY='jf-alquimago-3d-stage-v1'
+let publishedStage:AlquimagoStage|null=null
 export const DEFAULT_STAGE:AlquimagoStage={
  width:206,height:248,zoom:1.15,offsetX:0,offsetY:0,followPointer:true
 }
@@ -35,7 +36,7 @@ export function readAlquimagoStageDraft():AlquimagoStage|null{
 export function readAlquimagoStage(familiar?:Element|null):AlquimagoStage{
  const actor=familiar as (Element&{config?:{appearance?:{stage3d?:unknown}}})|undefined|null
  const published=actor?.config?.appearance?.stage3d
- return readAlquimagoStageDraft()||normalizeAlquimagoStage(published)
+ return readAlquimagoStageDraft()||publishedStage||normalizeAlquimagoStage(published)
 }
 export function writeAlquimagoStage(value:unknown):AlquimagoStage{
  const next=normalizeAlquimagoStage(value)
@@ -48,4 +49,11 @@ export function resetAlquimagoStage(familiar?:Element|null):AlquimagoStage{
  const stage=readAlquimagoStage(familiar)
  window.dispatchEvent(new CustomEvent<AlquimagoStage>('alquimago:stage3d-changed',{detail:stage}))
  return stage
+}
+
+/** Load published defaults separately: the legacy familiar normalizer strips unknown config keys. */
+export function applyPublishedAlquimagoStage(raw:unknown):void{
+ if(raw===undefined||raw===null)return
+ publishedStage=normalizeAlquimagoStage(raw)
+ if(!readAlquimagoStageDraft())window.dispatchEvent(new CustomEvent<AlquimagoStage>('alquimago:stage3d-changed',{detail:publishedStage}))
 }
