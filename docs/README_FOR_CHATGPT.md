@@ -70,3 +70,10 @@ Ver [README_CUSTOM_PAGES.md](README_CUSTOM_PAGES.md). Verificar mobile com muito
 - `ShowcaseItem.linkLabel` e `showLink` são opções por item, editadas em `CustomPageEditor`; `showLink:false` desliga completamente o botão. Sem URL segura, não há botão/placeholder. Itens já existentes sem campo mantêm link quando válido; novos itens começam sem botão.
 - `PageBlock.showcaseFit` permite escolher `contain` para mostrar certificados inteiros nas miniaturas, ou `cover` para artes. O painel de detalhes usa `contain`.
 - `ArtLightbox` (compartilhado entre projetos, galerias e slides) usa viewport com dimensionamento `width:100%;height:100%;object-fit:contain`; a imagem original inteira deve aparecer a 100% e o pan deve resetar ao voltar a esse nível. Evite CSS de `grid` com trilhas dimensionadas pela imagem original, que pode causar recortes em imagens enormes.
+
+
+## Direção de arte — paleta aplicada a todo o site
+
+A versão atual expõe **sete cores independentes**: primária, secundária, fundo, superfícies, texto principal, texto secundário e bordas. `ThemePalette`/normalização e publicação ficam em `src/lib/theme-palette.ts` e `src/hooks/use-portfolio.ts`. O editor possui prévia imediata, cancelamento que reverte, e indicadores WCAG. Cores antigas de quatro tokens migram sem perder customizações.
+
+`src/styles/theme-coverage.css` é a camada central de integração pública e **deve continuar sendo importada por último**, depois de `custom-pages.css`. Ela abrange Home, galerias, case studies, Sobre, Contact, páginas e player; respeite os sete tokens e evite valores roxos fixos em novas seções públicas. A cor das obras e os controles internos do Local Studio ficam intocados.
