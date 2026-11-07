@@ -1,4 +1,5 @@
 import type {PortfolioStore} from '../hooks/use-portfolio'
+import {githubWorkerProxy,isGitHubWorkerCredential} from './github-auth'
 
 export type RepositoryMedia={path:string;bytes:number;kind:'Imagem'|'Áudio'|'Vídeo'|'Modelo 3D';used:boolean;protected:boolean}
 const SOURCE='https://api.github.com/repos/jordanferrary/portfolio_jordan'
@@ -49,9 +50,11 @@ export function repositoryMediaPreviewUrl(path:string):string{
 }
 async function readRepositoryMedia(store:PortfolioStore,token?:string):Promise<RepositoryMedia[]>{
  const headers:Record<string,string>={Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
- if(token?.trim())headers.Authorization='Bearer '+token.trim()
- const response=await fetch(SOURCE+'/git/trees/main?recursive=1',{
-  headers,cache:'no-store',referrerPolicy:'no-referrer'
+ const worker=!!token&&isGitHubWorkerCredential(token)
+ if(token?.trim()&&!worker)headers.Authorization='Bearer '+token.trim()
+ if(worker)headers['X-Alquimago-Request']='1'
+ const response=await fetch(worker?githubWorkerProxy('/repos/jordanferrary/portfolio_jordan/git/trees/main?recursive=1'):SOURCE+'/git/trees/main?recursive=1',{
+  headers,credentials:worker?'include':'omit',cache:'no-store',referrerPolicy:'no-referrer'
  })
  if(!response.ok){
   if(!token&&response.status===403)throw new Error('O GitHub limitou temporariamente as consultas públicas. Tente novamente mais tarde ou consulte pelo token na tela de publicação.')
