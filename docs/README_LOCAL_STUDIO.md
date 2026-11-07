@@ -44,4 +44,4 @@ Em **Projeto → Composição**, escolha **Vídeo incorporado** ou **Modelo 3D i
 
 ## 11. Personalizar a apresentação dos vídeos
 
-Em **Projeto → Composição → Vídeo incorporado**, preencha o link do YouTube ou Vimeo e, opcionalmente, **Título exibido abaixo do player**. A capa pode ser selecionada da biblioteca ou importada. Na página pública, antes do clique, aparece somente uma miniatura com informações editoriais; após o clique em um vídeo do YouTube, surge a timeline roxa sincronizada com reprodução, pausa, voltar ao início, tempo decorrido e duração. A barra original do YouTube continua disponível dentro do vídeo para legendas e opções avançadas. No Vimeo permanece a reprodução padrão.
+Em **Projeto → Composição → Vídeo incorporado**, preencha o link YouTube ou Vimeo, a capa opcional e o título do iframe. Na página pública, uma miniatura aparece até o clique. Depois, a reprodução acontece com os controles próprios da plataforma; abaixo aparece somente o link **Watch on YouTube/Vimeo**, sem uma segunda barra ou painel.
