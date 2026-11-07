@@ -21,6 +21,7 @@ export function ProjectLike({projectId,showCount=false}:{projectId:string;showCo
  const [remote,setRemote]=useState(false)
  const [pending,setPending]=useState(false)
  const [error,setError]=useState('')
+ const [burst,setBurst]=useState(0)
  useEffect(()=>{
   setLiked(storageLiked(projectId));setCount(storageLiked(projectId)?1:0);setRemote(false);setError('')
   if(!API)return
@@ -43,7 +44,7 @@ export function ProjectLike({projectId,showCount=false}:{projectId:string;showCo
   if(pending)return
   setError('')
   const next=!liked
-  if(!remote||!API){setLiked(next);setCount(next?1:0);persist(projectId,next);return}
+  if(!remote||!API){setLiked(next);setCount(next?1:0);persist(projectId,next);if(next)setBurst(value=>value+1);return}
   setPending(true)
   try{
    const endpoint=API.replace(/\/$/,'')+'/projects/'+encodeURIComponent(projectId)+'/likes'
@@ -51,9 +52,9 @@ export function ProjectLike({projectId,showCount=false}:{projectId:string;showCo
    if(!res.ok)throw new Error()
    const data:unknown=await res.json()
    if(!isReply(data))throw new Error()
-   setLiked(data.liked);setCount(data.count)
+   setLiked(data.liked);setCount(data.count);if(data.liked)setBurst(value=>value+1)
   }catch{setError('Could not save your like. Please try again.')}
   finally{setPending(false)}
  }
- return <div className="project-like-wrap"><button type="button" className={liked?'project-like is-liked':'project-like'} onClick={()=>void toggle()} disabled={pending} aria-pressed={liked} aria-label={liked?'Unlike this project':'Like this project'}><Heart size={18} fill={liked?'currentColor':'none'}/><span>{liked?'Liked':'Like project'}</span>{showCount&&<span className="like-count" title={remote?'Shared likes':'Count on this browser only'}>{count}</span>}</button>{error&&<span className="like-error" role="status">{error}</span>}</div>
+ return <div className="project-like-wrap"><button type="button" className={liked?'project-like is-liked':'project-like'} onClick={()=>void toggle()} disabled={pending} aria-pressed={liked} aria-label={liked?'Unlike this project':'Like this project'}><Heart key={burst} className={burst>0&&liked?'like-heart-pop':''} size={18} fill={liked?'currentColor':'none'}/>{burst>0&&liked&&<span key={'burst-'+burst} className="like-spark-burst" aria-hidden="true"><i/><i/><i/><i/><i/><i/></span>}<span>{liked?'Liked':'Like project'}</span>{showCount&&<span className="like-count" title={remote?'Shared likes':'Count on this browser only'}>{count}</span>}</button>{error&&<span className="like-error" role="status">{error}</span>}</div>
 }
