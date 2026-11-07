@@ -6,8 +6,7 @@ const ALLOWED=/^public\/(images|audio|models|videos|assets)\/.+\.(png|jpe?g|webp
 const fallbackProtected=new Set([
  'public/images/hero/hero-character.webp',
  'public/images/profile/avatar.webp',
- 'public/images/music/album-cover.webp',
- ...['void-wanderer','moonlit-cottage','deepwalker','astral-guardian','neon-armor','ancient-ruins'].map(id=>'public/images/projects/'+id+'/'+id+'.webp')
+ 'public/images/music/album-cover.webp'
 ])
 export function isCleanableFile(path:string){return ALLOWED.test(path)&&!path.includes('\\')&&!/[\x00-\x1f]/.test(path)&&!path.split('/').some(part=>!part||part==='.'||part==='..')}
 export function isProtectedAsset(path:string){return fallbackProtected.has(path)}
