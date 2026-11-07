@@ -39,7 +39,7 @@
 
 /* Content editor */
 .custom-page-editor-overlay{z-index:85}
-.custom-page-editor{width:min(1080px,100%);max-width:100%;background:linear-gradient(150deg,#1a1027,#0d0914);border-left:1px solid #7948a3}
+.custom-page-editor{position:relative;width:min(1080px,100%);max-width:100%;background:linear-gradient(150deg,#1a1027,#0d0914);border-left:1px solid #7948a3}
 .custom-page-editor>header{flex:0 0 auto}
 .custom-page-editor>header>div{min-width:0}
 .custom-page-editor>header .eyebrow{color:#c19de0;font-size:11px;letter-spacing:.1em}
