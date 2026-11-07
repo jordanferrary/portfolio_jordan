@@ -64,3 +64,17 @@ No Local Studio, abra **Minhas páginas → Editar → Composição**.
 - Imagens de slides adicionadas pela biblioteca local seguem o fluxo normal de publicação; imagens externas continuam referenciadas pela URL.
 - **Salvar página** grava o rascunho local. **Publicar no GitHub** é necessário para disponibilizar ao público.
 
+
+
+## Ajuste horizontal e múltiplas imagens no carrossel
+
+Em **Local Studio → Minhas páginas → Editar → Composição → Slides**, o bloco agora possui:
+
+- **Largura:** de 50% a 100% da coluna de conteúdo da página.
+- **Altura:** de 180 a 640 px. No modo **Automático**, carrosséis mais baixos mostram até quatro imagens lado a lado, desde que exista largura suficiente.
+- **Imagens visíveis:** Automático ou seleção manual de 1 a 5 por vez; o site ainda limita a quantidade para preservar a legibilidade em telas estreitas.
+- **Enquadramento:** imagem completa (sem cortes) ou preenchimento do quadro (pode recortar).
+- **Prévia simplificada:** mostra as proporções e a distribuição aproximada no próprio editor. No celular, o carrossel ocupa a largura disponível.
+- Mantidos: reprodução manual/automática, intervalo de 1,5 a 30 segundos, animações fade/slide/zoom, navegação e zoom da arte selecionada.
+
+Projetos e páginas já salvos preservam seu comportamento: largura 100%, altura 520 px, enquadramento sem cortes e quantidade automática (normalmente uma imagem em carrosséis altos). A publicação no GitHub já serializa esses campos no JSON de conteúdo da página.
