@@ -41,3 +41,22 @@
  .project-focus-overlay .v2-editor .quick-insert-popover{width:calc(100% - 12px)!important;max-height:54dvh!important}
 }
 @media(prefers-reduced-motion:reduce){.project-focus-overlay *{scroll-behavior:auto!important}}
+
+
+/* Rich project blocks: reusable templates for carousels and linked collections. */
+.project-composition-enhanced{display:flex;flex-direction:column;gap:12px;margin:13px 0;padding:15px;border:1px solid #654184;border-radius:15px;background:linear-gradient(145deg,#221332,#160b24)}
+.project-composition-enhanced>label{display:flex;flex-direction:column;gap:8px;margin:0;color:#e1c5f1;font-size:12px}
+.project-composition-enhanced .editor-two>label{min-width:0}
+.project-composition-enhanced select,.project-composition-enhanced input[type=number],.project-composition-enhanced input[type=url],.project-composition-enhanced input[type=text],.project-composition-enhanced textarea{max-width:100%;border-radius:10px}
+.project-composition-enhanced input[type=range]{width:100%;accent-color:#b364ee}
+.project-composition-enhanced .checkbox-line{display:flex;align-items:center;flex-direction:row;gap:10px}
+.project-composition-enhanced .checkbox-line input{accent-color:#b364ee}
+.project-composition-item{display:flex;flex-direction:column;gap:11px;padding:14px;border:1px solid #69448d;border-radius:13px;background:#1a0d29}
+.project-composition-item .edit-block-top{margin:0}
+.project-composition-item .edit-block-top b{min-width:0;overflow-wrap:anywhere}
+.project-composition-item .edit-block-top div{display:flex;flex:0 0 auto;gap:4px}
+.project-composition-item .edit-block-top button{border:1px solid #5c387a;border-radius:8px;padding:5px;color:#dcc1f2}
+.project-composition-item .edit-block-top button:disabled{opacity:.4}
+.story-project-slideshow .page-slideshow{margin:16px 0 45px}
+.story-linked-gallery .artist-showcase{margin:16px 0 45px}
+@media(max-width:620px){.project-composition-enhanced{padding:10px}.project-composition-item{padding:11px}}
