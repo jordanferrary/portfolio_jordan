@@ -85,7 +85,7 @@ try{
   assert.match(awaitCss,/\.home-focus-panel \.focus-entry/)
   assert.match(awaitCss,/\.site-shell\.contact-route/)
   // Public palette CSS must never override editor overlays: deployment guard.
-  assert.doesNotMatch(awaitCss,/\.editor-overlay[\\s.{:]|\.theme-palette-editor[\\s.{:]/)
+  assert.doesNotMatch(awaitCss,/\.editor-overlay[\s.{:]|\.theme-palette-editor[\s.{:]/)
  })
  check('Contact specialties support add, remove, duplicate removal and hidden ribbon',()=>{
   assert.deepEqual(app.normalizeContactTags(['  MOTION DESIGN  ','3D ART','motion design','']),['MOTION DESIGN','3D ART'])
