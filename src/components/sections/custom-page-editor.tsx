@@ -69,7 +69,9 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
  const [tab,setTab]=useState<Tab>(()=>original||initialPageId==='new'?'identity':'manage')
  const [error,setError]=useState('')
  const [dragged,setDragged]=useState('')
+ const [insertAt,setInsertAt]=useState<number|null>(null)
  const folder='pages/'+(draft?.id??'new')
+ useEffect(()=>{if(insertAt===null)return;const onEscape=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.stopPropagation();setInsertAt(null)}};document.addEventListener('keydown',onEscape);return()=>document.removeEventListener('keydown',onEscape)},[insertAt])
  useEffect(()=>{const before=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.body.style.overflow=before}},[])
  const dirty=()=>!!draft&&JSON.stringify(draft)!==JSON.stringify(pages.find(p=>p.id===draft.id)??null)
  const close=()=>{if(dirty()&&!window.confirm('Descartar alterações ainda não salvas desta página?'))return;onClose()}
@@ -94,6 +96,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
   const blocks=[...draft.blocks]
   blocks.splice(index??blocks.length,0,block)
   patch({blocks})
+  setInsertAt(null)
  }
  const moveBlock=(from:number,to:number)=>{
   if(!draft||to<0||to>=draft.blocks.length||from===to)return
@@ -231,12 +234,19 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
       <div className="custom-page-button-sample">{(block.buttonAction??'copy')==='copy'?<Copy size={16}/>:<ExternalLink size={16}/>} <span>{block.buttonLabel||'Button preview'}</span></div>
       <p className="editor-help">Copiar funciona para PIX, prompts e textos grandes. Abrir URL usa apenas links permitidos; nunca executa código inserido no endereço. O botão não processa pagamentos.</p>
      </div>}
-     <button type="button" className="custom-page-insert" onClick={()=>addBlock('text',index+1)}><Plus size={14}/> Inserir bloco de texto após este</button>
+     <button type="button" className="custom-page-insert" onClick={()=>setInsertAt(index+1)}><Plus size={14}/> Inserir bloco depois deste · escolher layout</button>
     </section>)}
     {!draft.blocks.length&&<p className="custom-page-empty-composition"><Layers size={23}/> Sua página está vazia. Escolha um bloco acima para começar.</p>}
+    <button type="button" className="custom-page-insert custom-page-add-end" onClick={()=>setInsertAt(draft.blocks.length)}><Plus size={15}/> Adicionar bloco · escolher layout</button>
    </div>}
    {error&&<p role="alert" className="custom-page-editor-error">{error}</p>}
   </div>
+  {insertAt!==null&&draft&&tab==='composition'&&<div className="custom-page-block-picker-overlay" onMouseDown={event=>{if(event.target===event.currentTarget)setInsertAt(null)}}>
+   <div className="custom-page-block-picker" role="dialog" aria-label="Escolher tipo de bloco">
+    <div className="custom-page-block-picker-header"><div><span className="eyebrow">✦ PAGE BUILDER</span><h3>Qual bloco deseja adicionar?</h3><p>O bloco será inserido na posição escolhida, sem alterar os demais.</p></div><button type="button" onClick={()=>setInsertAt(null)} aria-label="Fechar seleção de bloco"><X size={19}/></button></div>
+    <div className="custom-page-block-picker-grid">{templates.map(({type,title,description,Icon})=><button type="button" key={type} onClick={()=>addBlock(type,insertAt)}><span className="custom-page-template-icon"><Icon size={23}/></span><strong>{title}</strong><small>{description}</small></button>)}</div>
+   </div>
+  </div>}
   <footer>
    <button type="button" className="subtle-action" onClick={close}>Fechar</button>
    {saveNeeded&&<><button type="button" className="subtle-action" onClick={()=>setTab('manage')}><BookOpen size={15}/> Voltar às páginas</button><button type="button" className="save-action" onClick={save}><Save size={17}/> Salvar página</button></>}
