@@ -6,6 +6,7 @@ import { Gallery } from './components/sections/gallery'
 const GalleryBackgroundEditor=lazy(()=>import('./components/sections/gallery-background-editor').then(m=>({default:m.GalleryBackgroundEditor})))
 const BrandLogoEditor=lazy(()=>import('./components/sections/brand-logo-editor').then(m=>({default:m.BrandLogoEditor})))
 import { ProjectPage } from './components/sections/project-page'
+const CustomPageView=lazy(()=>import('./components/sections/custom-page').then(m=>({default:m.CustomPageView})))
 const AdminEditor=lazy(()=>import('./components/sections/admin-editor').then(m=>({default:m.AdminEditor})))
 const AdminGate=lazy(()=>import('./components/sections/admin-gate').then(m=>({default:m.AdminGate})))
 import { HomePage } from './components/sections/home-page'
@@ -25,8 +26,9 @@ import type {StudioAction} from './components/sections/studio-dock'
 const StudioDock=lazy(()=>import('./components/sections/studio-dock').then(m=>({default:m.StudioDock})))
 const ImageConverter=lazy(()=>import('./components/sections/image-converter').then(m=>({default:m.ImageConverter})))
 const MediaManager=lazy(()=>import('./components/sections/media-manager').then(m=>({default:m.MediaManager})))
+const CustomPageEditor=lazy(()=>import('./components/sections/custom-page-editor').then(m=>({default:m.CustomPageEditor})))
 import type { Project } from './data/projects'
-function route():Page|'project'{const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':(['inicio','portfolio','sobre','contato'].includes(part)?part as Page:'inicio')}
+function route():Page|'project'|'custom'{const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':part.startsWith('page/')?'custom':(['inicio','portfolio','sobre','contato'].includes(part)?part as Page:'inicio')}
 export function App(){
  const [page,setPage]=useState(route)
  const [editing,setEditing]=useState(false)
@@ -42,22 +44,28 @@ export function App(){
  const [themePaletteOpen,setThemePaletteOpen]=useState(false)
  const [imageConverterOpen,setImageConverterOpen]=useState(false)
  const [mediaManagerOpen,setMediaManagerOpen]=useState(false)
+ const [customPageEditorTarget,setCustomPageEditorTarget]=useState<string|null>(null)
  const [stagedMediaDeletions,setStagedMediaDeletions]=useState<string[]>([])
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
  const navigate=(next:Page)=>{location.hash='/'+next;setPage(next);window.scrollTo(0,0)}
+ const navigateCustomPage=(id:string)=>{location.hash='/page/'+id;setPage('custom');window.scrollTo(0,0)}
  const openHomeTab=(tab:'home'|'feedback'|'music'|'socials'|'likes')=>{setHomeEditorTab(tab);setHomeEditorOpen(true)}
  const projectId=location.hash.replace(/^#\/project\//,'')
  const project=portfolio.projects.find(p=>p.id===projectId)
+ const customPageId=location.hash.replace(/^#\/page\//,'').split('/')[0]
+ const customPage=page==='custom'?portfolio.customPages.find(item=>item.id===customPageId):undefined
  const openProject=(p:Project)=>{location.hash='/project/'+p.id;setPage('project');window.scrollTo(0,0)}
- const pageLabels:Record<Page|'project',string>={inicio:'Home',portfolio:'Galeria',sobre:'Sobre',contato:'Contato',project:'Projeto'}
- const editCurrent=()=>{if(page==='inicio')openHomeTab('home');else if(page==='portfolio')setGalleryBackgroundEditorOpen(true);else if(page==='sobre')setAboutEditorOpen(true);else if(page==='contato')setContactEditorOpen(true);else setEditor(project??null)}
- const editingLabel=page==='project'?'Editar projeto':page==='portfolio'?'Editar galeria':'Editar página'
+ const pageLabels:Record<Page|'project'|'custom',string>={inicio:'Home',portfolio:'Galeria',sobre:'Sobre',contato:'Contato',project:'Projeto',custom:customPage?.navLabel??'Página'}
+ const editCurrent=()=>{if(page==='inicio')openHomeTab('home');else if(page==='portfolio')setGalleryBackgroundEditorOpen(true);else if(page==='sobre')setAboutEditorOpen(true);else if(page==='contato')setContactEditorOpen(true);else if(page==='custom')setCustomPageEditorTarget(customPage?.id??'manage');else setEditor(project??null)}
+ const editingLabel=page==='project'?'Editar projeto':page==='custom'?'Editar página':page==='portfolio'?'Editar galeria':'Editar página'
  const studioActions:StudioAction[]=[
   {id:'home',label:'Home',description:'Apresentação, banner e conteúdo inicial',section:'Páginas',icon:Home,onClick:()=>openHomeTab('home')},
   {id:'about',label:'Sobre',description:'Bio, especialidades e imagens',section:'Páginas',icon:UserRound,onClick:()=>setAboutEditorOpen(true)},
   {id:'contact',label:'Contato',description:'Apresentação e redes para contato direto',section:'Páginas',icon:Mail,onClick:()=>setContactEditorOpen(true)},
   {id:'gallery',label:'Galeria',description:'Imagem de fundo da galeria',section:'Páginas',icon:Grid2X2,onClick:()=>setGalleryBackgroundEditorOpen(true)},
+  {id:'custom-pages',label:'Minhas páginas',description:'Criar, organizar e editar páginas extras do menu',section:'Páginas',icon:Layers,onClick:()=>setCustomPageEditorTarget('manage')},
+  {id:'new-custom-page',label:'Nova página',description:'Cursos, recursos, guias, downloads e outros',section:'Páginas',icon:Plus,onClick:()=>setCustomPageEditorTarget('new')},
   {id:'new-project',label:'Novo projeto',description:'Criar e compor uma nova obra',section:'Projetos',icon:Plus,onClick:()=>setEditor(null)},
   ...(page==='project'&&project?[{id:'active-project',label:'Editar obra atual',description:project.title,section:'Projetos' as const,icon:Layers,onClick:()=>setEditor(project)}]:[]),
   {id:'media-manager',label:'Gerenciar arquivos',description:'Excluir imagens e áudios antigos, locais ou publicados',section:'Conteúdo',icon:ImageIcon,onClick:()=>setMediaManagerOpen(true)},
@@ -76,10 +84,12 @@ export function App(){
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
- return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page as Page} navigate={navigate} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
+ return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
  {page==='portfolio'&&<Gallery projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground} onEditBackground={()=>setGalleryBackgroundEditorOpen(true)}/>}
  {page==='project'&&project&&<ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts}/>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
+ {page==='custom'&&customPage&&<Suspense fallback={<div className="simple-page">Loading page…</div>}><CustomPageView page={customPage} editing={editing} onEdit={()=>setCustomPageEditorTarget(customPage.id)}/></Suspense>}
+ {page==='custom'&&!customPage&&<section className="simple-page"><h1>Page not found</h1><p>This page may have moved or been removed.</p><button type="button" className="primary-action" onClick={()=>navigate('inicio')}>Return home</button></section>}
  {page==='inicio'&&<HomePage home={portfolio.home} testimonials={portfolio.testimonials} projects={portfolio.projects} editing={editing} onOpenProject={openProject} onEditProject={setEditor} onEditHome={()=>{setHomeEditorTab('feedback');setHomeEditorOpen(true)}} onNavigatePortfolio={()=>navigate('portfolio')}/>}
  {page==='sobre'&&<AboutPage about={portfolio.about} editing={editing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
  {page==='contato'&&<ContactPage socials={portfolio.socialLinks} settings={portfolio.contact} demoEnabled={editing} onEdit={()=>setContactEditorOpen(true)}/>}
@@ -89,6 +99,7 @@ export function App(){
  <Suspense fallback={null}>
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
  {editing&&imageConverterOpen&&<ImageConverter onClose={()=>setImageConverterOpen(false)}/>}
+ {editing&&customPageEditorTarget!==null&&<CustomPageEditor key={customPageEditorTarget} initialPageId={customPageEditorTarget} pages={portfolio.customPages} onSavePages={portfolio.setCustomPages} onNavigatePage={navigateCustomPage} onClose={()=>setCustomPageEditorTarget(null)}/>}
  {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>{setMediaManagerOpen(false);setGitHubPublishOpen(true)}} onPreparePublished={paths=>{setStagedMediaDeletions(paths);setMediaManagerOpen(false);setGitHubPublishOpen(true)}}/>}
  {editing&&themePaletteOpen&&<ThemePaletteEditor value={portfolio.themePalette} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}
  {editing&&siteIdentityOpen&&<SiteIdentityEditor value={{siteFavicon:portfolio.siteFavicon,seoTitle:portfolio.seoTitle,seoDescription:portfolio.seoDescription}} homeBanner={portfolio.home.background} onSave={portfolio.setSiteIdentity} onEditBanner={()=>openHomeTab('home')} onClose={()=>setSiteIdentityOpen(false)}/>}
