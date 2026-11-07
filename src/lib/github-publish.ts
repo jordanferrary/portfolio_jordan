@@ -284,7 +284,18 @@ export async function publishPortfolioToGitHub(
    const neural=valid?{
     version:1,inputHidden:n!.inputHidden,hiddenBias:n!.hiddenBias,
     hiddenOutput:n!.hiddenOutput,outputBias:n!.outputBias,
-    learned:typeof n!.learned==='number'?Math.max(0,Math.min(1e6,n!.learned)):0
+    learned:typeof n!.learned==='number'?Math.max(0,Math.min(1e6,n!.learned)):0,
+    prototypes:Array.isArray(n!.prototypes)?n!.prototypes.slice(-24).filter((p:unknown)=>{
+     if(!p||typeof p!=='object')return false
+     const entry=p as {intent?:unknown;features?:unknown}
+     return typeof entry.intent==='string'&&
+      ['greeting','identity','status','pet','play','brew','rest','navigate','insight','help','mood','thanks'].includes(entry.intent)&&
+      Array.isArray(entry.features)&&entry.features.length===96&&
+      entry.features.every((x:unknown)=>typeof x==='number'&&Number.isFinite(x)&&x>=0&&x<=1)
+    }).map((p:unknown)=>{
+     const entry=p as {intent:string;features:number[]}
+     return {intent:entry.intent,features:entry.features}
+    }):[]
    }:undefined
    // A confirmed new GitHub revision is one meaningful milestone. Include
    // its reward in the snapshot itself so a reload never loses publication XP.
