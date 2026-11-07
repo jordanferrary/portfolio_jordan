@@ -276,8 +276,11 @@ export async function publishPortfolioToGitHub(
    const n=candidate.neural&&typeof candidate.neural==='object'&&!Array.isArray(candidate.neural)
     ?candidate.neural as Record<string,unknown>:null
    const shapes:Record<string,number>={inputHidden:2304,hiddenBias:24,hiddenOutput:288,outputBias:12}
-   const valid=n?.version===1&&Object.entries(shapes).every(([key,length])=>
-    Array.isArray(n[key])&&n[key].length===length&&n[key].every((v:unknown)=>typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<=5))
+   const valid=!!n&&n.version===1&&Object.entries(shapes).every(([key,length])=>{
+    const weights=n?.[key]
+    return Array.isArray(weights)&&weights.length===length&&weights.every((v:unknown)=>
+     typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<=5)
+   })
    const neural=valid?{
     version:1,inputHidden:n!.inputHidden,hiddenBias:n!.hiddenBias,
     hiddenOutput:n!.hiddenOutput,outputBias:n!.outputBias,
