@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "revision": "2026-11-07T18:43:31.935Z-57e9664a-1587-4bc9-9ff4-2a1c04376bfa",
+  "projects": [
+    {
+      "id": "project-mw4oyna3",
+      "title": "Room of the Palhacito",
+      "category": "Props",
+      "year": "2026",
+      "tools": [
+        "Blender",
+        "Substance Painter",
+        "Krita"
+      ],
+      "description": "A whimsical little world where fantasy, color, and creativity come together. ==Room of the Palhacito== is a stylized 3D diorama that explores a playful and cozy atmosphere, blending circus-inspired elements, cartoon-like shapes, and charming details.  Through vibrant colors, expressive textures, and soft lighting, the scene captures a sense of wonder and imagination, bringing a unique and personality-filled environment to life.",
+      "featured": true
+    },
+    {
+      "id": "project-mw4y57pk",
+      "title": "frankie",
+      "category": "Props",
+      "year": "2026",
+      "tools": [],
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.",
+      "featured": true
+    },
+    {
+      "id": "project-mw4yafaa",
+      "title": "plants",
+      "category": "Props",
+      "year": "2026",
+      "tools": [],
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.",
+      "featured": false
+    },
+    {
+      "id": "project-mw4y09kv",
+      "title": "Bruxa 3D",
+      "category": "Props",
+      "year": "2026",
+      "tools": [],
+      "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.",
+      "featured": false
+    },
+    {
+      "id": "project-mw4y7bfq",
+      "title": "Alice",
+      "category": "Props",
+      "year": "2026",
+      "tools": [],
+      "description": "",
+      "featured": false
+    },
+    {
+      "id": "project-mw4ygym0",
+      "title": "Piplup",
+      "category": "Props",
+      "year": "2026",
+      "tools": [],
+      "description": "",
+      "featured": false
+    },
+    {
+      "id": "project-mw4vi9s4",
+      "title": "Novo projeto",
+      "category": "Props",
+      "year": "2026",
+      "tools": [
+        "Blender",
+        "Zbrush",
+        "Substance Painter"
+      ],
+      "description": "## mecha - ==sci fy==",
+      "featured": true
+    }
+  ]
+}
