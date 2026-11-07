@@ -101,7 +101,7 @@ export async function listMediaAssets():Promise<LibraryAsset[]>{
  const known=new Set(catalog.map(a=>a.ref))
  for(const key of keys){
   const ref=PREFIX+String(key)
-  if(known.has(ref)||!/\.(png|jpg|jpeg|webp|avif)$/i.test(ref))continue
+  if(known.has(ref)||!/\.(png|jpg|jpeg|webp|avif|mp3|wav|ogg|m4a)$/i.test(ref))continue
   const blob=await readMedia(ref)
   if(!blob)continue
   const item:LibraryAsset={ref,name:filename(ref),folders:[folderFromRef(ref)],hash:await fingerprint(blob),size:blob.size,mime:blob.type,createdAt:Date.now()}
@@ -143,5 +143,19 @@ export async function saveUploadedAudio(file:File):Promise<string>{
  const ext=file.name.toLowerCase().match(/\.(mp3|wav|ogg|m4a)$/)?.[1]??(file.type.includes('m4a')||file.type==='audio/mp4'?'m4a':'mp3')
  const ref='media://music/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext
  await saveMediaBlob(ref,file)
+ await updateCatalog({ref,name:file.name,folders:['music'],size:file.size,mime:file.type,createdAt:Date.now()})
  return ref
+}
+
+/** Delete a local unused asset from IndexedDB, including its catalog metadata. */
+export async function deleteStoredMedia(ref:string):Promise<void>{
+ if(!isLocalMedia(ref))throw new Error('Só arquivos locais podem ser excluídos por esta ferramenta.')
+ const database=await db()
+ await new Promise<void>((resolve,reject)=>{
+  const tx=database.transaction([STORE,LIBRARY],'readwrite')
+  tx.objectStore(STORE).delete(mediaKey(ref))
+  tx.objectStore(LIBRARY).delete(ref)
+  tx.oncomplete=()=>resolve()
+  tx.onerror=()=>reject(tx.error)
+ })
 }
