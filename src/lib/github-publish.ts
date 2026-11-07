@@ -220,6 +220,8 @@ export async function publishPortfolioToGitHub(
    if(block.media)block.media=await stage(block.media,'image')
    if(block.after)block.after=await stage(block.after,'image')
    if(block.gallery)for(let i=0;i<block.gallery.length;i++)block.gallery[i]=await stage(block.gallery[i],'image')
+   if(block.galleryEntries)for(const item of block.galleryEntries)item.image=await stage(item.image,'image')
+   if(block.slides)for(const slide of block.slides)slide.image=await stage(slide.image,'image')
   }
  }
  for(const category of snapshot.categories)if(category.image)category.image=await stage(category.image,'image')
