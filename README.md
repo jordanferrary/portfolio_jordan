@@ -85,3 +85,8 @@ O Local Studio agora inclui **Páginas → Nova página / Minhas páginas**. Cad
 O editor permite composição em blocos (títulos, textos formatados, imagens, antes/depois, galerias, vídeos, modelos 3D e divisórias), capa com enquadramento, largura de conteúdo e **botões de ação**: copiar um texto/chave PIX/prompt, abrir URL na aba atual ou abrir URL em uma nova aba. Os botões aceitam estilo e alinhamento, e validam links para não executar URLs perigosas. A chave ou prompt configurado é **conteúdo público**, nunca local seguro para credenciais. A funcionalidade de PIX copia apenas o texto; não processa pagamentos.
 
 As páginas entram no mesmo rascunho local, ZIP, pipeline de mídias, publicação GitHub e limpeza de arquivos. Consulte [Guia completo do construtor de páginas](docs/README_CUSTOM_PAGES.md).
+
+
+### Galeria interativa de páginas personalizadas
+
+O bloco de galeria interativa exibe obras, certificados e coleções com títulos próprios. O painel lateral de detalhes **abre somente quando um item é selecionado**; seu botão pode ser renomeado ou desativado individualmente. Miniaturas podem preencher o quadro ou preservar a imagem completa. O zoom compartilhado com projetos e slides enquadra todo o arquivo original ao abrir, sem recorte em 100%.
