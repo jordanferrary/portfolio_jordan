@@ -53,6 +53,6 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
     <div className="contact-social-directory-footer"><span className="contact-social-status-dot"/>Links open directly on their respective platforms.</div>
    </section>
   </div>
-  <div className="contact-social-bottomline" aria-hidden="true"><span>3D ART</span><i/><span>CHARACTERS</span><i/><span>ENVIRONMENTS</span><i/><span>CREATIVE DIRECTION</span></div>
+  {settings.footerTags.length>0&&<div className="contact-social-bottomline" aria-label="Creative specialties">{settings.footerTags.map((label,index)=><span key={index} className="contact-social-bottomline-item">{index>0&&<i aria-hidden="true"/>}<span>{label}</span></span>)}</div>}
  </main>
 }
