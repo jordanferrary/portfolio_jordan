@@ -38,15 +38,31 @@ O caminho antigo de publicação por token temporário continua disponível, inc
 **Estado:** a integração cliente/servidor e os testes de rotas estão no código. O Worker e o GitHub App ainda precisam ser criados, configurados e autorizados pelo proprietário antes de o login sem token funcionar.
 
 
-## Assistente com IA generativa (opcional)
+## Professor Gemini (conexão opcional)
 
-O Worker também oferece **POST /api/assistant**, autorizado somente para a sessão do proprietário autenticado pelo GitHub App. O navegador não recebe uma chave da Cloudflare. Somente perguntas enviadas depois de o usuário ativar o modo generativo são encaminhadas ao modelo.
+**Provedor fixo: Google Gemini.** A Cloudflare é apenas o servidor intermediário que protege a credencial, autentica a sessão e limita o acesso. O Worker não usa Cloudflare Workers AI nem Gemma.
 
-**Para habilitar:** adicione o binding \`[ai] binding = "AI"\` ao \`wrangler.toml\` (já documentado em \`wrangler.example.toml\`) e faça o deploy autorizado. Configure limites de orçamento no painel Cloudflare. A API usa atualmente \`@cf/google/gemma-4-26b-a4b-it\`; consulte o catálogo antes de atualizar modelos. O custo de inferência depende do plano e do uso.
+O endpoint autenticado \`POST /api/assistant\` consulta o Gemini pelo serviço oficial. A chave do provedor permanece **somente no ambiente de servidor**, nunca no JavaScript público, no GitHub ou nos arquivos publicados do site. A configuração lógica exige \`GEMINI_API_KEY\` como segredo do servidor e \`GEMINI_MODEL\` como identificação de um modelo disponível na conta autorizada. Não há chave de exemplo no repositório.
 
-Por segurança:
-- O endpoint exige sessão ativa, origem autorizada, cabeçalho \`X-Alquimago-Request\` e limita cada mensagem.
-- Existe uma cota aproximada de **25 chamadas por sessão por dia** registrada no KV. Como KV pode ser eventualmente consistente, complemente com limites de gastos e de taxa da Cloudflare.
-- Só envia a pergunta, até oito mensagens recentes e metadados públicos mínimos da obra selecionada. O Worker não expõe GitHub tokens, não permite publicar código por comando da IA e não fornece ferramentas automáticas ao modelo.
-- O frontend permanece **\`llm.enabled=false\` por padrão**. Depois de testar a autenticação e os custos, edite \`public/alquimago/config.json\` para \`llm.enabled=true\` e \`llm.endpoint="https://seu-worker/api/assistant"\`. A interface disponibiliza então a caixa de consentimento **Usar IA generativa**.
-- Sem backend configurado ou sessão autorizada, o Alquimago usa somente suas respostas locais e a base pública de projetos. Ele não finge consultar uma IA.
+**Importante:** o Gemini é opcional e **ainda não está ativo em produção**; a screenshot compartilhada mostra que não há projetos Workers & Pages na conta exibida. Não existe conexão real sem um serviço implantado, uma conta habilitada e autorização compatível com os termos oficiais do Google.
+
+### Fluxo do aprendizado
+
+1. O Alquimago verifica respostas de sua própria base de lições aprovadas.
+2. Para perguntas ainda não respondidas, o usuário pode autorizar uma consulta ao professor Gemini em uma sessão autenticada.
+3. O Gemini retorna uma explicação em português. Se o usuário já autorizou inspecionar arquivos públicos, a solicitação pode incluir **somente metadados estruturais** (nomes de arquivos, imports e exports), nunca código bruto.
+4. A explicação não vira conhecimento automaticamente. A interface exige que o responsável revise a resposta e clique **Aprovar e aprender**.
+5. Somente lições aprovadas ficam no armazenamento local por namespace. O mascote poderá reutilizá-las mesmo após novas versões do site; elas não são incluídas no JSON público nem no commit do GitHub.
+
+O sistema de aprendizado é uma **memória recuperável de perguntas e respostas**, não alteração automática dos pesos do Gemini nem capacidade geral equivalente a um modelo de linguagem.
+
+### Privacidade e limites
+
+- O endpoint exige sessão, origem autorizada e consentimento de envio.
+- Até 25 consultas por sessão/dia na camada KV (limite aproximado), além dos limites do próprio Google.
+- Conteúdo enviado à modalidade gratuita da API pode ser usado para melhorias do serviço, conforme os termos do Google. **Não enviar informações confidenciais, segredos ou dados pessoais.**
+- Os dados públicos recebidos pelo professor são tratados como não confiáveis; ele não dispõe de ferramentas para editar arquivos, criar commits ou navegar no repositório.
+- O modelo real e eventuais quotas gratuitas variam; configure os limites de gastos no provedor antes de ativar.
+- O frontend permanece com \`llm.enabled=false\` até o serviço e a autorização estarem prontos.
+
+Consulte as regras oficiais do Google para elegibilidade, disponibilidade regional e uso da API antes de ativar a conexão.
