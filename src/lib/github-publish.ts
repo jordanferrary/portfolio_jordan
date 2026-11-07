@@ -3,6 +3,7 @@ import { isLocalMedia,readMedia } from './media-store'
 import { isKnownDemoTestimonial } from './testimonial-safety'
 import {resolvePublishedAsset} from './published-assets'
 import {isCleanableFile,isProtectedAsset,referencedMediaPaths} from './github-media'
+import {githubWorkerProxy,isGitHubWorkerCredential} from './github-auth'
 
 /**
  * Browser-only GitHub publishing.
@@ -25,10 +26,12 @@ export type GitHubPublishResult={revision:string;commitSha:string;commitUrl:stri
 export type GitHubPublishProgress=(status:string)=>void
 
 async function api<T>(token:string,path:string,method='GET',body?:unknown):Promise<T>{
- const response=await fetch(API+path,{
+ const secureSession=isGitHubWorkerCredential(token)
+ const response=await fetch(secureSession?githubWorkerProxy(path):API+path,{
   method,
+  credentials:secureSession?'include':'omit',
   headers:{
-   Authorization:'Bearer '+token,
+   ...(secureSession?{'X-Alquimago-Request':'1'}:{Authorization:'Bearer '+token}),
    Accept:'application/vnd.github+json',
    'Content-Type':'application/json',
    'X-GitHub-Api-Version':'2022-11-28'
@@ -38,7 +41,9 @@ async function api<T>(token:string,path:string,method='GET',body?:unknown):Promi
   referrerPolicy:'no-referrer'
  })
  if(!response.ok){
-  if(response.status===401)throw new Error('Token inválido ou expirado. Gere uma credencial com acesso somente a este repositório.')
+  if(response.status===401)throw new Error(secureSession?
+   'A sessão GitHub expirou. Entre novamente pelo botão Conectar GitHub.' :
+   'Token inválido ou expirado. Gere uma credencial com acesso somente a este repositório.')
   if(response.status===403)throw new Error('O GitHub recusou a operação. Confira o acesso ao repositório e a permissão Contents: Read and write.')
   if(response.status===404)throw new Error('Recurso não encontrado. Confira se o token tem acesso ao portfólio.')
   if(response.status===409||response.status===422)throw new Error('O repositório mudou durante a publicação ou a branch rejeitou o commit. Recarregue o site e tente novamente, sem forçar o histórico.')
@@ -123,7 +128,7 @@ export async function publishPortfolioToGitHub(
  familiarSnapshot:unknown=null
 ):Promise<GitHubPublishResult>{
  const cleanToken=token.trim()
- if(!cleanToken)throw new Error('Informe um token GitHub para autorizar a publicação.')
+ if(!cleanToken)throw new Error('Conecte sua conta GitHub ou informe um token temporário.')
  onProgress('Verificando sua conta e as permissões do repositório...')
  const account=await api<{login:string}>(cleanToken,'/user')
  if(account.login.toLowerCase()!==OWNER)throw new Error('Entre com um token pertencente à sua conta jordanferrary.')
