@@ -11,12 +11,14 @@ type Props={
  onNewProject:()=>void
  onPublish:()=>void
  onExport:()=>Promise<void>
+ onRestorePublished:()=>void
+ publishedRevision:string
  onLock:()=>void
  actions:StudioAction[]
 }
 
 /** One stable, contextual control center, instead of a row of unrelated buttons. */
-export function StudioDock({pageLabel,editLabel,onEditCurrent,onNewProject,onPublish,onExport,onLock,actions}:Props){
+export function StudioDock({pageLabel,editLabel,onEditCurrent,onNewProject,onPublish,onExport,onRestorePublished,publishedRevision,onLock,actions}:Props){
  const [open,setOpen]=useState(false)
  const root=useRef<HTMLDivElement>(null)
  useEffect(()=>{
@@ -29,13 +31,18 @@ export function StudioDock({pageLabel,editLabel,onEditCurrent,onNewProject,onPub
  },[open])
  const invoke=(callback:()=>void)=>{setOpen(false);callback()}
  const groups:StudioSection[]=['Páginas','Projetos','Conteúdo','Identidade']
+ const buildCode=String(import.meta.env.VITE_BUILD_SHA||'local').slice(0,7)
  return <div className="studio-dock-anchor" lang="pt-BR" ref={root}>
   {open&&<div id="studio-hub" className="studio-hub" role="dialog" aria-label="Central de ferramentas do Local Studio" aria-modal="false">
-   <header className="studio-hub-header"><div><span>PAINEL DE CONTROLE</span><h2>Local Studio</h2><p>Selecione o que deseja ajustar. Os rascunhos ficam neste navegador.</p></div><button type="button" onClick={()=>setOpen(false)} aria-label="Fechar ferramentas"><X size={18}/></button></header>
+   <header className="studio-hub-header"><div><span>PAINEL DE CONTROLE</span><h2>Local Studio</h2><p>Selecione o que deseja ajustar. Os rascunhos ficam neste navegador.</p><p className="studio-hub-version">Build {buildCode} · Conteúdo {publishedRevision.slice(0,9)}</p></div><button type="button" onClick={()=>setOpen(false)} aria-label="Fechar ferramentas"><X size={18}/></button></header>
    <div className="studio-hub-groups">
     {groups.map(group=>{const items=actions.filter(action=>action.section===group);return items.length>0&&<section key={group} className="studio-hub-group"><h3>{group}</h3><div className="studio-hub-grid">{items.map(action=>{const Icon=action.icon;return <button type="button" key={action.id} className="studio-hub-item" onClick={()=>invoke(action.onClick)}><span className="studio-hub-icon"><Icon size={19}/></span><span className="studio-hub-item-copy"><strong>{action.label}</strong><small>{action.description}</small></span></button>})}</div></section>})}
     <section className="studio-hub-group"><h3>Gerenciamento</h3><div className="studio-hub-grid">
      <button type="button" className="studio-hub-item" onClick={()=>{setOpen(false);void onExport()}}><span className="studio-hub-icon"><Download size={19}/></span><span className="studio-hub-item-copy"><strong>Backup ZIP</strong><small>Guarde uma cópia dos seus projetos e mídias.</small></span></button>
+     <button type="button" className="studio-hub-item" onClick={()=>{
+       const confirmed=window.confirm('Descartar os rascunhos locais deste portfólio e recuperar os dados da versão publicada? Esta ação não altera o GitHub. Exporte um backup ZIP antes de continuar caso queira guardar seus rascunhos.');
+       if(confirmed)invoke(onRestorePublished);
+     }}><span className="studio-hub-icon"><BookOpen size={19}/></span><span className="studio-hub-item-copy"><strong>Voltar à versão publicada</strong><small>Descarte apenas rascunhos locais após confirmação.</small></span></button>
      <button type="button" className="studio-hub-item" onClick={()=>invoke(onLock)}><span className="studio-hub-icon"><LockKeyhole size={19}/></span><span className="studio-hub-item-copy"><strong>Encerrar edição</strong><small>Voltar à versão pública do portfólio.</small></span></button>
     </div></section>
    </div>
