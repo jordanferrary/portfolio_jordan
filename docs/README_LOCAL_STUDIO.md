@@ -55,11 +55,11 @@ O bloco **Botão de ação** aceita três funções: **copiar** texto, chave PIX
 Em **Minhas páginas**, reordene, duplique, oculte do menu ou exclua páginas. Ocultar não impede acesso por link direto. O endereço `#/page/page-<uuid>` permanece quando renomear a página. Saiba mais em [README_CUSTOM_PAGES.md](README_CUSTOM_PAGES.md).
 
 
-## Galeria de artistas e slides (páginas personalizadas)
+## Galeria interativa e slides (páginas personalizadas)
 
 No Local Studio, abra **Minhas páginas → Editar → Composição**.
 
-- **Galeria de artistas**: adicione cada participante com nome, descrição, URL direta da imagem e link do portfólio. As miniaturas são selecionáveis; a arte selecionada aparece em destaque com zoom e botão **View portfolio**. As imagens são referenciadas externamente, não copiadas para o GitHub. O servidor de origem deve permitir carregamento público da imagem e manter a URL ativa. Dê crédito e obtenha autorização de exibição dos participantes.
+- **Galeria interativa**: serve para certificados, premiações, participantes, obras e coleções. Cada item tem título próprio, descrição e URL direta da imagem. **O painel lateral começa fechado** e só abre ao clicar num item, com opção de fechar; não há numeração automática nem o rótulo fixo “artista”. Cada item tem **Mostrar botão**, texto do botão e link configuráveis. Se desativado, nenhum botão é exibido. Configure **Enquadramento das miniaturas** para mostrar certificados inteiros ou preencher os cards com arte. As imagens externas não são copiadas ao GitHub; utilize URLs estáveis e tenha autorização para exibi-las.
 - **Slides**: adicione e reordene imagens, escolha reprodução manual ou automática, transição *fade*, *slide* ou *zoom*, e intervalo de 1,5 a 30 segundos. O visitante pode avançar, voltar e ampliar a imagem. O botão flutuante de pausa/reprodução é opcional e fica sobre a imagem. Não há barra inferior, legendas ou numeração visível.
 - Imagens de slides adicionadas pela biblioteca local seguem o fluxo normal de publicação; imagens externas continuam referenciadas pela URL.
 - **Salvar página** grava o rascunho local. **Publicar no GitHub** é necessário para disponibilizar ao público.
@@ -79,3 +79,7 @@ Em **Local Studio → Minhas páginas → Editar → Composição → Slides**, 
 - **Transições e autoplay:** continuam disponíveis com seus controles de intervalo.
 
 Slides antigos são migrados para largura natural de 100% e altura anterior de 520 px quando não houver configuração de altura. As propriedades antigas de largura personalizada e contagem manual não são mais usadas no layout. Todas as alterações precisam ser salvas e publicadas no GitHub para chegarem ao público.
+
+## Zoom sem corte em slides e certificados
+
+O zoom dos slides e o dos demais projetos compartilham `ArtLightbox`. O visualizador foi ajustado para dimensionar a imagem original dentro da área da tela com `object-fit: contain` mesmo para imagens muito grandes ou verticais. **Ao abrir, a imagem inteira deve ficar visível**; só deve ser cortada visualmente se o visitante ampliá-la e mover o enquadramento. Redefinir o zoom para 100% também limpa o deslocamento anterior. Miniaturas configuradas como `cover` podem aparecer recortadas no card, mas não no zoom.
