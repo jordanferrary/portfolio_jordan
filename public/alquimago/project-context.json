@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "updatedAt": null,
+  "revision": null,
+  "site": {
+    "type": "react-portfolio",
+    "editor": "Local Studio"
+  },
+  "counts": {
+    "projects": 0,
+    "pages": 0
+  },
+  "description": "Resumo público do projeto. Atualizado no fluxo normal de publicação do Studio."
+}
