@@ -81,16 +81,40 @@ export function App(){
  useEffect(()=>{applyThemePalette(portfolio.themePalette)},[portfolio.themePalette])
  useEffect(()=>{
   if(!editing)return
-  // Test-mode integration: the familiar is not loaded for public visitors.
-  const existing=document.querySelector('alquimago-familiar')
-  if(existing)return
-  const script=document.createElement('script')
-  script.src=import.meta.env.BASE_URL+'alquimago/alquimago.js'
-  script.dataset.config=import.meta.env.BASE_URL+'alquimago/config.json'
-  script.async=true
-  document.body.appendChild(script)
-  return()=>{script.remove();document.querySelectorAll('alquimago-familiar').forEach(el=>el.remove())}
+  // A single Studio-only mount, including StrictMode cleanup and async script races.
+  let active=true
+  const host=window as Window & {
+   ALQUIMAGO_AUTO_MOUNT?:boolean
+   Alquimago?:{mount:(target:HTMLElement,mode:'web')=>HTMLElement}
+  }
+  host.ALQUIMAGO_AUTO_MOUNT=false
+  const mount=()=>{if(active&&!document.querySelector('alquimago-familiar'))host.Alquimago?.mount(document.body,'web')}
+  let script:HTMLScriptElement|undefined
+  if(host.Alquimago)mount()
+  else{
+   script=document.createElement('script')
+   script.src=import.meta.env.BASE_URL+'alquimago/alquimago.js'
+   script.dataset.config=import.meta.env.BASE_URL+'alquimago/config.json'
+   script.async=true
+   script.addEventListener('load',mount,{once:true})
+   document.body.appendChild(script)
+  }
+  return()=>{
+   active=false
+   script?.remove()
+   document.querySelectorAll('alquimago-familiar').forEach(el=>el.remove())
+  }
  },[editing])
+ useEffect(()=>{
+  if(!editing)return
+  // Public structure and counts only; no draft contents or credentials.
+  const announce=()=>window.dispatchEvent(new CustomEvent('alquimago:studio-context',{
+   detail:{editing:true,section:page,projects:portfolio.projects.length,pages:portfolio.customPages.length}
+  }))
+  window.addEventListener('alquimago:request-context',announce)
+  announce()
+  return()=>window.removeEventListener('alquimago:request-context',announce)
+ },[editing,page,portfolio.projects.length,portfolio.customPages.length])
 
  useEffect(()=>{const sync=()=>{setPage(route());window.scrollTo(0,0)};window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync)},[])
  useEffect(()=>{
