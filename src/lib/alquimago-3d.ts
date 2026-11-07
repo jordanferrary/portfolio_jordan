@@ -34,7 +34,41 @@ export async function inspectAlquimagoGLB(file:File):Promise<{found:string[];mis
  const missing=ALQUIMAGO_SHAPES.filter(name=>!all.includes(name))
  return {all,found:[...found],missing:[...missing]}
 }
+const LAYOUT_STYLE=String.raw\`
+/* Alquimago layout polish: dark, compact, accessible, no extra panels. */
+:host(:not([data-mode="desktop"])) .panel{width:min(415px,calc(100vw - 20px))!important}
+.panel-header{padding:14px 15px 12px!important;border-bottom:1px solid #b18cda49!important}
+.panel-header .subtitle{font-size:11px!important;line-height:1.45!important;opacity:.9}
+.tabs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px!important;padding:9px 12px!important}
+.tab{min-width:0!important;min-height:37px!important;border-radius:11px!important;font-weight:600!important;white-space:nowrap}
+.tab.selected{box-shadow:inset 0 0 0 1px #c99afa42;background:#7f4ba0a6!important}
+.content{padding:13px 15px!important}
+.chat-history{margin:4px 0 8px!important;padding-right:4px!important;scrollbar-gutter:stable;max-height:min(36vh,310px)!important}
+.chat-bubble{line-height:1.63!important;overflow-wrap:anywhere}
+.chat-form{display:flex!important;align-items:stretch;gap:8px!important}
+.chat-form input{min-width:0!important;flex:1!important}
+.chat-send{min-width:45px!important}
+.panel:has(.chat-form) .feedback{display:none!important}
+#arcane-skin-label select{min-height:38px!important}
+:host([data-mode="desktop"]) .panel{width:min(365px,100%)!important}
+@media(max-width:520px){
+ :host(:not([data-mode="desktop"])) .panel{width:min(365px,calc(100vw - 12px))!important;max-height:70dvh!important}
+ .chat-history{max-height:26dvh!important}
+ .content{padding:10px 12px!important}
+}
+@media(prefers-reduced-motion:reduce){.character,.character svg{animation:none!important}}
+\`;
+function styleAlquimago(){
+ const familiar=document.querySelector('alquimago-familiar');
+ if(!familiar?.shadowRoot||familiar.shadowRoot.getElementById('jf-layout-v1'))return
+ const css=document.createElement('style');css.id='jf-layout-v1';css.textContent=LAYOUT_STYLE;
+ familiar.shadowRoot.append(css)
+}
+
 export function registerAlquimago3D():void{
+ const observer=new MutationObserver(styleAlquimago)
+ observer.observe(document.documentElement,{childList:true,subtree:true})
+ styleAlquimago()
  const world=window as typeof window & {AlquimagoSkinRenderers?:{model3d?: (args:{host:HTMLElement;url:string;shapeKeys:Record<string,string>})=>SkinAdapter}}
  world.AlquimagoSkinRenderers??={}
  world.AlquimagoSkinRenderers.model3d=({host,url,shapeKeys})=>{
@@ -89,6 +123,7 @@ export function registerAlquimago3D():void{
       const blink=(t%5.1)<0.14?Math.sin((t%5.1)/0.14*Math.PI):0
       const desired=new Map<string,number>()
       if(mood!=='idle')desired.set(shapeKeys[mood]||ALQUIMAGO_SHAPE_MAP[mood],0.95)
+      else desired.set(shapeKeys.idle||'Idle',0.12)
       desired.set(shapeKeys.blink||'Blink',mood==='sleep'?1:blink)
       for(const entry of morphs)for(const [name,index] of Object.entries(entry.dictionary)){
        const target=desired.get(name)??0
