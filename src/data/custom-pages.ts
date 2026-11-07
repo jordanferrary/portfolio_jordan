@@ -21,6 +21,8 @@ export type PageBlock=Omit<Block,'type'> &{
  buttonAlign?:'left'|'center'|'right'
  buttonWidth?:'auto'|'full'
  showcaseItems?:ShowcaseItem[]
+ /** Cover for artwork thumbnails; contain for complete certificates. */
+ showcaseFit?:'contain'|'cover'
  slideItems?:SlideItem[]
  slideAutoplay?:boolean
  slideTransition?:SlideTransition
@@ -82,6 +84,7 @@ export function normalizeCustomPages(input:unknown):CustomPage[]{
     after:typeof block.after==='string'?normalizeBundledImage(block.after):undefined,
     gallery:Array.isArray(block.gallery)?block.gallery.filter((a):a is string=>typeof a==='string').map(normalizeBundledImage):undefined,
     showcaseItems:Array.isArray(block.showcaseItems)?block.showcaseItems.slice(0,120).filter((entry):entry is ShowcaseItem=>Boolean(entry&&typeof entry==='object'&&typeof entry.image==='string')).map(entry=>({id:typeof entry.id==='string'?entry.id:'item-'+crypto.randomUUID(),image:entry.image,name:typeof entry.name==='string'?entry.name.slice(0,120):'',description:typeof entry.description==='string'?entry.description.slice(0,1800):'',portfolioUrl:typeof entry.portfolioUrl==='string'?entry.portfolioUrl:'',linkLabel:typeof entry.linkLabel==='string'?entry.linkLabel.slice(0,90):'View portfolio',showLink:entry.showLink!==false})):[],
+    showcaseFit:block.showcaseFit==='contain'?'contain':'cover',
     slideItems:Array.isArray(block.slideItems)?block.slideItems.slice(0,80).filter((entry):entry is SlideItem=>Boolean(entry&&typeof entry==='object'&&typeof entry.image==='string')).map(entry=>({id:typeof entry.id==='string'?entry.id:'slide-'+crypto.randomUUID(),image:entry.image,caption:typeof entry.caption==='string'?entry.caption.slice(0,500):''})):[],
     slideAutoplay:block.slideAutoplay===true,
     slideTransition:['fade','slide','zoom'].includes(block.slideTransition??'')?block.slideTransition:'fade',
