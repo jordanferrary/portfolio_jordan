@@ -136,6 +136,9 @@ export function usePortfolio(editing=false){
  const markPublished=(revision:string)=>{
   // Credential-free marker only. Never write the GitHub token to localStorage.
   try{localStorage.setItem(PENDING_KEY,JSON.stringify({revision,snapshot:localStorage.getItem(KEY)}))}catch{/* publication itself already succeeded */}
+  // A successful authenticated publication is a meaningful familiar milestone.
+  // Only the non-sensitive revision id is exposed to the local companion.
+  window.dispatchEvent(new CustomEvent('alquimago:activity',{detail:{type:'published',revision}}))
  }
  const restorePublished=()=>{
   localStorage.removeItem(KEY)
