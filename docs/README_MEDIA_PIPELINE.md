@@ -34,3 +34,8 @@ O gerenciador local utiliza `deleteStoredMedia(ref)` para remover conteúdo e ca
 
 ## Bloco de modelo 3D
 `ProjectModel` exibe um card estático com capa opcional. Após o clique, adiciona o web component `model-viewer` via CDN, com versão fixada, que renderiza `.glb` / `.gltf` e habilita câmera de órbita e zoom. O componente de renderização externo é carregado apenas nessa interação. A origem deve permitir requisições CORS. **FBX não é suportado diretamente**, devendo ser convertido para GLB com as texturas apropriadas.
+
+
+## Player com identidade editorial
+
+A composição `video` aceita `videoTitle?:string` para um título editável na apresentação, sem modificar o título oficial do vídeo no YouTube. `ProjectVideo` oferece a miniatura leve e só carrega `YouTubeCustomPlayer` após clique. O player é um iframe oficial com `enablejsapi=1` e controles nativos habilitados, associado à API por `YT.Player` quando o SDK externo fica disponível. Uma timeline **externa** sincronizada por `getCurrentTime()`, `getDuration()` e `seekTo()` permite estilo roxo/grafite e fontes locais. Não insira sobreposições nos controles internos. O Vimeo preserva a interface nativa.
