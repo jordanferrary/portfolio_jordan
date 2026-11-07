@@ -43,7 +43,8 @@
           "pet": "Pet",
           "surprised": "Surprised",
           "focused": "Focused",
-          "sad": "Sad"
+          "sad": "Sad",
+          "breath": "Breath"
         }
       }
     ],
