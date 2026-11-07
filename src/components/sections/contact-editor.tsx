@@ -1,5 +1,5 @@
 import {useState} from 'react'
-import {Link2,Save,Sparkles,X} from 'lucide-react'
+import {ArrowDown,ArrowUp,Link2,Plus,Save,Sparkles,Trash2,X} from 'lucide-react'
 import type {ContactSettings,SocialLink} from '../../data/studio'
 import {SocialLinksEditor} from './social-links-editor'
 
@@ -15,11 +15,13 @@ export function ContactEditor({settings,links,onSave,onClose}:Props){
  const [draftLinks,setDraftLinks]=useState<SocialLink[]>(()=>links.map(link=>({...link})))
  const [error,setError]=useState('')
  const patch=(changes:Partial<ContactSettings>)=>setDraft(prev=>({...prev,...changes}))
+ const updateTags=(next:string[])=>patch({footerTags:next})
+ const moveTag=(index:number,offset:number)=>{const next=[...draft.footerTags];const target=index+offset;if(target<0||target>=next.length)return;[next[index],next[target]]=[next[target],next[index]];updateTags(next)}
  const save=()=>{
   if(!draft.titleFirst.trim()||!draft.titleAccent.trim()||!draft.introduction.trim()){
    setError('Preencha o título e a apresentação da página.');return
   }
-  onSave({...draft,titleFirst:draft.titleFirst.trim(),titleAccent:draft.titleAccent.trim(),introduction:draft.introduction.trim(),greeting:draft.greeting.trim()},draftLinks)
+  onSave({...draft,titleFirst:draft.titleFirst.trim(),titleAccent:draft.titleAccent.trim(),introduction:draft.introduction.trim(),greeting:draft.greeting.trim(),footerTags:[...new Set(draft.footerTags.map(v=>v.trim()).filter(Boolean))].slice(0,18)},draftLinks)
   onClose()
  }
  return <div className="editor-overlay" lang="pt-BR"><section className="editor-panel contact-editor contact-social-editor" role="dialog" aria-modal="true" aria-label="Editar contato e redes sociais">
@@ -36,6 +38,12 @@ export function ContactEditor({settings,links,onSave,onClose}:Props){
    <section className="contact-editor-networks">
     <div className="contact-editor-section-title"><span>02 · CANAIS DE CONTATO</span><h3>Perfis e links</h3><p>Somente redes com links válidos aparecem na página. A primeira rede configurada recebe maior destaque.</p></div>
     <SocialLinksEditor links={draftLinks} onChange={setDraftLinks}/>
+   </section>
+   <section className="contact-editor-tags">
+    <div className="contact-editor-section-title"><span>03 · ÁREAS CRIATIVAS</span><h3>Especialidades do rodapé</h3><p>Edite as etiquetas exibidas no fim do Contact. Reordene, adicione ou remova livremente. Remover todas oculta a faixa inteira.</p></div>
+    <div className="contact-footer-tag-list">{draft.footerTags.map((tag,index)=><div className="contact-footer-tag-row" key={index}><input aria-label={'Especialidade '+(index+1)} value={tag} maxLength={38} placeholder="Ex.: 3D ART, MOTION DESIGN" onChange={e=>updateTags(draft.footerTags.map((value,i)=>i===index?e.target.value:value))}/><button type="button" onClick={()=>moveTag(index,-1)} disabled={index===0} aria-label="Mover especialidade acima"><ArrowUp size={15}/></button><button type="button" onClick={()=>moveTag(index,1)} disabled={index===draft.footerTags.length-1} aria-label="Mover especialidade abaixo"><ArrowDown size={15}/></button><button type="button" onClick={()=>updateTags(draft.footerTags.filter((_,i)=>i!==index))} aria-label={'Remover '+(tag||'especialidade')}><Trash2 size={15}/></button></div>)}</div>
+    <button type="button" className="contact-footer-add-tag" disabled={draft.footerTags.length>=18} onClick={()=>updateTags([...draft.footerTags,''])}><Plus size={16}/>Adicionar especialidade</button>
+    <div className="contact-footer-tags-preview" aria-label="Prévia da faixa de especialidades">{draft.footerTags.filter(Boolean).length?draft.footerTags.filter(Boolean).map((tag,index)=><span key={index}>{tag}</span>):<span>Faixa oculta quando estiver vazia</span>}</div>
    </section>
    <div className="contact-editor-reminder"><Link2 size={17}/><span>Salve cada perfil dentro do gerenciador e depois clique em <b>Salvar página</b>. Para tornar as mudanças públicas, use <b>Publicar no GitHub</b>.</span></div>
    {error&&<p className="editor-status" role="alert">{error}</p>}
