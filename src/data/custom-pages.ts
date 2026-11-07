@@ -9,14 +9,22 @@ export const customPageIconOptions:{value:CustomPageIcon;label:string}[]=[
  {value:'video',label:'Vídeo'},{value:'star',label:'Estrela'},{value:'link',label:'Links'}
 ]
 export type PageButtonAction='copy'|'url-current'|'url-new'
+export type ShowcaseItem={id:string;image:string;name:string;description:string;portfolioUrl:string}
+export type SlideTransition='fade'|'slide'|'zoom'
+export type SlideItem={id:string;image:string;caption:string}
 export type PageBlock=Omit<Block,'type'> &{
- type:BlockType|'action'
+ type:BlockType|'action'|'showcase'|'slideshow'
  buttonLabel?:string
  buttonAction?:PageButtonAction
  buttonStyle?:'primary'|'outline'
  buttonNote?:string
  buttonAlign?:'left'|'center'|'right'
  buttonWidth?:'auto'|'full'
+ showcaseItems?:ShowcaseItem[]
+ slideItems?:SlideItem[]
+ slideAutoplay?:boolean
+ slideTransition?:SlideTransition
+ slideInterval?:number
 }
 export interface CustomPage{
  id:string
@@ -32,7 +40,7 @@ export interface CustomPage{
  layout:'standard'|'wide'
  blocks:PageBlock[]
 }
-const blockTypes=new Set<string>(['heading','text','image','image-left','image-right','before-after','gallery','divider','video','model','action'])
+const blockTypes=new Set<string>(['heading','text','image','image-left','image-right','before-after','gallery','divider','video','model','action','showcase','slideshow'])
 const iconSet=new Set<string>(customPageIconOptions.map(option=>option.value))
 const buttonActions=new Set<string>(['copy','url-current','url-new'])
 /** Stable IDs keep links working when a page title or navigation label changes. */
@@ -68,6 +76,11 @@ export function normalizeCustomPages(input:unknown):CustomPage[]{
     media:typeof block.media==='string'?normalizeBundledImage(block.media):undefined,
     after:typeof block.after==='string'?normalizeBundledImage(block.after):undefined,
     gallery:Array.isArray(block.gallery)?block.gallery.filter((a):a is string=>typeof a==='string').map(normalizeBundledImage):undefined,
+    showcaseItems:Array.isArray(block.showcaseItems)?block.showcaseItems.slice(0,120).filter((entry):entry is ShowcaseItem=>Boolean(entry&&typeof entry==='object'&&typeof entry.image==='string')).map(entry=>({id:typeof entry.id==='string'?entry.id:'item-'+crypto.randomUUID(),image:entry.image,name:typeof entry.name==='string'?entry.name.slice(0,120):'',description:typeof entry.description==='string'?entry.description.slice(0,1800):'',portfolioUrl:typeof entry.portfolioUrl==='string'?entry.portfolioUrl:''})):[],
+    slideItems:Array.isArray(block.slideItems)?block.slideItems.slice(0,80).filter((entry):entry is SlideItem=>Boolean(entry&&typeof entry==='object'&&typeof entry.image==='string')).map(entry=>({id:typeof entry.id==='string'?entry.id:'slide-'+crypto.randomUUID(),image:entry.image,caption:typeof entry.caption==='string'?entry.caption.slice(0,500):''})):[],
+    slideAutoplay:block.slideAutoplay===true,
+    slideTransition:['fade','slide','zoom'].includes(block.slideTransition??'')?block.slideTransition:'fade',
+    slideInterval:typeof block.slideInterval==='number'&&Number.isFinite(block.slideInterval)?Math.max(1500,Math.min(30000,Math.round(block.slideInterval))):5000,
     buttonAction:buttonActions.has(block.buttonAction??'')?block.buttonAction:'copy',
     buttonLabel:typeof block.buttonLabel==='string'?block.buttonLabel:'Copy',
     buttonNote:typeof block.buttonNote==='string'?block.buttonNote:'',
