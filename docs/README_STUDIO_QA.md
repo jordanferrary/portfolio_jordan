@@ -65,3 +65,10 @@ O pipeline de GitHub Pages roda os testes antes do deploy: falhas impedem public
 - A paleta possui **quatro controles globais**; elementos da interface administrativa permanecem visualmente estáveis intencionalmente. A cor personalizada pode gerar contraste insuficiente e o usuário precisa avaliar o alerta.
 - Links externos podem deixar de funcionar, bloquear carregamento ou mudar ao longo do tempo.
 - Não publique nem exclua mídias reais apenas para testar; utilize dados artificiais e backup num ambiente separado.
+
+
+## Auditoria ampliada: paleta global
+
+Os **sete** tokens persistidos agora controlam: `primary`, `secondary`, `background`, `surface`, `text`, `muted` e `border`. `theme-coverage.css`, importado por último, conecta os tokens aos elementos públicos de Home/Galeria/Projeto/Sobre/Contact/Páginas personalizadas/Player.
+
+**Validação manual importante:** altere cada token para uma cor nitidamente diferente no Local Studio; verifique o resultado imediatamente nas páginas (navegando enquanto a prévia está aberta, quando a interface permitir) e depois de salvar e publicar. Compare borda e fundo de cards, texto secundário, faixas de categoria, texto dos projetos e widgets. Confirme que capas, imagens de projetos e controles do Studio não sofrem filtros ou recoloração. Abra/cancele o editor para confirmar reversão. Teste um preset e um backup de paleta antiga de quatro campos. O teste SSR confere aplicação das sete variáveis e presença de regras públicas, **mas não substitui verificação por navegador/renderização pixel a pixel**.
