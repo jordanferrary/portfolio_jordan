@@ -1,21 +1,22 @@
 {
   "schema": 2,
-  "updatedAt": "2026-11-07T18:43:31.935Z",
+  "updatedAt": "2026-11-07T21:25:45.343Z",
   "brain": {
-    "energy": 77.64166666666668,
-    "curiosity": 58.17499999999999,
-    "focus": 35.74333333333332,
-    "affinity": 51,
-    "xp": 10,
-    "interactions": 3,
+    "energy": 98.25000000000006,
+    "curiosity": 63.24999999999996,
+    "focus": 26.300000000000015,
+    "affinity": 57,
+    "xp": 20,
+    "interactions": 6,
     "lastSeen": 1000000000000,
     "sleepUntil": 0,
-    "lastRewardAt": 1794077011935,
+    "lastRewardAt": 1794086745343,
     "lastAction": "publish",
+    "lastRewardAction": "publish",
     "rewardedPages": {
-      "pub-2026-11-07T18%3A43%3A31.935Z-57e9664a-1587-4bc9-9ff4-2a1c04376bfa": 20764
-    },
-    "lastRewardAction": "publish"
+      "pub-2026-11-07T18%3A43%3A31.935Z-57e9664a-1587-4bc9-9ff4-2a1c04376bfa": 20764,
+      "pub-2026-11-07T21%3A25%3A45.343Z-0f60515e-bd5b-4264-b980-55a8ca82e670": 20764
+    }
   },
   "neural": {
     "version": 1,
@@ -2666,9 +2667,9 @@
   "behavior": {
     "schema": 1,
     "seed": 77,
-    "energy": 72.55000000000004,
-    "curiosity": 54.44000000000001,
-    "stimulation": 40.25,
+    "energy": 64.50000000000017,
+    "curiosity": 52.60000000000005,
+    "stimulation": 34.5,
     "trust": 45,
     "rewardBias": [
       0,
