@@ -21,6 +21,8 @@ jobs:
       - run: npm install
       - run: npm run typecheck
       - run: npm run test:studio
+      - name: Verify Alquimago release
+        run: node scripts/check-alquimago-release.mjs
       - name: Prepare social preview and favicon from published content
         run: |
           python3 -m pip install --disable-pip-version-check Pillow
