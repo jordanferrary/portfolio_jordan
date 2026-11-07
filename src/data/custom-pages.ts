@@ -25,6 +25,13 @@ export type PageBlock=Omit<Block,'type'> &{
  slideAutoplay?:boolean
  slideTransition?:SlideTransition
  slideInterval?:number
+ /** Percent of the page's content column, 50–100. */
+ slideWidth?:number
+ /** Stage height in CSS px, 180–640. Shorter carousels display more images in auto mode. */
+ slideHeight?:number
+ /** Zero = automatically choose based on stage dimensions; 1–5 = preferred images per view. */
+ slideVisible?:number
+ slideFit?:'contain'|'cover'
 }
 export interface CustomPage{
  id:string
@@ -81,6 +88,10 @@ export function normalizeCustomPages(input:unknown):CustomPage[]{
     slideAutoplay:block.slideAutoplay===true,
     slideTransition:['fade','slide','zoom'].includes(block.slideTransition??'')?block.slideTransition:'fade',
     slideInterval:typeof block.slideInterval==='number'&&Number.isFinite(block.slideInterval)?Math.max(1500,Math.min(30000,Math.round(block.slideInterval))):5000,
+    slideWidth:typeof block.slideWidth==='number'&&Number.isFinite(block.slideWidth)?Math.max(50,Math.min(100,Math.round(block.slideWidth))):100,
+    slideHeight:typeof block.slideHeight==='number'&&Number.isFinite(block.slideHeight)?Math.max(180,Math.min(640,Math.round(block.slideHeight))):520,
+    slideVisible:typeof block.slideVisible==='number'&&Number.isFinite(block.slideVisible)?Math.max(0,Math.min(5,Math.round(block.slideVisible))):0,
+    slideFit:block.slideFit==='cover'?'cover':'contain',
     buttonAction:buttonActions.has(block.buttonAction??'')?block.buttonAction:'copy',
     buttonLabel:typeof block.buttonLabel==='string'?block.buttonLabel:'Copy',
     buttonNote:typeof block.buttonNote==='string'?block.buttonNote:'',
