@@ -42,6 +42,7 @@ export function App(){
  const [themePaletteOpen,setThemePaletteOpen]=useState(false)
  const [imageConverterOpen,setImageConverterOpen]=useState(false)
  const [mediaManagerOpen,setMediaManagerOpen]=useState(false)
+ const [stagedMediaDeletions,setStagedMediaDeletions]=useState<string[]>([])
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
  const navigate=(next:Page)=>{location.hash='/'+next;setPage(next);window.scrollTo(0,0)}
@@ -88,12 +89,12 @@ export function App(){
  <Suspense fallback={null}>
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
  {editing&&imageConverterOpen&&<ImageConverter onClose={()=>setImageConverterOpen(false)}/>}
- {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>setGitHubPublishOpen(true)}/>}
+ {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>{setMediaManagerOpen(false);setGitHubPublishOpen(true)}} onPreparePublished={paths=>{setStagedMediaDeletions(paths);setMediaManagerOpen(false);setGitHubPublishOpen(true)}}/>}
  {editing&&themePaletteOpen&&<ThemePaletteEditor value={portfolio.themePalette} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}
  {editing&&siteIdentityOpen&&<SiteIdentityEditor value={{siteFavicon:portfolio.siteFavicon,seoTitle:portfolio.seoTitle,seoDescription:portfolio.seoDescription}} homeBanner={portfolio.home.background} onSave={portfolio.setSiteIdentity} onEditBanner={()=>openHomeTab('home')} onClose={()=>setSiteIdentityOpen(false)}/>}
  {editing&&logoEditorOpen&&<BrandLogoEditor value={{siteLogo:portfolio.siteLogo,siteLogoHover:portfolio.siteLogoHover,siteLogoSize:portfolio.siteLogoSize,siteLogoHoverScale:portfolio.siteLogoHoverScale}} onSave={portfolio.setBranding} onClose={()=>setLogoEditorOpen(false)}/>}
  {editing&&galleryBackgroundEditorOpen&&<GalleryBackgroundEditor value={portfolio.galleryBackground} onSave={portfolio.setGalleryBackground} onClose={()=>setGalleryBackgroundEditorOpen(false)}/>}
- {editing&&githubPublishOpen&&<GitHubPublishEditor store={portfolio} onPublished={portfolio.markPublished} onRestore={portfolio.restorePublished} onExport={portfolio.exportData} onClose={()=>setGitHubPublishOpen(false)}/>}
+ {editing&&githubPublishOpen&&<GitHubPublishEditor store={portfolio} stagedDeletionPaths={stagedMediaDeletions} onPublished={revision=>{portfolio.markPublished(revision);setStagedMediaDeletions([])}} onRestore={portfolio.restorePublished} onExport={portfolio.exportData} onClose={()=>{setGitHubPublishOpen(false);setStagedMediaDeletions([])}}/>}
  {editing&&contactEditorOpen&&<ContactEditor settings={portfolio.contact} links={portfolio.socialLinks} onSave={portfolio.setContactPage} onClose={()=>setContactEditorOpen(false)}/>}
  {editing&&aboutEditorOpen&&<AboutEditor value={portfolio.about} onSave={portfolio.setAbout} onClose={()=>setAboutEditorOpen(false)}/>}
  {editing&&homeEditorOpen&&<HomeEditor initialTab={homeEditorTab} showLikeCounts={portfolio.showLikeCounts} onShowLikeCounts={portfolio.setShowLikeCounts} home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} links={portfolio.socialLinks} onLinks={portfolio.setSocialLinks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
