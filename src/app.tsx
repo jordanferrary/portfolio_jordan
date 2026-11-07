@@ -26,6 +26,7 @@ import type {StudioAction} from './components/sections/studio-dock'
 const StudioDock=lazy(()=>import('./components/sections/studio-dock').then(m=>({default:m.StudioDock})))
 const ImageConverter=lazy(()=>import('./components/sections/image-converter').then(m=>({default:m.ImageConverter})))
 const MediaManager=lazy(()=>import('./components/sections/media-manager').then(m=>({default:m.MediaManager})))
+const Alquimago3DEditor=lazy(()=>import('./components/sections/alquimago-3d-editor').then(m=>({default:m.Alquimago3DEditor})))
 const CustomPageEditor=lazy(()=>import('./components/sections/custom-page-editor').then(m=>({default:m.CustomPageEditor})))
 import type { Project } from './data/projects'
 function route():Page|'project'|'custom'{const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':part.startsWith('page/')?'custom':(['inicio','portfolio','sobre','contato'].includes(part)?part as Page:'inicio')}
@@ -44,6 +45,7 @@ export function App(){
  const [themePaletteOpen,setThemePaletteOpen]=useState(false)
  const [imageConverterOpen,setImageConverterOpen]=useState(false)
  const [mediaManagerOpen,setMediaManagerOpen]=useState(false)
+ const [skin3DOpen,setSkin3DOpen]=useState(false)
  const [customPageEditorTarget,setCustomPageEditorTarget]=useState<string|null>(null)
  const [stagedMediaDeletions,setStagedMediaDeletions]=useState<string[]>([])
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
@@ -68,6 +70,7 @@ export function App(){
   {id:'new-custom-page',label:'Nova página',description:'Cursos, recursos, guias, downloads e outros',section:'Páginas',icon:Plus,onClick:()=>setCustomPageEditorTarget('new')},
   {id:'new-project',label:'Novo projeto',description:'Criar e compor uma nova obra',section:'Projetos',icon:Plus,onClick:()=>setEditor(null)},
   ...(page==='project'&&project?[{id:'active-project',label:'Editar obra atual',description:project.title,section:'Projetos' as const,icon:Layers,onClick:()=>setEditor(project)}]:[]),
+  {id:'alquimago-skin3d',label:'Skin 3D do Alquimago',description:'Importar GLB, validar Shape Keys e visualizar expressões',section:'Conteúdo',icon:Palette,onClick:()=>setSkin3DOpen(true)},
   {id:'media-manager',label:'Gerenciar arquivos',description:'Excluir imagens e áudios antigos, locais ou publicados',section:'Conteúdo',icon:ImageIcon,onClick:()=>setMediaManagerOpen(true)},
   {id:'image-converter',label:'Conversor WebP',description:'Compactar, redimensionar e baixar imagens',section:'Conteúdo',icon:ImageIcon,onClick:()=>setImageConverterOpen(true)},
   {id:'music',label:'Músicas',description:'Faixas, capas e ordem da playlist',section:'Conteúdo',icon:Music,onClick:()=>openHomeTab('music')},
@@ -171,6 +174,7 @@ export function App(){
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>setGateOpen(false)}/>}
  {editing&&imageConverterOpen&&<ImageConverter onClose={()=>setImageConverterOpen(false)}/>}
  {editing&&customPageEditorTarget!==null&&<CustomPageEditor key={customPageEditorTarget} initialPageId={customPageEditorTarget} pages={portfolio.customPages} onSavePages={portfolio.setCustomPages} onNavigatePage={navigateCustomPage} onClose={()=>setCustomPageEditorTarget(null)}/>}
+ {editing&&skin3DOpen&&<Alquimago3DEditor onClose={()=>setSkin3DOpen(false)} onPublish={()=>setGitHubPublishOpen(true)}/>}
  {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>{setMediaManagerOpen(false);setGitHubPublishOpen(true)}} onPreparePublished={paths=>{setStagedMediaDeletions(paths);setMediaManagerOpen(false);setGitHubPublishOpen(true)}}/>}
  {editing&&themePaletteOpen&&<ThemePaletteEditor value={portfolio.themePalette} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}
  {editing&&siteIdentityOpen&&<SiteIdentityEditor value={{siteFavicon:portfolio.siteFavicon,seoTitle:portfolio.seoTitle,seoDescription:portfolio.seoDescription}} homeBanner={portfolio.home.background} onSave={portfolio.setSiteIdentity} onEditBanner={()=>openHomeTab('home')} onClose={()=>setSiteIdentityOpen(false)}/>}
