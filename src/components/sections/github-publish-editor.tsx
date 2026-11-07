@@ -44,7 +44,11 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
   }
   setBusy(true);setError('');setResult(null)
   try{
-   const finished=await publishPortfolioToGitHub(token,store,currentPublishedRevision,setStatus,selectedPaths)
+   // The live familiar's uncommitted state is included only on this explicit
+   // publication. Reloading without publishing discards its draft changes.
+   const familiar=document.querySelector('alquimago-familiar') as (HTMLElement&{snapshot?:()=>unknown})|null
+   const familiarSnapshot=familiar?.snapshot?.()??null
+   const finished=await publishPortfolioToGitHub(token,store,currentPublishedRevision,setStatus,selectedPaths,familiarSnapshot)
    onPublished(finished.revision)
    setResult(finished)
    setStatus('As alterações estão no GitHub. O GitHub Pages publicará essa versão após o workflow concluir.')
