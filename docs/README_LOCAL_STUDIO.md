@@ -92,3 +92,18 @@ Em **Local Studio → Identidade → Paleta de cores**, o proprietário agora po
 A prévia interna mostra as sete amostras e verifica o contraste entre texto principal e fundos/cards e entre texto secundário e fundo. Para desfazer uma experiência sem salvá-la, feche a janela; **Salvar paleta** registra no navegador; **Publicar no GitHub** envia a paleta ao site público. Presets foram atualizados para combinar também o texto secundário e as bordas com cada direção de arte. As paletas antigas de quatro cores são migradas com os novos campos preenchidos por defaults; cores previamente customizadas permanecem inalteradas.
 
 Implementação: `src/lib/theme-palette.ts` valida valores, `src/components/sections/theme-palette-editor.tsx` manipula e aplica a prévia, `src/styles/theme-coverage.css` contém as regras do site visitante e precisa continuar sendo a última folha importada em `src/main.tsx`. Não adicionar novas cores roxas fixas nas páginas públicas; utilizar tokens `--jf-*`.
+
+
+## Alquimago — mascote experimental do Local Studio
+
+Ao desbloquear o Local Studio com **Ctrl + \\**, o Alquimago aparece na tela. Ele não é carregado para visitantes enquanto estiver em testes.
+
+Os arquivos de integração ficam em `public/alquimago/`: `alquimago.js` (widget local), `config.json` (regras), `project-context.json` (resumo público do projeto) e `project-memory.json` (snapshot numérico público opcional do familiar do editor). Não é necessário executar um novo processo de instalação nem adicionar etapas para publicar o portfólio.
+
+O mascote salva XP, energia e demais atributos em `localStorage` usando o namespace `studio`. Atualizar o código ou publicar o site normalmente não apaga essa memória no mesmo navegador e domínio. Limpar dados do site ou trocar de dispositivo pode apagá-la; use **Exportar memória** e **Restaurar** para transferir ou guardar um backup.
+
+Ao usar **Publicar no GitHub** com o token temporário já empregado pelo Studio, o publicador também inclui no mesmo commit um contexto público atualizado do projeto e, se existir memória local do editor, um snapshot **apenas numérico**, sem textos privados. Rascunhos salvos localmente **não** fazem commits automaticamente. Dados de interação de visitantes não são compartilhados no repositório.
+
+O recurso **Arquivos** lê apenas arquivos de texto públicos que forem explicitamente indicados em `config.json`. Não lê o código privado de outros repositórios nem acessa o disco do computador pelo navegador. A integração atual não é um agente de IA autônomo.
+
+Ao atualizar o widget da sua própria instalação, verifique a versão de `public/alquimago/alquimago.js` e não substitua os arquivos de memória por conteúdo de exemplo.
