@@ -223,3 +223,26 @@
 .custom-page-slide-pause-option>span{display:flex;flex-direction:column;gap:4px;min-width:0}
 .custom-page-slide-pause-option strong{color:#edd5fc;font-size:12px}
 .custom-page-slide-pause-option small{color:#b798ca;font-size:10px;line-height:1.4}
+
+
+/* Public custom pages inherit the actual site palette. Studio editor keeps its stable controls. */
+.site-shell .custom-page{--cp-purple:var(--jf-primary)}
+.site-shell .custom-page-hero{border-color:var(--jf-panel-edge);background:radial-gradient(ellipse at 83% 38%,var(--jf-primary-soft),var(--jf-surface) 57%,var(--jf-background));box-shadow:0 22px 65px #08031166}
+.site-shell .custom-page-eyebrow,.site-shell .custom-page-footer a{color:var(--jf-secondary)}
+.site-shell .custom-page-hero-watermark{color:var(--jf-primary-soft)}
+.site-shell .custom-page-hero::after{background:linear-gradient(90deg,color-mix(in srgb,var(--jf-background) 94%,transparent),color-mix(in srgb,var(--jf-background) 82%,transparent) 37%,color-mix(in srgb,var(--jf-background) 40%,transparent) 85%),linear-gradient(0deg,var(--jf-background),transparent 67%)}
+.site-shell .custom-page-cta{border-color:var(--jf-primary);background:linear-gradient(110deg,var(--jf-primary),color-mix(in srgb,var(--jf-primary) 58%,var(--jf-surface)));box-shadow:0 8px 28px var(--jf-primary-glow)}
+.site-shell .custom-page-cta:hover{box-shadow:0 11px 33px var(--jf-primary-glow);border-color:var(--jf-secondary)}
+.site-shell .custom-page-cta.outline{background:var(--jf-surface);border-color:var(--jf-panel-edge);color:var(--jf-secondary);box-shadow:none}
+.site-shell .custom-page-empty{border-color:var(--jf-panel-edge);background:var(--jf-surface)}
+.site-shell .custom-page-footer{border-color:var(--jf-panel-edge)}
+.site-shell .artist-showcase-card{border-color:var(--jf-panel-edge);background:var(--jf-surface)}
+.site-shell .artist-showcase-card:hover,.site-shell .artist-showcase-card.active{border-color:var(--jf-primary);box-shadow:0 0 0 1px var(--jf-primary),0 8px 25px var(--jf-primary-glow)}
+.site-shell .artist-showcase-detail{border-color:var(--jf-panel-edge);background:linear-gradient(155deg,var(--jf-panel-elevated),var(--jf-background))}
+.site-shell .artist-showcase-kicker{color:var(--jf-secondary)}
+.site-shell .artist-showcase-portfolio{border-color:var(--jf-primary);background:linear-gradient(105deg,var(--jf-primary),color-mix(in srgb,var(--jf-primary) 40%,var(--jf-background)))}
+.site-shell .page-slideshow{border-color:var(--jf-panel-edge);background:var(--jf-background)}
+.site-shell .page-slideshow-image{border-color:var(--jf-panel-edge);background:var(--jf-background)}
+.site-shell .page-slideshow-image:hover{border-color:var(--jf-primary)}
+.site-shell .page-slideshow-arrow,.site-shell .page-slideshow-floating-play{border-color:var(--jf-panel-edge);background:color-mix(in srgb,var(--jf-surface) 81%,transparent);color:var(--jf-secondary)}
+.site-shell .page-slideshow-arrow:hover,.site-shell .page-slideshow-floating-play:hover{border-color:var(--jf-primary);background:var(--jf-primary-soft)}
