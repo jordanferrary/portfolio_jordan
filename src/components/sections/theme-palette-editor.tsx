@@ -6,10 +6,10 @@ import { applyThemePalette,contrastRatio,DEFAULT_THEME,PALETTE_FIELDS,type Theme
 type Props={value:ThemePalette;onSave:(theme:ThemePalette)=>void;onClose:()=>void}
 const PRESETS:{name:string;palette:ThemePalette}[]=[
  {name:'Neon Dream',palette:{...DEFAULT_THEME}},
- {name:'Cyber Aurora',palette:{...DEFAULT_THEME,primary:'#3D91FF',secondary:'#43EDCD',background:'#070D1C',surface:'#111D32'}},
- {name:'Electric Rose',palette:{...DEFAULT_THEME,primary:'#FF4D9D',secondary:'#FFA44B',background:'#160914',surface:'#2A1225'}},
- {name:'Solar Flare',palette:{...DEFAULT_THEME,primary:'#FF8145',secondary:'#FFCE54',background:'#130A0E',surface:'#281719'}},
- {name:'Moonlight',palette:{...DEFAULT_THEME,primary:'#B4AAFF',secondary:'#91DFFF',background:'#090B19',surface:'#1C1C34'}}
+ {name:'Cyber Aurora',palette:{...DEFAULT_THEME,primary:'#3D91FF',secondary:'#43EDCD',background:'#070D1C',surface:'#111D32',muted:'#ACCEDE',border:'#3A729A'}},
+ {name:'Electric Rose',palette:{...DEFAULT_THEME,primary:'#FF4D9D',secondary:'#FFA44B',background:'#160914',surface:'#2A1225',muted:'#DBC0CF',border:'#A44A83'}},
+ {name:'Solar Flare',palette:{...DEFAULT_THEME,primary:'#FF8145',secondary:'#FFCE54',background:'#130A0E',surface:'#281719',muted:'#E0C1B4',border:'#995539'}},
+ {name:'Moonlight',palette:{...DEFAULT_THEME,primary:'#B4AAFF',secondary:'#91DFFF',background:'#090B19',surface:'#1C1C34',muted:'#C0C0DC',border:'#6669A6'}}
 ]
 export function ThemePaletteEditor({value,onSave,onClose}:Props){
  const [draft,setDraft]=useState<ThemePalette>(()=>({...value}))
