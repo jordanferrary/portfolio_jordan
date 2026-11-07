@@ -58,5 +58,12 @@
     "projectHover": true,
     "delayMs": 1050,
     "cooldownMs": 50000
+  },
+  "behavior": {
+    "enabled": true,
+    "mode": "equilibrado",
+    "minIntervalMs": 120000,
+    "maxPerDay": 4,
+    "toy": true
   }
 }
