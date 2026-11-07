@@ -6,7 +6,8 @@ export const ANIMATION_IDS=[
 ] as const
 export type AnimationKey=typeof ANIMATION_IDS[number]
 export type AnimationTiming={durationMs:number;intensity:number;intervalMs:number}
-export const BREATH_MOODS=['tranquilo','feliz','animado','curioso','concentrado','sonolento','meditando','cansado'] as const
+export const BREATH_MOODS=['tranquilo','feliz','animado','curioso','concentrado','sonolento','meditando','cansado',
+ 'sad','happy','angry','surprised','curious','focused','pet','tired'] as const
 export type BreathMood=typeof BREATH_MOODS[number]
 export type AnimationProfile={
  shapes:Record<AnimationKey,AnimationTiming>
@@ -35,7 +36,9 @@ export const DEFAULT_ANIMATION_PROFILE:AnimationProfile={
  })) as Record<AnimationKey,AnimationTiming>,
  breathMoodSpeed:{
   tranquilo:1,feliz:1.14,animado:1.55,curioso:1.08,
-  concentrado:0.9,sonolento:0.75,meditando:0.7,cansado:0.8
+  concentrado:0.9,sonolento:0.75,meditando:0.7,cansado:0.8,
+  sad:0.74,happy:1.16,angry:1.45,surprised:1.7,
+  curious:1.1,focused:0.93,pet:0.88,tired:0.76
  }
 }
 let published:AnimationProfile|null=null
