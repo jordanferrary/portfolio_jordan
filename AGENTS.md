@@ -39,3 +39,13 @@ O PIN do Local Studio é apenas UX; não o descreva como autenticação segura. 
 - [docs/README_GITHUB_TOKEN.md](docs/README_GITHUB_TOKEN.md): geração/uso do token.
 - [docs/README_MEDIA_PIPELINE.md](docs/README_MEDIA_PIPELINE.md): publicação de imagens, zoom e vídeos.
 - [docs/README_HISTORY.md](docs/README_HISTORY.md): documentação histórica, não a fonte de verdade atual.
+
+
+## Novos fluxos de mídia e 3D
+- `src/lib/github-media.ts`: analisa a árvore pública do GitHub para listar imagens, áudios, modelos e vídeos; determina referências conhecidas e proíbe exclusão de arquivos padrão. Sem seleção explícita, nenhum arquivo é apagado.
+- `src/components/sections/media-manager.tsx`: remove arquivos locais órfãos do IndexedDB; não modifica o repositório.
+- `src/components/sections/github-publish-editor.tsx`: seleção opcional de paths para exclusão no mesmo commit; `src/lib/github-publish.ts` revalida caminhos, referências e permissões e usa Git tree com `sha:null`.
+- `src/components/ui/project-model.tsx` e `src/lib/model-embed.ts`: cartão 3D com carregamento por clique. Suporte GLB e glTF, URL pública com CORS. FBX deve ser convertido externamente para GLB, não prometa suporte perfeito a FBX.
+- `src/components/ui/project-video.tsx`: miniatura de vídeo cinematográfico. O iframe só aparece após clique.
+- `src/components/sections/music-library-editor.tsx`: cadastro de áudio importado, sugestão de metadados do nome do arquivo e capa pública de YouTube; **não implementa extração de MP3 de vídeos do YouTube**.
+- Leia [docs/README_MEDIA_CLEANUP.md](docs/README_MEDIA_CLEANUP.md) antes de alterar regras de exclusão. Não remova automaticamente mídia que só pareça órfã; fontes podem estar referenciadas por CSS, links antigos ou outros documentos.
