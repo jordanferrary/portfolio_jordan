@@ -157,6 +157,8 @@ function verifiedConfig(env){
   throw Error('The GitHub App Worker is not configured.');
  const site=frontend(env);
  if(site.protocol!=='https:')throw Error('Frontend must use HTTPS.');
+ if(!/^[a-zA-Z0-9-]+$/.test(env.GH_OWNER)||!/^[a-zA-Z0-9_.-]+$/.test(env.GH_REPO))
+  throw Error('Invalid repository allowlist.');
 }
 function returnPage(env){return frontend(env).href;}
 function loggedInPage(env){
@@ -188,7 +190,7 @@ function allowedRepoPath(method,value,env){
  const rules=[
   ['GET',new RegExp('^/git/ref/heads/main$')],
   ['GET',new RegExp('^/git/commits/'+sha+'$')],
-  ['GET',new RegExp('^/git/trees/'+sha+'$')],
+  ['GET',new RegExp('^/git/trees/'+sha+'
   ['GET',/^\/contents\/src\/data\/published-portfolio\.json$/],
   ['GET',/^\/contents\/public\/alquimago\/config\.json$/],
   ['POST',/^\/git\/blobs$/],
@@ -257,7 +259,7 @@ async function route(request,env){
  if(path==='/auth/callback'&&request.method==='GET'){
   const queryState=url.searchParams.get('state');
   const state=parseCookies(request)[FLOW_COOKIE];
-  if(!queryState||!validId(queryState.padEnd(64,'0').slice(0,64))||
+  if(!queryState||!/^[a-f0-9]{48}$/.test(queryState)||
    queryState!==state||!url.searchParams.get('code'))
    return error('Invalid GitHub OAuth callback',403);
   const saved=await env.SESSIONS.get('flow:'+state);
@@ -346,3 +348,165 @@ export default {
   }
  }
 };
+)],
+  ['GET',/^\/git\/trees\/main$/],
+  ['GET',/^\/contents\/src\/data\/published-portfolio\.json$/],
+  ['GET',/^\/contents\/public\/alquimago\/config\.json$/],
+  ['POST',/^\/git\/blobs$/],
+  ['POST',/^\/git\/trees$/],
+  ['POST',/^\/git\/commits$/],
+  ['PATCH',/^\/git\/refs\/heads\/main$/]
+ ];
+ if(!rules.some(([verb,pattern])=>verb===method&&pattern.test(suffix)))return null;
+ if(url.search&&!(
+  method==='GET'&&/^\?ref=main$/.test(url.search)&&suffix.startsWith('/contents/')||
+  method==='GET'&&url.search==='?recursive=1'&&suffix.startsWith('/git/trees/')
+ ))return null;
+ return url.pathname+url.search;
+}
+function safeTreePath(path){
+ if(typeof path!=='string'||path.length>260||path.includes('\\')||
+  path.split('/').some(x=>!x||x==='.'||x==='..'))return false;
+ if(['src/data/published-portfolio.json','public/alquimago/project-memory.json','public/alquimago/config.json','public/alquimago/project-context.json'].includes(path))return true;
+ return /^public\/(images|audio|models|videos|assets)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|avif|gif|svg|mp3|wav|ogg|m4a|flac|mp4|webm|glb|gltf|fbx)$/i.test(path);
+}
+function validateWrite(path,method,data,env){
+ const suffix=path.split('?')[0].slice(('/repos/'+env.GH_OWNER+'/'+env.GH_REPO).length);
+ if(method==='PATCH'){
+  return suffix==='/git/refs/heads/main'&&
+   data?.force===false&&/^[a-f0-9]{40}$/.test(data?.sha||'');
+ }
+ if(suffix==='/git/trees'){
+  return typeof data?.base_tree==='string'&&/^[a-f0-9]{40}$/.test(data.base_tree)&&
+   Array.isArray(data.tree)&&data.tree.length<=800&&data.tree.every(entry=>
+    safeTreePath(entry?.path)&&entry.mode==='100644'&&entry.type==='blob'&&
+    (entry.sha===null||typeof entry.content==='string'||/^[a-f0-9]{40}$/.test(entry.sha||'')));
+ }
+ if(suffix==='/git/commits'){
+  return data?.message==='Publish portfolio content from Local Studio'&&
+   /^[a-f0-9]{40}$/.test(data?.tree||'')&&
+   Array.isArray(data?.parents)&&data.parents.length===1&&
+   /^[a-f0-9]{40}$/.test(data.parents[0]);
+ }
+ if(suffix==='/git/blobs'){
+  return data?.encoding==='base64'&&typeof data.content==='string'&&
+   data.content.length<MAX_API_BYTES;
+ }
+ return false;
+}
+async function route(request,env){
+ verifiedConfig(env);
+ const url=new URL(request.url),path=url.pathname;
+ const headers=cors(request,env);
+ if(request.method==='OPTIONS'){
+  return permittedOrigin(request,env)?
+   new Response(null,{status:204,headers}):
+   error('Origin is not authorized',403);
+ }
+ if(path==='/auth/start'&&request.method==='GET'){
+  const state=secureRandom(24),verifier=secureRandom(32);
+  await env.SESSIONS.put('flow:'+state,JSON.stringify({verifier}),{expirationTtl:600});
+  const callback=url.origin+'/auth/callback';
+  const qs=new URLSearchParams({
+   client_id:env.GH_CLIENT_ID,redirect_uri:callback,
+   state,code_challenge_method:'S256',
+   code_challenge:await sha256base64url(verifier)
+  });
+  return redirect('https://github.com/login/oauth/authorize?'+qs.toString(),
+   {'Set-Cookie':flowCookie(state,600)});
+ }
+ if(path==='/auth/callback'&&request.method==='GET'){
+  const queryState=url.searchParams.get('state');
+  const state=parseCookies(request)[FLOW_COOKIE];
+  if(!queryState||!/^[a-f0-9]{48}$/.test(queryState)||
+   queryState!==state||!url.searchParams.get('code'))
+   return error('Invalid GitHub OAuth callback',403);
+  const saved=await env.SESSIONS.get('flow:'+state);
+  await env.SESSIONS.delete('flow:'+state);
+  if(!saved)return error('GitHub connection expired. Start again.',403);
+  const {verifier}=JSON.parse(saved);
+  const auth=await exchangeGitHub(env,{
+   code:url.searchParams.get('code'),
+   redirect_uri:url.origin+'/auth/callback',code_verifier:verifier
+  });
+  const user=await githubGet(auth.access_token,'/user');
+  if(!user||user.login?.toLowerCase()!==env.GH_OWNER.toLowerCase())
+   return error('Only the configured repository owner can connect.',403);
+  const repo=await githubGet(auth.access_token,'/repos/'+env.GH_OWNER+'/'+env.GH_REPO);
+  if(!repo?.permissions?.push)
+   return error('Install the GitHub App on the selected repository with Contents: Read and write.',403);
+  const id=secureRandom(32),now=Date.now();
+  await storeSession(id,{
+   login:user.login,repository:env.GH_OWNER+'/'+env.GH_REPO,
+   accessToken:auth.access_token,refreshToken:auth.refresh_token||null,
+   expiresAt:auth.expires_in?now+auth.expires_in*1000:now+2592000000,
+   refreshExpiresAt:auth.refresh_token_expires_in?now+auth.refresh_token_expires_in*1000:0,
+   sessionExpiresAt:now+2592000000
+  },env);
+  const html=loggedInPage(env);
+  const output=new Response(html.body,html);
+  output.headers.append('Set-Cookie',cookie(SESSION_COOKIE,id,2592000,env));
+  output.headers.append('Set-Cookie',flowCookie('',0));
+  return output;
+ }
+ if(!['/auth/session','/auth/logout','/api/github'].includes(path))
+  return error('Not found',404,headers);
+ if(!permittedOrigin(request,env))return error('Origin is not authorized',403);
+ if(path==='/auth/session'&&request.method==='GET'){
+  const session=await readSession(request,env);
+  return json(session?{authenticated:true,login:session.value.login,
+   repository:session.value.repository,expiresAt:session.value.sessionExpiresAt}:
+   {authenticated:false},200,headers);
+ }
+ if(path==='/auth/logout'&&request.method==='POST'){
+  if(request.headers.get('X-Alquimago-Request')!=='1')return error('Forbidden',403,headers);
+  const session=await readSession(request,env);
+  if(session)await env.SESSIONS.delete(keySession(session.id));
+  return json({ok:true},200,{...headers,'Set-Cookie':cookie(SESSION_COOKIE,'',0,env)});
+ }
+ if(path==='/api/github'&&['GET','POST','PATCH'].includes(request.method)){
+  if(request.headers.get('X-Alquimago-Request')!=='1')return error('Forbidden',403,headers);
+  const session=await readSession(request,env);
+  if(!session)return error('Authorize the GitHub App again.',401,headers);
+  const target=allowedRepoPath(request.method,url.searchParams.get('path'),env);
+  if(!target)return error('GitHub route not permitted',403,headers);
+  if(target==='/user')return json({login:session.value.login},200,headers);
+  const contentLength=Number(request.headers.get('Content-Length')||0);
+  if(contentLength>MAX_API_BYTES)return error('Upload exceeds 45 MB per request',413,headers);
+  let body;
+  if(request.method!=='GET'){
+   const text=await request.text();
+   if(text.length>MAX_API_BYTES)return error('Upload too large',413,headers);
+   try{body=JSON.parse(text)}catch{return error('Invalid JSON',400,headers)}
+   if(!validateWrite(target,request.method,body,env))return error('Write request rejected',403,headers);
+  }
+  let token;
+  try{token=await getAccessToken(session,env)}
+  catch{return error('Authorization expired. Connect to GitHub again.',401,headers)}
+  const result=await fetch(GH+target,{
+   method:request.method,
+   headers:{...HEADER,Authorization:'Bearer '+token,
+    ...(body===undefined?{}:{'Content-Type':'application/json'})},
+   ...(body===undefined?{}:{body:JSON.stringify(body)}),
+   cache:'no-store',redirect:'error'
+  });
+  const text=await result.text();
+  return new Response(text,{status:result.status,headers:{
+   'Content-Type':'application/json; charset=utf-8',
+   'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers
+  }});
+ }
+ return error('Method not allowed',405,headers);
+}
+export default {
+ async fetch(request,env){
+  try{return await route(request,env)}
+  catch(error){
+   // Never log or return OAuth codes, tokens, session contents or internals.
+   return json({error:'Falha na autenticação ou comunicação com o GitHub.'},500);
+  }
+ }
+};
+
+// Pure helpers exported for test tooling, not reachable by HTTP requests.
+export const __test={allowedRepoPath,safeTreePath,validateWrite,flowCookie,cookie};
