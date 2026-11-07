@@ -15,7 +15,7 @@ type Props={
 function FramingView({
  type,title,description,source,value,onChange
 }:{
- type:'cover'|'hero'
+ type:'cover'|'hero'|'home'
  title:string
  description:string
  source:string
@@ -51,7 +51,7 @@ function FramingView({
   {key:'zoom',label:'Zoom',min:1,max:2.5,step:.01,unit:'×'}
  ]
  return <section className="framing-view" aria-label={title}>
-  <div className="framing-view-heading"><div><span>{type==='cover'?'01 · CARD':'02 · BANNER'}</span><h3>{title}</h3><p>{description}</p></div><button type="button" onClick={()=>onChange({...DEFAULT_FRAMING})}><RotateCcw size={15}/>Centralizar</button></div>
+  <div className="framing-view-heading"><div><span>{type==='cover'?'01 · GALLERY':type==='home'?'02 · HOME':'03 · BANNER'}</span><h3>{title}</h3><p>{description}</p></div><button type="button" onClick={()=>onChange({...DEFAULT_FRAMING})}><RotateCcw size={15}/>Centralizar</button></div>
   <div
    className={'framing-canvas framing-canvas-'+type+(source?' can-drag':'')}
    onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerEnd} onPointerCancel={pointerEnd}
@@ -71,9 +71,10 @@ export function ProjectFramingEditor({image,coverFocus,heroFocus,onChange}:Props
  const cover=normalizeFraming(coverFocus)
  const hero=normalizeFraming(heroFocus)
  return <div className="project-framing-editor">
-  <div className="framing-intro"><Scan size={20}/><div><strong>Direção de câmera da obra</strong><p>Posicione a arte do jeito que valoriza sua composição. O cartão e o banner são independentes. Arraste a imagem diretamente na prévia ou utilize os valores precisos.</p></div></div>
+  <div className="framing-intro"><Scan size={20}/><div><strong>Direção de câmera da obra</strong><p>Posicione a arte do jeito que valoriza sua composição. A galeria e a Home compartilham a posição da capa; o banner do projeto tem ajuste independente. Arraste a imagem diretamente na prévia ou utilize os valores precisos.</p></div></div>
   <div className="framing-dual-layout">
    <FramingView type="cover" title="Capa da galeria" description="Como a obra aparece entre os projetos." source={image} value={cover} onChange={coverFocus=>onChange({coverFocus})}/>
+   <FramingView type="home" title="Destaque na Home" description="Mesmo enquadramento da capa, prévia no formato dos cartões da Home." source={image} value={cover} onChange={coverFocus=>onChange({coverFocus})}/>
    <FramingView type="hero" title="Banner do projeto" description="Enquadramento horizontal na página interna." source={image} value={hero} onChange={heroFocus=>onChange({heroFocus})}/>
   </div>
   <div className="framing-transfer"><span>Copiar ajustes</span><button type="button" onClick={()=>onChange({heroFocus:{...cover}})}><Copy size={14}/>Capa → Banner</button><button type="button" onClick={()=>onChange({coverFocus:{...hero}})}><Copy size={14}/>Banner → Capa</button></div>
