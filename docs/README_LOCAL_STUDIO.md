@@ -83,3 +83,12 @@ Slides antigos são migrados para largura natural de 100% e altura anterior de 5
 ## Zoom sem corte em slides e certificados
 
 O zoom dos slides e o dos demais projetos compartilham `ArtLightbox`. O visualizador foi ajustado para dimensionar a imagem original dentro da área da tela com `object-fit: contain` mesmo para imagens muito grandes ou verticais. **Ao abrir, a imagem inteira deve ficar visível**; só deve ser cortada visualmente se o visitante ampliá-la e mover o enquadramento. Redefinir o zoom para 100% também limpa o deslocamento anterior. Miniaturas configuradas como `cover` podem aparecer recortadas no card, mas não no zoom.
+
+
+## Paleta de cores global — 7 variáveis
+
+Em **Local Studio → Identidade → Paleta de cores**, o proprietário agora pode ajustar **cor principal**, **cor secundária**, **fundo**, **superfícies**, **texto principal**, **texto secundário** e **bordas e divisórias**. Os controles aplicam uma prévia em tempo real às seções públicas: Home, galeria, projetos, Sobre, Contact, páginas extras, galeria interativa, slides e player. Títulos, cards, indicadores, textos, botões, fundos e bordas acompanham as alterações. **As imagens das obras e a interface administrativa não são recoloridas**.
+
+A prévia interna mostra as sete amostras e verifica o contraste entre texto principal e fundos/cards e entre texto secundário e fundo. Para desfazer uma experiência sem salvá-la, feche a janela; **Salvar paleta** registra no navegador; **Publicar no GitHub** envia a paleta ao site público. Presets foram atualizados para combinar também o texto secundário e as bordas com cada direção de arte. As paletas antigas de quatro cores são migradas com os novos campos preenchidos por defaults; cores previamente customizadas permanecem inalteradas.
+
+Implementação: `src/lib/theme-palette.ts` valida valores, `src/components/sections/theme-palette-editor.tsx` manipula e aplica a prévia, `src/styles/theme-coverage.css` contém as regras do site visitante e precisa continuar sendo a última folha importada em `src/main.tsx`. Não adicionar novas cores roxas fixas nas páginas públicas; utilizar tokens `--jf-*`.
