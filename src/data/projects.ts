@@ -1,5 +1,5 @@
 import type { ImageFraming } from '../lib/image-framing'
-export type BlockType = 'heading' | 'text' | 'image' | 'image-left' | 'image-right' | 'before-after' | 'gallery' | 'divider' | 'video'
+export type BlockType = 'heading' | 'text' | 'image' | 'image-left' | 'image-right' | 'before-after' | 'gallery' | 'divider' | 'video' | 'model'
 export type Block = { id:string; type:BlockType; content:string; media?:string; after?:string; gallery?:string[]; dividerIcon?:'none'|'sparkles'|'star'|'diamond'|'circle'; dividerStyle?:'glow'|'solid'|'dashed'; beforeLabel?:string; afterLabel?:string }
 export type ProcessStep = { id:string; label:string; image:string }
 export type CategoryIcon = 'user'|'mountain'|'box'|'sparkles'|'grid'|'palette'|'film'|'brush'|'shapes'
