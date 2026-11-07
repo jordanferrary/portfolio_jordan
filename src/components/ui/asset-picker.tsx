@@ -26,6 +26,16 @@ function collectSources(sources:Sources|null,catalog:LibraryAsset[]):AssetEntry[
   map.set(ref,{ref,name,folders:[folder],date})
  }
  for(const item of unique)if(item.mime?.startsWith('image/')||/\.(png|jpe?g|webp|avif)(?:[?#]|$)/i.test(item.ref))for(const folder of item.folders)add(item.ref,folder,item.name,item.createdAt)
+ for(const page of sources?.pages??[]){
+  const folder='pages/'+page.id
+  add(page.heroImage,folder,page.title+' · Banner')
+  for(const block of page.blocks){
+   if(block.type==='image')add(block.content,folder,page.title+' · Imagem')
+   if(block.media)add(block.media,folder,page.title+' · Arte lateral / capa')
+   if(block.after)add(block.after,folder,page.title+' · Comparação')
+   for(const image of block.gallery??[])add(image,folder,page.title+' · Galeria')
+  }
+ }
  for(const project of sources?.projects??[]){
   const folder='projects/'+project.id
   add(project.image,folder,project.title+' · Capa')
