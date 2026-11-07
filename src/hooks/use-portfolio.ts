@@ -3,6 +3,7 @@ import { DEFAULT_THEME,normalizeThemePalette,type ThemePalette } from '../lib/th
 import { isKnownDemoTestimonial } from '../lib/testimonial-safety'
 import { normalizeFraming } from '../lib/image-framing'
 import type {ResponsiveImageMap} from '../lib/image-variants'
+import {normalizeCustomPages,type CustomPage} from '../data/custom-pages'
 import publishedPackage from '../data/published-portfolio.json'
 import { initialProjects, starterCategories, type Project, type Category } from '../data/projects'
 import { normalizeBundledImage } from '../lib/default-assets'
@@ -12,7 +13,7 @@ const KEY='jordan-portfolio-local-v2'
 const PENDING_KEY='jordan-portfolio-publish-pending-v1'
 const bundled=publishedPackage as {schema:number;revision:string;store:unknown}
 export const currentPublishedRevision=bundled.revision||'initial'
-export interface PortfolioStore {imageVariants:ResponsiveImageMap;themePalette:ThemePalette;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
+export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
 export function clampBrandScale(value:unknown,fallback:number,min:number,max:number):number{
  const number=typeof value==='number'?value:Number(value)
  return Number.isFinite(number)?Math.max(min,Math.min(max,Math.round(number))):fallback
@@ -23,6 +24,7 @@ function englishCategory(label:string):string{
 function parseStore(raw:unknown):PortfolioStore{
  if(!raw||typeof raw!=='object')throw new Error('Arquivo de dados inválido')
  const obj=raw as Partial<PortfolioStore>
+ const customPages=normalizeCustomPages(obj.customPages)
  const imageVariants:ResponsiveImageMap=obj.imageVariants&&typeof obj.imageVariants==='object'&&!Array.isArray(obj.imageVariants)?obj.imageVariants:{}
  if(!Array.isArray(obj.projects)||!Array.isArray(obj.categories))throw new Error('Formato inválido')
  const categories:Category[]=obj.categories.map((c:Category|string)=>{
@@ -55,13 +57,13 @@ function parseStore(raw:unknown):PortfolioStore{
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'&&!isKnownDemoTestimonial(t)):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
- return {imageVariants,themePalette,projects,categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
+ return {customPages,imageVariants,themePalette,projects,categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
 }
 function publishedStore():PortfolioStore{
  if(bundled.schema===1&&bundled.store){
   try{return parseStore(bundled.store)}catch{/* preserve original defaults when a malformed content file is committed */}
  }
- return {imageVariants:{},themePalette:{...DEFAULT_THEME},projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,siteLogo:'',siteLogoHover:'',siteLogoSize:100,siteLogoHoverScale:110,siteFavicon:'',seoTitle:'Jordan Ferrary — Creative Portfolio',seoDescription:'Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'}
+ return {customPages:[],imageVariants:{},themePalette:{...DEFAULT_THEME},projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,siteLogo:'',siteLogoHover:'',siteLogoSize:100,siteLogoHoverScale:110,siteFavicon:'',seoTitle:'Jordan Ferrary — Creative Portfolio',seoDescription:'Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'}
 }
 function load():PortfolioStore{
  try{
@@ -80,6 +82,15 @@ function load():PortfolioStore{
 }
 function refsFor(store:PortfolioStore):string[]{
  const refs=new Set(mediaRefs(store.projects,store.categories))
+ for(const page of store.customPages){
+  if(isLocalMedia(page.heroImage))refs.add(page.heroImage)
+  for(const block of page.blocks){
+   if(block.type==='image'&&isLocalMedia(block.content))refs.add(block.content)
+   if(block.media&&isLocalMedia(block.media))refs.add(block.media)
+   if(block.after&&isLocalMedia(block.after))refs.add(block.after)
+   for(const src of block.gallery??[])if(isLocalMedia(src))refs.add(src)
+  }
+ }
  if(isLocalMedia(store.home.avatar))refs.add(store.home.avatar)
  if(isLocalMedia(store.home.background))refs.add(store.home.background)
  if(isLocalMedia(store.galleryBackground))refs.add(store.galleryBackground)
@@ -113,6 +124,7 @@ export function usePortfolio(editing=false){
   save({...store,projects:list})
  }
  const setCategories=(categories:Category[])=>save({...store,categories})
+ const setCustomPages=(customPages:CustomPage[])=>save({...store,customPages:normalizeCustomPages(customPages)})
  const setHome=(home:HomeContent)=>save({...store,home})
  const markPublished=(revision:string)=>{
   // Credential-free marker only. Never write the GitHub token to localStorage.
@@ -169,5 +181,5 @@ export function usePortfolio(editing=false){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setCategories,setHome,setGalleryBackground,setBranding,setSiteIdentity,setThemePalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setCategories,setCustomPages,setHome,setGalleryBackground,setBranding,setSiteIdentity,setThemePalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }
