@@ -24,3 +24,13 @@ O modelo de dados possui fallbacks e não deve exigir `imageVariants` em arquivo
 - Abrir imagem em zoom e verificar original maior, Esc, reset, pinça e arraste.
 - Testar imagem legada sem miniaturas e modal de vídeo YouTube/Vimeo.
 - Validar `npm run typecheck` e `npm run build` antes de concluir implantação.
+
+
+## Gerenciamento e exclusões
+O gerenciador local utiliza `deleteStoredMedia(ref)` para remover conteúdo e catálogo de arquivos `media://` órfãos do IndexedDB. O fluxo de publicação lê a árvore do GitHub por token temporário e permite selecionar arquivos sem referência identificada. `publishPortfolioToGitHub(..., deletePaths)` verifica se cada arquivo pertence a uma pasta permitida, não é protegido, não está em uso e existe no branch; então solicita exclusão por `sha:null` no mesmo Git tree. Consulte [README_MEDIA_CLEANUP.md](README_MEDIA_CLEANUP.md).
+
+## Música e referência de thumbnail
+`MusicLibraryEditor` utiliza arquivos de áudio enviados pelo proprietário. Ao importar, preenche título e artista a partir do nome quando possível, mas deixa os campos editáveis. A URL de um vídeo do YouTube serve opcionalmente para sua miniatura pública, não extrai o áudio nem incorpora anúncios.
+
+## Bloco de modelo 3D
+`ProjectModel` exibe um card estático com capa opcional. Após o clique, adiciona o web component `model-viewer` via CDN, com versão fixada, que renderiza `.glb` / `.gltf` e habilita câmera de órbita e zoom. O componente de renderização externo é carregado apenas nessa interação. A origem deve permitir requisições CORS. **FBX não é suportado diretamente**, devendo ser convertido para GLB com as texturas apropriadas.
