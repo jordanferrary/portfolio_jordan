@@ -165,3 +165,15 @@ A Home usa `focus-entry` no painel *Project Focus*, isolando ícones/textos das 
 - A seleção de uma skin previamente registrada pode ser salva no mesmo commit autenticado. **Não** existe importação de arquivos GLB diretamente do mascote: primeiro disponibilize o arquivo na pasta de mídias autorizadas do site.
 - Recarregar a página **sem publicar** continua descartando a memória experimental do Alquimago no Studio; a memória local de visitantes de outras instalações não é modificada.
 - A paridade com o Pestinha desktop é **parcial**. O navegador não tem acesso automático a programas do sistema operacional e o Alquimago ainda não reproduz a física, a rede neural LIF e todos os brinquedos do projeto original.
+
+
+## Alquimago v0.7 — decisões autônomas, condicionamento e orbe físico
+
+- O familiar agora possui um **córtex LIF independente de 512 neurônios pulsados, 16.384 conexões, 32 canais sensoriais e 16 canais motores**, além da rede de linguagem.
+- O novo cérebro analisa apenas eventos e metadados públicos já disponíveis: estrutura da rota, problemas gerais de acessibilidade, obras autorizadas e interações **diretas** com o familiar. Não lê o conteúdo de formulários, senhas ou outras abas.
+- Em **Interagir → Cérebro e autonomia**, é possível ativar ou pausar iniciativas, escolher `silencioso`, `equilibrado` ou `brincalhao`, e avaliar a última iniciativa com **Gostei** ou **Menos disso**. O feedback altera valores contextuais, reforço e até 32 episódios numéricos.
+- Existe uma espera inicial e limites de frequência e de iniciativas por dia. Aba oculta, digitação e abertura do grimório impedem interrupções. O usuário continua decidindo toda navegação, publicação e alteração de arquivos.
+- Em **Interagir → Orbe arcano**, uma brincadeira opcional abre um campo limitado com gravidade, quique e arremesso. Ele não interfere nos cartões nem no editor do site.
+- No **Local Studio**, a memória do córtex acompanha o botão **Publicar** já existente: o snapshot numérico entra no mesmo commit autenticado, sem texto de conversa. Recarregar sem publicar recupera a última memória confirmada.
+- Instalações independentes usam `behavior` no JSON de configuração. O domínio, o namespace e as permissões são definidos pelo próprio desenvolvedor.
+- O Pestinha original ainda possui vantagens em leitura autorizada de janelas do SO e rotinas físicas desktop, portanto a versão 0.7 não declara equivalência total. Consulte `docs/CEREBRO_COMPORTAMENTAL.md` no repositório Alquimago.
