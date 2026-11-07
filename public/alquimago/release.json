@@ -1,6 +1,7 @@
 {
-  "version": "0.8.1",
+  "version": "0.9.0",
   "upstream": "jordanferrary/alquimago",
-  "bundleBlobSha": "682fc1638879d6bb4dabef5a96dc48e8c41b7ead",
-  "note": "Versão sincronizada e auditada. Atualize este manifesto ao instalar uma nova versão do widget."
+  "bundleBlobSha": "07f1912b5f27823fab514fc8aa077c7f5581c75b",
+  "note": "Manifesto do pacote versionado. No deploy, o workflow recompila o Alquimago da origem e recalcula seu hash automaticamente.",
+  "source": "Alquimago v0.9 verificado e sincronizado"
 }
