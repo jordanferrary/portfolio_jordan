@@ -49,3 +49,11 @@ Responder ao proprietário em português com objetividade. Não redesenhar os el
 ## Player de vídeo simplificado (2026-11)
 
 `src/components/ui/project-video.tsx` mantém miniatura antes do clique e iframe oficial após a ativação. **Não** carregar a API JavaScript do YouTube, controles externos, barra de progresso ou painéis adicionais abaixo do vídeo. O único elemento inferior é um link discreto **Watch on YouTube/Vimeo**. Os módulos antigos `youtube-custom-player.tsx` e `youtube-player-api.ts` foram removidos. `Block.videoTitle?:string` permanece disponível como título acessível do iframe, com fallback para o nome do projeto. O YouTube e o Vimeo conservam seus controles nativos.
+
+## Páginas adicionais editáveis (2026-11)
+
+A partir de agora o portfólio não é somente uma galeria: **Local Studio → Páginas → Nova página / Minhas páginas** cria páginas arbitrárias (cursos, recursos, guias etc.) com navegação lateral, ordem e visibilidade ajustáveis. Os quatro links nativos permanecem fixos. O renderizador é `CustomPageView`; o editor é `CustomPageEditor`, e o modelo de dados é `CustomPage`/`PageBlock` em `src/data/custom-pages.ts`. Rota permanente `#/page/<id>`. Reaproveitar `StoryBlock` da página de projeto para mídias e composição; o tipo `action` é específico para botões copiar/abrir links.
+
+O botão **copy** copia texto, prompts ou chave PIX com feedback, **não** processa pagamentos. Botões URL usam `safePageHref` e têm opções mesma aba/nova aba; sem esquema `javascript:` ou interpretação de código. O conteúdo do botão copiar vai para o manifesto público e não deve conter segredos. Imagens de páginas e blocos são tratadas no backup, asset picker, otimização, publicação e detecção de órfãos.
+
+Ver [README_CUSTOM_PAGES.md](README_CUSTOM_PAGES.md). Verificar mobile com muitos links, rota direta, upload de capa, cópia, URLs internas, backup ZIP e deploy após testar a build.
