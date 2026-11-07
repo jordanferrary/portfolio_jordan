@@ -124,6 +124,7 @@ try{
   assert.equal(app.classifyAudioSource('https://music.youtube.com/watch?v=dQw4w9WgXcQ'),'video-page')
   assert.equal(app.classifyAudioSource('https://youtu.be/dQw4w9WgXcQ'),'video-page')
   assert.equal(app.classifyAudioSource('https://example.org/audio.mp3'),'direct')
+  assert.equal(app.classifyAudioSource('media://music/16700000-test.mp3'),'local')
   assert.equal(app.classifyAudioSource('https://example.org/song.m4a?token=123'),'direct')
   assert.equal(app.classifyAudioSource('https://example.org/track.html'),'web-page')
   assert.equal(app.classifyAudioSource('javascript:alert(1)'),'invalid')
