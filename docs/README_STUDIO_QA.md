@@ -39,7 +39,7 @@ O pipeline de GitHub Pages roda os testes antes do deploy: falhas impedem public
 | Conversor WebP | Testar JPG/PNG, tamanhos e qualidade; baixar e abrir resultado |
 | Feedbacks | Adicionar apenas depoimento real; editar, remover e navegar no carrossel da Home |
 | Curtidas | Curtir/descurtir, atualizar página e verificar persistência; sem backend, contagem é **somente local**, nunca total público |
-| Músicas | Importar MP3 próprio, editar título/artista/capa, reproduzir/pausar, rearranjar e remover; alternar faixa |
+| Músicas | Importar MP3 próprio, editar título/artista, usar capa importada, link HTTPS direto de imagem externa ou miniatura do YouTube; testar prévia, link inválido, salvar/editar e persistência da imagem no player após publicação. Reproduzir/pausar, rearranjar e remover. |
 | Redes sociais | Editar URL, rótulo e ícone; testar link em nova aba e ausência de links inválidos |
 | Contato | Editar apresentação, redes e chips de especialidades no rodapé; remover um chip, adicionar outro, deixar lista vazia |
 | Sobre | Editar texto, skills e imagens; conferir responsividade |
