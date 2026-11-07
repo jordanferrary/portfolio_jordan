@@ -71,3 +71,8 @@ O conteúdo do Studio é publicado com a API do GitHub no branch `main`, em uma 
 - **Composição → Modelo 3D interativo:** use URL direta de um **GLB** (recomendado) ou **glTF**, com capa opcional. O visualizador carrega apenas após clique, suporta rotação, zoom e arraste. **FBX não é carregado diretamente; converta para GLB no Blender**. Links externos exigem suporte a CORS e acesso público.
 
 Consulte [Limpeza de mídias](docs/README_MEDIA_CLEANUP.md), [Pipeline de mídia](docs/README_MEDIA_PIPELINE.md) e [Local Studio](docs/README_LOCAL_STUDIO.md).
+
+
+### Controles personalizados para vídeos do YouTube
+
+O card continua exibindo somente a miniatura até o visitante clicar. Após a ativação, um pequeno módulo carrega a API oficial de iframe do YouTube sob demanda e exibe, **fora do iframe**, uma barra de progresso roxa com tempo atual, duração, reproduzir/pausar, reiniciar e título na tipografia do site. Os controles nativos permanecem disponíveis para legendas, configurações e tela cheia, pois o conteúdo interno não pode ser livremente estilizado. Em **Projeto → Composição → Vídeo incorporado**, o título exibido no portfólio é editável. O Vimeo conserva seu player nativo.
