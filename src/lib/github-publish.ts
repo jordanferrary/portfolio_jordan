@@ -4,6 +4,7 @@ import { isKnownDemoTestimonial } from './testimonial-safety'
 import {resolvePublishedAsset} from './published-assets'
 import {isCleanableFile,isProtectedAsset,referencedMediaPaths} from './github-media'
 import {githubWorkerProxy,isGitHubWorkerCredential} from './github-auth'
+import {ALQUIMAGO_SKIN_MEDIA,ALQUIMAGO_SKIN_PATH} from './alquimago-3d'
 
 /**
  * Browser-only GitHub publishing.
@@ -422,6 +423,18 @@ export async function publishPortfolioToGitHub(
    const file=await api<{content:string}>(cleanToken,ROOT+'/contents/public/alquimago/config.json?ref='+BRANCH)
    const config=JSON.parse(decodeBase64Utf8(file.content)) as {
     appearance?:{selectedSkin?:string;skins?:Array<{id?:unknown}>}
+   }
+   if(candidate.selectedSkin==='custom-3d'){
+    const local=await readMedia(ALQUIMAGO_SKIN_MEDIA)
+    if(local){
+     if(local.size>18*1024*1024)throw new Error('A skin 3D excede 18 MiB. Importe uma versão otimizada.')
+     onProgress('Enviando skin 3D autorizada para o GitHub…')
+     const content=await encodeBinary(local)
+     const asset=await api<{sha:string}>(cleanToken,ROOT+'/git/blobs','POST',{content,encoding:'base64'})
+     entries.push({path:ALQUIMAGO_SKIN_PATH,mode:'100644',type:'blob',sha:asset.sha})
+    }else if(!existing.has(ALQUIMAGO_SKIN_PATH)){
+     throw new Error('A skin 3D ainda não foi importada. Abra o Ateliê de skins 3D no Local Studio antes de publicar.')
+    }
    }
    if(config.appearance&&Array.isArray(config.appearance.skins)&&
       config.appearance.skins.some(skin=>skin.id===candidate.selectedSkin)&&
