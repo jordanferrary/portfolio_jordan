@@ -65,5 +65,13 @@
     "minIntervalMs": 120000,
     "maxPerDay": 4,
     "toy": true
+  },
+  "knowledge": {
+    "file": "./alquimago/knowledge.json"
+  },
+  "llm": {
+    "enabled": false,
+    "endpoint": "",
+    "consentRequired": true
   }
 }
