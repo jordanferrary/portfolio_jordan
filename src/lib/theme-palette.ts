@@ -20,6 +20,20 @@ export function normalizeHexColor(value:unknown):string|null{
  if(/^#[0-9a-f]{6}$/i.test(trimmed))return trimmed.toUpperCase()
  return null
 }
+/** WCAG relative luminance and contrast against the site's fixed light text. */
+export function colorLuminance(hex:string):number{
+ const color=normalizeHexColor(hex)
+ if(!color)return 0
+ const components=[1,3,5].map(i=>{
+  const channel=parseInt(color.slice(i,i+2),16)/255
+  return channel<=0.04045?channel/12.92:((channel+0.055)/1.055)**2.4
+ })
+ return 0.2126*components[0]+0.7152*components[1]+0.0722*components[2]
+}
+export function contrastRatio(foreground:string,background:string):number{
+ const a=colorLuminance(foreground),b=colorLuminance(background)
+ return (Math.max(a,b)+0.05)/(Math.min(a,b)+0.05)
+}
 export function normalizeThemePalette(raw:unknown):ThemePalette{
  const value=raw&&typeof raw==='object'?raw as Partial<Record<ThemeColorKey,unknown>>:{}
  // Migrate the temporary cyan palette introduced by the visual redesign.
