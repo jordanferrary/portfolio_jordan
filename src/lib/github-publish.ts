@@ -2,6 +2,7 @@ import type { PortfolioStore } from '../hooks/use-portfolio'
 import { isLocalMedia,readMedia } from './media-store'
 import { isKnownDemoTestimonial } from './testimonial-safety'
 import {resolvePublishedAsset} from './published-assets'
+import {isCleanableFile,isProtectedAsset,referencedMediaPaths} from './github-media'
 
 /**
  * Browser-only GitHub publishing.
@@ -17,8 +18,8 @@ const ROOT='/repos/'+OWNER+'/'+REPO
 const CONTENT_PATH='src/data/published-portfolio.json'
 const MAX_NEW_MEDIA_BYTES=80*1024*1024
 type Kind='image'|'audio'
-type TreeEntry={path:string;mode:'100644';type:'blob';sha?:string;content?:string}
-export type GitHubPublishResult={revision:string;commitSha:string;commitUrl:string;newFiles:number}
+type TreeEntry={path:string;mode:'100644';type:'blob';sha?:string|null;content?:string}
+export type GitHubPublishResult={revision:string;commitSha:string;commitUrl:string;newFiles:number;deletedFiles:number}
 export type GitHubPublishProgress=(status:string)=>void
 
 async function api<T>(token:string,path:string,method='GET',body?:unknown):Promise<T>{
@@ -114,7 +115,8 @@ export async function publishPortfolioToGitHub(
  token:string,
  store:PortfolioStore,
  bundledRevision:string,
- onProgress:GitHubPublishProgress=()=>{}
+ onProgress:GitHubPublishProgress=()=>{},
+ deletePaths:string[]=[]
 ):Promise<GitHubPublishResult>{
  const cleanToken=token.trim()
  if(!cleanToken)throw new Error('Informe um token GitHub para autorizar a publicação.')
@@ -226,6 +228,12 @@ export async function publishPortfolioToGitHub(
  const revision=new Date().toISOString()+'-'+crypto.randomUUID()
  const manifest=JSON.stringify({schema:1,revision,store:snapshot},null,2)+'\n'
  const entries:TreeEntry[]=[{path:CONTENT_PATH,mode:'100644',type:'blob',content:manifest}]
+ const usedPaths=referencedMediaPaths(snapshot)
+ const cleanups=[...new Set(deletePaths)]
+ for(const path of cleanups){
+  if(!isCleanableFile(path)||isProtectedAsset(path)||usedPaths.has(path)||pending.has(path)||!existing.has(path))throw new Error('Exclusão bloqueada: arquivo protegido, utilizado ou inexistente ('+path+').')
+  entries.push({path,mode:'100644',type:'blob',sha:null})
+ }
  let progress=0
  for(const [path,blob] of pending){
   progress++
@@ -247,6 +255,7 @@ export async function publishPortfolioToGitHub(
   revision,
   commitSha:newCommit.sha,
   commitUrl:'https://github.com/'+OWNER+'/'+REPO+'/commit/'+newCommit.sha,
-  newFiles:pending.size
+  newFiles:pending.size,
+  deletedFiles:cleanups.length
  }
 }
