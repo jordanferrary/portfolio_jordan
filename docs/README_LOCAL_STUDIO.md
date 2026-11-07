@@ -151,3 +151,17 @@ A Home usa `focus-entry` no painel *Project Focus*, isolando ícones/textos das 
 - **Recarregar sem publicar:** volta ao estado confirmado no repositório. Não mexe no rascunho do portfólio nem exige novas etapas para salvar o site.
 - O publicador só captura o mascote quando ele está montado e com a configuração carregada. Se ele estiver indisponível, a memória pública anterior é preservada.
 - Por privacidade, não ensine senhas, tokens nem dados de outras pessoas: a rede é um protótipo que permanece separado de serviços externos.
+
+
+## Alquimago v0.6 — observação de projetos e personalização
+
+- Ao permanecer sobre uma obra na Home, na Galeria ou na página de projeto, o familiar reconhece apenas os metadados **públicos** da obra (título, categoria, ano e ferramentas). Ele pode medir luz, variação tonal e cores da capa quando a imagem pertence à mesma origem. Não faz reconhecimento de objetos nem análise generativa.
+- Há um intervalo para evitar falas repetitivas e um limite por sessão. Clique no balão de comentário para abrir a opinião completa em **Observar**.
+- Na análise do projeto, **Dica útil** e **Não priorizar** ensinam que tipo de observação é mais relevante. Somente pesos numéricos por categoria de arte são persistidos no snapshot após **Publicar no GitHub**.
+- **Ensinar uma frase** agora aplica uma correção explícita imediatamente e informa a nova confiança; o aprendizado persiste após publicar e recarregar. Conversas completas continuam fora do repositório.
+- O grimório possui apenas três abas principais: **Conversar**, **Observar** e **Interagir**. Ferramentas de rotas, arquivos, backup e IA estão recolhidas em **Interagir → Ajustes e ferramentas**. Os scrollbars combinam com a identidade visual.
+- Idioma padrão **português brasileiro**; para outro idioma é necessário adicionar um JSON público com traduções, exemplos e respostas e apontá-lo na configuração.
+- **Skins** são listadas dentro de **Interagir → Ajustes e ferramentas → Aparência**. A skin padrão SVG não exige dependências. Skins 2D usam imagens hospedadas e skins GLB/Morph Targets precisam do adaptador Three.js opcional no React, conforme a documentação do repositório Alquimago.
+- A seleção de uma skin previamente registrada pode ser salva no mesmo commit autenticado. **Não** existe importação de arquivos GLB diretamente do mascote: primeiro disponibilize o arquivo na pasta de mídias autorizadas do site.
+- Recarregar a página **sem publicar** continua descartando a memória experimental do Alquimago no Studio; a memória local de visitantes de outras instalações não é modificada.
+- A paridade com o Pestinha desktop é **parcial**. O navegador não tem acesso automático a programas do sistema operacional e o Alquimago ainda não reproduz a física, a rede neural LIF e todos os brinquedos do projeto original.
