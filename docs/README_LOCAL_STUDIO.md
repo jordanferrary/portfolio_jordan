@@ -28,3 +28,15 @@ Veja os detalhes em [README_GITHUB_TOKEN.md](README_GITHUB_TOKEN.md).
 
 ## 7. Limites
 Rascunhos em Local Studio pertencem ao navegador até a publicação. Não limpe dados do navegador antes de exportar um backup. GitHub Pages hospeda conteúdo estático; não é um banco de dados de mensagens privadas.
+
+
+## 8. Excluir arquivos antigos
+**Ferramentas → Gerenciar arquivos** abre a biblioteca de arquivos do navegador, separando os que estão em uso dos órfãos. Selecione os que não precisa, confirme e exclua apenas os dados locais. Para a pasta `public/images/` ou áudios já publicados, use **Abrir arquivos publicados**, informe o token e clique em **Analisar arquivos do GitHub**. Arquivos em uso e padrões não podem ser selecionados. Depois de marcar os arquivos sem uso, confirme e clique em **Publicar**; as exclusões ocorrerão no novo commit. Faça backup antes.
+
+O inventário suporta imagens, áudio e também outros formatos de mídia quando presentes no repositório (vídeos MP4/WebM e modelos GLB/glTF/FBX). Consulte [Limpeza de mídias](README_MEDIA_CLEANUP.md).
+
+## 9. Músicas com capa de referência
+Em **Home → Músicas**, importe MP3, WAV, OGG ou M4A que você tenha direito de publicar. Se o nome estiver como `Artista - Música.mp3`, os campos são sugeridos e **continuam editáveis**. Uma URL do YouTube pode fornecer apenas a miniatura pública; o áudio precisa ser enviado como arquivo próprio. Não há conversor de vídeo do YouTube para MP3 dentro do Studio.
+
+## 10. Modelo 3D e vídeo
+Em **Projeto → Composição**, escolha **Vídeo incorporado** ou **Modelo 3D interativo**. Ambos têm miniatura e só carregam o conteúdo pesado após clique. Para o modelo, use URL HTTPS direta `.glb` ou `.gltf`. FBX deve ser convertido para GLB, de preferência no Blender com as texturas embutidas. O link deve permitir CORS.
