@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-07T00:09:53.588Z-1a01896d-2d26-454f-af1d-1ce88ac29778",
+  "revision": "2026-11-07T03:20:29.005Z-39c54979-53fb-4677-98c3-e97b01c2be42",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -67,6 +67,7 @@
         "largeWidth": 1200
       }
     },
+    "customPages": [],
     "projects": [
       {
         "id": "project-mw4oyna3",
@@ -170,13 +171,13 @@
         "blocks": [],
         "processSteps": [],
         "coverFocus": {
-          "x": 50,
-          "y": 50,
+          "x": 63.13672922252011,
+          "y": 27.59900331147328,
           "zoom": 1
         },
         "heroFocus": {
-          "x": 50,
-          "y": 50,
+          "x": 53.48525469168901,
+          "y": 22.46767947572237,
           "zoom": 1
         }
       },
@@ -353,6 +354,13 @@
         "artist": "Chapters",
         "src": "site://audio/studio/554783c278077543b45d86594e3476819091e487f2d364ea5e50b9bf8e93410f.mp3",
         "cover": "site://images/studio/d2f9fee9741617031eaf0789507df503b513b963cee8598f7304d8a109e0ab46.jpg"
+      },
+      {
+        "id": "track-mw5tunxu-9ke",
+        "title": "Sunflower",
+        "artist": "Post Malone & Swae Lee",
+        "src": "https://youtu.be/ApXoWvfEYVU?si=PBBguVAiu2l_mZZY",
+        "cover": "site://images/studio/998ff56fafc7ee73ae2de4ecb9b8a5241e3df82422fabe26ae6119d7efa23d60.webp"
       }
     ],
     "socialLinks": [
@@ -390,7 +398,13 @@
       "titleFirst": "Have a project",
       "titleAccent": "in mind?",
       "introduction": "For collaborations, commissions, or questions about my work, reach out through my social profiles. Let’s start a conversation.",
-      "greeting": "Choose a platform below to explore my work or get in touch."
+      "greeting": "Choose a platform below to explore my work or get in touch.",
+      "footerTags": [
+        "3D ART",
+        "CHARACTERS",
+        "ENVIRONMENTS",
+        "CREATIVE DIRECTION"
+      ]
     },
     "galleryBackground": "site://images/studio/5f5db0accc8c625c55ac22172769e03bc4e723816e5990a9a33e0ded87341807.webp",
     "siteLogo": "site://images/studio/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5.png",
