@@ -76,7 +76,7 @@ export function registerAlquimago3D():void{
     camera.position.set(0,0.15,4)
     camera.lookAt(0,0,0)
     model.traverse(node=>{
-     const mesh=node as T.Mesh
+     const mesh=node as import('three').Mesh
      if(mesh.morphTargetDictionary&&mesh.morphTargetInfluences)
       morphs.push({mesh,dictionary:mesh.morphTargetDictionary,weights:mesh.morphTargetInfluences})
     })
