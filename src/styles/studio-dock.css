@@ -55,3 +55,6 @@
 }
 @media(max-width:410px){.studio-dock-brand small{display:none}.studio-dock-brand{gap:6px}.studio-dock-actions button{padding:8px}.studio-dock-actions .studio-dock-new{display:none}}
 @media(prefers-reduced-motion:reduce){.studio-hub-item{transition:none}}
+
+/* Compact deployment identifier: distinguish published build from local drafts. */
+.studio-hub-header .studio-hub-version{margin-top:7px;color:#a4d7c5;font-size:10px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
