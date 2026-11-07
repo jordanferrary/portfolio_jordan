@@ -19,6 +19,7 @@ const ROOT='/repos/'+OWNER+'/'+REPO
 const CONTENT_PATH='src/data/published-portfolio.json'
 const ALQUIMAGO_MEMORY_PATH='public/alquimago/project-memory.json'
 const ALQUIMAGO_CONTEXT_PATH='public/alquimago/project-context.json'
+const ALQUIMAGO_KNOWLEDGE_PATH='public/alquimago/knowledge.json'
 const MAX_NEW_MEDIA_BYTES=80*1024*1024
 type Kind='image'|'audio'
 type TreeEntry={path:string;mode:'100644';type:'blob';sha?:string|null;content?:string}
@@ -259,6 +260,21 @@ export async function publishPortfolioToGitHub(
   description:'Resumo público do projeto gerado automaticamente durante a publicação.'
  },null,2)+'\n'
  entries.push({path:ALQUIMAGO_CONTEXT_PATH,mode:'100644',type:'blob',content:context})
+ // Explicitly published public project details, capped and structured. This
+ // knowledge is versioned together with portfolio data; it never reads drafts,
+ // user messages, editor passwords, tokens or hidden browser state.
+ const cleanText=(value:unknown,n:number)=>typeof value==='string'
+  ?value.replace(/[\\u0000-\\u001f\\u007f<>]/g,' ').trim().slice(0,n):''
+ const publicProjects=snapshot.projects.slice(0,150).filter(p=>typeof p.title==='string'&&typeof p.id==='string')
+  .map(p=>({
+   id:cleanText(p.id,90),title:cleanText(p.title,100),category:cleanText(p.category,70),
+   year:cleanText(String(p.year||''),8),
+   tools:Array.isArray(p.tools)?p.tools.filter(x=>typeof x==='string').slice(0,12).map(x=>cleanText(x,55)):[],
+   description:cleanText(p.description,650),featured:p.featured===true
+  }))
+ entries.push({path:ALQUIMAGO_KNOWLEDGE_PATH,mode:'100644',type:'blob',
+  content:JSON.stringify({schema:1,revision,projects:publicProjects},null,2)+'\\n'})
+
  // Persist the live familiar ONLY inside this authenticated GitHub commit.
  // No automatic localStorage snapshot, no chat text and no credentials.
  if(familiarSnapshot&&typeof familiarSnapshot==='object'){
