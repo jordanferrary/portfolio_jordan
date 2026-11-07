@@ -11,8 +11,9 @@ type Props={
  onRestore:()=>void
  onExport:()=>Promise<void>
  onClose:()=>void
+ stagedDeletionPaths?:string[]
 }
-export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClose}:Props){
+export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClose,stagedDeletionPaths=[]}:Props){
  const [token,setToken]=useState('')
  const [visible,setVisible]=useState(false)
  const [confirmed,setConfirmed]=useState(false)
@@ -23,13 +24,13 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
  const [media,setMedia]=useState<RepositoryMedia[]|null>(null)
  const [mediaLoading,setMediaLoading]=useState(false)
  const [mediaError,setMediaError]=useState('')
- const [selectedPaths,setSelectedPaths]=useState<string[]>([])
+ const [selectedPaths,setSelectedPaths]=useState<string[]>(()=>[...stagedDeletionPaths])
  const [mediaFilter,setMediaFilter]=useState<'unused'|'all'>('unused')
  const [confirmDeletion,setConfirmDeletion]=useState(false)
  const scanMedia=async()=>{
   if(!token.trim()||mediaLoading||busy)return
-  setMediaLoading(true);setMediaError('');setSelectedPaths([]);setConfirmDeletion(false)
-  try{setMedia(await getRepositoryMedia(token,store))}
+  setMediaLoading(true);setMediaError('');setConfirmDeletion(false)
+  try{const files=await getRepositoryMedia(token,store);setMedia(files);setSelectedPaths(current=>current.filter(path=>files.some(item=>item.path===path&&!item.used&&!item.protected)))}
   catch(e){setMedia(null);setMediaError(e instanceof Error?e.message:'Falha ao consultar as mídias.')}
   finally{setMediaLoading(false)}
  }
@@ -107,8 +108,12 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
        <div className="github-media-list">{media.filter(item=>mediaFilter==='all'||(!item.used&&!item.protected)).map(item=><label className={'github-media-row'+(item.used||item.protected?' is-protected':'')} key={item.path}><input type="checkbox" disabled={item.used||item.protected||busy} checked={selectedPaths.includes(item.path)} onChange={e=>togglePath(item.path,e.target.checked)}/><span className="github-media-file-icon">{item.kind==='Imagem'?<ImageIcon size={19}/>:item.kind==='Áudio'?<MusicIcon size={19}/>:<FolderOpen size={19}/>}</span><span className="github-media-file-info"><strong title={item.path}>{item.path.replace(/^public\//,'')}</strong><small>{item.kind} · {(item.bytes/1048576).toFixed(2)} MB · {item.protected?'Protegido (arquivo padrão)':item.used?'Em uso pelo portfólio':'Sem referência identificada'}</small></span></label>)}
        {media.length===0&&<p className="editor-help">Nenhuma mídia foi encontrada nas pastas públicas monitoradas.</p>}</div>
        <p className="editor-help">A análise verifica referências do rascunho atual e arquivos essenciais. Arquivos usados exclusivamente por CSS, URLs externas, versões antigas ou documentos podem não ser detectados. Faça backup e confira a lista antes de excluir.</p>
-       {selectedPaths.length>0&&<label className="github-media-confirm"><input type="checkbox" checked={confirmDeletion} onChange={e=>setConfirmDeletion(e.target.checked)}/><span><Trash2 size={15}/> Entendo que {selectedPaths.length} arquivo(s) serão removidos do GitHub quando eu clicar em Publicar.</span></label>}
       </>}
+      {selectedPaths.length>0&&<div className="github-media-queued">
+       <p><Trash2 size={16}/> {selectedPaths.length} arquivo(s) selecionado(s) para remoção nesta publicação.</p>
+       <details><summary>Conferir caminhos antes de excluir</summary><ul>{selectedPaths.map(path=><li key={path}>{path}</li>)}</ul></details>
+       <label className="github-media-confirm"><input type="checkbox" checked={confirmDeletion} onChange={e=>setConfirmDeletion(e.target.checked)}/><span>Entendo que os arquivos selecionados serão excluídos do branch principal ao publicar.</span></label>
+      </div>}
      </section>
 
      <label className="github-publish-confirm">
