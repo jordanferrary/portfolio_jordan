@@ -60,21 +60,22 @@ Em **Minhas páginas**, reordene, duplique, oculte do menu ou exclua páginas. O
 No Local Studio, abra **Minhas páginas → Editar → Composição**.
 
 - **Galeria de artistas**: adicione cada participante com nome, descrição, URL direta da imagem e link do portfólio. As miniaturas são selecionáveis; a arte selecionada aparece em destaque com zoom e botão **View portfolio**. As imagens são referenciadas externamente, não copiadas para o GitHub. O servidor de origem deve permitir carregamento público da imagem e manter a URL ativa. Dê crédito e obtenha autorização de exibição dos participantes.
-- **Slides**: adicione imagens e legendas, reordene os slides, escolha reprodução manual ou automática, transição *fade*, *slide* ou *zoom*, e intervalo de 1,5 a 30 segundos. O visitante pode avançar, voltar, selecionar slides, pausar/reproduzir e ampliar a imagem. Respeita preferência de movimento reduzido.
+- **Slides**: adicione e reordene imagens, escolha reprodução manual ou automática, transição *fade*, *slide* ou *zoom*, e intervalo de 1,5 a 30 segundos. O visitante pode avançar, voltar e ampliar a imagem. O botão flutuante de pausa/reprodução é opcional e fica sobre a imagem. Não há barra inferior, legendas ou numeração visível.
 - Imagens de slides adicionadas pela biblioteca local seguem o fluxo normal de publicação; imagens externas continuam referenciadas pela URL.
 - **Salvar página** grava o rascunho local. **Publicar no GitHub** é necessário para disponibilizar ao público.
 
 
 
-## Ajuste horizontal e múltiplas imagens no carrossel
+## Carrossel responsivo: controle apenas de altura
 
-Em **Local Studio → Minhas páginas → Editar → Composição → Slides**, o bloco agora possui:
+Em **Local Studio → Minhas páginas → Editar → Composição → Slides**, o bloco oferece:
 
-- **Largura:** de 50% a 100% da coluna de conteúdo da página.
-- **Altura:** de 180 a 640 px. No modo **Automático**, carrosséis mais baixos mostram até quatro imagens lado a lado, desde que exista largura suficiente.
-- **Imagens visíveis:** Automático ou seleção manual de 1 a 5 por vez; o site ainda limita a quantidade para preservar a legibilidade em telas estreitas.
-- **Enquadramento:** imagem completa (sem cortes) ou preenchimento do quadro (pode recortar).
-- **Prévia simplificada:** mostra as proporções e a distribuição aproximada no próprio editor. No celular, o carrossel ocupa a largura disponível.
-- Mantidos: reprodução manual/automática, intervalo de 1,5 a 30 segundos, animações fade/slide/zoom, navegação e zoom da arte selecionada.
+- **Altura:** de 180 a 640 px. A largura é sempre **100% da área de conteúdo**, respeitando o layout do site. Não existe configuração horizontal.
+- **Quantidade automática de imagens:** até 4 quando a altura é de 180–240 px, até 3 em 241–320 px, até 2 em 321–430 px e uma acima disso. A quantidade também considera a largura real do dispositivo e o total de imagens.
+- **Enquadramento:** imagem completa ou preenchimento do quadro (que pode recortar a imagem).
+- **Botão flutuante de pausa/reprodução:** ativável ou desativável com uma caixa de seleção no Studio, **desativado por padrão**. Quando ativado, surge no canto inferior direito **sobre o carrossel**.
+- **Sem rodapé:** os visitantes não veem título, legenda, descrição, numeração nem dots de paginação sob as imagens. As setas laterais e o zoom individual permanecem.
+- **Prévia no editor:** ilustra as proporções e o número aproximado de imagens lado a lado.
+- **Transições e autoplay:** continuam disponíveis com seus controles de intervalo.
 
-Projetos e páginas já salvos preservam seu comportamento: largura 100%, altura 520 px, enquadramento sem cortes e quantidade automática (normalmente uma imagem em carrosséis altos). A publicação no GitHub já serializa esses campos no JSON de conteúdo da página.
+Slides antigos são migrados para largura natural de 100% e altura anterior de 520 px quando não houver configuração de altura. As propriedades antigas de largura personalizada e contagem manual não são mais usadas no layout. Todas as alterações precisam ser salvas e publicadas no GitHub para chegarem ao público.
