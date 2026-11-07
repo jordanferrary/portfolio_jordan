@@ -93,7 +93,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
    <div className="editor-scroll">
     <div className="github-publish-overview">
      <div className="github-publish-icon"><CloudUpload size={25}/></div>
-     <div><strong>Publicação sem servidor adicional</strong><p>Seus projetos e mídias serão gravados no repositório. A automação do GitHub Pages gera o site atualizado.</p></div>
+     <div><strong>{configured?'Publicação com autenticação protegida':'Publicação pelo GitHub'}</strong><p>Seus projetos e mídias são gravados no repositório somente após sua confirmação. O GitHub Pages gera a versão pública.</p></div>
     </div>
     <div className="github-publish-stats">
      <span><b>{store.projects.length}</b><small>projetos</small></span>
@@ -124,28 +124,15 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
        <p>Este método funciona sem o serviço de autenticação. Crie um <b>fine-grained personal access token</b> do GitHub, restrito ao repositório <code>jordanferrary/portfolio_jordan</code>, com permissão <b>Contents: Read and write</b> e prazo de validade curto.</p>
        <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Criar token restrito no GitHub <ExternalLink size={14}/></a>
       </details>
-      <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Criar token restrito no GitHub <ExternalLink size={14}/></a>
-      <details className="github-token-help">
-       <summary>Como gerar o token? Ver passo a passo</summary>
-       <ol>
-        <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Gerar novo token no GitHub <ExternalLink size={12}/></a> e entre na sua conta <strong>jordanferrary</strong>.</li>
-        <li>Informe um nome como <strong>Portfolio Studio</strong> e escolha uma <strong>validade curta</strong>.</li>
-        <li>Em <strong>Resource owner</strong>, selecione sua conta. Em <strong>Repository access</strong>, escolha <strong>Only select repositories</strong> e marque <code>portfolio_jordan</code>.</li>
-        <li>Em <strong>Repository permissions → Contents</strong>, selecione <strong>Read and write</strong>. Deixe os demais acessos no mínimo necessário.</li>
-        <li>Clique em <strong>Generate token</strong>, copie o valor imediatamente e cole no campo abaixo. Depois, revise a confirmação e publique.</li>
-       </ol>
-       <p>Já gerou antes e perdeu o valor? O GitHub não permite visualizar novamente um token criado. Abra <a href="https://github.com/settings/personal-access-tokens" target="_blank" rel="noopener noreferrer">Gerenciar meus tokens <ExternalLink size={12}/></a> para revogar o antigo se não for necessário e criar outro.</p>
-       <p>O token autoriza a publicação mesmo sem acesso ao PIN se alguém o obtiver. Não o envie por chat nem o coloque no código ou em capturas de tela.</p>
-       <a href="https://docs.github.com/pt/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens" target="_blank" rel="noopener noreferrer">Documentação oficial do GitHub <ExternalLink size={12}/></a>
-      </details>
+      
      </div>
-     <label className="github-publish-token-label">{configured?'Token temporário (opcional)':'Token temporário do GitHub'}
+     {!session.authenticated&&<label className="github-publish-token-label">{configured?'Alternativa: token temporário':'Token temporário do GitHub'}
       <div className="github-publish-token-control">
        <input value={token} type={visible?'text':'password'} autoComplete="off" autoCapitalize="off" spellCheck={false} onChange={e=>setToken(e.target.value)} placeholder="Cole o token somente aqui" disabled={busy} aria-label="Token temporário de publicação GitHub"/>
        <button type="button" onClick={()=>setVisible(v=>!v)} aria-label={visible?'Ocultar token':'Mostrar token'} disabled={busy}>{visible?<EyeOff size={17}/>:<Eye size={17}/>}</button>
       </div>
-     </label>
-     <p className="github-publish-security"><ShieldCheck size={14}/> A credencial fica apenas na memória desta página durante a publicação. Não é adicionada ao código, ao ZIP ou ao armazenamento do navegador.</p>
+     </label>}
+     <p className="github-publish-security"><ShieldCheck size={14}/> {session.authenticated?'A autorização fica no serviço seguro; nenhum token GitHub chega ao navegador.':'O token alternativo fica só na memória desta página; não é salvo no site.'}</p>
      <section className="github-media-cleanup" aria-label="Gerenciar arquivos publicados">
       <div className="github-media-cleanup-head"><div><h3><FolderOpen size={17}/> Gerenciar arquivos publicados</h3><p>Confira imagens, capas, áudios e também vídeos ou modelos 3D existentes nas pastas públicas. Exclua somente arquivos sem referência conhecida.</p></div><button type="button" onClick={()=>void scanMedia()} disabled={busy||mediaLoading||!credential}><FolderOpen size={15}/>{mediaLoading?'Analisando...':media?'Atualizar lista':'Analisar arquivos do GitHub'}</button></div>
       {mediaError&&<p className="github-publish-error" role="alert">{mediaError}</p>}
