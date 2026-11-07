@@ -71,3 +71,11 @@ O projeto usa `src/components/ui/project-video.tsx` para miniatura clicável e i
 - O carrossel de páginas personalizadas em `src/components/sections/page-media-blocks.tsx` **deve sempre acompanhar 100% da largura do conteúdo**; não restaurar ajuste de largura horizontal ou contagem manual de itens. A altura (`slideHeight`) determina automaticamente a quantidade de imagens visíveis, limitada pela largura real via ResizeObserver.
 - **Nunca** adicionar barra inferior, descrição, contador de imagens ou pontos de navegação abaixo do carrossel. As setas laterais e zoom individual permanecem.
 - A propriedade `slideShowPauseButton?:boolean` controla apenas o botão pequeno de pausa/reprodução, flutuante no canto inferior direito da imagem. Padrão desativado, configurável em Local Studio → Composição → Slides.
+
+
+## Galeria interativa genérica e zoom correto
+- O bloco interno `showcase` é **galeria interativa**, não apenas galeria de artistas: atende obras, certificados, prêmios e coleções. **Não** usar rótulos `Artista 1`, `Artist 2` ou forçar nomes/numeração.
+- No `ArtistShowcase` (`src/components/sections/page-media-blocks.tsx`), o painel de detalhes deve ficar **fechado inicialmente**, só abrir após clique num item e ter botão explícito de fechar. A galeria deve ocupar a largura disponível quando o painel estiver fechado.
+- `ShowcaseItem.showLink` e `ShowcaseItem.linkLabel` controlam respectivamente a exibição e o texto do botão no painel, individualmente. Itens antigos sem `showLink` mantêm comportamento compatível; itens novos começam sem CTA. Se não há URL válida, não renderizar botão desativado.
+- `PageBlock.showcaseFit` permite miniaturas `contain` para certificados ou `cover` para arte; **o painel de detalhes e o modal de zoom devem preservar a imagem completa**.
+- O visualizador `ArtLightbox` deve usar dimensionamento proporcional na tela, sem depender do tamanho intrínseco do grid. Em 100%, mostrar toda a imagem e limpar qualquer deslocamento de pan. Não substituir original por thumbnail da biblioteca responsiva.
