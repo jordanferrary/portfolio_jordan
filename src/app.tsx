@@ -108,6 +108,15 @@ export function App(){
   }
  },[editing])
  useEffect(()=>{
+  if(!editing)return;
+  const openPublish=()=>setGitHubPublishOpen(true)
+  window.addEventListener('alquimago:request-publish',openPublish)
+  return()=>window.removeEventListener('alquimago:request-publish',openPublish)
+ },[editing])
+ useEffect(()=>{
+  window.dispatchEvent(new CustomEvent('alquimago:publish-dialog',{detail:{open:githubPublishOpen}}))
+ },[githubPublishOpen])
+ useEffect(()=>{
   if(!editing)return
   // Public structure and counts only; no draft contents or credentials.
   const announce=()=>window.dispatchEvent(new CustomEvent('alquimago:studio-context',{
