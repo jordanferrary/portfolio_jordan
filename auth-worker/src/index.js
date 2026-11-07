@@ -209,7 +209,7 @@ function allowedRepoPath(method,value,env){
 function safeTreePath(path){
  if(typeof path!=='string'||path.length>260||path.includes('\\')||
   path.split('/').some(x=>!x||x==='.'||x==='..'))return false;
- if(['src/data/published-portfolio.json','public/alquimago/project-memory.json','public/alquimago/config.json','public/alquimago/project-context.json'].includes(path))return true;
+ if(['src/data/published-portfolio.json','public/alquimago/project-memory.json','public/alquimago/config.json','public/alquimago/project-context.json','public/alquimago/knowledge.json'].includes(path))return true;
  return /^public\/(images|audio|models|videos|assets)\/[a-zA-Z0-9_./-]+\.(png|jpe?g|webp|avif|gif|svg|mp3|wav|ogg|m4a|flac|mp4|webm|glb|gltf|fbx)$/i.test(path);
 }
 function validateWrite(path,method,data,env){
