@@ -87,7 +87,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
    showcaseItems:type==='showcase'?[]:undefined,
    slideItems:type==='slideshow'?[]:undefined,
    slideAutoplay:false,slideTransition:'fade',slideInterval:5000,
-   slideWidth:100,slideHeight:520,slideVisible:0,slideFit:'contain',
+   slideHeight:520,slideFit:'contain',slideShowPauseButton:false,
    dividerIcon:type==='divider'?'sparkles':undefined,
    dividerStyle:type==='divider'?'glow':undefined,
    buttonLabel:type==='action'?'Copy content':undefined,
@@ -215,15 +215,14 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
      </div>}
      {block.type==='slideshow'&&<div className="custom-page-rich-gallery-editor">
       <div className="custom-page-slide-layout">
-       <div className="editor-section-title"><h3>Dimensões e disposição do carrossel</h3><p>A largura controla o espaço horizontal na página. Ao reduzir a altura, o modo automático exibe mais imagens por vez, respeitando o espaço disponível.</p></div>
+       <div className="editor-section-title"><h3>Altura e apresentação do carrossel</h3><p>A largura acompanha a composição do site. Ajuste somente a altura: quanto menor, mais imagens aparecem lado a lado.</p></div>
        <div className="custom-page-slide-layout-controls">
-        <label>Largura do carrossel · {block.slideWidth??100}%<input type="range" min="50" max="100" step="5" value={block.slideWidth??100} onChange={e=>patchBlock(block.id,{slideWidth:Number(e.target.value)})}/></label>
-        <label>Altura · {block.slideHeight??520} px<input type="range" min="180" max="640" step="20" value={block.slideHeight??520} onChange={e=>patchBlock(block.id,{slideHeight:Number(e.target.value)})}/></label>
-        <label>Imagens visíveis<select value={block.slideVisible??0} onChange={e=>patchBlock(block.id,{slideVisible:Number(e.target.value)})}><option value={0}>Automático pela altura</option>{[1,2,3,4,5].map(n=><option key={n} value={n}>{n} {n===1?'imagem':'imagens'} por vez</option>)}</select></label>
+        <label>Altura do carrossel · {block.slideHeight??520} px<input type="range" min="180" max="640" step="20" value={block.slideHeight??520} onChange={e=>patchBlock(block.id,{slideHeight:Number(e.target.value)})}/></label>
         <label>Enquadramento<select value={block.slideFit??'contain'} onChange={e=>patchBlock(block.id,{slideFit:e.target.value as 'contain'|'cover'})}><option value="contain">Mostrar imagem completa</option><option value="cover">Preencher quadro (recortar)</option></select></label>
        </div>
-       <div className="custom-page-slide-size-preview" aria-hidden="true"><div style={{width:(block.slideWidth??100)+'%',height:Math.round(68*(block.slideHeight??520)/520)+22}}>{Array.from({length:Math.max(1,block.slideVisible||((block.slideHeight??520)<=240?4:(block.slideHeight??520)<=320?3:(block.slideHeight??520)<=430?2:1))},(_,j)=><span key={j}/>)}</div></div>
-       <p className="editor-help">No celular, a largura se adapta à tela e a quantidade é reduzida quando necessário. Os slides existentes continuam compatíveis.</p>
+       <label className="custom-page-slide-pause-option"><input type="checkbox" checked={block.slideShowPauseButton===true} onChange={e=>patchBlock(block.id,{slideShowPauseButton:e.target.checked})}/><span><strong>Mostrar botão flutuante de pausa/reprodução</strong><small>Discreto, sobre o canto inferior direito do carrossel. Desativado por padrão.</small></span></label>
+       <div className="custom-page-slide-size-preview" aria-hidden="true"><div style={{height:Math.round(68*(block.slideHeight??520)/520)+22}}>{Array.from({length:(block.slideHeight??520)<=240?4:(block.slideHeight??520)<=320?3:(block.slideHeight??520)<=430?2:1},(_,j)=><span key={j}/>)}</div></div>
+       <p className="editor-help">A largura acompanha sempre a área da página. Ajustar somente a altura determina quantas imagens aparecem lado a lado; no celular a quantidade se adapta ao espaço. Sem descrições, números ou faixa inferior.</p>
       </div>
       <div className="custom-page-button-options"><label>Reprodução automática<select value={block.slideAutoplay?'yes':'no'} onChange={e=>patchBlock(block.id,{slideAutoplay:e.target.value==='yes'})}><option value="no">Não · Manual</option><option value="yes">Sim · Automática</option></select></label><label>Transição<select value={block.slideTransition??'fade'} onChange={e=>patchBlock(block.id,{slideTransition:e.target.value as SlideTransition})}><option value="fade">Fade suave</option><option value="slide">Deslizamento</option><option value="zoom">Zoom cinematográfico</option></select></label><label>Intervalo (segundos)<input type="number" min="1.5" max="30" step=".5" value={(block.slideInterval??5000)/1000} onChange={e=>patchBlock(block.id,{slideInterval:Math.max(1500,Math.min(30000,Math.round(Number(e.target.value||5)*1000)))})}/></label></div>
       {(block.slideItems??[]).map((item,index)=><div className="custom-page-rich-gallery-entry" key={item.id}>
