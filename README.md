@@ -63,8 +63,9 @@ O conteúdo do Studio é publicado com a API do GitHub no branch `main`, em uma 
 
 ## Gerenciamento de mídia, vídeos e modelos 3D
 
-- **Ferramentas → Gerenciar arquivos:** examine mídias salvas no navegador (imagens e áudios), liste as não utilizadas e exclua com confirmação. A exclusão local não afeta o GitHub.
-- **Publicar → Gerenciar arquivos publicados:** após informar um token válido, consulte o inventário de `public/images/`, `public/audio/` e demais pastas públicas de mídia. Arquivos referenciados pelo conteúdo atual e arquivos padrão são protegidos; os demais podem ser selecionados para exclusão no mesmo commit de publicação. Faça backup e confira as referências antes.
+- **Ferramentas → Gerenciar arquivos → Arquivos do GitHub:** visualize miniaturas de todas as imagens e outras mídias das subpastas públicas, mesmo as que não estão nos projetos. A consulta é pública, **sem token**. Use pasta, pesquisa e filtro de uso; selecione os arquivos órfãos e clique em **Excluir no GitHub** para abrir a publicação com os caminhos já marcados.
+- **Ferramentas → Gerenciar arquivos → Arquivos locais:** examine e exclua mídias órfãs do armazenamento deste navegador, sem afetar o repositório.
+- O token do GitHub é necessário **apenas para efetivar a exclusão na publicação** (ou uma consulta autenticada alternativa), não para ver arquivos. O publicador revalida as seleções; arquivos essenciais e em uso são protegidos. Atenção a referências externas e arquivos de projetos demonstrativos antigos.
 - A análise inclui **imagens, áudios e, quando existirem, vídeos MP4/WebM ou modelos GLB/glTF/FBX**. Arquivos estáticos referenciados apenas por CSS ou links antigos podem exigir revisão manual.
 - **Músicas:** continuam como arquivos MP3/WAV/OGG/M4A do proprietário, sem player incorporado de plataforma de streaming. Ao importar áudio com nome no formato `Artista - Música.mp3`, o cadastro sugere título e artista editáveis. Há opção de aproveitar a miniatura pública de um vídeo do YouTube como capa. **O site não extrai nem baixa áudio de vídeos do YouTube.**
 - **Composição → Vídeo incorporado:** o layout possui miniatura cinematográfica, claramente identificada como vídeo, e player sob demanda.
