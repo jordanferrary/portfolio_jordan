@@ -1,6 +1,6 @@
 import {useState} from 'react'
 import {ArrowDown,ArrowUp,Link2,Plus,Save,Sparkles,Trash2,X} from 'lucide-react'
-import type {ContactSettings,SocialLink} from '../../data/studio'
+import {normalizeContactTags,type ContactSettings,type SocialLink} from '../../data/studio'
 import {SocialLinksEditor} from './social-links-editor'
 
 type Props={
@@ -21,7 +21,7 @@ export function ContactEditor({settings,links,onSave,onClose}:Props){
   if(!draft.titleFirst.trim()||!draft.titleAccent.trim()||!draft.introduction.trim()){
    setError('Preencha o título e a apresentação da página.');return
   }
-  onSave({...draft,titleFirst:draft.titleFirst.trim(),titleAccent:draft.titleAccent.trim(),introduction:draft.introduction.trim(),greeting:draft.greeting.trim(),footerTags:[...new Set(draft.footerTags.map(v=>v.trim()).filter(Boolean))].slice(0,18)},draftLinks)
+  onSave({...draft,titleFirst:draft.titleFirst.trim(),titleAccent:draft.titleAccent.trim(),introduction:draft.introduction.trim(),greeting:draft.greeting.trim(),footerTags:normalizeContactTags(draft.footerTags)},draftLinks)
   onClose()
  }
  return <div className="editor-overlay" lang="pt-BR"><section className="editor-panel contact-editor contact-social-editor" role="dialog" aria-modal="true" aria-label="Editar contato e redes sociais">
