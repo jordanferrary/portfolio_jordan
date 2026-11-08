@@ -13,7 +13,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "test:assistant": "node --test functions/api/*.test.mjs",
     "test:github-vault": "node --test scripts/github-token-vault.test.mjs",
-    "audit:size": "node scripts/performance-budget.mjs --check"
+    "audit:size": "node scripts/performance-budget.mjs --check",
+    "test:glass": "node --test scripts/liquid-glass.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",

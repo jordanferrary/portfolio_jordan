@@ -21,6 +21,8 @@ jobs:
       - run: npm install
       - run: npm run typecheck
       - run: npm run test:studio
+      - name: Verify Liquid Glass design tokens and reduced-motion support
+        run: npm run test:glass
       - name: Verify GitHub App and generative AI security
         run: node --test auth-worker/tests/*.test.mjs
       - name: Verify Cloudflare Gemini image proxy

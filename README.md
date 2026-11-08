@@ -116,3 +116,11 @@ Auditoria inicial: **49,2 MiB de arquivos na revisão analisada**, concentrados 
 Após `npm run build`, execute `npm run audit:size` para medir arquivos de `dist/` e ver os avisos antes de publicar. O GitHub Actions executa essa inspeção automaticamente e interrompe deploys com mídias ou volume muito acima das metas de segurança.
 
 Leia o **[Guia de desempenho, formatos de mídia e limites do GitHub Pages](docs/GUIA_PERFORMANCE_GITHUB_PAGES.md)** para escolher entre importar imagens otimizadas, URLs externas, vídeo incorporado e modelos 3D sob demanda.
+
+## Liquid Glass — botões com cores do Local Studio
+
+Os principais CTAs, controles flutuantes, navegação e botões do Studio usam uma camada de vidro inspirada no Liquid Glass da Apple. O efeito usa exclusivamente CSS e as **mesmas sete cores** da paleta existente — não depende de arquivos de imagem, serviços, bibliotecas de animação nem novas assinaturas. Em **Local Studio → Direção de arte**, alterar **Cor principal, Cor secundária, Superfícies e Bordas** atualiza instantaneamente transparência, tom do vidro, reflexos e contornos. Os botões secundários preservam um vidro mais neutro, e os CTAs continuam destacados na cor principal.
+
+A prévia do editor exibe simultaneamente um botão primário e um secundário. Há fallback quando o navegador não suporta `backdrop-filter`, preferências de transparência/movimento reduzidos são respeitadas e o blur é reduzido nos controles menores em telas estreitas.
+
+As regras moram em `src/styles/liquid-glass-buttons.css`, carregado **depois** dos estilos de cobertura da paleta; a configuração existente dos temas é preservada. Para verificar vínculos e compatibilidade CSS, execute `npm run test:glass`. O workflow do Pages já executa esse teste automaticamente.
