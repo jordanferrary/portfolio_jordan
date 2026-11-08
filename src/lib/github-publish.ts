@@ -11,9 +11,9 @@ import {readAlquimagoVisibilityDraft} from './alquimago-visibility'
 
 /**
  * Browser-only GitHub publishing.
- * The fine-grained token exists only in the caller's React state.
- * NEVER persist it, log it, send it anywhere other than api.github.com,
- * or embed it in the compiled public site.
+ * Publication receives a credential in memory. The user may separately opt into
+ * storing an encrypted device-local token through the Studio's vault.
+ * This function never logs, persists or embeds the credential into public content.
  */
 const OWNER='jordanferrary'
 const REPO='portfolio_jordan'
