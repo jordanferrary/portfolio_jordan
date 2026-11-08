@@ -1,0 +1,218 @@
+/*
+ * JF Liquid Glass — palette-driven, no assets or JavaScript animation.
+ * Inspired by Apple's material hierarchy, not a pixel-perfect copy.
+ * Studio's seven --jf-* colors remain the single source of truth.
+ * Loaded after theme-coverage.css for visitor controls.
+ */
+:root{
+ --jf-liquid-edge:color-mix(in srgb,var(--jf-border) 62%,var(--jf-text) 38%);
+ --jf-liquid-edge-hot:color-mix(in srgb,var(--jf-secondary) 58%,var(--jf-text) 42%);
+ --jf-liquid-sheen:color-mix(in srgb,var(--jf-text) 32%,transparent);
+ --jf-liquid-glow:color-mix(in srgb,var(--jf-primary) 26%,transparent);
+ --jf-liquid-dark:color-mix(in srgb,var(--jf-background) 68%,transparent);
+ --jf-liquid-clear:
+  radial-gradient(ellipse 130% 80% at 24% -25%,color-mix(in srgb,var(--jf-text) 19%,transparent),transparent 67%),
+  linear-gradient(160deg,color-mix(in srgb,var(--jf-surface) 79%,transparent) 4%,
+   color-mix(in srgb,var(--jf-surface) 64%,transparent) 53%,
+   color-mix(in srgb,var(--jf-background) 82%,transparent) 100%);
+ --jf-liquid-tinted:
+  radial-gradient(ellipse 130% 80% at 24% -25%,color-mix(in srgb,var(--jf-text) 25%,transparent),transparent 68%),
+  linear-gradient(145deg,color-mix(in srgb,var(--jf-primary) 75%,var(--jf-surface) 25%) 0%,
+   color-mix(in srgb,var(--jf-primary) 63%,var(--jf-surface) 37%) 55%,
+   color-mix(in srgb,var(--jf-primary) 46%,var(--jf-background) 54%) 100%);
+ --jf-liquid-border-shadow:
+  inset 0 1px 0 var(--jf-liquid-sheen),
+  inset 0 -1px 0 color-mix(in srgb,var(--jf-background) 75%,transparent),
+  inset 1px 0 0 color-mix(in srgb,var(--jf-text) 9%,transparent),
+  0 8px 23px var(--jf-liquid-dark);
+ --jf-liquid-tinted-shadow:
+  inset 0 1px 0 color-mix(in srgb,var(--jf-text) 47%,transparent),
+  inset 0 -1px 0 color-mix(in srgb,var(--jf-background) 46%,transparent),
+  0 9px 26px var(--jf-liquid-glow),
+  0 7px 22px var(--jf-liquid-dark);
+}
+
+/* Rounded functional controls receive the material, not artworks or cards.
+ * Do not alter geometry of layout-sensitive widgets and media previews. */
+.site-shell :is(
+ .home-explore,.preview-cta,.home-cta,.primary-action,.secondary-action,
+ .contact-send-button,.contact-social-primary-link,.contact-social-portfolio-link,
+ .project-end,.back-link,.project-like,.about-page-edit,
+ .custom-page-cta,.artist-showcase-portfolio,
+ .gallery-background-edit,.gallery-move-controls button,
+ .chips button,.filter-button,.feedback-controls button,
+ .page-slideshow-arrow,.page-slideshow-floating-play,
+ .music-repeat,.music-volume-toggle,.music-main-toggle,
+ .project-model-launch,.project-video-play
+){
+ border:1px solid var(--jf-liquid-edge)!important;
+ background:var(--jf-liquid-clear)!important;
+ box-shadow:var(--jf-liquid-border-shadow)!important;
+ color:var(--jf-text)!important;
+ -webkit-backdrop-filter:blur(9px) saturate(135%);
+ backdrop-filter:blur(9px) saturate(135%);
+ transition:background-color .2s ease,border-color .2s ease,
+  box-shadow .2s ease,filter .2s ease,transform .2s ease;
+}
+
+/* Native-looking edge illumination for persistent floating navigation. */
+.site-shell :is(.side-icon,.socials a,.card-open,.work-arrow){
+ border-color:var(--jf-liquid-edge)!important;
+ background:var(--jf-liquid-clear)!important;
+ box-shadow:var(--jf-liquid-border-shadow)!important;
+ -webkit-backdrop-filter:blur(9px) saturate(130%);
+ backdrop-filter:blur(9px) saturate(130%);
+ transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;
+}
+.site-shell .side-link:not(.current) .side-icon,
+.site-shell .side-link:hover:not(.current) .side-icon,
+.site-shell .socials a,
+.site-shell .socials a:hover{
+ background:var(--jf-liquid-clear)!important;
+}
+.site-shell .side-link.current .side-icon{
+ background:var(--jf-liquid-tinted)!important;
+ border-color:var(--jf-liquid-edge-hot)!important;
+ box-shadow:var(--jf-liquid-tinted-shadow)!important;
+}
+.site-shell .side-link:not(.current):hover .side-icon,
+.site-shell .socials a:hover{
+ border-color:var(--jf-liquid-edge-hot)!important;
+ box-shadow:var(--jf-liquid-border-shadow),0 0 16px var(--jf-liquid-glow)!important;
+}
+.site-shell .home-explore>span{
+ background:var(--jf-liquid-tinted)!important;
+ color:var(--jf-text)!important;
+ border:1px solid var(--jf-liquid-edge-hot)!important;
+ box-shadow:var(--jf-liquid-tinted-shadow)!important;
+}
+
+/* Only meaningful calls-to-action get saturated color inside the glass. */
+.site-shell :is(
+ .preview-cta,.home-cta,.primary-action,.contact-send-button,
+ .custom-page-cta:not(.outline),.artist-showcase-portfolio,
+ .project-model-launch,.project-video-play,.music-main-toggle,
+ .chips button.active,.filter-button.active
+){
+ background:var(--jf-liquid-tinted)!important;
+ border-color:var(--jf-liquid-edge-hot)!important;
+ box-shadow:var(--jf-liquid-tinted-shadow)!important;
+ color:var(--jf-text)!important;
+}
+.site-shell .side-link.current .side-icon svg,
+.site-shell :is(.home-explore>span,.music-main-toggle,.project-video-play) svg{
+ filter:drop-shadow(0 1px 2px color-mix(in srgb,var(--jf-background) 50%,transparent));
+}
+.site-shell :is(
+ .home-explore,.preview-cta,.home-cta,.primary-action,.secondary-action,
+ .contact-send-button,.contact-social-primary-link,.contact-social-portfolio-link,
+ .project-end,.back-link,.project-like,.about-page-edit,
+ .custom-page-cta,.artist-showcase-portfolio,.gallery-background-edit,
+ .chips button,.filter-button,.feedback-controls button,
+ .page-slideshow-arrow,.page-slideshow-floating-play,
+ .music-repeat,.music-volume-toggle,.music-main-toggle
+):hover:not(:disabled){
+ border-color:var(--jf-liquid-edge-hot)!important;
+ box-shadow:var(--jf-liquid-border-shadow),
+  0 0 0 1px color-mix(in srgb,var(--jf-secondary) 16%,transparent),
+  0 10px 27px var(--jf-liquid-glow)!important;
+ filter:brightness(1.085);
+}
+.site-shell :is(
+ .preview-cta,.home-cta,.primary-action,.contact-send-button,
+ .custom-page-cta:not(.outline),.artist-showcase-portfolio,.music-main-toggle
+):hover:not(:disabled){
+ box-shadow:var(--jf-liquid-tinted-shadow),0 0 18px var(--jf-liquid-glow)!important;
+}
+.site-shell :is(
+ .home-explore,.preview-cta,.home-cta,.primary-action,.secondary-action,
+ .contact-send-button,.custom-page-cta,.project-end,.gallery-background-edit,
+ .chips button,.filter-button,.feedback-controls button,.music-main-toggle
+):active:not(:disabled){filter:brightness(.96);transform:translateY(1px) scale(.99)}
+.site-shell :is(button,a):focus-visible{
+ outline:2px solid var(--jf-secondary)!important;
+ outline-offset:3px;
+}
+.site-shell :is(button,a):disabled{
+ box-shadow:none!important;
+ filter:none!important;
+ cursor:not-allowed;
+}
+
+/* The owner's floating controls share the exact live palette, without
+ * replacing all admin layouts or changing their existing tap dimensions. */
+.studio-dock :is(.studio-context-button,.studio-dock-actions button),
+.studio-hub :is(.studio-hub-welcome-actions button,.studio-hub-category-grid>button){
+ border:1px solid var(--jf-liquid-edge)!important;
+ background:var(--jf-liquid-clear)!important;
+ box-shadow:var(--jf-liquid-border-shadow)!important;
+ color:var(--jf-text)!important;
+ -webkit-backdrop-filter:blur(8px) saturate(125%);
+ backdrop-filter:blur(8px) saturate(125%);
+ transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+.studio-dock .studio-dock-actions .studio-dock-publish,
+.studio-hub .studio-hub-welcome-actions button:last-child,
+.theme-palette-editor .save-action{
+ background:var(--jf-liquid-tinted)!important;
+ border-color:var(--jf-liquid-edge-hot)!important;
+ box-shadow:var(--jf-liquid-tinted-shadow)!important;
+ color:var(--jf-text)!important;
+}
+.studio-dock :is(.studio-context-button,.studio-dock-actions button):hover:not(:disabled),
+.studio-hub :is(.studio-hub-welcome-actions button,.studio-hub-category-grid>button):hover:not(:disabled){
+ border-color:var(--jf-liquid-edge-hot)!important;
+ box-shadow:var(--jf-liquid-border-shadow),0 0 16px var(--jf-liquid-glow)!important;
+ filter:brightness(1.08);
+}
+.studio-dock :is(.studio-context-button,.studio-dock-actions button):active:not(:disabled){
+ transform:translateY(1px) scale(.985);
+}
+
+/* Palette editor shows exactly what the visitor's glass CTA will look like. */
+.theme-palette-editor :is(.theme-mini-glass-primary,.theme-mini-glass-secondary){
+ border:1px solid var(--jf-liquid-edge)!important;
+ color:var(--jf-text)!important;
+ background:var(--jf-liquid-clear)!important;
+ box-shadow:var(--jf-liquid-border-shadow)!important;
+ border-radius:999px;
+}
+.theme-palette-editor .theme-mini-glass-primary{
+ background:var(--jf-liquid-tinted)!important;
+ border-color:var(--jf-liquid-edge-hot)!important;
+ box-shadow:var(--jf-liquid-tinted-shadow)!important;
+}
+
+/* Graceful fallback and accessibility/performance budgets. */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+ .site-shell :is(.side-icon,.socials a,.home-explore,.primary-action,.secondary-action,.chips button,.filter-button),
+ .studio-dock :is(.studio-context-button,.studio-dock-actions button){
+  background-color:var(--jf-surface)!important;
+ }
+}
+@media (prefers-reduced-transparency:reduce){
+ .site-shell :is(.side-icon,.socials a,.home-explore,.primary-action,.secondary-action,.chips button,.filter-button),
+ .studio-dock :is(.studio-context-button,.studio-dock-actions button){
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  background:var(--jf-surface)!important;
+ }
+ .site-shell :is(.primary-action,.preview-cta,.home-cta,.music-main-toggle),
+ .studio-dock .studio-dock-actions .studio-dock-publish{
+  background:var(--jf-primary)!important;
+ }
+}
+@media(max-width:640px){
+ /* Limit costly live blur surfaces on lower-powered mobile GPUs. */
+ .site-shell :is(.side-icon,.socials a,.chips button,.filter-button,.feedback-controls button),
+ .studio-dock :is(.studio-context-button,.studio-dock-actions button),
+ .studio-hub .studio-hub-category-grid>button{
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .site-shell :is(button,a,.side-icon,.socials a),
+ .studio-dock :is(button,.studio-context-button),
+ .studio-hub button{transition:none!important}
+ .site-shell :is(button,a,.side-icon,.socials a):active,
+ .studio-dock button:active{transform:none!important}
+}
