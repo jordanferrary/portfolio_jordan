@@ -41,9 +41,13 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
    detail:{playing:playingNow,audible:playingNow&&volume>0}
   }))
  },[playing,volume,playableSource])
- useEffect(()=>()=>window.dispatchEvent(new CustomEvent('alquimago:music-state',{
-  detail:{playing:false,audible:false}
- })),[])
+ useEffect(()=>{
+  return ()=>{
+   window.dispatchEvent(new CustomEvent('alquimago:music-state',{
+    detail:{playing:false,audible:false}
+   }))
+  }
+ },[])
 
  useEffect(()=>{if(audio.current){audio.current.volume=volume/100;audio.current.muted=volume===0}try{localStorage.setItem('jf-music-volume',String(volume))}catch{/* storage unavailable */}},[volume])
  const tryPlay=()=>{
