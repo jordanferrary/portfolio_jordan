@@ -48,7 +48,8 @@
         }
       }
     ],
-    "selectedSkin": "padrao"
+    "selectedSkin": "padrao",
+    "visible": true
   },
   "memory": {
     "namespace": "studio",
