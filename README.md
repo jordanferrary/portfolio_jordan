@@ -124,3 +124,11 @@ Os principais CTAs, controles flutuantes, navegação e botões do Studio usam u
 A prévia do editor exibe simultaneamente um botão primário e um secundário. Há fallback quando o navegador não suporta `backdrop-filter`, preferências de transparência/movimento reduzidos são respeitadas e o blur é reduzido nos controles menores em telas estreitas.
 
 As regras moram em `src/styles/liquid-glass-buttons.css`, carregado **depois** dos estilos de cobertura da paleta; a configuração existente dos temas é preservada. Para verificar vínculos e compatibilidade CSS, execute `npm run test:glass`. O workflow do Pages já executa esse teste automaticamente.
+
+## Player mobile e visibilidade pública do Alquimago
+
+No celular (até 750 px), o player de música é uma **gaveta lateral esquerda**. Inicia recolhido, exibindo apenas o botão **》**; esse botão abre o player e passa a mostrar **《** para fechar. Um toque fora da gaveta, Escape ou troca de página a recolhe. O áudio continua tocando se o visitante apenas recolher a interface. A playlist, o volume e o progresso continuam funcionando. No desktop, o player permanece na posição tradicional.
+
+O mascote **Alquimago inicia oculto para visitantes** (`public/alquimago/config.json → appearance.visible: false`); seu JavaScript não é baixado nessa situação. Ao desbloquear o **Local Studio**, o Alquimago continua disponível, respeitando a preferência de exibição do Studio. O proprietário pode mudar a visibilidade pública pelo controle independente **Familiar → Público · Ativar Alquimago** e publicar a alteração; a mudança local não afeta visitantes até a publicação.
+
+Os estilos da gaveta estão em `src/styles/mobile-music-drawer.css`, importados após as demais camadas de tema. O comando `npm run test:mobile-ui` verifica os principais contratos de responsividade, acessibilidade e configuração e é executado no GitHub Actions.
