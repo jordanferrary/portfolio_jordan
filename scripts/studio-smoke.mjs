@@ -30,6 +30,7 @@ const entry=[
  "export {ContactEditor} from './src/components/sections/contact-editor.tsx'",
  "export {ThemePaletteEditor} from './src/components/sections/theme-palette-editor.tsx'",
  "export {StudioDock} from './src/components/sections/studio-dock.tsx'",
+ "export {normalizeAnimationProfile,DEFAULT_ANIMATION_PROFILE} from './src/lib/alquimago-animation-profile.ts'",
  "export {ProjectLike} from './src/components/sections/project-like.tsx'",
  "export {StoryBlock,ProjectPage} from './src/components/sections/project-page.tsx'"
 ].join('\n')
@@ -64,6 +65,20 @@ try{
   assert.match(html,/Ferramentas/)
   assert.match(html,/Publicar/)
   assert.match(html,/Novo projeto/)
+ })
+ check('Shape Key playback profiles support loop and one-shot independently',()=>{
+  const base=app.normalizeAnimationProfile({})
+  assert.equal(base.shapes.Breath.loop,true)
+  assert.equal(base.shapes.Pet.loop,false)
+  assert.equal(base.shapes.Surprised.loop,false)
+  const changed=app.normalizeAnimationProfile({shapes:{
+   Breath:{loop:false,durationMs:4200,intensity:.6},
+   Pet:{loop:true,durationMs:850,intensity:.7}
+  }})
+  assert.equal(changed.shapes.Breath.loop,false)
+  assert.equal(changed.shapes.Pet.loop,true)
+  assert.equal(changed.shapes.Pet.durationMs,850)
+  assert.equal(changed.shapes.Surprised.loop,false)
  })
  check('Theme normalization and WCAG contrast are correct',()=>{
   assert.equal(app.normalizeHexColor('#abc'),'#AABBCC')
