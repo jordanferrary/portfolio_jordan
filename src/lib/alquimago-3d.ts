@@ -441,16 +441,17 @@ export function registerAlquimago3D():void{
       const mappedMood=tired&&brainMood!=='meditando'&&brainMood!=='sonolento'?'cansado':brainMood
       const rate=animation.breathMoodSpeed[mappedMood as keyof AnimationProfile['breathMoodSpeed']]||1
       const breathCycle=Math.max(180,timing('breath').durationMs/rate)
-      const breathTime=timing('breath').loop?elapsed%breathCycle:Math.min(elapsed,breathCycle)
+      const breathElapsed=expression==='breath'?now-cueStart:elapsed
+      const breathTime=timing('breath').loop?breathElapsed%breathCycle:Math.min(breathElapsed,breathCycle)
       const phase=breathTime/breathCycle
       const breath=0.5-0.5*Math.cos(phase*Math.PI*2)
       set('breath',expression==='breath'?1:breath)
       const blinkTiming=timing('blink')
-      const blinkMs=blinkTiming.loop?elapsed%blinkTiming.intervalMs:elapsed
+      const blinkMs=blinkTiming.loop?elapsed%blinkTiming.intervalMs:(expression==='blink'?now-cueStart:elapsed)
       const blink=blinkMs<blinkTiming.durationMs?Math.sin(blinkMs/blinkTiming.durationMs*Math.PI):0
       set('blink',expression==='sleep'?1:blink)
       if(tired&&expression!=='sleep'){
-       const yawnTiming=timing('yawn'),yawnMs=yawnTiming.loop?elapsed%yawnTiming.intervalMs:elapsed
+       const yawnTiming=timing('yawn'),yawnMs=yawnTiming.loop?elapsed%yawnTiming.intervalMs:(expression==='yawn'?now-cueStart:elapsed)
        if(yawnMs<yawnTiming.durationMs)
         set('yawn',Math.sin(yawnMs/yawnTiming.durationMs*Math.PI))
       }
