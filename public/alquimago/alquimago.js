@@ -3164,6 +3164,18 @@ class AlquimagoFamiliar extends HTMLElement {
       add('<button type="button" class="action" data-action="go-actions">← Voltar às interações</button>');
       add('<p class="muted">Para questões que ultrapassem meu diálogo local, posso preparar um resumo e abrir ChatGPT ou Gemini, sempre por escolha do usuário.</p><div class="actions"><button class="action primary" data-action="chatgpt">ChatGPT ↗</button><button class="action" data-action="gemini">Gemini ↗</button></div>');
     } else if(this.state.tab===5){
+      const conversation=document.createElement('section');conversation.className='grimoire-conversation';
+      this.$content.appendChild(conversation);
+      const heading=document.createElement('div');heading.className='grimoire-conversation-header';
+      const headingText=document.createElement('div');headingText.className='grimoire-conversation-title';
+      const eyebrow=document.createElement('span');eyebrow.textContent='CONVERSA ATIVA';
+      const headingName=document.createElement('strong');headingName.textContent='Converse com o Alquimago';
+      headingText.append(eyebrow,headingName);
+      const source=document.createElement('span');source.className='grimoire-answer-source';
+      source.textContent=this.lastAnswerSource||'Cérebro local';
+      source.title='Origem da última resposta';
+      heading.append(headingText,source);
+      conversation.appendChild(heading);
       const history=document.createElement('div');
       history.className='chat-history';
       history.setAttribute('role','log');
@@ -3175,12 +3187,12 @@ class AlquimagoFamiliar extends HTMLElement {
         bubble.textContent=item.text;
         history.appendChild(bubble);
       }
-      this.$content.appendChild(history);
+      conversation.appendChild(history);
       add('<form id="alquimago-chat-form" class="chat-form" autocomplete="off"><label for="alquimago-message" class="sr-only">Mensagem para o familiar</label><input name="message" id="alquimago-message" maxlength="320" placeholder="Converse com seu familiar..." aria-label="Sua mensagem" required><button type="submit" class="chat-send" aria-label="Enviar mensagem">➤</button></form>');
       if(this.pendingQuestion&&Date.now()-this.pendingQuestion.at<300000){
         add('<div class="chat-suggestions" aria-label="Responder à pergunta"><button type="button" data-say="sim">✓ Sim</button><button type="button" data-say="não">✕ Não</button></div>');
       }else{
-        add('<div class="chat-suggestions"><button type="button" data-say="OIE!">Olá</button><button type="button" data-say="Como faço carinho?">Carinho</button><button type="button" data-say="Quanto XP tenho?">XP</button><button type="button" data-say="Quanto é 2 + 2?">Matemática</button></div>');
+        add('<div class="chat-suggestions"><button type="button" data-say="O que você aprendeu?">Seu aprendizado</button><button type="button" data-say="Como mudar as cores do meu site?">Paleta de cores</button><button type="button" data-say="Quais projetos você conhece?">Projetos</button><button type="button" data-say="Quem é você?">Apresentação</button></div>');
       }
       const teacher=document.createElement('div');teacher.className='neural-teach';
       const lbl=document.createElement('label');lbl.textContent='Ensinar o significado da última mensagem:';
@@ -3243,6 +3255,23 @@ class AlquimagoFamiliar extends HTMLElement {
        ' lições aprovadas neste navegador · '+this.knowledge.projects.length+' obras públicas.';
       this.$content.appendChild(message);
       if(this.config.memory.mode==='publish')add('<div class="session-note">As conversas/XP não são lições. Somente lições aprovadas ficam salvas neste navegador; não são enviadas ao GitHub ou ao Gemini.</div>');
+      // A readable conversation occupies the available height. Teaching,
+      // consent and technical controls live in a separate expandable section.
+      const composer=document.createElement('div');composer.className='grimoire-composer';
+      for(const node of this.$content.querySelectorAll('#alquimago-chat-form,.chat-suggestions'))
+        composer.appendChild(node);
+      conversation.appendChild(composer);
+      const review=this.$content.querySelector('.alquimago-lesson-review');
+      if(review)conversation.insertBefore(review,composer);
+      const mentor=document.createElement('details');mentor.className='grimoire-mentor';
+      // Review after a teacher reply is a high-priority action, not hidden.
+      const mentorSummary=document.createElement('summary');mentorSummary.textContent='✦ Mentor Gemini e treinamento';
+      mentor.appendChild(mentorSummary);
+      for(const node of this.$content.querySelectorAll('.neural-teach,.neural-lesson,.arcane-ai-consent,.session-note'))
+        mentor.appendChild(node);
+      const technical=Array.from(this.$content.children).find(node=>node.matches?.('p.muted'));
+      if(technical){technical.classList.add('grimoire-diagnostics');mentor.appendChild(technical)}
+      if(mentor.children.length>1)conversation.appendChild(mentor);
       history.scrollTop=history.scrollHeight;
     }
     const cortexToggle=this.$content.querySelector('#toggle-cortex');
