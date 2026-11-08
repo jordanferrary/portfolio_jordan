@@ -33,7 +33,7 @@ Cookies com `HttpOnly`, `Secure` e `SameSite=None` podem ser bloqueados quando o
 
 ## Reversão e privacidade
 
-O caminho antigo de publicação por token temporário continua disponível, inclusive quando nenhum Worker está configurado. Nunca gravamos PATs, Client Secrets, tokens de usuário, cookies ou mensagens privadas no snapshot público do Alquimago. Caso uma sessão pareça comprometida, revogue o acesso ao GitHub App e desconecte o Worker.
+O método de token temporário continua disponível sem Worker. O proprietário pode optar por guardar essa credencial criptografada localmente no IndexedDB do navegador, ou usá-la somente em memória. Nenhum token, Client Secret, cookie ou mensagem privada entra no snapshot público do Alquimago. O cofre local não oferece o isolamento de segurança do Worker: scripts da mesma origem podem pedir uso da chave. Se uma autorização for comprometida, revogue-a no GitHub e desconecte o Worker.
 
 **Estado:** a integração cliente/servidor e os testes de rotas estão no código. O Worker e o GitHub App ainda precisam ser criados, configurados e autorizados pelo proprietário antes de o login sem token funcionar.
 
