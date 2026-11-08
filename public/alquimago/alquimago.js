@@ -3179,7 +3179,7 @@ class AlquimagoFamiliar extends HTMLElement {
         choice.id='toggle-llm';choice.checked=this.modelEnabled;
         choice.disabled=this.modelBusy;
         const details=document.createElement('span');
-        details.textContent='Usar IA generativa (opcional). Cada nova pergunta poderá ser enviada ao serviço configurado. Não envie dados privados.';
+        details.textContent='Consultar Gemini apenas quando faltar conhecimento local (opcional). Uma resposta só vira lição após sua aprovação. Não envie dados privados.';
         consent.append(choice,details);
         this.$content.appendChild(consent);
       }
@@ -3187,7 +3187,7 @@ class AlquimagoFamiliar extends HTMLElement {
       message.textContent='Fonte: '+this.lastAnswerSource+' · '+this.lessons.lessons.length+
        ' lições aprovadas neste navegador · '+this.knowledge.projects.length+' obras públicas.';
       this.$content.appendChild(message);
-      if(this.config.memory.mode==='publish')add('<div class="session-note">As conversas e mudanças de XP são temporárias. Clique em Publicar no Studio para salvar; recarregar descarta o que não foi publicado.</div>');
+      if(this.config.memory.mode==='publish')add('<div class="session-note">As conversas/XP não são lições. Somente lições aprovadas ficam salvas neste navegador; não são enviadas ao GitHub ou ao Gemini.</div>');
       history.scrollTop=history.scrollHeight;
     }
     const cortexToggle=this.$content.querySelector('#toggle-cortex');
