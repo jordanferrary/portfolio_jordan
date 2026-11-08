@@ -45,3 +45,9 @@ A memória local do familiar — incluindo lições, exemplos de treinamento, di
 **Não confundir**: `public/alquimago/project-memory.json` e outros snapshots públicos continuam legíveis por qualquer visitante. O Local Studio publica esse estado numérico por escolha do proprietário, não usando o cofre. A versão atual do recurso foi desenhada para impedir leitura casual no armazenamento local, não para prometer acesso exclusivo ou eliminar riscos de scripts comprometidos na mesma origem. O backup JSON exportado manualmente também continua sem criptografia.
 
 Como o cofre depende do domínio de origem, uma instalação em Cloudflare Pages e outra em GitHub Pages não compartilham chaves ou memória. Antes de testar, publicar uma compilação atualizada do upstream no site integrador.
+
+## Credencial GitHub reutilizável (v0.11.5)
+
+O portfólio dispõe de um cofre opcional em `src/lib/github-token-vault.ts`, separado do cofre de memória `ALQ-V1` do mascote. Ele guarda tokens pessoais de GitHub criptografados em AES-256-GCM e uma chave não exportável no IndexedDB da origem do site, apenas após comando **Guardar token criptografado**. O Alquimago não recebe a credencial; recebe somente um evento `alquimago:publish-auth-status` com um dos estados `ready`, `missing`, `expired`, `forbidden`, `offline` e `unavailable`.
+
+O proprietário revisa e confirma cada publicação; apagar a credencial armazenada requer confirmação separada. A credencial não integra o código público nem backups, embora scripts da mesma origem possam utilizar a chave: para segurança mais forte, prefira o GitHub App em Worker.
