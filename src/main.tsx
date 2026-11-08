@@ -53,3 +53,6 @@ import './styles/custom-pages.css'
 import './styles/theme-coverage.css'
 
 import './styles/alquimago-studio-workbench.css'
+
+// Final visitor/UI layer: palette-derived translucent control material.
+import './styles/liquid-glass-buttons.css'

@@ -104,3 +104,8 @@
 .theme-mini-card h4,.theme-mini-top{color:inherit}
 .theme-mini-card{box-shadow:0 8px 25px color-mix(in srgb,currentColor 9%,transparent)}
 .theme-editor-intro{max-width:100%}
+
+/* Live sample shares the actual palette-driven glass material of visitor buttons. */
+.theme-mini-actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.theme-mini-actions .theme-mini-action{margin-top:0;min-width:0;flex:0 1 auto;min-height:38px;gap:9px;box-sizing:border-box;padding:9px 13px;font-size:10px;line-height:1.35}
+.theme-mini-actions .theme-mini-action span{font-size:15px}

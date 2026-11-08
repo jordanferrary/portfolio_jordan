@@ -11,13 +11,13 @@ export const DEFAULT_THEME:ThemePalette={
  border:'#7335A7'
 }
 export const PALETTE_FIELDS:{key:ThemeColorKey;label:string;description:string}[]=[
- {key:'primary',label:'Cor principal',description:'Botões, foco, marca e elementos de destaque'},
- {key:'secondary',label:'Cor secundária',description:'Detalhes luminosos, indicadores e contraste visual'},
+ {key:'primary',label:'Cor principal',description:'Botões Liquid Glass, brilho colorido, foco e destaques'},
+ {key:'secondary',label:'Cor secundária',description:'Reflexos do vidro, contornos luminosos e indicadores'},
  {key:'background',label:'Fundo do site',description:'Base escura das páginas e atmosfera geral'},
- {key:'surface',label:'Superfícies',description:'Cards, janelas e áreas elevadas'},
+ {key:'surface',label:'Superfícies',description:'Profundidade e tonalidade base do vidro, cards e janelas'},
  {key:'text',label:'Texto principal',description:'Títulos, textos e ícones de maior destaque'},
  {key:'muted',label:'Texto secundário',description:'Descrições, legendas e informações auxiliares'},
- {key:'border',label:'Bordas e divisórias',description:'Contornos dos cards, linhas e separadores'}
+ {key:'border',label:'Bordas e divisórias',description:'Contorno do vidro, bordas dos cards e separadores'}
 ]
 export function normalizeHexColor(value:unknown):string|null{
  if(typeof value!=='string')return null

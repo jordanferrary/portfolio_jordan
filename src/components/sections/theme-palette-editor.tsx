@@ -42,9 +42,9 @@ export function ThemePaletteEditor({value,onSave,onClose}:Props){
        <div className="theme-mini-card" style={{background:draft.surface,borderColor:draft.border,color:draft.text}}>
         <span style={{color:draft.secondary}}>✦ CREATIVE PORTFOLIO</span>
         <h4>Art beyond<br/><em style={{color:draft.primary}}>the ordinary.</em></h4>
-        <div className="theme-mini-action" style={{background:draft.primary}}>Explore my work <span>↗</span></div>
+        <div className="theme-mini-actions"><div className="theme-mini-action theme-mini-glass-primary">Explore my work <span>↗</span></div><div className="theme-mini-action theme-mini-glass-secondary">Discover <span>✦</span></div></div>
        </div>
-       <small style={{color:draft.muted}}>Prévia de hierarquia visual · títulos, cartões, bordas e CTA</small>
+       <small style={{color:draft.muted}}>Prévia em tempo real · botões Liquid Glass, superfície, bordas e cores</small>
       </div>
      </div>
      <div className="theme-color-workspace">
