@@ -27,19 +27,16 @@ import './styles/contact-studio-v2.css'
 
 import './styles/gallery-background.css'
 
-import './styles/github-publish.css'
 
 import './styles/brand-logo.css'
 
 import './styles/site-identity.css'
-import './styles/studio-dock.css'
 import './styles/project-focus.css'
 import './styles/studio-polish.css'
 
 import './styles/studio-centered.css'
 
 import './styles/creative-direction.css'
-import './styles/theme-palette-editor.css'
 
 import './styles/portfolio-review.css'
 
@@ -49,7 +46,6 @@ import './styles/contact-social.css'
 
 import './styles/media-extras.css'
 
-import './styles/project-model.css'
 
 import './styles/custom-pages.css'
 

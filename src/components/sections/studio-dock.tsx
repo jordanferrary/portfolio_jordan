@@ -1,3 +1,4 @@
+import '../../styles/studio-dock.css'
 import { useEffect,useRef,useState } from 'react'
 import {
  ArrowRight,BookOpen,ChevronDown,CloudUpload,Download,FileText,

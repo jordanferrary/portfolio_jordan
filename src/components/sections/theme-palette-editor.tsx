@@ -1,3 +1,4 @@
+import '../../styles/theme-palette-editor.css'
 import { useEffect,useRef,useState } from 'react'
 import { Check,Palette,RotateCcw,Save,Sparkles,X } from 'lucide-react'
 import { ChromaticPicker } from '../ui/chromatic-picker'

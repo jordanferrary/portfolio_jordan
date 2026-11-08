@@ -1,3 +1,4 @@
+import '../../styles/project-model.css'
 import {useEffect,useRef,useState} from 'react'
 import {Box,ExternalLink,Move3d,Play} from 'lucide-react'
 import {AssetImage} from './asset-image'
