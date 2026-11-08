@@ -365,7 +365,7 @@ function respondToChat(input,context={}){
 
  // Questions about the familiar's own progress are facts about its LOCAL
  // state, never open-domain prompts for the Gemini mentor.
- const asksLearning=/(?:\b(?:vc|voce|alquimago)\b.{0,38}\b(?:treinand[oa]|treinou|treina|aprendend[oa]|aprendeu|aprende|estudand[oa]|estudou|evoluindo)\b|\b(?:seu|sua|teu|tua)\b.{0,22}\b(?:treinamento|aprendizado|aprendizagem|memoria|conhecimento|evolucao)\b|\b(?:como|quando|quanto|quantas|o que)\b.{0,26}\b(?:voce|vc)\b.{0,20}\b(?:aprende|treina|aprendeu|treinou))/i.test(q);
+ const asksLearning=/(?:\b(?:vc|voce|alquimago)\b.{0,38}\b(?:treinand[oa]|treinad[oa]|treinou|treina|aprendend[oa]|aprendid[oa]|aprendeu|aprende|estudand[oa]|estudad[oa]|estudou|evoluindo|evoluiu)\b|\b(?:seu|sua|teu|tua)\b.{0,22}\b(?:treinamento|aprendizado|aprendizagem|memoria|conhecimento|evolucao)\b|\b(?:como|quando|quanto|quantas|o que)\b.{0,26}\b(?:voce|vc)\b.{0,20}\b(?:aprende|treina|aprendeu|treinou))/i.test(q);
  if(asksLearning){
   const count=Math.max(0,Number(context.approvedLessons)||0);
   const corrections=Math.max(0,Number(context.neuralCorrections)||0);
