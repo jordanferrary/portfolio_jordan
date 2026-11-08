@@ -5,7 +5,7 @@ export const ANIMATION_IDS=[
  'Worried','Laugh','LookLeft','LookRight','LookUp','LookDown'
 ] as const
 export type AnimationKey=typeof ANIMATION_IDS[number]
-export type AnimationTiming={durationMs:number;intensity:number;intervalMs:number}
+export type AnimationTiming={durationMs:number;intensity:number;intervalMs:number;loop:boolean}
 export const BREATH_MOODS=['tranquilo','feliz','animado','curioso','concentrado','sonolento','meditando','cansado',
  'sad','happy','angry','surprised','curious','focused','pet','tired'] as const
 export type BreathMood=typeof BREATH_MOODS[number]
@@ -29,10 +29,11 @@ const KEY_DEFAULTS:Partial<Record<AnimationKey,[number,number,number]>>={
  Worried:[600,0.8,0],Laugh:[650,0.9,0],
  LookLeft:[310,0.35,0],LookRight:[310,0.35,0],LookUp:[310,0.35,0],LookDown:[310,0.35,0]
 }
+const DEFAULT_LOOPS=new Set<AnimationKey>(['Breath','Idle','Blink','Talk','Sleep','Tired','Happy','Sad','Curious','Focused'])
 export const DEFAULT_ANIMATION_PROFILE:AnimationProfile={
  shapes:Object.fromEntries(ANIMATION_IDS.map(id=>{
   const [durationMs,intensity,intervalMs]=KEY_DEFAULTS[id]||[500,0.8,0]
-  return [id,{durationMs,intensity,intervalMs}]
+  return [id,{durationMs,intensity,intervalMs,loop:DEFAULT_LOOPS.has(id)}]
  })) as Record<AnimationKey,AnimationTiming>,
  breathMoodSpeed:{
   tranquilo:1,feliz:1.14,animado:1.55,curioso:1.08,
@@ -52,6 +53,7 @@ export function normalizeAnimationProfile(input:unknown):AnimationProfile{
   return [id,{
    durationMs:Math.round(clamp(raw.durationMs,80,6000,defaults.durationMs)),
    intensity:Math.round(clamp(raw.intensity,0,1,defaults.intensity)*100)/100,
+   loop:typeof raw.loop==='boolean'?raw.loop:defaults.loop,
    intervalMs:id==='Blink'||id==='Yawn'
     ?Math.round(clamp(raw.intervalMs,800,30000,defaults.intervalMs))
     :0
