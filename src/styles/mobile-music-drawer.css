@@ -1,0 +1,121 @@
+/*
+ * Small-screen music drawer: 》 opens and 《 closes.
+ * Rendered through a React portal inside .site-shell to keep coordinates
+ * independent of the transformed/blurred bottom navigation rail.
+ * The music element stays mounted while the drawer is collapsed.
+ */
+.music-drawer-toggle{display:none}
+.music-drawer-content{min-width:0}
+@media(max-width:750px){
+ .site-shell>.music-widget{
+  display:flex!important;
+  visibility:visible!important;
+  position:fixed!important;
+  top:auto!important;
+  right:auto!important;
+  left:0!important;
+  bottom:max(86px,calc(76px + env(safe-area-inset-bottom,0px)))!important;
+  margin:0!important;
+  width:187px!important;
+  max-width:187px!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  z-index:64!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  flex-direction:row!important;
+  gap:0!important;
+  transform:translate3d(-144px,0,0)!important;
+  transition:transform .27s cubic-bezier(.22,.78,.22,1)!important;
+  filter:drop-shadow(0 10px 18px color-mix(in srgb,var(--jf-background) 64%,transparent));
+  pointer-events:auto;
+  overflow:visible!important;
+ }
+ .site-shell>.music-widget.music-drawer-open{
+  transform:translate3d(0,0,0)!important;
+ }
+ .site-shell>.music-widget .music-drawer-content{
+  order:1;
+  position:relative;
+  flex:0 0 144px;
+  width:144px;
+  max-width:144px;
+  min-width:0;
+  align-self:stretch;
+ }
+ .site-shell>.music-widget .music-card{
+  width:144px!important;
+  max-width:144px!important;
+  margin:0!important;
+  min-height:124px;
+  border-radius:0 20px 20px 0;
+  border-left:0;
+ }
+ .site-shell>.music-widget .music-drawer-toggle{
+  order:2;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 43px;
+  width:43px;
+  height:65px;
+  margin:0;
+  padding:0;
+  align-self:center;
+  border:1px solid color-mix(in srgb,var(--jf-border) 75%,var(--jf-secondary) 25%);
+  border-left:0;
+  border-radius:0 17px 17px 0;
+  background:
+   linear-gradient(160deg,
+    color-mix(in srgb,var(--jf-primary) 26%,var(--jf-surface) 74%),
+    color-mix(in srgb,var(--jf-background) 20%,var(--jf-surface) 80%));
+  box-shadow:inset 0 1px color-mix(in srgb,var(--jf-text) 31%,transparent),0 6px 16px #0006;
+  color:var(--jf-secondary);
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color .2s,border-color .2s,color .2s;
+ }
+ .site-shell>.music-widget .music-drawer-toggle span{
+  display:block;
+  color:inherit;
+  font-size:29px;
+  font-weight:600;
+  line-height:1;
+  transform:translateY(-1px);
+ }
+ .site-shell>.music-widget .music-drawer-toggle:hover,
+ .site-shell>.music-widget .music-drawer-toggle:focus-visible{
+  border-color:var(--jf-secondary)!important;
+  background:var(--jf-surface-tint)!important;
+  color:var(--jf-text)!important;
+ }
+ .site-shell>.music-widget .music-drawer-toggle:focus-visible{
+  outline:2px solid var(--jf-secondary);
+  outline-offset:2px;
+ }
+ .site-shell>.music-widget .music-popover{
+  left:0!important;
+  bottom:calc(100% + 9px)!important;
+  width:min(290px,calc(100vw - 17px))!important;
+  max-height:clamp(100px,calc(100dvh - 260px),280px)!important;
+  overflow:auto!important;
+ }
+ .site-shell>.music-widget .music-card-error{
+  max-width:calc(100vw - 10px);
+  width:min(230px,calc(100vw - 10px));
+ }
+}
+@media(max-width:750px) and (max-height:480px){
+ .site-shell>.music-widget{
+  bottom:max(74px,calc(67px + env(safe-area-inset-bottom,0px)))!important;
+ }
+ .site-shell>.music-widget .music-popover{
+  max-height:max(95px,calc(100dvh - 230px))!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .site-shell>.music-widget{transition:none!important}
+ .site-shell>.music-widget .music-drawer-toggle{transition:none!important}
+}
