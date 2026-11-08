@@ -1,7 +1,7 @@
 {
   "version": "0.9.0",
   "upstream": "jordanferrary/alquimago",
-  "bundleBlobSha": "503c647b3bf51cbce72170e3bd0d8b23a6e7feee",
-  "note": "Grimório 2.0: janela ampla, menu lateral, chat com histórico expandido, Gemini e treinamento recolhíveis.",
-  "source": "Alquimago · cérebro local prioritário e lições aprovadas"
+  "bundleBlobSha": "d6075daa8c1d650b273540856d7d1c22fc9fd58e",
+  "note": "Alquimago Orb 2D: novo robô vetorial expressivo, 26 poses, animações CSS e integração com Studio.",
+  "source": "Orb 2D animated SVG • 26 facial expressions"
 }
