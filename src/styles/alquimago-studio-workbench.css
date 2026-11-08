@@ -1,3 +1,10 @@
+/* The published site may disable the familiar without deleting its skin or memory.
+   Pending state avoids flashing a hidden mascot before config.json is loaded. */
+html[data-alquimago-visible="false"] alquimago-familiar,
+html[data-alquimago-visible="pending"] alquimago-familiar{
+ display:none!important;
+}
+
 /* Alquimago creative workbench — built to match the Local Studio UI. */
 .editor-overlay .jf-skin-editor{
  width:min(850px,100%)!important;max-width:850px!important;
