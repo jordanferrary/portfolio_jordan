@@ -28,6 +28,9 @@ export function createAffect(seed=123456789,now=0){
 }
 export function affectSignal(state,signal,now=state.lastAt){
  const next={...state,lastAt:Math.max(state.lastAt,now)};
+ // Salient cues prompt an early *decision*, never a hardcoded face.
+ if(['pet','happy','sad','angry','surprised','music','return','away'].includes(signal))
+  next.changedAt=Math.min(next.changedAt,now-3700);
  const impulse=AFFECT_IMPULSES[signal]||{};
  for(const key of ['calm','curiosity','warmth','tension','energy']){
   next[key]=clampAffect(next[key]+(impulse[key]||0));
@@ -70,12 +73,12 @@ export function affectTick(state,now){
   curious:.05+curiosity*.66+energy*.09,
   focused:.04+curiosity*.63+calm*.11,
   thinking:.04+curiosity*.56+(1-energy)*.12,
-  pet:Math.max(0,warmth-.56)*1.65+calm*.09,
-  love:Math.max(0,warmth-.64)*1.85,
+  pet:Math.max(0,warmth-.56)*2.5+calm*.09,
+  love:Math.max(0,warmth-.64)*2.25,
   angry:Math.max(0,tension-.21)*1.24+(1-calm)*.12,
   worried:Math.max(0,tension-.29)*.97+(1-warmth)*.17,
   surprised:Math.max(0,tension-.27)*1.03+Math.max(0,energy-.57)*.35,
-  sad:Math.max(0,.40-warmth)*1.75+(1-energy)*.08,
+  sad:Math.max(0,.40-warmth)*2.35+(1-energy)*.08,
   tired:Math.max(0,.40-energy)*1.65+(1-curiosity)*.05,
   sleep:Math.max(0,.30-energy)*2.05+calm*.08
  };
