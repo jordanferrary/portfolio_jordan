@@ -371,7 +371,7 @@ function respondToChat(input,context={}){
  if(grounded)return grounded;
  if(context.neuralIntent==='greeting'||/^(?:oi+e*|oie+|ola+|eai+|eae+|opa+|salve+)[!?. ]*$/.test(q)||/\b(bom dia|boa tarde|boa noite)\b/.test(q))
   return {reply:'Oi! Sou '+name+'. Conheço os projetos públicos deste site, posso resolver contas e sugerir melhorias. Diga o nome de uma obra ou faça uma pergunta.',intent:'greeting'};
- if(context.neuralIntent==='identity'||/\b(quem (e|eh) voce|seu nome|o que voce (e|eh)|vc (e|eh))\b/.test(q))
+ if(context.neuralIntent==='identity'||/\b(quem (e|eh) voce|seu nome|qual (e|eh) (o )?seu nome|como voce se chama|o que voce (e|eh)|vc (e|eh))\b/.test(q))
   return {reply:'Sou '+name+', um familiar arcano interativo. Tenho memória local, sentimentos simbólicos e observo apenas a estrutura pública da página. Ainda não sou uma IA conversacional completa.',intent:'identity'};
  if(context.neuralIntent==='status'||/\b(xp|nivel|experiencia|progresso|status|energia)\b/.test(q))
   return {reply:'Meu grimório registra nível '+level+' e '+xp+' XP. Carinhos aumentam nossa afinidade, mas não geram XP infinito. Explorar uma rota ou realizar uma tarefa relevante ajuda na evolução.',intent:'status'};
@@ -391,8 +391,10 @@ function respondToChat(input,context={}){
   const tip=tips.find(t=>!['route','studio'].includes(t.id))||tips[0];
   return {reply:tip?'Encontrei uma observação sobre '+page+': '+tip.title+'. '+tip.description+' Quer que eu mostre como continuar com uma IA?':'Estou acompanhando a seção '+page+'. Posso revisar títulos, imagens e navegação pública; para analisar o código completo, preciso de arquivos autorizados.',intent:'insight',...(tip?{pending:{kind:'ai-handoff'}}:{})};
  }
+ if(/\b(o que (voce|vc) (pode|consegue|sabe) fazer|o que voce faz|quais (suas|as) (funcoes|habilidades|capacidades)|para que voce serve|como voce funciona)\b/.test(q))
+  return {reply:'Sou o Alquimago! Posso explicar recursos do portfólio, reconhecer projetos públicos, fazer contas simples, mostrar meu estado e reutilizar lições que você aprovou. Quando eu não souber algo, posso consultar o Gemini com sua permissão; a resposta só vira meu conhecimento após sua revisão. ✦',intent:'help'};
  if(context.neuralIntent==='help'||/\b(ajuda|comandos|o que (faz|sabe)|como funciona)\b/.test(q))
-  return {reply:'Podemos conversar sobre XP, carinho, poções, emoções e sugestões do site. Também sei responder sim ou não conforme a pergunta anterior e calcular contas como 2 + 2 ou 12 dividido por 4.',intent:'help'};
+  return {reply:'Posso orientar sobre obras públicas, recursos da página, contas, minhas emoções e memória aprovada. Se o assunto exigir conhecimento novo, consulto o Gemini somente quando habilitado e ofereço a resposta para revisão antes de aprender.',intent:'help'};
  if(context.neuralIntent==='mood'||/\b(triste|feliz|humor|sentindo|emocao)\b/.test(q))
   return {reply:'Meu humor simbólico agora está '+mood+'. Ele reage aos cuidados, às brincadeiras e ao tempo, mas não significa que eu tenha sentimentos humanos.',intent:'mood'};
  if(context.neuralIntent==='thanks'||/\b(obrigado|valeu|agradeco)\b/.test(q))
@@ -1552,8 +1554,107 @@ async function askLanguageModel({endpoint,prompt,history=[],project,fetcher,sign
 
 
 
+// Approved, owner-reviewed knowledge. Shared with the source library.
+/**
+ * Alquimago: approved offline knowledge lessons.
+ *
+ * No remote model calls. The user teaches facts by explicitly reviewing each
+ * question-answer pair; the familiar never adds LLM output automatically.
+ * Lessons stay in localStorage, isolated by site origin and namespace. This
+ * deliberately DOES NOT enter a public GitHub publication or a snapshot.
+ */
+const lObj=x=>x&&typeof x==='object'&&!Array.isArray(x)?x:{};
+const LESSONS_LIMIT=64;
+const canonicalLesson=x=>String(x||'').normalize('NFD')
+ .replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]/g,' ')
+ .replace(/\s+/g,' ').trim();
+const lSensitive=x=>/(?:github_pat_|gh[pousr]_|AIza[a-zA-Z0-9_-]{20,}|\bsk-[A-Za-z0-9_-]{12,}|\b(?:senha|password|secret|token|api[\s_-]*key|chave privada|credential)\b)/i.test(String(x||''));
+const lClean=(x,max)=>typeof x==='string'?x.trim().replace(/[\u0000-\u001f\u007f]/g,' ').slice(0,max):'';
+function validateLesson(question,answer,source='manual'){
+ const q=lClean(question,160),a=lClean(answer,800),s=lClean(source,120);
+ if(q.length<4||a.length<5||lSensitive(q)||lSensitive(a)||lSensitive(s))return null;
+ const canonical=canonicalLesson(q);
+ if(canonical.length<3)return null;
+ return {question:q,answer:a,source:s||'manual',key:canonical};
+}
+function normalizeLessons(value){
+ const obj=lObj(value),entries=Array.isArray(obj.lessons)?obj.lessons:[];
+ const out=[],seen=new Set();
+ for(const raw of entries.slice(-LESSONS_LIMIT)){
+  const v=lObj(raw);
+  if(v.approved!==true)continue;
+  const candidate=validateLesson(v.question,v.answer,v.source);
+  if(!candidate||seen.has(candidate.key))continue;
+  seen.add(candidate.key);out.push({...candidate,approved:true});
+ }
+ return {schema:1,lessons:out};
+}
+function approveLesson(library,question,answer,source='manual'){
+ const lesson=validateLesson(question,answer,source);
+ if(!lesson)return {ok:false,library:normalizeLessons(library),reason:'Revise a pergunta e a resposta. Não insira senhas, tokens nem dados privados.'};
+ const current=normalizeLessons(library);
+ const filtered=current.lessons.filter(l=>l.key!==lesson.key);
+ return {ok:true,reason:'Conhecimento aprovado e salvo neste dispositivo.',
+  library:{schema:1,lessons:[...filtered,{...lesson,approved:true}].slice(-LESSONS_LIMIT)}};
+}
+function recallLesson(input,library){
+ const query=canonicalLesson(input),items=normalizeLessons(library).lessons;
+ if(!query||!items.length)return null;
+ const exact=items.find(item=>item.key===query);
+ if(exact)return {reply:exact.answer,intent:'approved-lesson',source:exact.source};
+ // Only near-exact questions, not a generic keyword match. This avoids
+ // pretending an unrelated human-supplied answer is supported by evidence.
+ const words=x=>new Set(x.split(' ').filter(t=>t.length>2));
+ const terms=words(query);
+ let selected=null,top=0;
+ for(const item of items){
+  const other=words(item.key);
+  if(terms.size<2||other.size<2)continue;
+  const intersection=[...terms].filter(t=>other.has(t)).length;
+  const similarity=intersection/Math.max(terms.size,other.size);
+  if(similarity>.84&&similarity>top){selected=item;top=similarity;}
+ }
+ return selected?{reply:selected.answer,intent:'approved-lesson',source:selected.source}:null;
+}
+const lessonsKey=ns=>'alquimago:lessons:v1:'+(/^[a-zA-Z0-9_-]{1,48}$/.test(ns)?ns:'default');
+function readLessons(storage,namespace='default'){
+ try{
+  const raw=storage?.getItem(lessonsKey(namespace));
+  if(!raw||raw.length>100000)return normalizeLessons(null);
+  return normalizeLessons(JSON.parse(raw));
+ }catch{return normalizeLessons(null);}
+}
+function writeLessons(storage,namespace,library){
+ try{
+  if(!storage)return false;
+  const raw=JSON.stringify(normalizeLessons(library));
+  if(raw.length>100000)return false;
+  storage.setItem(lessonsKey(namespace),raw);return true;
+ }catch{return false;}
+}
+function summarizeApprovedFiles(records){
+ // This is a source inventory, not claims about semantics or execution.
+ const items=Array.isArray(records)?records.slice(0,20):[];
+ return items.filter(f=>f?.status==='read'&&typeof f.file==='string').map(f=>{
+  const excerpt=typeof f.excerpt==='string'?f.excerpt.slice(0,5000):'';
+  const exports=[...excerpt.matchAll(/\bexport\s+(?:default\s+)?(?:async\s+)?(?:function|class|const|let|type|interface)\s+([A-Za-z_$][\w$]*)/g)]
+   .map(m=>m[1]).slice(0,16);
+  const imports=[...excerpt.matchAll(/\bfrom\s+['"]([^'"]+)['"]/g)]
+   .map(m=>m[1]).slice(0,12);
+  return {file:lClean(f.file,180),exports,imports,bytes:Number(f.bytes)||0,
+   description:'Resumo estrutural (nomes de exports e imports). A finalidade do código deve ser confirmada pelo responsável.'};
+ });
+}
+
 const TAG = 'alquimago-familiar';
 const STYLE = `
+.familiar-title{display:none!important}
+.alquimago-lesson-review{display:grid;gap:8px;margin:12px 0;padding:12px;border:1px solid #a37aca8c;
+ border-radius:13px;background:linear-gradient(140deg,#3d2455a3,#20142edb);font-size:11px}
+.alquimago-lesson-review strong{color:#f7ddff}
+.alquimago-lesson-review p{margin:0;color:#ddc3ee;line-height:1.55}
+.alquimago-lesson-review .actions{display:flex;flex-wrap:wrap;gap:8px}
+
 
 /* Visitor mode is a living character, not a floating stat/minigame widget. */
 :host([data-public-mode="true"]) .familiar-title,
@@ -1963,6 +2064,7 @@ class AlquimagoFamiliar extends HTMLElement {
     this.message=this.config.identity.greeting;
     this.projectFiles=[];
     this.knowledge=normalizeKnowledge(null);this.lastProjectId=null;
+    this.lessons=normalizeLessons(null);this.lessonDraft=null;this.lastAnswerSource='Pronto para conversar';
     this.modelAvailable=false;this.modelEnabled=false;this.modelBusy=false;this.modelSequence=0;this.modelAbort=null;
     this.links = [];
     this.audit = null;
@@ -2123,6 +2225,9 @@ class AlquimagoFamiliar extends HTMLElement {
         }catch{this.language=normalizeLanguage(null)}
       }
       this.dialogue=config.memory.mode==='publish'?[]:readDialogue(storage(),config.memory.namespace);
+      // Unlike XP drafts, owner-approved lessons remain in this browser,
+      // with no Gemini calls and no upload to publicly readable GitHub JSON.
+      this.lessons=readLessons(storage(),config.memory.namespace);
       this.message=config.identity.greeting;
       this.lastSpoken=config.identity.greeting;this.lastSpokenAt=Date.now();
       this.neural=config.memory.mode==='publish'?this.neural:(readNeural(storage(),config.memory.namespace)||this.neural);
@@ -2741,9 +2846,10 @@ class AlquimagoFamiliar extends HTMLElement {
       }));
       return;
     }
-    const prediction=neuralPredict(this.neural,user);
+    const approved=recallLesson(user,this.lessons);
+    const prediction=approved?{intent:'approved-lesson',confidence:1}:neuralPredict(this.neural,user);
     this.lastUserText=user;this.lastNeuralIntent=prediction.intent;
-    const response=respondToChat(user,{
+    const response=approved?{...approved,store:true}:respondToChat(user,{
       pending:this.pendingQuestion,
       knowledge:this.knowledge,lastProjectId:this.lastProjectId,
       focusTitle:this.selectedProject?.title||'',
@@ -2752,14 +2858,21 @@ class AlquimagoFamiliar extends HTMLElement {
       level:levelFromXp(this.state.brain.xp),xp:this.state.brain.xp,
       page:this.activePage?.route||'desktop',suggestions:this.suggestions
     });
+    // Gemini is a teacher of last resort, not the default chat engine.
+    // Never override approved facts, site knowledge, a valid local command,
+    // arithmetic or a question about the familiar itself.
+    const known=['private','math','followup','decline','clarify','navigate','empty',
+      'project-fact','project-list','project-info','approved-lesson',
+      'greeting','identity','status','pet','play','brew','rest','help','mood','thanks'];
+    const localIntent=known.includes(response.intent);
     const canGenerate=this.modelAvailable&&this.modelEnabled&&!this.modelBusy&&
-      !['private','math','followup','decline','clarify','navigate','empty','project-fact','project-list','project-info'].includes(response.intent)&&
-      user.length>=3;
+      !localIntent&&user.length>=3;
     if(canGenerate){
       const history=this.dialogue.slice(-8);
       const project=this.knowledge.projects.find(p=>p.id===(response.projectId||this.lastProjectId))||null;
       const request=++this.modelSequence;
       this.modelBusy=true;
+      this.lastAnswerSource='Aguardando Gemini';
       this.pendingQuestion=null;
       this.lastUserText='';this.lastNeuralIntent='';
       this.dialogue=[...this.dialogue,{role:'user',text:user},
@@ -2775,12 +2888,15 @@ class AlquimagoFamiliar extends HTMLElement {
         if(!this.isConnected||request!==this.modelSequence)return;
         this.dialogue[this.dialogue.length-1]={role:'familiar',text:answer.reply};
         this.message=answer.reply;
+        this.lastAnswerSource='Gemini · resposta ainda NÃO aprendida';
+        this.lessonDraft={question:user,answer:answer.reply,source:'Gemini (revisado pelo proprietário)'};
         this.lastSpoken=answer.reply;this.lastSpokenAt=Date.now();
       }).catch(error=>{
         if(!this.isConnected||request!==this.modelSequence)return;
         const reason=error?.name==='AbortError'?
          'A consulta demorou demais.':error instanceof Error?error.message:'Não consegui conectar à IA.';
         const fallback=reason+' Resposta local: '+response.reply;
+        this.lastAnswerSource='Resposta local · Gemini indisponível';
         this.dialogue[this.dialogue.length-1]={role:'familiar',text:fallback};
         this.message=fallback;
       }).finally(()=>{
@@ -2821,6 +2937,7 @@ class AlquimagoFamiliar extends HTMLElement {
       this.dialogue=[...this.dialogue,{role:'familiar',text:response.reply}].slice(-24);
     }
     this.message=response.reply;
+    this.lastAnswerSource=response.intent==='approved-lesson'?'Memória aprovada · offline':'Cérebro local · sem Gemini';
     this.lastSpoken=response.reply;this.lastSpokenAt=Date.now();
     if(this.skinAdapter?.setExpression){
       this.skinAdapter.setExpression('talk');
@@ -3017,6 +3134,25 @@ class AlquimagoFamiliar extends HTMLElement {
       const teach=document.createElement('button');teach.type='button';teach.dataset.action='teach-neural';teach.textContent='Ensinar';
       teach.disabled=!this.lastUserText;
       teacher.append(lbl,chooser,teach);
+      // Gemini drafts are not knowledge until the Studio owner approves.
+      if(this.lessonDraft){
+        const review=document.createElement('section');
+        review.className='alquimago-lesson-review';
+        const title=document.createElement('strong');
+        title.textContent='✦ Gemini respondeu. Ensinar ao Alquimago?';
+        const explanation=document.createElement('p');
+        explanation.textContent='Revise o conteúdo antes de aprovar. A lição fica neste navegador; não é treino automático nem vai para o GitHub.';
+        const question=document.createElement('p');question.className='muted';
+        question.textContent='Pergunta: '+this.lessonDraft.question;
+        const buttons=document.createElement('div');buttons.className='actions';
+        const accept=document.createElement('button');accept.type='button';
+        accept.className='action primary';accept.dataset.action='approve-lesson';
+        accept.textContent='✓ Aprovar aprendizado';
+        const discard=document.createElement('button');discard.type='button';
+        discard.className='action';discard.dataset.action='discard-lesson';discard.textContent='Descartar';
+        buttons.append(accept,discard);review.append(title,explanation,question,buttons);
+        this.$content.appendChild(review);
+      }
       const lesson=document.createElement('details');lesson.className='neural-lesson';
       const summary=document.createElement('summary');summary.textContent='✦ Ensinar a reconhecer uma frase';
       lesson.append(summary,teacher);this.$content.appendChild(lesson);
@@ -3032,7 +3168,8 @@ class AlquimagoFamiliar extends HTMLElement {
         this.$content.appendChild(consent);
       }
       const message=document.createElement('p');message.className='muted';
-      message.textContent='Modo '+(this.modelEnabled?'IA generativa':'contextual local')+' · '+this.knowledge.projects.length+' obras públicas conhecidas · '+this.neural.learned+' correções de frases.';
+      message.textContent='Fonte: '+this.lastAnswerSource+' · '+this.lessons.lessons.length+
+       ' lições aprovadas neste navegador · '+this.knowledge.projects.length+' obras públicas.';
       this.$content.appendChild(message);
       if(this.config.memory.mode==='publish')add('<div class="session-note">As conversas e mudanças de XP são temporárias. Clique em Publicar no Studio para salvar; recarregar descarta o que não foi publicado.</div>');
       history.scrollTop=history.scrollHeight;
@@ -3156,6 +3293,24 @@ class AlquimagoFamiliar extends HTMLElement {
       this.state.open=false;this.render();
       window.dispatchEvent(new Event('alquimago:request-publish'));
       return;
+    }
+    if(action==='approve-lesson'){
+      if(!this.lessonDraft)return;
+      const saved=approveLesson(this.lessons,this.lessonDraft.question,this.lessonDraft.answer,this.lessonDraft.source);
+      if(!saved.ok){this.message=saved.reason;this.renderHeader();return;}
+      if(!writeLessons(storage(),this.config.memory.namespace,saved.library)){
+        this.message='Não consegui gravar a lição neste navegador. Verifique o armazenamento.';
+        this.renderHeader();return;
+      }
+      this.lessons=saved.library;this.lessonDraft=null;
+      this.lastAnswerSource='Conhecimento aprovado · disponível offline';
+      this.message='Lição aprovada! Agora responderei a essa pergunta e a formulações muito próximas sem chamar o Gemini.';
+      this.render();return;
+    }
+    if(action==='discard-lesson'){
+      this.lessonDraft=null;
+      this.message='Lição descartada. A resposta do Gemini não foi incorporada à memória.';
+      this.render();return;
     }
     if(action==='teach-neural'){
       if(!this.lastUserText)return;
