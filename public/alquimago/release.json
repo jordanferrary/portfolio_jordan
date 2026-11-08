@@ -1,7 +1,7 @@
 {
   "version": "0.9.0",
   "upstream": "jordanferrary/alquimago",
-  "bundleBlobSha": "2771c6fee4545f177897bf30aa78151d1f470df6",
-  "note": "Manifesto do pacote versionado. No deploy, o workflow recompila o Alquimago da origem e recalcula seu hash automaticamente.",
-  "source": "Alquimago v0.9 • balão estável e controle de visibilidade pelo Studio"
+  "bundleBlobSha": "6fe77b0cdbe628740fdf3abb5317eebfd207ce31",
+  "note": "Manifeste do bundle: Gemini só consulta para lacunas, aprendizado após aprovação, Grimório sem barra inferior.",
+  "source": "Alquimago · cérebro local prioritário e lições aprovadas"
 }
