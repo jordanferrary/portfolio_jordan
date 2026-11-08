@@ -3146,20 +3146,32 @@ class AlquimagoFamiliar extends HTMLElement {
         title.textContent='✦ Gemini respondeu. Ensinar ao Alquimago?';
         const explanation=document.createElement('p');
         explanation.textContent='Revise o conteúdo antes de aprovar. A lição fica neste navegador; não é treino automático nem vai para o GitHub.';
-        const question=document.createElement('p');question.className='muted';
-        question.textContent='Pergunta: '+this.lessonDraft.question;
+        const questionLabel=document.createElement('label');
+        questionLabel.textContent='Pergunta a memorizar';
+        const question=document.createElement('input');question.id='alquimago-lesson-question';
+        question.maxLength=160;question.value=this.lessonDraft.question;
+        question.style.cssText='width:100%;min-height:36px;border-radius:9px;background:#160f24;color:#f1deff;border:1px solid #785a9c;padding:8px';
+        const answerLabel=document.createElement('label');answerLabel.textContent='Resposta revisada';
+        const answer=document.createElement('textarea');answer.id='alquimago-lesson-answer';
+        answer.rows=4;answer.maxLength=800;answer.value=this.lessonDraft.answer.slice(0,800);
+        answer.style.cssText='width:100%;border-radius:9px;background:#160f24;color:#f1deff;border:1px solid #785a9c;padding:8px;resize:vertical';
         const buttons=document.createElement('div');buttons.className='actions';
         const accept=document.createElement('button');accept.type='button';
         accept.className='action primary';accept.dataset.action='approve-lesson';
         accept.textContent='✓ Aprovar aprendizado';
         const discard=document.createElement('button');discard.type='button';
         discard.className='action';discard.dataset.action='discard-lesson';discard.textContent='Descartar';
-        buttons.append(accept,discard);review.append(title,explanation,question,buttons);
+        buttons.append(accept,discard);review.append(title,explanation,questionLabel,question,answerLabel,answer,buttons);
         this.$content.appendChild(review);
       }
       const lesson=document.createElement('details');lesson.className='neural-lesson';
       const summary=document.createElement('summary');summary.textContent='✦ Ensinar a reconhecer uma frase';
-      lesson.append(summary,teacher);this.$content.appendChild(lesson);
+      lesson.append(summary,teacher);
+      const reset=document.createElement('button');reset.type='button';
+      reset.className='action';reset.dataset.action='clear-lessons';
+      reset.textContent='Limpar minhas '+this.lessons.lessons.length+' lições aprovadas';
+      reset.disabled=this.lessons.lessons.length===0;
+      lesson.append(reset);this.$content.appendChild(lesson);
       if(this.modelAvailable){
         const consent=document.createElement('label');
         consent.className='arcane-ai-consent';
@@ -3300,7 +3312,9 @@ class AlquimagoFamiliar extends HTMLElement {
     }
     if(action==='approve-lesson'){
       if(!this.lessonDraft)return;
-      const saved=approveLesson(this.lessons,this.lessonDraft.question,this.lessonDraft.answer,this.lessonDraft.source);
+      const q=this.$content.querySelector('#alquimago-lesson-question')?.value||this.lessonDraft.question;
+      const answer=this.$content.querySelector('#alquimago-lesson-answer')?.value||'';
+      const saved=approveLesson(this.lessons,q,answer,this.lessonDraft.source);
       if(!saved.ok){this.message=saved.reason;this.renderHeader();return;}
       if(!writeLessons(storage(),this.config.memory.namespace,saved.library)){
         this.message='Não consegui gravar a lição neste navegador. Verifique o armazenamento.';
@@ -3314,6 +3328,17 @@ class AlquimagoFamiliar extends HTMLElement {
     if(action==='discard-lesson'){
       this.lessonDraft=null;
       this.message='Lição descartada. A resposta do Gemini não foi incorporada à memória.';
+      this.render();return;
+    }
+    if(action==='clear-lessons'){
+      if(!window.confirm('Excluir todas as lições aprovadas deste navegador? Não altera a skin ou o site público.'))return;
+      const empty=normalizeLessons(null);
+      if(!writeLessons(storage(),this.config.memory.namespace,empty)){
+        this.message='Não foi possível apagar as lições neste navegador.';this.renderHeader();return;
+      }
+      this.lessons=empty;this.lessonDraft=null;
+      this.lastAnswerSource='Memória revisada';
+      this.message='Lições locais apagadas. O Gemini não foi consultado.';
       this.render();return;
     }
     if(action==='teach-neural'){
