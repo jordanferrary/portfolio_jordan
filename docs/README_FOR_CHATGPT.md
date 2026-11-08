@@ -77,3 +77,11 @@ Ver [README_CUSTOM_PAGES.md](README_CUSTOM_PAGES.md). Verificar mobile com muito
 A versão atual expõe **sete cores independentes**: primária, secundária, fundo, superfícies, texto principal, texto secundário e bordas. `ThemePalette`/normalização e publicação ficam em `src/lib/theme-palette.ts` e `src/hooks/use-portfolio.ts`. O editor possui prévia imediata, cancelamento que reverte, e indicadores WCAG. Cores antigas de quatro tokens migram sem perder customizações.
 
 `src/styles/theme-coverage.css` é a camada central de integração pública e **deve continuar sendo importada por último**, depois de `custom-pages.css`. Ela abrange Home, galerias, case studies, Sobre, Contact, páginas e player; respeite os sete tokens e evite valores roxos fixos em novas seções públicas. A cor das obras e os controles internos do Local Studio ficam intocados.
+
+## Alquimago: compilação independente e upgrade cognitivo 2.0
+
+- O código-fonte do familiar vive em `jordanferrary/alquimago`. A versão integrada não é escrita manualmente no `public/alquimago/alquimago.js` do repositório: o `npm run build` chama o `prebuild`, que executa `scripts/sync-alquimago.mjs` e busca o código atual do upstream.
+- A sincronização executa os testes do familiar, produz o bundle, registra o SHA de origem em `public/alquimago/release.json` (no ambiente de build) e exige os recursos de cognição 2.0 através de `scripts/check-alquimago-release.mjs`.
+- Tanto GitHub Pages quanto Cloudflare Pages devem executar `npm run build` com Git e rede disponíveis. Não assuma que mudar um arquivo no upstream atualiza o site sem um novo build do hospedeiro.
+- O upgrade 0.11.0 aumenta limites locais para 128 lições, 160 exemplos e 64 protótipos; condiciona sinapses simuladas ativadas com até 512 pesos persistentes. Não instala LLM local nem altera autorização para Gemini, publicação ou arquivos privados.
+- A versão do bundle publicado deve ser verificada no `/alquimago/release.json` servido pelo domínio. O marcador dentro do repositório pode ser antigo, pois a sincronização acontece durante o build e não reescreve automaticamente o commit de origem do portfólio.
