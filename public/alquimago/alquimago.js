@@ -2744,8 +2744,13 @@ class AlquimagoFamiliar extends HTMLElement {
     this.startPageReactions();
     this.musicHandler=event=>{
       const playing=event?.detail?.playing===true;
+      const justStarted=playing&&!this.affect.music;
       this.affect=setAffectMusic(this.affect,playing,Date.now());
       this.affect=affectTick(this.affect,Date.now());
+      if(justStarted)this.speakPublic(
+        "Oh, music! Activating my best floating-and-vibing mode.",
+        'music:play',{priority:1,interval:150000,hold:5700}
+      );
       if(this.isConnected)this.renderHeader();
     };
     window.addEventListener('alquimago:music-state',this.musicHandler);
@@ -3188,23 +3193,31 @@ class AlquimagoFamiliar extends HTMLElement {
     this.updateThought();
     return true;
   }
-  speakForReaction(name){
+  speakForReaction(trigger){
     if(!this.isPublicVisitor())return;
-    const lines={
-      sad:["Leaving already? I'll keep the tiny portal warm.","Off to another tab? I'll guard the pixels."],
-      happy:["You're back! I definitely wasn't rehearsing my dramatic farewell.","Welcome back! The art missed you. Probably."],
-      angry:["Hey! Are you copying my master's sacred words? At least credit the wizard!","Hold on—are you borrowing that text? My legal department is a very small owl."],
-      pet:["Careful! That's my thinking hat.","Oh! A head pat. I shall allow this."],
-      surprised:["WHOA! That cursor has turbo mode!","Easy there, speedster! My hat nearly flew away."],
-      tired:["I'm practicing my sleepy spell. The art isn't going anywhere.","Even tiny wizards need a dramatic yawn."]
+    const mood=this.affect?.expression||'idle';
+    // The internal mood selects the tone; interactions merely provide context.
+    const calm=['serene','breath','idle','sleep','tired'].includes(mood);
+    const tense=['angry','worried','surprised'].includes(mood);
+    const words={
+      sad:calm?["I will be here, keeping the pixels peaceful.","Enjoy your adventure beyond this tab!"]:
+        ["Leaving already? My tiny circuits will miss the company.","Off to another tab? I'll guard the artwork."],
+      happy:calm?["Welcome back. Everything is nicely in orbit.","You're back! I saved the calm vibes for you."]:
+        ["Welcome back! The art missed you. Probably.","My sensors picked up your return!"],
+      angry:tense?["Copying text? My copyright sensors are watching!","Careful with those sacred words, human!"]:
+        ["Found a sentence worth keeping? Interesting.","Research mode? I can respect that."],
+      pet:["Easy on the headset! Those are premium sensors.","Oh! A head pat. My circuits approve."],
+      surprised:tense?["Whoa! That cursor nearly scrambled my sensors!","Easy there, speedster!"]:
+        ["Fast cursor! My scanners almost missed it.","Impressive pointer speed. Very futuristic."],
+      tired:calm?["Quiet mode feels nice right now.","A little floating recharge sounds perfect."]:
+        ["Even a tiny robot deserves a dramatic yawn.","Power-saving mode, but make it stylish."]
     };
-    const set=lines[name];
-    if(!set)return;
-    const priority={angry:8,pet:7,happy:7,sad:6,surprised:5,tired:1}[name]||1;
-    const hold={sad:3600,angry:7000,pet:3400,happy:4200,surprised:3000,tired:5000}[name]||5000;
-    const interval={sad:90000,happy:45000,angry:95000,pet:26000,surprised:110000,tired:180000}[name]||60000;
-    const index=this.publicSpeechCount%set.length;
-    this.speakPublic(set[index],'reaction:'+name,{priority,interval,hold});
+    const lines=words[trigger];
+    if(!lines)return;
+    const priority={angry:5,pet:7,happy:6,sad:4,surprised:3,tired:1}[trigger]||1;
+    const interval={sad:90000,happy:50000,angry:95000,pet:26000,surprised:110000,tired:180000}[trigger]||60000;
+    this.speakPublic(lines[this.publicSpeechCount%lines.length],'reaction:'+trigger,
+      {priority,interval,hold:trigger==='angry'?6900:4700});
   }
   // Only describe features that actually exist on the current page.
   publicSceneTip(){
