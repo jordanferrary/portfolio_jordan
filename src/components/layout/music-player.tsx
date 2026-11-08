@@ -31,6 +31,20 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
  },[])
  useEffect(()=>{setProgress(0);setPlaying(false);if(current?.id){try{localStorage.setItem('jf-selected-song',current.id)}catch{/* storage unavailable */}}},[current?.id])
  useEffect(()=>{try{localStorage.setItem('jf-music-repeat',repeatOne?'one':'next')}catch{/* storage unavailable */}},[repeatOne])
+
+ // Only the native audio playback state affects the familiar.
+ // No track name, listening history or audio data leaves this page.
+ useEffect(()=>{
+  const el=audio.current
+  const playingNow=Boolean(el&&!el.paused&&!el.ended&&playableSource)
+  window.dispatchEvent(new CustomEvent('alquimago:music-state',{
+   detail:{playing:playingNow,audible:playingNow&&volume>0}
+  }))
+ },[playing,volume,playableSource])
+ useEffect(()=>()=>window.dispatchEvent(new CustomEvent('alquimago:music-state',{
+  detail:{playing:false,audible:false}
+ })),[])
+
  useEffect(()=>{if(audio.current){audio.current.volume=volume/100;audio.current.muted=volume===0}try{localStorage.setItem('jf-music-volume',String(volume))}catch{/* storage unavailable */}},[volume])
  const tryPlay=()=>{
   const player=audio.current
