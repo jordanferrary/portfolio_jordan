@@ -7,6 +7,7 @@ const repoParts=(process.env.GITHUB_REPOSITORY||'jordanferrary/portfolio_jordan'
 const repositoryName=repoParts[1]||'portfolio_jordan'
 const accountName=repoParts[0]||'jordanferrary'
 const base=process.env.GITHUB_PAGES==='true'?'/'+repositoryName+'/':'/'
+const buildRevision=(process.env.CF_PAGES_COMMIT_SHA||process.env.GITHUB_SHA||process.env.VITE_BUILD_SHA||'local').slice(0,40)
 const publicSiteUrl=(process.env.PUBLIC_SITE_URL||'https://'+accountName+'.github.io/'+repositoryName+'/').replace(/\/?$/,'/')
 
 function escapeHtml(text:string):string{
@@ -40,7 +41,8 @@ function socialMetadata(){
      '{{SEO_DESCRIPTION}}':escapeHtml(description),
      '{{SITE_URL}}':escapeHtml(publicSiteUrl),
      '{{SOCIAL_IMAGE_URL}}':escapeHtml(publicSiteUrl+'social-preview.jpg?v='+version),
-     '{{CACHE_VERSION}}':version
+     '{{CACHE_VERSION}}':version,
+     '{{BUILD_COMMIT}}':escapeHtml(buildRevision.slice(0,12))
     }
     return Object.entries(tags).reduce((result,[key,value])=>result.replaceAll(key,value),html)
    }
@@ -50,6 +52,7 @@ function socialMetadata(){
 
 export default defineConfig({
  plugins:[react(),tailwindcss(),socialMetadata()],
+ define:{'import.meta.env.VITE_BUILD_SHA':JSON.stringify(buildRevision)},
  base,
  server:{host:'0.0.0.0'}
 })
