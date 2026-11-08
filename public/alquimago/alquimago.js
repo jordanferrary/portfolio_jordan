@@ -2853,7 +2853,11 @@ class AlquimagoFamiliar extends HTMLElement {
       pending:this.pendingQuestion,
       knowledge:this.knowledge,lastProjectId:this.lastProjectId,
       focusTitle:this.selectedProject?.title||'',
-      neuralIntent:prediction.confidence>=.55?prediction.intent:null,
+      // The neural intent classifier is only a hint. Open-domain questions
+      // should not be hijacked by a falsely confident identity/help label.
+      neuralIntent:prediction.confidence>=.55&&
+       !/\b(qual|quais|como|porque|por que|quando|onde|explique|diferenca|diferença|what|why|how|which)\b/.test(plain(user))
+       ?prediction.intent:null,
       name:this.config.identity.name,mood:currentMood(this.state.brain),
       level:levelFromXp(this.state.brain.xp),xp:this.state.brain.xp,
       page:this.activePage?.route||'desktop',suggestions:this.suggestions
