@@ -212,6 +212,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
         <button type="button" className="action" onClick={()=>void refreshSaved()} disabled={busy||vaultBusy}>Verificar validade</button>
         <button type="button" className="action" onClick={()=>void forgetSaved()} disabled={busy||vaultBusy||vaultStatus.status==='missing'}><Trash2 size={15}/>Descartar token</button>
        </div>
+       {authError&&<p role="alert" className="github-publish-error">{authError}</p>}
        <p className="editor-help">Opcional: o token fica criptografado neste navegador com AES-256-GCM. Não o envie no chat. Scripts deste mesmo site ainda podem acessar a autorização; prefira a conexão GitHub App quando configurada.</p>
       </div>}
       {!session.authenticated&&<label className="github-publish-token-label">{configured?'Alternativa: token temporário':'Token temporário do GitHub'}
