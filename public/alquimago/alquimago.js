@@ -2132,13 +2132,27 @@ class AlquimagoFamiliar extends HTMLElement {
     this.state.brain = passTime(restoreBrain(saved.brain), Math.max(0, Date.now() - (saved.brain?.lastSeen || Date.now())));
     if (saved.position && Number.isFinite(saved.position.x) && Number.isFinite(saved.position.y)) this.state.position = saved.position;
     this.state.open = this.desktop;
-    this.shadowRoot.innerHTML = `<style>${STYLE}</style><section class="shell"><div class="panel" id="panel"><header class="panel-header"><div class="row"><b id="wizard-title">✦ Grimório</b><span class="badge" id="level">Nível 1</span><button type="button" id="close-panel" aria-label="Fechar grimório" title="Fechar" class="panel-close">✕</button></div><div class="subtitle" id="wizard-subtitle">Familiar local • sem coleta de dados</div></header><nav class="tabs" id="tabs" aria-label="Seções"></nav><div class="content" id="content"></div><div class="feedback" id="feedback" role="status"></div></div><button type="button" class="thought" id="thought" aria-label="Conversar com o familiar"></button><button type="button" class="character" id="character" aria-label="Interagir com Alquimago" title="Toque para carinho, deslize para acariciar ou arraste para mover">${SVG}</button><button type="button" class="familiar-title" id="toggle"><strong id="wizard-label">✦ Alquimago</strong><span aria-hidden="true">⌃</span></button></section>`;
+    this.shadowRoot.innerHTML = `<style>${STYLE}</style><section class="shell"><div class="panel" id="panel" role="dialog" aria-label="Grimório do Alquimago" aria-modal="false"><header class="panel-header"><div class="row"><span class="grimoire-brand-mark" aria-hidden="true">✦</span><div class="grimoire-brand"><span class="grimoire-kicker">ALQUIMAGO / LOCAL STUDIO</span><b id="wizard-title">Grimório</b></div><span class="badge" id="level">Nível 1</span><button type="button" id="grimoire-size-toggle" aria-label="Expandir grimório" aria-pressed="false" title="Expandir ou restaurar tamanho" class="panel-close grimoire-size-toggle">⤢</button><button type="button" id="close-panel" aria-label="Fechar grimório" title="Fechar" class="panel-close">✕</button></div><div class="subtitle" id="wizard-subtitle">Conversa e aprendizado local</div></header><div class="grimoire-layout"><nav class="tabs" id="tabs" aria-label="Seções do grimório"></nav><div class="content" id="content"></div></div><div class="feedback" id="feedback" role="status"></div></div><button type="button" class="thought" id="thought" aria-label="Conversar com o familiar"></button><button type="button" class="character" id="character" aria-label="Interagir com Alquimago" title="Toque para carinho, deslize para acariciar ou arraste para mover">${SVG}</button><button type="button" class="familiar-title" id="toggle"><strong id="wizard-label">✦ Alquimago</strong><span aria-hidden="true">⌃</span></button></section>`;
     this.$panel = this.shadowRoot.getElementById('panel');
     this.$character = this.shadowRoot.getElementById('character');
     this.$content = this.shadowRoot.getElementById('content');
     this.$thought=this.shadowRoot.getElementById('thought');
     this.$thought.addEventListener('click',()=>{if(document.documentElement.dataset.alquimagoStudio!=='true')return;this.state.open=true;this.state.tab=this.selectedProject&&Date.now()-this.lastSpokenAt<18000?1:5;this.render();});
     this.shadowRoot.getElementById('close-panel').addEventListener('click',()=>{this.state.open=false;this.render();});
+    this.grimoireExpanded=storage()?.getItem('alquimago-grimoire-expanded')==='true';
+    this.$panel.classList.toggle('expanded',this.grimoireExpanded);
+    const expand=this.shadowRoot.getElementById('grimoire-size-toggle');
+    expand.setAttribute('aria-pressed',String(this.grimoireExpanded));
+    expand.setAttribute('aria-label',this.grimoireExpanded?'Restaurar tamanho do grimório':'Expandir grimório');
+    expand.textContent=this.grimoireExpanded?'⤡':'⤢';
+    expand.addEventListener('click',()=>{
+      this.grimoireExpanded=!this.grimoireExpanded;
+      this.$panel.classList.toggle('expanded',this.grimoireExpanded);
+      expand.setAttribute('aria-pressed',String(this.grimoireExpanded));
+      expand.setAttribute('aria-label',this.grimoireExpanded?'Restaurar tamanho do grimório':'Expandir grimório');
+      expand.textContent=this.grimoireExpanded?'⤡':'⤢';
+      try{storage()?.setItem('alquimago-grimoire-expanded',String(this.grimoireExpanded))}catch{/* optional */}
+    });
     this.$tabs = this.shadowRoot.getElementById('tabs');
     this.$feedback = this.shadowRoot.getElementById('feedback');
     this.shadowRoot.getElementById('toggle').addEventListener('click', () => this.toggle());
@@ -3009,9 +3023,9 @@ class AlquimagoFamiliar extends HTMLElement {
   toggle() { if (this.desktop||document.documentElement.dataset.alquimagoStudio!=='true') return; this.state.open = !this.state.open; this.render(); }
   renderHeader() {
     const mood=currentMood(this.state.brain);
-    this.shadowRoot.getElementById('wizard-title').textContent='✦ '+this.config.identity.name+' · v0.9';
+    this.shadowRoot.getElementById('wizard-title').textContent='Grimório';
     this.shadowRoot.getElementById('wizard-label').textContent='✦ '+this.config.identity.name;
-    this.shadowRoot.getElementById('wizard-subtitle').textContent=this.config.identity.subtitle+(this.config.memory.mode==='publish'?' · rascunho até publicar':'');
+    this.shadowRoot.getElementById('wizard-subtitle').textContent='Conversa, lições aprovadas e ferramentas do familiar';
     this.style.setProperty('--violet',this.config.appearance.accent);
     this.style.setProperty('--gold',this.config.appearance.gold);
 
@@ -3047,7 +3061,11 @@ class AlquimagoFamiliar extends HTMLElement {
       button.className='tab'+(item.index===this.state.tab?' selected':'');
       button.dataset.tab=String(item.index);
       button.setAttribute('aria-pressed',String(item.index===this.state.tab));
-      button.textContent=this.language.tabs[item.key]||item.key;
+      const icon=document.createElement('span');
+      icon.className='grimoire-nav-icon';
+      icon.textContent=item.index===5?'◈':item.index===1?'◎':'✧';
+      icon.setAttribute('aria-hidden','true');
+      button.append(icon,document.createTextNode(this.language.tabs[item.key]||item.key));
       this.$tabs.appendChild(button);
     }
     this.$content.replaceChildren();
