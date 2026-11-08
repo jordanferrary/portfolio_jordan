@@ -225,3 +225,29 @@ O Alquimago usa uma camada de falas **totalmente separada** do Grimório do Loca
 - [ ] Ao sair/voltar da janela, surgem frases curtas diferentes e não insistentes.
 - [ ] O balão desaparece automaticamente e não cobre os controles do visitante.
 - [ ] Dentro do Local Studio, o Grimório permanece funcional e suas mensagens técnicas não vazam para o site público.
+
+## Controle de repetição (Loop / Executar uma vez)
+
+Em **Local Studio → Ferramentas → Familiar → Ateliê do Alquimago → Animações**, selecione cada expressão e configure:
+
+- **Repetir animação (loop) ativado:** a Shape Key interpola entre repouso, expressão e repouso em ciclos contínuos enquanto aquele estado estiver ativo.
+- **Repetir animação (loop) desativado:** um único ciclo, com retorno ao repouso; o próximo evento deve reativá-la.
+- **Duração e intensidade** continuam independentes para cada expressão, assim como o intervalo de piscadas/bocejos quando o loop está ligado.
+- **Breath** tem seu próprio controle de loop, permitindo uma respiração contínua ou uma inspiração única de teste.
+
+Padrões recomendados: Breath, Idle e Blink com loop; Pet, Surprised, Yawn e reações breves sem loop. Você pode personalizar tudo no Studio.
+
+**Limitação atual:** estes controles já atuam na animação procedimental das Shape Keys. O formato GLB suporta clips de ossos e Morph Targets, mas o adaptador atual ainda não reproduz clips de **Bones** via AnimationMixer. Portanto, o seletor de loop NÃO controla clips esqueléticos por enquanto. Essa integração futura deverá oferecer LoopRepeat/LoopOnce por clip e camadas Bones/Shape Keys independentes.
+
+### Identificar versão implantada
+
+O projeto Cloudflare Pages publica o endpoint público de diagnóstico /build-info.json com o **commit do GitHub que foi realmente compilado** e a branch. Essa informação não contém segredos. A central do Local Studio também mostra o prefixo do commit no rodapé.
+
+Quando uma atualização não aparecer:
+
+1. Entre em **Cloudflare → Workers & Pages → portfolio-jordan → Deployments → Production**.
+2. Confirme **Success**, branch main e o commit esperado. Se o build estiver com erro, abra o **Build log**.
+3. Abra https://portfolio-jordan.pages.dev/build-info.json e compare o campo commit com o commit de produção.
+4. Se o commit for antigo, o problema é o deployment ou o domínio consultado; não adianta apenas recarregar a página.
+5. Se o commit for novo, mas a interface continuar antiga, confira a URL pages.dev, teste uma janela privada e recarregue sem cache. Em domínio próprio, revise as regras de cache.
+
