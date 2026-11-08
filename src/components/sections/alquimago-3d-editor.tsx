@@ -56,6 +56,7 @@ function Range({label,value,min,max,step,unit='',onChange}:{
 }
 export function Alquimago3DEditor({onClose,onPublish}:Props){
  const [tab,setTab]=useState<Tab>('model')
+ const [activeSkin,setActiveSkin]=useState<'padrao'|'custom-3d'>(()=>familiarElement()?.selectedSkin==='custom-3d'?'custom-3d':'padrao')
  const [activeAnimation,setActiveAnimation]=useState<AnimationKey>('Pet')
  const [stage,setStage]=useState<AlquimagoStage>(()=>readAlquimagoStage(familiarElement()))
  const [animation,setAnimation]=useState<AnimationProfile>(()=>readAnimationProfile())
@@ -103,23 +104,36 @@ export function Alquimago3DEditor({onClose,onPublish}:Props){
    window.dispatchEvent(new Event('alquimago:skin3d-imported'))
    setExists(true);setFound(report.found)
    previewSkin()
+   setActiveSkin('custom-3d')
    setTab('face')
    setMessage('Modelo importado neste navegador. '+report.found.length+' expressões identificadas; teste as reações antes de publicar.')
   }catch(e){setError(e instanceof Error?e.message:'Falha na importação.')}
   finally{setBusy(false)}
  }
- const preview=()=>{try{previewSkin();setMessage('Prévia 3D ativada. Você pode ajustar câmera e animações.')}catch(e){setError(e instanceof Error?e.message:'Falha ao abrir prévia.')}}
+ const preview=()=>{try{previewSkin();setActiveSkin('custom-3d');setMessage('Prévia 3D ativada. Você pode ajustar câmera e animações.')}catch(e){setError(e instanceof Error?e.message:'Falha ao abrir prévia.')}}
+ const preview2D=()=>{
+  const familiar=familiarElement()
+  if(!familiar){setError('Alquimago não carregado. Atualize a página e tente novamente.');return}
+  setError('')
+  familiar.selectedSkin='padrao'
+  familiar.skin={type:'svg',src:'',shapeKeys:{}}
+  familiar.applySkin()
+  familiar.render()
+  setActiveSkin('padrao')
+  setTab('face')
+  setMessage('Alquimago Orb 2D ativado. Clique em qualquer emoção para ver os olhos, a boca e as luzes reagirem. Se quiser mantê-lo como padrão, revise a publicação.')
+ }
  const testExpression=(name:string)=>{
   const familiar=familiarElement()
   if(familiar?.skinAdapter?.previewExpression)familiar.skinAdapter.previewExpression(name.toLowerCase())
   else familiar?.skinAdapter?.setExpression?.(name.toLowerCase())
-  setMessage('Testando '+name+' na skin ativa. Se a malha não tiver essa Shape Key, a expressão não aparecerá.')
+  setMessage(activeSkin==='padrao'?'Testando '+name+' na skin vetorial Orb 2D.':'Testando '+name+' na skin 3D. Sem Shape Key correspondente, a expressão não aparecerá.')
  }
  const shapeOptions=(items:readonly string[])=><div className="jf-skin-shape-grid">
   {items.map(name=><button type="button" key={name}
-   className={'jf-skin-shape'+(found.includes(name)?' known':'')}
+   className={'jf-skin-shape'+(activeSkin==='padrao'||found.includes(name)?' known':'')}
    onClick={()=>testExpression(name)} title={'Testar '+name}
-   >{found.includes(name)?'✓ ':'✦ '}{name}</button>)}
+   >{activeSkin==='padrao'||found.includes(name)?'✓ ':'✦ '}{name}</button>)}
  </div>
  const selected=animation.shapes[activeAnimation]
  return <div className="editor-overlay" lang="pt-BR" onMouseDown={event=>{if(event.target===event.currentTarget)onClose()}}>
@@ -134,7 +148,11 @@ export function Alquimago3DEditor({onClose,onPublish}:Props){
    </nav>
    <div className="editor-scroll jf-skin-scroll">
     {tab==='model'&&<div className="jf-skin-block">
-     <div className="jf-skin-section-title"><span>01</span><div><h3>Arquivo do personagem</h3><p>O GLB permanece privado no navegador até você escolher Publicar.</p></div></div>
+     <div className="jf-skin-section-title"><span>01</span><div><h3>Skin do personagem</h3><p>Alterne entre o novo robô vetorial e seu GLB 3D. Apenas publique depois de testar.</p></div></div>
+     <div className="jf-skin-info"><strong>Alquimago Orb 2D — vetorial animado</strong>
+       <p>Nova skin original: cabeça esférica, visor robótico, headset, olhos expressivos e animações leves de flutuação. Não necessita de arquivo externo.</p>
+       <div className="jf-skin-end"><button type="button" onClick={preview2D}>Usar e testar skin Orb 2D</button></div>
+     </div>
      <label className="jf-skin-upload">
       <strong>{busy?'Analisando modelo…':'Selecionar modelo .glb'}</strong>
       <small>glTF Binary 2.0 · até 18 MiB · texturas incorporadas</small>
@@ -146,7 +164,9 @@ export function Alquimago3DEditor({onClose,onPublish}:Props){
     </div>}
     {tab==='face'&&<div className="jf-skin-block">
      <div className="jf-skin-section-title"><span>02</span><div><h3>Laboratório de Shape Keys</h3><p>Teste as expressões sem alterar o arquivo-fonte.</p></div></div>
-     <div className="jf-skin-hint">O rosto precisa ter a Shape Key <code>Basis</code> e os nomes exatos abaixo. Encontradas: <b>{found.length}/{ALQUIMAGO_SHAPES.length}</b>. As extras são opcionais.</div>
+     <div className="jf-skin-hint">{activeSkin==='padrao'
+       ?'Skin ativa: Orb 2D. Todas as expressões abaixo funcionam por SVG animado e podem ser testadas clicando nos nomes.'
+       :<>Skin 3D: o rosto precisa de <code>Basis</code> e dos nomes abaixo. Detectadas: <b>{found.length}/{ALQUIMAGO_SHAPES.length}</b>.</>}</div>
      <h4>Expressões principais</h4>{shapeOptions(ALQUIMAGO_REQUIRED_SHAPES)}
      <h4>Emoções extras e movimento dos olhos</h4>{shapeOptions(ALQUIMAGO_OPTIONAL_SHAPES)}
      <p className="jf-skin-help">A respiração usa <code>Breath</code>, representando o peito expandido. Você poderá ajustar o tempo do ciclo na aba Animações.</p>
