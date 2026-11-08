@@ -85,3 +85,11 @@ A versão atual expõe **sete cores independentes**: primária, secundária, fun
 - Tanto GitHub Pages quanto Cloudflare Pages devem executar `npm run build` com Git e rede disponíveis. Não assuma que mudar um arquivo no upstream atualiza o site sem um novo build do hospedeiro.
 - O upgrade 0.11.0 aumenta limites locais para 128 lições, 160 exemplos e 64 protótipos; condiciona sinapses simuladas ativadas com até 512 pesos persistentes. Não instala LLM local nem altera autorização para Gemini, publicação ou arquivos privados.
 - A versão do bundle publicado deve ser verificada no `/alquimago/release.json` servido pelo domínio. O marcador dentro do repositório pode ser antigo, pois a sincronização acontece durante o build e não reescreve automaticamente o commit de origem do portfólio.
+
+## Alquimago v0.11.3 — regras de continuidade (2026-11-08)
+
+O núcleo do robô é **outro repositório** (`jordanferrary/alquimago`), com sua skin Orb 2D e o aprendizado local. A configuração, conhecimento público, memória numérica de publicação, complementos 3D e API Gemini são exclusivos deste site. As falas específicas de Frankie estão agora em `public/alquimago/config.json` > `assistant.spotlights`, nunca diretamente no núcleo. Ver `docs/ALQUIMAGO_FILE_BOUNDARIES.md`.
+
+O upload multimodal existe somente no Grimório do Studio com o Gemini ativado; até 8 MB de JPG/PNG/WebP, prévia e compactação locais, clique explícito para enviar; texto de feedback retornado pelo proxy Cloudflare. Imagens não entram em lições ou Git. O processamento semântico com Gemini não é offline. O serviço `/api/assistant` continua público, sem rate limit forte: monitore cotas.
+
+Ao alterar o widget, teste o repositório do bot e **reconstrua o portfólio**: `scripts/sync-alquimago.mjs` sincroniza o upstream durante o build e `scripts/check-alquimago-release.mjs` compara versão interna, manifest e recursos esperados. Use `npm run test:assistant` para a Function. GitHub Pages não executa Cloudflare Pages Functions; verifique o endpoint no domínio Cloudflare.
