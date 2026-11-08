@@ -66,6 +66,23 @@ try{
   assert.match(html,/Publicar/)
   assert.match(html,/Novo projeto/)
  })
+ const familiarCode=await readFile(join(root,'public','alquimago','alquimago.js'),'utf8')
+ check('Orb 2D has 26 vector expressions and an emotion adapter',()=>{
+  assert.match(familiarCode,/class="alquimago-orb"/)
+  assert.match(familiarCode,/previewExpression:\(name,duration=2100\)=>/)
+  const shapes=[
+   'idle','breath','blink','happy','excited','laugh','curious','focused',
+   'thinking','surprised','confused','sad','worried','angry','tired','yawn',
+   'sleep','pet','love','shy','proud','talk',
+   'lookleft','lookright','lookup','lookdown'
+  ]
+  for(const shape of shapes){
+   assert.match(familiarCode,new RegExp(' '+shape+':orbFace\\('))
+   assert.ok(familiarCode.includes('.orb-expression-'+shape))
+  }
+  assert.match(familiarCode,/data-expression/)
+  assert.match(familiarCode,/prefers-reduced-motion/)
+ })
  check('Shape Key playback profiles support loop and one-shot independently',()=>{
   const base=app.normalizeAnimationProfile({})
   assert.equal(base.shapes.Breath.loop,true)
