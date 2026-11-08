@@ -1,7 +1,7 @@
 {
   "version": "0.9.0",
   "upstream": "jordanferrary/alquimago",
-  "bundleBlobSha": "6fe77b0cdbe628740fdf3abb5317eebfd207ce31",
-  "note": "Manifeste do bundle: Gemini só consulta para lacunas, aprendizado após aprovação, Grimório sem barra inferior.",
+  "bundleBlobSha": "ab0ad20ca6fd5b34ade91348bc9821763dde017a",
+  "note": "Assistência contextual local: orientar pelo Local Studio, não por arquivos-fonte; Gemini recebe mapa de ferramentas reais.",
   "source": "Alquimago · cérebro local prioritário e lições aprovadas"
 }
