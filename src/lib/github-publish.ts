@@ -4,6 +4,9 @@ import { isKnownDemoTestimonial } from './testimonial-safety'
 import {resolvePublishedAsset} from './published-assets'
 import {isCleanableFile,isProtectedAsset,referencedMediaPaths} from './github-media'
 import {githubWorkerProxy,isGitHubWorkerCredential} from './github-auth'
+import {ALQUIMAGO_SKIN_MEDIA,ALQUIMAGO_SKIN_PATH} from './alquimago-3d'
+import {readAlquimagoStageDraft,normalizeAlquimagoStage} from './alquimago-3d-stage'
+import {readAnimationDraft,normalizeAnimationProfile} from './alquimago-animation-profile'
 
 /**
  * Browser-only GitHub publishing.
@@ -421,13 +424,45 @@ export async function publishPortfolioToGitHub(
   if(typeof candidate.selectedSkin==='string'&&/^[a-zA-Z0-9_-]{1,35}$/.test(candidate.selectedSkin)){
    const file=await api<{content:string}>(cleanToken,ROOT+'/contents/public/alquimago/config.json?ref='+BRANCH)
    const config=JSON.parse(decodeBase64Utf8(file.content)) as {
-    appearance?:{selectedSkin?:string;skins?:Array<{id?:unknown}>}
+    appearance?:{selectedSkin?:string;skins?:Array<{id?:unknown}>;stage3d?:unknown;animation3d?:unknown}
+   }
+   if(candidate.selectedSkin==='custom-3d'){
+    const local=await readMedia(ALQUIMAGO_SKIN_MEDIA)
+    if(local){
+     if(local.size>18*1024*1024)throw new Error('A skin 3D excede 18 MiB. Importe uma versão otimizada.')
+     onProgress('Enviando skin 3D autorizada para o GitHub…')
+     const content=await encodeBinary(local)
+     const asset=await api<{sha:string}>(cleanToken,ROOT+'/git/blobs','POST',{content,encoding:'base64'})
+     entries.push({path:ALQUIMAGO_SKIN_PATH,mode:'100644',type:'blob',sha:asset.sha})
+    }else if(!existing.has(ALQUIMAGO_SKIN_PATH)){
+     throw new Error('A skin 3D ainda não foi importada. Abra o Ateliê de skins 3D no Local Studio antes de publicar.')
+    }
    }
    if(config.appearance&&Array.isArray(config.appearance.skins)&&
-      config.appearance.skins.some(skin=>skin.id===candidate.selectedSkin)&&
-      config.appearance.selectedSkin!==candidate.selectedSkin){
-    config.appearance.selectedSkin=candidate.selectedSkin
-    entries.push({path:'public/alquimago/config.json',mode:'100644',type:'blob',content:JSON.stringify(config,null,2)+'\n'})
+      config.appearance.skins.some(skin=>skin.id===candidate.selectedSkin)){
+    let configChanged=false
+    if(config.appearance.selectedSkin!==candidate.selectedSkin){
+     config.appearance.selectedSkin=candidate.selectedSkin
+     configChanged=true
+    }
+    // Only deliberately adjusted framing from this browser may change
+    // the public default. Preview/published defaults are not rewritten.
+    const stageDraft=readAlquimagoStageDraft()
+    if(candidate.selectedSkin==='custom-3d'&&stageDraft&&
+       JSON.stringify(normalizeAlquimagoStage(config.appearance.stage3d))!==JSON.stringify(stageDraft)){
+      config.appearance.stage3d=stageDraft
+      configChanged=true
+    }
+    const animationDraft=readAnimationDraft()
+    if(candidate.selectedSkin==='custom-3d'&&animationDraft&&
+      JSON.stringify(normalizeAnimationProfile(config.appearance.animation3d))!==JSON.stringify(animationDraft)){
+     config.appearance.animation3d=animationDraft
+     configChanged=true
+    }
+    if(configChanged)entries.push({
+     path:'public/alquimago/config.json',mode:'100644',type:'blob',
+     content:JSON.stringify(config,null,2)+'\n'
+    })
    }
   }
  }

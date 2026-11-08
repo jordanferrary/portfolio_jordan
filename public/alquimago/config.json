@@ -27,6 +27,25 @@
           "focused": "Focused",
           "sad": "Sad"
         }
+      },
+      {
+        "id": "custom-3d",
+        "label": "Minha skin 3D (GLB)",
+        "type": "model3d",
+        "src": "./alquimago/skins/custom.glb",
+        "shapeKeys": {
+          "idle": "Idle",
+          "blink": "Blink",
+          "happy": "Happy",
+          "curious": "Curious",
+          "talk": "Talk",
+          "sleep": "Sleep",
+          "pet": "Pet",
+          "surprised": "Surprised",
+          "focused": "Focused",
+          "sad": "Sad",
+          "breath": "Breath"
+        }
       }
     ],
     "selectedSkin": "padrao"
@@ -64,7 +83,7 @@
     "mode": "equilibrado",
     "minIntervalMs": 120000,
     "maxPerDay": 4,
-    "toy": true
+    "toy": false
   },
   "knowledge": {
     "file": "./alquimago/knowledge.json"

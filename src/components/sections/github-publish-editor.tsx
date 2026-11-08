@@ -79,7 +79,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
    const finished=await publishPortfolioToGitHub(credential,store,currentPublishedRevision,setStatus,selectedPaths,familiarSnapshot)
    onPublished(finished.revision)
    setResult(finished)
-   setStatus('As alterações estão no GitHub. O GitHub Pages publicará essa versão após o workflow concluir.')
+   setStatus('As alterações estão no GitHub. A Cloudflare Pages publicará essa versão após a nova implantação concluir.')
   }catch(e){setError(e instanceof Error?e.message:'Não foi possível publicar no GitHub.')}
   finally{setToken('');setBusy(false)}
  }
@@ -93,7 +93,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
    <div className="editor-scroll">
     <div className="github-publish-overview">
      <div className="github-publish-icon"><CloudUpload size={25}/></div>
-     <div><strong>{configured?'Publicação com autenticação protegida':'Publicação pelo GitHub'}</strong><p>Seus projetos e mídias são gravados no repositório somente após sua confirmação. O GitHub Pages gera a versão pública.</p></div>
+     <div><strong>{configured?'Publicação com autenticação protegida':'Publicação pelo GitHub'}</strong><p>Seus projetos e mídias são gravados no repositório somente após sua confirmação. A Cloudflare Pages gera a versão pública automaticamente ao detectar o commit.</p></div>
     </div>
     <div className="github-publish-stats">
      <span><b>{store.projects.length}</b><small>projetos</small></span>
@@ -106,7 +106,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
      <p>{status}</p>
      <small>{result.newFiles} arquivo(s) novo(s) · {result.deletedFiles} removido(s) · Commit {result.commitSha.slice(0,7)}</small>
      <a href={result.commitUrl} target="_blank" rel="noopener noreferrer">Ver alterações no GitHub <ExternalLink size={15}/></a>
-     <a href="https://github.com/jordanferrary/portfolio_jordan/actions" target="_blank" rel="noopener noreferrer">Acompanhar publicação do site <ExternalLink size={15}/></a>
+     <a href="https://github.com/jordanferrary/portfolio_jordan/actions" target="_blank" rel="noopener noreferrer">Ver commit/Actions do GitHub <ExternalLink size={15}/></a>
     </div>:<>
      <div className="github-publish-section">
       <div className="github-publish-section-title"><ShieldCheck size={18}/><h3>Autorizar a publicação</h3></div>
