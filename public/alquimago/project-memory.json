@@ -1,21 +1,22 @@
 {
   "schema": 2,
-  "updatedAt": "2026-11-07T21:25:45.343Z",
+  "updatedAt": "2026-11-08T00:49:04.402Z",
   "brain": {
-    "energy": 98.25000000000006,
-    "curiosity": 63.24999999999996,
-    "focus": 26.300000000000015,
+    "energy": 100,
+    "curiosity": 68.25000000000007,
+    "focus": 18.96666666666671,
     "affinity": 57,
-    "xp": 20,
-    "interactions": 6,
+    "xp": 30,
+    "interactions": 7,
     "lastSeen": 1000000000000,
     "sleepUntil": 0,
-    "lastRewardAt": 1794086745343,
+    "lastRewardAt": 1794098944402,
     "lastAction": "publish",
     "lastRewardAction": "publish",
     "rewardedPages": {
       "pub-2026-11-07T18%3A43%3A31.935Z-57e9664a-1587-4bc9-9ff4-2a1c04376bfa": 20764,
-      "pub-2026-11-07T21%3A25%3A45.343Z-0f60515e-bd5b-4264-b980-55a8ca82e670": 20764
+      "pub-2026-11-07T21%3A25%3A45.343Z-0f60515e-bd5b-4264-b980-55a8ca82e670": 20764,
+      "pub-2026-11-08T00%3A49%3A04.401Z-8e84c0f6-f66a-4c7c-99ee-af04d52be469": 20765
     }
   },
   "neural": {
@@ -2667,9 +2668,9 @@
   "behavior": {
     "schema": 1,
     "seed": 77,
-    "energy": 64.50000000000017,
-    "curiosity": 52.60000000000005,
-    "stimulation": 34.5,
+    "energy": 57.50000000000015,
+    "curiosity": 51.000000000000085,
+    "stimulation": 29.5,
     "trust": 45,
     "rewardBias": [
       0,
@@ -2716,7 +2717,7 @@
     "lastRewardAt": 0,
     "feedbackCount": 0,
     "autonomousCount": 0,
-    "lastActiveDay": 20764,
+    "lastActiveDay": 20765,
     "lastCue": ""
   },
   "description": "Memória numérica pública do familiar. Nenhuma mensagem ou token é incluído."
