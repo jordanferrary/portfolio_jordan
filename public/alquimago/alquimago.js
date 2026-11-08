@@ -363,6 +363,18 @@ function respondToChat(input,context={}){
  if(!raw)return {reply:'Escreva uma pergunta ou escolha um dos assuntos do grimório.',intent:'empty'};
  if(sensitiveChatText(raw))return {reply:'Isso parece conter informações privadas. Não compartilhe senhas ou tokens comigo. Não registrei essa mensagem no histórico.',intent:'private',store:false};
 
+ // Questions about the familiar's own progress are facts about its LOCAL
+ // state, never open-domain prompts for the Gemini mentor.
+ const asksLearning=/(?:\b(?:vc|voce|alquimago)\b.{0,38}\b(?:treinand[oa]|treinou|treina|aprendend[oa]|aprendeu|aprende|estudand[oa]|estudou|evoluindo)\b|\b(?:seu|sua|teu|tua)\b.{0,22}\b(?:treinamento|aprendizado|aprendizagem|memoria|conhecimento|evolucao)\b|\b(?:como|quando|quanto|quantas|o que)\b.{0,26}\b(?:voce|vc)\b.{0,20}\b(?:aprende|treina|aprendeu|treinou))/i.test(q);
+ if(asksLearning){
+  const count=Math.max(0,Number(context.approvedLessons)||0);
+  const corrections=Math.max(0,Number(context.neuralCorrections)||0);
+  const lessonText=count===1?'1 lição aprovada':count+' lições aprovadas';
+  const correctionText=corrections>0?' Também recebi '+corrections+' correções de classificação local.':'';
+  return {reply:'Tenho estudado com sua ajuda! Neste navegador, guardo '+lessonText+'.'+correctionText+' Eu não fico treinando sozinho em segundo plano: primeiro tento usar meu conhecimento local e, se faltar algo, posso consultar o professor Gemini quando você autorizar. A resposta dele só vira conhecimento meu quando você revisa e aprova no Grimório. ✦',intent:'self-learning'};
+ }
+
+
  // Help about THIS portfolio must reference the owner-facing Local Studio,
  // never generic suggestions to open source files or edit CSS by hand.
  // This branch is deliberately deterministic and does not consult Gemini.
@@ -2878,6 +2890,7 @@ class AlquimagoFamiliar extends HTMLElement {
        ?prediction.intent:null,
       name:this.config.identity.name,mood:currentMood(this.state.brain),
       level:levelFromXp(this.state.brain.xp),xp:this.state.brain.xp,
+      approvedLessons:this.lessons?.lessons?.length||0,neuralCorrections:this.neural?.learned||0,
       page:this.activePage?.route||'desktop',suggestions:this.suggestions
     });
     // Gemini is a teacher of last resort, not the default chat engine.
@@ -2885,7 +2898,7 @@ class AlquimagoFamiliar extends HTMLElement {
     // arithmetic or a question about the familiar itself.
     const known=['private','math','followup','decline','clarify','navigate','empty',
       'project-fact','project-list','project-info','approved-lesson','studio-guide',
-      'greeting','identity','status','pet','play','brew','rest','help','mood','thanks'];
+      'greeting','identity','status','pet','play','brew','rest','help','mood','thanks','self-learning'];
     const localIntent=known.includes(response.intent);
     const canGenerate=this.modelAvailable&&this.modelEnabled&&!this.modelBusy&&
       !localIntent&&user.length>=3;
