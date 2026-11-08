@@ -36,3 +36,12 @@ O usuário habilita Gemini, seleciona a imagem, examina sua prévia e escolhe en
 ## Fluxo de manutenção
 
 Alterar núcleo → validar testes no bot → executar build do portfólio → sincronizar e conferir `public/alquimago/release.json` → testar no domínio real. A sincronização já busca o branch `main` do bot e falha fechada quando testes ou consistência não passam. Não copiar bundles antigos de volta para contornar o erro. Em GitHub Pages, `/api/assistant` não executa a Function Cloudflare; a análise com Gemini exige hospedagem compatível.
+
+
+## Cofre criptografado ALQ-V1 (Alquimago v0.11.4)
+
+A memória local do familiar — incluindo lições, exemplos de treinamento, diálogo, preferências e estados neurais que não são publicados — passa por um cofre AES-256-GCM dentro do IndexedDB, com chave WebCrypto não exportável por namespace. Na primeira abertura, o bot migra dados antigos do `localStorage` e só apaga texto legível depois de confirmar a gravação criptografada. Falhas de inicialização não fazem fallback inseguro. O código e a especificação desse cofre pertencem **exclusivamente ao repositório do bot**, não devem ser duplicados no portfólio.
+
+**Não confundir**: `public/alquimago/project-memory.json` e outros snapshots públicos continuam legíveis por qualquer visitante. O Local Studio publica esse estado numérico por escolha do proprietário, não usando o cofre. A versão atual do recurso foi desenhada para impedir leitura casual no armazenamento local, não para prometer acesso exclusivo ou eliminar riscos de scripts comprometidos na mesma origem. O backup JSON exportado manualmente também continua sem criptografia.
+
+Como o cofre depende do domínio de origem, uma instalação em Cloudflare Pages e outra em GitHub Pages não compartilham chaves ou memória. Antes de testar, publicar uma compilação atualizada do upstream no site integrador.
