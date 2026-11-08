@@ -100,3 +100,11 @@ No Local Studio, o proprietário pode ativar o professor Gemini e selecionar uma
 As falas especiais de projetos ficam no `public/alquimago/config.json`, em `assistant.spotlights`, e **não no código reutilizável do bot**. Os arquivos `public/alquimago/knowledge.json`, `project-context.json` e `project-memory.json` são deliberadamente públicos. Não inclua segredos ou dados confidenciais no frontend ou no repositório; a chave `GEMINI_API_KEY` permanece exclusivamente em Secret na Cloudflare.
 
 Para validar, use `npm run test:assistant`, `npm run typecheck`, `npm run test:studio` e `npm run build`. Consulte [Guia Cloudflare/Gemini](docs/ALQUIMAGO_GEMINI_CLOUDFLARE.md) e [separação entre arquivos públicos e privados](docs/ALQUIMAGO_FILE_BOUNDARIES.md). O GitHub Pages distribui o site estático, mas o caminho `/api/assistant` precisa de Cloudflare Pages Functions.
+
+## “Vai comprar pão” — autorização reutilizável (Alquimago v0.11.5)
+
+Em **Local Studio → Publicar**, informe um token restrito de GitHub no campo protegido. Para não precisar copiá-lo novamente em cada atualização, clique **Guardar token criptografado**. O publicador verifica a identidade e a permissão de escrita no repositório e guarda a credencial no **IndexedDB** deste navegador, criptografada com **AES-256-GCM e chave WebCrypto não exportável**. O botão **Verificar validade** testa novamente a autorização; **Descartar token** exige confirmação e elimina apenas a cópia local.
+
+O comando **“vai comprar pão”** abre o diálogo de revisão. O Alquimago recebe somente o **status** do token, nunca o valor: se não houver autorização, diz que falta o dinheiro; se estiver válida, que há dinheiro guardado; se expirar, pergunta se pode descartar o pão mofado. A publicação sempre exige revisão e confirmação. **Não cole o token no chat do Alquimago ou em conversas externas.**
+
+O cofre é opcional. Se o proprietário preferir, pode usar o token sem guardá-lo ou configurar a [GitHub App com sessão protegida no Worker](auth-worker/README.md), que é mais segura. A criptografia local evita leitura casual do armazenamento, mas scripts maliciosos na mesma origem ainda poderiam usar a chave. Em outro navegador ou domínio, será necessária nova autorização. Execute `npm run test:github-vault` para validar o cofre.
