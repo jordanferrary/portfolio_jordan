@@ -36,6 +36,8 @@ jobs:
           GITHUB_PAGES: 'true'
           VITE_BUILD_SHA: ${{ github.sha }}
           VITE_ALQUIMAGO_AUTH_ORIGIN: ${{ vars.ALQUIMAGO_AUTH_ORIGIN }}
+      - name: Audit GitHub Pages size budget
+        run: npm run audit:size
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
