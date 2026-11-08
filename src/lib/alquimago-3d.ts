@@ -402,6 +402,12 @@ const LAYOUT_STYLE=String.raw`
 }
 
 
+
+/* A filtered ancestor creates a containing block for position:fixed.
+   The familiar's drop-shadow must not offset its fullscreen creator panel. */
+:host([data-public-mode="false"]:not([data-mode="desktop"])) .shell:has(.panel.open){
+ filter:none!important;
+}
 /* Center the creator Grimório in the viewport, independent of mascot drag,
    left/right docking, browser width or sidebar size. A panel is not a page layout. */
 @media(min-width:761px){
