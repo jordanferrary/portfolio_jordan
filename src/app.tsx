@@ -104,9 +104,14 @@ export function App(){
    description:'Preferência apenas deste navegador de edição; não modifica o site público.',
    section:'Familiar',icon:studioFamiliarVisible?EyeOff:Eye,
    onClick:toggleStudioFamiliar},
-  {id:'alquimago-grimorio',label:'Abrir Grimório',description:'Conversar com Gemini e acessar treinamento local',section:'Familiar',icon:MessageSquare,onClick:()=>{
+  {id:'alquimago-grimorio',label:'Abrir Grimório',description:'Conversar com Alquimago, consultar o professor Gemini e ensinar',section:'Familiar',icon:MessageSquare,onClick:()=>{
     const familiar=document.querySelector('alquimago-familiar') as (HTMLElement & {state?:{open:boolean;tab:number};render?:()=>void})|null
-    if(familiar?.state){familiar.state.open=true;familiar.state.tab=5;familiar.render?.()}
+    if(familiar?.state){
+     familiar.state.open=true
+     familiar.state.tab=5
+     familiar.render?.()
+     requestAnimationFrame(()=>familiar.shadowRoot?.querySelector<HTMLInputElement>('#alquimago-message')?.focus())
+    }
    }},
   {id:'alquimago-skin3d',label:'Ateliê do Alquimago',description:'Modelo GLB, emoções, respiração e enquadramento',section:'Familiar',icon:Palette,onClick:()=>setSkin3DOpen(true)},
   {id:'media-manager',label:'Gerenciar arquivos',description:'Excluir imagens e áudios antigos, locais ou publicados',section:'Conteúdo',icon:ImageIcon,onClick:()=>setMediaManagerOpen(true)},
