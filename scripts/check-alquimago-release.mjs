@@ -22,7 +22,10 @@ for(const feature of [
  'function seedNeuralModel(', 'this.pendingQuestion=pendingFromReply(response)',
  'function tickCortex(', 'function answerFromKnowledge(', 'function normalizeKnowledge(',
  'function askLanguageModel(', 'const ALQUIMAGO_PRETRAINED=', 'this.lastProjectId=response.projectId',
- 'class AlquimagoFamiliar extends HTMLElement'
+ 'class AlquimagoFamiliar extends HTMLElement',
+ // The published site must not silently fall back to the old single-choice UI.
+ 'function respondToContextFollowup(', 'function recognizeTeachingLabels(',
+ 'function approveTeachingExample(', "if(action==='clear-chat')"
 ]){
  assert.ok(text.includes(feature),'Funcionalidade ausente no bundle: '+feature);
 }
