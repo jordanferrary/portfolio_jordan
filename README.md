@@ -90,3 +90,13 @@ As páginas entram no mesmo rascunho local, ZIP, pipeline de mídias, publicaç�
 ### Galeria interativa de páginas personalizadas
 
 O bloco de galeria interativa exibe obras, certificados e coleções com títulos próprios. O painel lateral de detalhes **abre somente quando um item é selecionado**; seu botão pode ser renomeado ou desativado individualmente. Miniaturas podem preencher o quadro ou preservar a imagem completa. O zoom compartilhado com projetos e slides enquadra todo o arquivo original ao abrir, sem recorte em 100%.
+
+## Alquimago v0.11.3 — integração visual com Gemini
+
+O mascote é mantido no repositório público independente [Alquimago](https://github.com/jordanferrary/alquimago). O build do portfólio executa `npm run sync:alquimago`, testa a origem, gera o widget e valida a versão no `public/alquimago/release.json`. **Não editar manualmente o bundle publicado**, nem supor que um commit no bot atualiza o site sem novo build.
+
+No Local Studio, o proprietário pode ativar o professor Gemini e selecionar uma imagem PNG/JPG/WebP de até 8 MB para receber feedback artístico. O navegador prepara uma prévia e reduz a imagem localmente; o envio ocorre somente ao clicar em **Analisar imagem com Gemini**. O endpoint Cloudflare `/api/assistant` valida o pedido e encaminha pixels ao serviço Gemini. Essa etapa depende de internet: a análise com IA **não é offline**. A imagem não é gravada na memória do bot ou no GitHub, e a resposta é exibida no chat. O cérebro local continua disponível sem Gemini.
+
+As falas especiais de projetos ficam no `public/alquimago/config.json`, em `assistant.spotlights`, e **não no código reutilizável do bot**. Os arquivos `public/alquimago/knowledge.json`, `project-context.json` e `project-memory.json` são deliberadamente públicos. Não inclua segredos ou dados confidenciais no frontend ou no repositório; a chave `GEMINI_API_KEY` permanece exclusivamente em Secret na Cloudflare.
+
+Para validar, use `npm run test:assistant`, `npm run typecheck`, `npm run test:studio` e `npm run build`. Consulte [Guia Cloudflare/Gemini](docs/ALQUIMAGO_GEMINI_CLOUDFLARE.md) e [separação entre arquivos públicos e privados](docs/ALQUIMAGO_FILE_BOUNDARIES.md). O GitHub Pages distribui o site estático, mas o caminho `/api/assistant` precisa de Cloudflare Pages Functions.
