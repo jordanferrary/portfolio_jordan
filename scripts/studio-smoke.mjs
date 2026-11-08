@@ -29,6 +29,7 @@ const entry=[
  "export {ContactPage} from './src/components/sections/contact-page.tsx'",
  "export {ContactEditor} from './src/components/sections/contact-editor.tsx'",
  "export {ThemePaletteEditor} from './src/components/sections/theme-palette-editor.tsx'",
+ "export {StudioDock} from './src/components/sections/studio-dock.tsx'",
  "export {ProjectLike} from './src/components/sections/project-like.tsx'",
  "export {StoryBlock,ProjectPage} from './src/components/sections/project-page.tsx'"
 ].join('\n')
@@ -39,7 +40,7 @@ try{
   stdin:{contents:entry,resolveDir:root,sourcefile:'studio-smoke-entry.ts',loader:'ts'},
   bundle:true,platform:'node',format:'esm',target:'node22',jsx:'automatic',packages:'external',
   loader:{'.css':'empty'},write:false,logLevel:'silent',
-  define:{'import.meta.env.BASE_URL':JSON.stringify('/portfolio_jordan/'),'import.meta.env.VITE_LIKES_API_URL':'undefined'}
+  define:{'import.meta.env.BASE_URL':JSON.stringify('/portfolio_jordan/'),'import.meta.env.VITE_LIKES_API_URL':'undefined','import.meta.env.VITE_BUILD_SHA':JSON.stringify('smoke')}
  })
  const bundle=join(cache,'entry.mjs')
  await writeFile(bundle,output.outputFiles.find(file=>file.path.endsWith('.js'))?.contents??output.outputFiles[0].contents)
@@ -51,6 +52,18 @@ try{
   assert.deepEqual(app.normalizeFraming({x:120,y:-7,zoom:7}),{x:100,y:0,zoom:2.5})
   assert.equal(app.framingStyle({x:23,y:61,zoom:1.7}).objectPosition,'23% 61%')
   assert.equal(app.framingStyle({x:23,y:61,zoom:1.7})['--jf-frame-zoom'],1.7)
+ })
+ check('Local Studio dock renders with safe creator actions',()=>{
+  const html=element(app.StudioDock,{
+   pageLabel:'Home',editLabel:'Editar página',
+   onEditCurrent:()=>{},onNewProject:()=>{},onPublish:()=>{},
+   onExport:async()=>{},onRestorePublished:()=>{},onLock:()=>{},
+   publishedRevision:'smoke-revision',actions:[]
+  })
+  assert.match(html,/Local Studio/)
+  assert.match(html,/Ferramentas/)
+  assert.match(html,/Publicar/)
+  assert.match(html,/Novo projeto/)
  })
  check('Theme normalization and WCAG contrast are correct',()=>{
   assert.equal(app.normalizeHexColor('#abc'),'#AABBCC')
