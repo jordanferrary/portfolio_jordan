@@ -50,8 +50,25 @@ function socialMetadata(){
  }
 }
 
+
+function buildDiagnostic(){
+ return {
+  name:'jf-build-diagnostic',
+  generateBundle(){
+   this.emitFile({
+    type:'asset',
+    fileName:'build-info.json',
+    source:JSON.stringify({
+     commit:buildRevision,
+     branch:process.env.CF_PAGES_BRANCH||process.env.GITHUB_REF_NAME||'local'
+    },null,2)+'\n'
+   })
+  }
+ }
+}
+
 export default defineConfig({
- plugins:[react(),tailwindcss(),socialMetadata()],
+ plugins:[react(),tailwindcss(),socialMetadata(),buildDiagnostic()],
  define:{'import.meta.env.VITE_BUILD_SHA':JSON.stringify(buildRevision)},
  base,
  server:{host:'0.0.0.0'}
