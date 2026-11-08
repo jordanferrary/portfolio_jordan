@@ -2280,6 +2280,86 @@ const STYLE = `
  :host([data-public-mode="false"]) .panel-close{transition:none!important}
 }
 
+
+
+/* Alquimago Orb 2D: stateful SVG face animation, no image sheets or network. */
+.character:has(.alquimago-orb){width:154px!important;height:168px!important;padding:0!important;animation:levitate 4.2s ease-in-out infinite!important;filter:drop-shadow(0 6px 11px #110729ad)!important}
+.character:has(.alquimago-orb):hover{filter:drop-shadow(0 0 10px #ab72ef8a) drop-shadow(0 7px 11px #0b0523a0)!important}
+.character .alquimago-orb{width:154px!important;height:168px!important;overflow:visible;display:block}
+.character .orb-expression{opacity:0;transition:opacity .18s ease}
+.character .orb-expression-idle{opacity:1}
+.character[data-expression]:not([data-expression="idle"]) .orb-expression-idle{opacity:0}
+.character[data-expression="idle"] .orb-expression-idle,
+.character[data-expression="breath"] .orb-expression-breath,
+.character[data-expression="blink"] .orb-expression-blink,
+.character[data-expression="happy"] .orb-expression-happy,
+.character[data-expression="excited"] .orb-expression-excited,
+.character[data-expression="laugh"] .orb-expression-laugh,
+.character[data-expression="curious"] .orb-expression-curious,
+.character[data-expression="focused"] .orb-expression-focused,
+.character[data-expression="thinking"] .orb-expression-thinking,
+.character[data-expression="surprised"] .orb-expression-surprised,
+.character[data-expression="confused"] .orb-expression-confused,
+.character[data-expression="sad"] .orb-expression-sad,
+.character[data-expression="worried"] .orb-expression-worried,
+.character[data-expression="angry"] .orb-expression-angry,
+.character[data-expression="tired"] .orb-expression-tired,
+.character[data-expression="yawn"] .orb-expression-yawn,
+.character[data-expression="sleep"] .orb-expression-sleep,
+.character[data-expression="pet"] .orb-expression-pet,
+.character[data-expression="love"] .orb-expression-love,
+.character[data-expression="shy"] .orb-expression-shy,
+.character[data-expression="proud"] .orb-expression-proud,
+.character[data-expression="talk"] .orb-expression-talk,
+.character[data-expression="lookleft"] .orb-expression-lookleft,
+.character[data-expression="lookright"] .orb-expression-lookright,
+.character[data-expression="lookup"] .orb-expression-lookup,
+.character[data-expression="lookdown"] .orb-expression-lookdown{opacity:1}
+.character .orb-robot{transform-box:fill-box;transform-origin:center;animation:orb-breath var(--orb-breath-duration,4s) ease-in-out infinite}
+.character .orb-headset-left,.character .orb-headset-right{transform-box:fill-box;transform-origin:center}
+.character .orb-eye-glow{filter:drop-shadow(0 0 2px #83faffaf)}
+.character .orb-crest{transform-box:fill-box;transform-origin:center;animation:orb-twinkle 3s ease-in-out infinite}
+.character .orb-status-light{animation:orb-neon 3.8s ease-in-out infinite}
+.character .orb-audio-bars{animation:orb-neon 1.6s ease-in-out infinite}
+.character .orb-twinkle{animation:orb-twinkle 4s ease-in-out infinite}
+.character .orb-orbit{transform-box:fill-box;transform-origin:center;animation:orb-orbit-shimmer 8s ease-in-out infinite}
+.character .orb-shadow{animation:orb-shadow-soft 4.2s ease-in-out infinite}
+.character .orb-shadow-ring{animation:orb-neon 4.2s ease-in-out infinite}
+.character[data-expression="idle"] .orb-expression-idle .orb-eyes,
+.character[data-expression="curious"] .orb-expression-curious .orb-eyes{transform-box:fill-box;transform-origin:center;animation:orb-auto-blink 5.1s infinite}
+.character[data-expression="talk"] .orb-talk-mouth{transform-box:fill-box;transform-origin:center;animation:orb-talk .3s ease-in-out infinite alternate}
+.character[data-expression="laugh"] .orb-robot,
+.character[data-expression="excited"] .orb-robot{animation:orb-bounce 1s ease-in-out infinite}
+.character[data-expression="surprised"] .orb-robot{animation:orb-startle .55s ease-out 1}
+.character[data-expression="angry"] .orb-audio-bars{stroke:#ff8ce5!important;animation:orb-neon .6s ease-in-out infinite}
+.character[data-expression="sad"] .orb-robot{animation:orb-sigh 4.6s ease-in-out infinite}
+.character[data-expression="tired"] .orb-robot{animation:orb-sigh 5s ease-in-out infinite}
+.character[data-expression="sleep"] .orb-robot{animation:orb-breath 6s ease-in-out infinite}
+.character[data-expression="pet"] .orb-crest,
+.character[data-expression="love"] .orb-crest{animation:orb-twinkle .64s ease-in-out infinite}
+.character[data-expression="curious"] .orb-robot,
+.character[data-expression="thinking"] .orb-robot{animation:orb-tilt 3.2s ease-in-out infinite}
+.character[data-expression="yawn"] .orb-robot{animation:orb-sigh 3s ease-in-out 1}
+@keyframes orb-breath{0%,100%{transform:scale(1)}50%{transform:scale(1.018)}}
+@keyframes orb-sigh{0%,100%{transform:translateY(2px) scale(.99)}50%{transform:translateY(5px) scale(.985)}}
+@keyframes orb-bounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.025)}}
+@keyframes orb-startle{0%,100%{transform:scale(1)}30%{transform:scale(.94) rotate(-4deg)}70%{transform:scale(1.06) rotate(3deg)}}
+@keyframes orb-tilt{0%,100%{transform:rotate(0)}50%{transform:rotate(-4deg)}}
+@keyframes orb-auto-blink{0%,43%,46%,100%{transform:scaleY(1)}44.5%{transform:scaleY(.07)}}
+@keyframes orb-talk{0%{transform:scaleY(.45)}100%{transform:scaleY(1.1)}}
+@keyframes orb-twinkle{0%,100%{opacity:.8;transform:scale(.96)}50%{opacity:1;transform:scale(1.1)}}
+@keyframes orb-neon{0%,100%{opacity:.64}50%{opacity:1}}
+@keyframes orb-orbit-shimmer{0%,100%{opacity:.55}50%{opacity:.86}}
+@keyframes orb-shadow-soft{0%,100%{opacity:.68;transform:scaleX(1)}50%{opacity:.38;transform:scaleX(.9)}}
+@media(max-width:460px){
+ .character:has(.alquimago-orb){width:118px!important;height:130px!important}
+ .character .alquimago-orb{width:118px!important;height:130px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .character:has(.alquimago-orb),.character .alquimago-orb *,
+ .character .orb-expression{animation:none!important;transition:none!important}
+}
+
 `;
 // Built-in 2D mascot: native SVG with independent robotic facial poses.
 const orbEye=(x,y=81,rx=5,ry=8)=>'<ellipse cx="'+x+'" cy="'+y+'" rx="'+rx+'" ry="'+ry+'" fill="url(#orb-eye)" class="orb-eye-glow"/><ellipse cx="'+(x-1.5)+'" cy="'+(y-2.5)+'" rx="1.4" ry="2" fill="#f6ffff" opacity=".7"/>';
