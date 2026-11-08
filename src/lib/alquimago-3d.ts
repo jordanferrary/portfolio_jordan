@@ -259,13 +259,13 @@ export function registerAlquimago3D():void{
  const world=window as typeof window & {AlquimagoSkinRenderers?:{model3d?: (args:{host:HTMLElement;url:string;shapeKeys:Record<string,string>})=>SkinAdapter}}
  world.AlquimagoSkinRenderers??={}
  world.AlquimagoSkinRenderers.model3d=({host,url,shapeKeys})=>{
-  let dead=false,frame=0,blobUrl='',mood='idle',start=performance.now()
+  let dead=false,frame=0,blobUrl='',mood='idle',start=performance.now(),moodStart=start
   let renderer:import('three').WebGLRenderer|undefined
   let scene:import('three').Scene|undefined
   let camera:import('three').PerspectiveCamera|undefined
   let model:import('three').Object3D|undefined
   let morphs:Array<{dictionary:Record<string,number>;weights:number[]}>=[] 
-  let preview:{name:string;until:number}|null=null
+  let preview:{name:string;until:number;start:number}|null=null
   let gazeX=0,gazeY=0,targetX=0,targetY=0
   let dims={w:0,h:0}
   const familiar=host.getRootNode() instanceof ShadowRoot
@@ -360,7 +360,7 @@ export function registerAlquimago3D():void{
   }
   const onActivity=(e:Event)=>{
    const detail=(e as CustomEvent<{type?:string}>).detail
-   if(detail?.type==='published')preview={name:'proud',until:performance.now()+2600}
+   if(detail?.type==='published'){const at=performance.now();preview={name:'proud',start:at,until:at+2600}}
   }
   window.addEventListener('alquimago:stage3d-changed',onStageChanged)
   window.addEventListener('alquimago:animation-profile',onProfileChanged)
@@ -411,16 +411,28 @@ export function registerAlquimago3D():void{
       const raw=preview&&now<preview.until?preview.name:mood
       const expression=tired&&raw==='idle'?'tired':raw
       const chosen=new Map<string,number>()
+      const cueStart=preview&&now<preview.until?preview.start:moodStart
+      // Loop plays a repeating 0 -> 1 -> 0 cycle. One-shot plays one
+      // bounded envelope, then rests until the next distinct expression.
+      // The same config will later drive skeletal GLB clips via AnimationMixer.
+      const cue=(name:string)=>{
+       const cfg=timing(name)
+       const elapsed=Math.max(0,now-cueStart)
+       const progress=cfg.loop?(elapsed%cfg.durationMs)/cfg.durationMs
+        :Math.min(1,elapsed/cfg.durationMs)
+       return cfg.loop ? 0.5-0.5*Math.cos(progress*2*Math.PI)
+        :Math.sin(progress*Math.PI)
+      }
       const set=(name:string,value:number)=>{
        const key=map(name),intensity=timing(name).intensity
        chosen.set(key,Math.min(1,Math.max(0,value*intensity)))
       }
-      if(expression==='idle')set('idle',0.55)
-      else if(expression!=='breath')set(expression,1)
-      if(tired&&expression!=='sleep'&&expression!=='pet'&&expression!=='talk')set('tired',0.9)
-      if(expression==='pet')set('love',0.55)
-      if(expression==='focused')set('thinking',0.42)
-      if(expression==='happy')set('excited',0.3)
+      if(expression==='idle')set('idle',0.55*cue('idle'))
+      else if(expression!=='breath')set(expression,cue(expression))
+      if(tired&&expression!=='sleep'&&expression!=='pet'&&expression!=='talk')set('tired',0.9*cue('tired'))
+      if(expression==='pet')set('love',0.55*cue('love'))
+      if(expression==='focused')set('thinking',0.42*cue('thinking'))
+      if(expression==='happy')set('excited',0.3*cue('excited'))
       // Breath is an independent cyclical morph target. Emotional speed factors
       // alter cycle duration but never overwrite the artist's base settings.
       const reaction=host.dataset.reaction||''
@@ -429,21 +441,24 @@ export function registerAlquimago3D():void{
       const mappedMood=tired&&brainMood!=='meditando'&&brainMood!=='sonolento'?'cansado':brainMood
       const rate=animation.breathMoodSpeed[mappedMood as keyof AnimationProfile['breathMoodSpeed']]||1
       const breathCycle=Math.max(180,timing('breath').durationMs/rate)
-      const phase=(elapsed%breathCycle)/breathCycle
+      const breathTime=timing('breath').loop?elapsed%breathCycle:Math.min(elapsed,breathCycle)
+      const phase=breathTime/breathCycle
       const breath=0.5-0.5*Math.cos(phase*Math.PI*2)
       set('breath',expression==='breath'?1:breath)
       const blinkTiming=timing('blink')
-      const blinkMs=elapsed%blinkTiming.intervalMs
+      const blinkMs=blinkTiming.loop?elapsed%blinkTiming.intervalMs:elapsed
       const blink=blinkMs<blinkTiming.durationMs?Math.sin(blinkMs/blinkTiming.durationMs*Math.PI):0
       set('blink',expression==='sleep'?1:blink)
       if(tired&&expression!=='sleep'){
-       const yawnTiming=timing('yawn'),yawnMs=elapsed%yawnTiming.intervalMs
+       const yawnTiming=timing('yawn'),yawnMs=yawnTiming.loop?elapsed%yawnTiming.intervalMs:elapsed
        if(yawnMs<yawnTiming.durationMs)
         set('yawn',Math.sin(yawnMs/yawnTiming.durationMs*Math.PI))
       }
       if(expression==='talk'){
        const talkDuration=timing('talk').durationMs
-       set('talk',0.28+0.72*(0.5+0.5*Math.sin(elapsed/talkDuration*Math.PI*2)))
+       const talkElapsed=now-cueStart
+       const talkOn=timing('talk').loop||talkElapsed<=talkDuration
+       set('talk',talkOn?0.28+0.72*(0.5+0.5*Math.sin(talkElapsed/talkDuration*Math.PI*2)):0)
       }
       gazeX+=(targetX-gazeX)*(reduced.matches?1:0.055)
       gazeY+=(targetY-gazeY)*(reduced.matches?1:0.055)
@@ -484,14 +499,18 @@ export function registerAlquimago3D():void{
    setStage(next:AlquimagoStage){applyStage(next)},
    setExpression(name:string){
     const key=mapped(name)
-    mood=Object.hasOwn(ALQUIMAGO_SHAPE_MAP,key)?key:'idle'
-    if(['pet','love','surprised','laugh','yawn'].includes(mood))
-     preview={name:mood,until:performance.now()+timing(mood).durationMs}
+    const next=Object.hasOwn(ALQUIMAGO_SHAPE_MAP,key)?key:'idle'
+    const changed=next!==mood
+    if(changed){mood=next;moodStart=performance.now()}
+    if(changed&&['pet','love','surprised','laugh','yawn'].includes(mood)){
+     const at=performance.now()
+     preview={name:mood,start:at,until:at+timing(mood).durationMs}
+    }
    },
    previewExpression(name:string){
     const key=mapped(name)
     if(Object.hasOwn(ALQUIMAGO_SHAPE_MAP,key))
-     preview={name:key,until:performance.now()+Math.max(1800,timing(key).durationMs)}
+     {const at=performance.now();preview={name:key,start:at,until:at+Math.max(1800,timing(key).durationMs)}}
    },
    dispose(){
     dead=true;cancelAnimationFrame(frame)
