@@ -100,3 +100,12 @@ html[data-alquimago-visible="pending"] alquimago-familiar{
  .studio-hub-search{margin:12px 16px 0}
 }
 @media(prefers-reduced-motion:reduce){.jf-skin-shape{transition:none}}
+
+/* Studio mode uses its own corner; public mascot retains its original position.
+   Manual dragging still takes precedence because widget inline styles may override. */
+@media(min-width:780px){
+ html[data-alquimago-studio="true"] alquimago-familiar{
+  left:24px;right:auto;bottom:110px;
+ }
+}
+
