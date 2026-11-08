@@ -23,6 +23,8 @@ const SiteIdentityEditor=lazy(()=>import('./components/sections/site-identity-ed
 const ThemePaletteEditor=lazy(()=>import('./components/sections/theme-palette-editor').then(m=>({default:m.ThemePaletteEditor})))
 import { applyThemePalette } from './lib/theme-palette'
 import {readAlquimagoVisibilityDraft,writeAlquimagoVisibilityDraft} from './lib/alquimago-visibility'
+import {githubTokenVault,type GitHubTokenCheck} from './lib/github-token-vault'
+import {hasGitHubLogin,readGitHubSession} from './lib/github-auth'
 import type {StudioAction} from './components/sections/studio-dock'
 const StudioDock=lazy(()=>import('./components/sections/studio-dock').then(m=>({default:m.StudioDock})))
 const ImageConverter=lazy(()=>import('./components/sections/image-converter').then(m=>({default:m.ImageConverter})))
@@ -222,7 +224,19 @@ export function App(){
  },[editing])
  useEffect(()=>{
   if(!editing)return;
-  const openPublish=()=>setGitHubPublishOpen(true)
+  const openPublish=(event:Event)=>{
+   setGitHubPublishOpen(true)
+   if(!(event instanceof CustomEvent)||event.detail?.source!=='chat')return
+   void (async()=>{
+    let status:GitHubTokenCheck='missing'
+    try{
+     if(hasGitHubLogin()&&(await readGitHubSession()).authenticated)status='ready'
+     else status=(await githubTokenVault.inspect()).status
+    }catch{status='unavailable'}
+    // Public events carry a *status only*, never a token or session cookie.
+    window.dispatchEvent(new CustomEvent('alquimago:publish-auth-status',{detail:{status}}))
+   })()
+  }
   window.addEventListener('alquimago:request-publish',openPublish)
   return()=>window.removeEventListener('alquimago:request-publish',openPublish)
  },[editing])
