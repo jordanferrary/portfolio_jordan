@@ -7,6 +7,7 @@ import {githubWorkerProxy,isGitHubWorkerCredential} from './github-auth'
 import {ALQUIMAGO_SKIN_MEDIA,ALQUIMAGO_SKIN_PATH} from './alquimago-3d'
 import {readAlquimagoStageDraft,normalizeAlquimagoStage} from './alquimago-3d-stage'
 import {readAnimationDraft,normalizeAnimationProfile} from './alquimago-animation-profile'
+import {readAlquimagoVisibilityDraft} from './alquimago-visibility'
 
 /**
  * Browser-only GitHub publishing.
@@ -464,6 +465,25 @@ export async function publishPortfolioToGitHub(
      content:JSON.stringify(config,null,2)+'\n'
     })
    }
+  }
+ }
+
+ // Public mascot visibility is a separate, explicitly approved Studio draft.
+ // Apply it to the same config blob (if skin settings were already staged),
+ // avoiding duplicate Git tree paths and never publishing browser-only state.
+ const visibilityDraft=readAlquimagoVisibilityDraft()
+ if(visibilityDraft!==null){
+  const configPath='public/alquimago/config.json'
+  const stagedConfig=entries.find(entry=>entry.path===configPath)
+  const payload=stagedConfig?.content
+   ??decodeBase64Utf8((await api<{content:string}>(cleanToken,ROOT+'/contents/'+configPath+'?ref='+BRANCH)).content)
+  const config=JSON.parse(payload) as {appearance?:{visible?:boolean}}
+  if(!config.appearance)config.appearance={}
+  if(config.appearance.visible!==visibilityDraft){
+   config.appearance.visible=visibilityDraft
+   const content=JSON.stringify(config,null,2)+'\n'
+   if(stagedConfig)stagedConfig.content=content
+   else entries.push({path:configPath,mode:'100644',type:'blob',content})
   }
  }
  const usedPaths=referencedMediaPaths(snapshot)
