@@ -56,3 +56,6 @@ import './styles/alquimago-studio-workbench.css'
 
 // Final visitor/UI layer: palette-derived translucent control material.
 import './styles/liquid-glass-buttons.css'
+
+// Mobile player drawer overrides legacy fixed-player visibility rules.
+import './styles/mobile-music-drawer.css'

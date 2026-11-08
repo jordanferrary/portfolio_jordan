@@ -144,14 +144,14 @@ export function App(){
   let active=true
   // Avoid showing the mascot before the published visibility setting loads.
   const load=async()=>{
-   let published=true
+   let published=false
    try{
     const response=await fetch(import.meta.env.BASE_URL+'alquimago/config.json',{cache:'no-store'})
     if(response.ok){
      const config=await response.json() as {appearance?:{visible?:unknown}}
      if(typeof config.appearance?.visible==='boolean')published=config.appearance.visible
     }
-   }catch{/* A missing config keeps the historical visible default. */}
+   }catch{/* A missing config safely keeps the public mascot hidden. */}
    if(active){
     setPublishedAlquimagoVisible(published)
     setAlquimagoVisible(readAlquimagoVisibilityDraft()??published)
