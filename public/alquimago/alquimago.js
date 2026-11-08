@@ -1705,7 +1705,7 @@ function createAffect(seed=123456789,now=0){
  const initial=(Number(seed)>>>0)||123456789;
  return {
   calm:.56,curiosity:.45,warmth:.50,tension:.12,energy:.57,
-  music:false,startle:0,expression:'idle',changedAt:now,lastAt:now,
+  music:false,startle:0,expression:'idle',changedAt:now,lastAt:now,lastSignalAt:0,
   seed:initial
  };
 }
@@ -1714,6 +1714,7 @@ function affectSignal(state,signal,now=state.lastAt){
  // Salient cues prompt an early *decision*, never a hardcoded face.
  if(['pet','happy','sad','angry','surprised','music','return','away'].includes(signal))
   next.changedAt=Math.min(next.changedAt,now-3700);
+ next.lastSignalAt=now;
  const impulse=AFFECT_IMPULSES[signal]||{};
  if(signal==='surprised')next.startle=clampAffect((next.startle||0)+.78);
  for(const key of ['calm','curiosity','warmth','tension','energy']){
@@ -1754,11 +1755,11 @@ function affectTick(state,now){
   idle:.28+calm*.5+(1-tension)*.11,
   breath:.10+calm*.48+(music?.18:0),
   serene:music?.48+calm*.62-tension*.43:.02+calm*.15,
-  happy:.05+warmth*.62+energy*.14-tension*.13,
+  happy:.08+warmth*.84+energy*.12-tension*.13,
   curious:.04+curiosity*.9+energy*.07,
   focused:.01+curiosity*.88+calm*.08,
   thinking:.04+curiosity*.56+(1-energy)*.12,
-  pet:Math.max(0,warmth-.56)*3.3+calm*.09,
+  pet:Math.max(0,warmth-.56)*3.7+calm*.09,
   love:Math.max(0,warmth-.64)*2.25,
   angry:Math.max(0,tension-.21)*1.24+(1-calm)*.12,
   worried:Math.max(0,tension-.29)*.97+(1-warmth)*.17,
@@ -1769,7 +1770,7 @@ function affectTick(state,now){
  };
  // Seeded microvariations produce variety while keeping tests deterministic.
  const previous=next.expression;
- let best=previous,bestScore=(scores[previous]??0)+.075;
+ let best=previous,bestScore=(scores[previous]??0)+(now-next.lastSignalAt<500?.025:.075);
  for(const [name,value] of Object.entries(scores)){
   const jitter=(nextRandom(next)-.5)*.085;
   if(value+jitter>bestScore){
