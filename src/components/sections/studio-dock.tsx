@@ -1,7 +1,7 @@
 import { useEffect,useRef,useState } from 'react'
 import {
  ArrowRight,BookOpen,ChevronDown,CloudUpload,Download,FileText,
- FolderKanban,Heart,LayoutGrid,LockKeyhole,Palette,Plus,Search,
+ FolderKanban,LayoutGrid,LockKeyhole,Palette,Plus,Search,
  Settings2,Sparkles,WandSparkles,X
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
