@@ -48,6 +48,18 @@ export function App(){
  const [mediaManagerOpen,setMediaManagerOpen]=useState(false)
  const [skin3DOpen,setSkin3DOpen]=useState(false)
  const [alquimagoVisible,setAlquimagoVisible]=useState<boolean|null>(null)
+ // A creator can keep the Studio familiar independently of public visibility.
+ const [studioFamiliarVisible,setStudioFamiliarVisible]=useState(()=>{
+  try{return localStorage.getItem('jf-alquimago-studio-visible')!=='false'}
+  catch{return true}
+ })
+ const toggleStudioFamiliar=()=>{
+  setStudioFamiliarVisible(current=>{
+   const next=!current
+   try{localStorage.setItem('jf-alquimago-studio-visible',String(next))}catch{/* optional */}
+   return next
+  })
+ }
  const toggleAlquimagoVisible=()=>{
   setAlquimagoVisible(current=>{
    const next=current===false
@@ -80,12 +92,17 @@ export function App(){
   {id:'new-project',label:'Novo projeto',description:'Criar e compor uma nova obra',section:'Projetos',icon:Plus,onClick:()=>setEditor(null)},
   ...(page==='project'&&project?[{id:'active-project',label:'Editar obra atual',description:project.title,section:'Projetos' as const,icon:Layers,onClick:()=>setEditor(project)}]:[]),
   {id:'alquimago-visibility',
-   label:alquimagoVisible===false?'Ativar Alquimago':'Desativar Alquimago',
+   label:alquimagoVisible===false?'Público · Ativar Alquimago':'Público · Desativar Alquimago',
    description:alquimagoVisible===false
-    ?'Mostrar o mascote novamente; publique para atualizar o site.'
-    :'Ocultar o mascote e suas interações; publique para aplicar aos visitantes.',
+    ?'Exibir o mascote aos visitantes após publicar. Não altera o Grimório do Studio.'
+    :'Ocultar apenas o mascote dos visitantes após publicar. O Studio permanece independente.',
    section:'Familiar',icon:alquimagoVisible===false?Eye:EyeOff,
    onClick:toggleAlquimagoVisible},
+  {id:'alquimago-studio-visibility',
+   label:studioFamiliarVisible?'Studio · Ocultar Alquimago':'Studio · Mostrar Alquimago',
+   description:'Preferência apenas deste navegador de edição; não modifica o site público.',
+   section:'Familiar',icon:studioFamiliarVisible?EyeOff:Eye,
+   onClick:toggleStudioFamiliar},
   {id:'alquimago-grimorio',label:'Abrir Grimório',description:'Conversar com Gemini e acessar treinamento local',section:'Familiar',icon:MessageSquare,onClick:()=>{
     const familiar=document.querySelector('alquimago-familiar') as (HTMLElement & {state?:{open:boolean;tab:number};render?:()=>void})|null
     if(familiar?.state){familiar.state.open=true;familiar.state.tab=5;familiar.render?.()}
@@ -133,16 +150,16 @@ export function App(){
   return()=>{active=false}
  },[])
  useEffect(()=>{
-  document.documentElement.dataset.alquimagoVisible=
-   alquimagoVisible===null?'pending':String(alquimagoVisible)
-  if(alquimagoVisible===false){
-   // Remove the custom element, not only its pixels: stop gesture listeners and timers.
+  const show=editing?studioFamiliarVisible:alquimagoVisible
+  document.documentElement.dataset.alquimagoVisible=show===null?'pending':String(show)
+  if(show===false){
+   // Remove listeners and animation when hidden in this particular context.
    document.querySelectorAll('alquimago-familiar').forEach(element=>element.remove())
-  }else if(alquimagoVisible===true){
+  }else if(show===true){
    const api=(window as Window&{Alquimago?:{mount:(target:HTMLElement,mode:'web')=>HTMLElement}}).Alquimago
    if(api&&!document.querySelector('alquimago-familiar'))api.mount(document.body,'web')
   }
- },[alquimagoVisible])
+ },[editing,studioFamiliarVisible,alquimagoVisible])
  useEffect(()=>{
   // Use the actual release SHA for the script URL. Cloudflare builds do not
   // receive VITE_BUILD_SHA, and a fixed fallback previously froze the cache.
