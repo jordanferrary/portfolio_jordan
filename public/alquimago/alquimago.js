@@ -2880,6 +2880,47 @@ class AlquimagoFamiliar extends HTMLElement {
       }
     }
     this.$character.innerHTML=SVG;
+    this.$character.dataset.expression='idle';
+    // Procedural SVG animation adapter shares the same expression interface
+    // as the GLB renderer, so Studio's Shape Key tester can preview both skins.
+    const normalize=name=>{
+      const raw=String(name||'idle').toLowerCase().replace(/[^a-z]/g,'');
+      const aliases={stroke:'pet',affection:'pet',surprise:'surprised',anger:'angry',
+        sleepy:'tired',meditating:'sleep',joy:'happy',focus:'focused',
+        lookleft:'lookleft',lookright:'lookright',lookup:'lookup',lookdown:'lookdown'};
+      const resolved=aliases[raw]||raw;
+      return Object.prototype.hasOwnProperty.call(ORB_EXPRESSIONS,resolved)?resolved:'idle';
+    };
+    const apply=name=>{
+      const key=normalize(name);
+      this.$character.dataset.expression=key;
+      const speed=key==='sleep'?6.3:key==='tired'?5.1:key==='excited'||key==='angry'||key==='surprised'?2.1:4.1;
+      this.$character.style.setProperty('--orb-breath-duration',speed+'s');
+      return key;
+    };
+    this.skinAdapter={
+      setExpression:name=>{
+        if(this.svgPreview&&Date.now()<this.svgPreview.until)return;
+        if(name==='talk'){
+          this.skinAdapter.previewExpression('talk',900);
+          return;
+        }
+        apply(name);
+      },
+      previewExpression:(name,duration=2100)=>{
+        if(this.svgPreviewTimer)clearTimeout(this.svgPreviewTimer);
+        const key=apply(name);
+        this.svgPreview={name:key,until:Date.now()+duration};
+        this.svgPreviewTimer=setTimeout(()=>{
+          this.svgPreview=null;this.svgPreviewTimer=null;
+          if(this.isConnected)this.renderHeader();
+        },duration);
+      },
+      dispose:()=>{
+        if(this.svgPreviewTimer)clearTimeout(this.svgPreviewTimer);
+        this.svgPreviewTimer=null;this.svgPreview=null;
+      }
+    };
   }
   projectPointerOver(e){
     if(this.isPublicVisitor()){
@@ -3433,6 +3474,8 @@ class AlquimagoFamiliar extends HTMLElement {
     const behavior=this.pageEmotion&&Date.now()<this.pageEmotion.until?this.pageEmotion.name:null;
     const effective=(!this.desktop&&this.pageAwayAt?'sad':behavior);
     this.$character.dataset.reaction=effective||'';
+    // Compatible with both native 2D expression groups and GLB morph targets.
+    if(!this.skinAdapter)this.$character.dataset.expression=effective||skinExpression(mood);
     if(this.skinAdapter?.setExpression){
       try{this.skinAdapter.setExpression(effective||skinExpression(mood))}catch{/* optional 3D adapter */}
     }
