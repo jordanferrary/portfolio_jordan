@@ -23,19 +23,6 @@ jobs:
       - run: npm run test:studio
       - name: Verify GitHub App and generative AI security
         run: node --test auth-worker/tests/*.test.mjs
-      - name: Build Alquimago from its independent source repository
-        shell: bash
-        run: |
-          git clone --depth 1 https://github.com/jordanferrary/alquimago.git "$RUNNER_TEMP/alquimago"
-          (
-            cd "$RUNNER_TEMP/alquimago"
-            npm test
-            npm run build
-          )
-          cp "$RUNNER_TEMP/alquimago/dist/alquimago.js" public/alquimago/alquimago.js
-          node scripts/stamp-alquimago-release.mjs "$RUNNER_TEMP/alquimago/package.json" "$(git -C "$RUNNER_TEMP/alquimago" rev-parse HEAD)"
-      - name: Verify Alquimago release
-        run: node scripts/check-alquimago-release.mjs
       - name: Prepare social preview and favicon from published content
         run: |
           python3 -m pip install --disable-pip-version-check Pillow
