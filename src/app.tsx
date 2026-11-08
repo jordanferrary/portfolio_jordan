@@ -1,5 +1,5 @@
 import { lazy,Suspense,useEffect,useState } from 'react'
-import { Home,Grid2X2,UserRound,Mail,Image as ImageIcon,Heart,Music,Share2,Layers,Palette,Plus,MessageSquare } from 'lucide-react'
+import { Home,Grid2X2,UserRound,Mail,Image as ImageIcon,Heart,Music,Share2,Layers,Palette,Plus,MessageSquare,Eye,EyeOff } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
 import { SocialBar } from './components/layout/social-bar'
 import { Gallery } from './components/sections/gallery'
@@ -22,6 +22,7 @@ const GitHubPublishEditor=lazy(()=>import('./components/sections/github-publish-
 const SiteIdentityEditor=lazy(()=>import('./components/sections/site-identity-editor').then(m=>({default:m.SiteIdentityEditor})))
 const ThemePaletteEditor=lazy(()=>import('./components/sections/theme-palette-editor').then(m=>({default:m.ThemePaletteEditor})))
 import { applyThemePalette } from './lib/theme-palette'
+import {readAlquimagoVisibilityDraft,writeAlquimagoVisibilityDraft} from './lib/alquimago-visibility'
 import type {StudioAction} from './components/sections/studio-dock'
 const StudioDock=lazy(()=>import('./components/sections/studio-dock').then(m=>({default:m.StudioDock})))
 const ImageConverter=lazy(()=>import('./components/sections/image-converter').then(m=>({default:m.ImageConverter})))
@@ -46,6 +47,14 @@ export function App(){
  const [imageConverterOpen,setImageConverterOpen]=useState(false)
  const [mediaManagerOpen,setMediaManagerOpen]=useState(false)
  const [skin3DOpen,setSkin3DOpen]=useState(false)
+ const [alquimagoVisible,setAlquimagoVisible]=useState<boolean|null>(null)
+ const toggleAlquimagoVisible=()=>{
+  setAlquimagoVisible(current=>{
+   const next=current===false
+   writeAlquimagoVisibilityDraft(next)
+   return next
+  })
+ }
  const [customPageEditorTarget,setCustomPageEditorTarget]=useState<string|null>(null)
  const [stagedMediaDeletions,setStagedMediaDeletions]=useState<string[]>([])
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
@@ -70,6 +79,13 @@ export function App(){
   {id:'new-custom-page',label:'Nova página',description:'Cursos, recursos, guias, downloads e outros',section:'Páginas',icon:Plus,onClick:()=>setCustomPageEditorTarget('new')},
   {id:'new-project',label:'Novo projeto',description:'Criar e compor uma nova obra',section:'Projetos',icon:Plus,onClick:()=>setEditor(null)},
   ...(page==='project'&&project?[{id:'active-project',label:'Editar obra atual',description:project.title,section:'Projetos' as const,icon:Layers,onClick:()=>setEditor(project)}]:[]),
+  {id:'alquimago-visibility',
+   label:alquimagoVisible===false?'Ativar Alquimago':'Desativar Alquimago',
+   description:alquimagoVisible===false
+    ?'Mostrar o mascote novamente; publique para atualizar o site.'
+    :'Ocultar o mascote e suas interações; publique para aplicar aos visitantes.',
+   section:'Familiar',icon:alquimagoVisible===false?Eye:EyeOff,
+   onClick:toggleAlquimagoVisible},
   {id:'alquimago-grimorio',label:'Abrir Grimório',description:'Conversar com Gemini e acessar treinamento local',section:'Familiar',icon:MessageSquare,onClick:()=>{
     const familiar=document.querySelector('alquimago-familiar') as (HTMLElement & {state?:{open:boolean;tab:number};render?:()=>void})|null
     if(familiar?.state){familiar.state.open=true;familiar.state.tab=5;familiar.render?.()}
@@ -100,6 +116,34 @@ export function App(){
   document.documentElement.dataset.alquimagoStudio=editing?'true':'false'
  },[editing])
  useEffect(()=>{
+  let active=true
+  // Avoid showing the mascot before the published visibility setting loads.
+  const load=async()=>{
+   let published=true
+   try{
+    const response=await fetch(import.meta.env.BASE_URL+'alquimago/config.json',{cache:'no-store'})
+    if(response.ok){
+     const config=await response.json() as {appearance?:{visible?:unknown}}
+     if(typeof config.appearance?.visible==='boolean')published=config.appearance.visible
+    }
+   }catch{/* A missing config keeps the historical visible default. */}
+   if(active)setAlquimagoVisible(readAlquimagoVisibilityDraft()??published)
+  }
+  void load()
+  return()=>{active=false}
+ },[])
+ useEffect(()=>{
+  document.documentElement.dataset.alquimagoVisible=
+   alquimagoVisible===null?'pending':String(alquimagoVisible)
+  if(alquimagoVisible===false){
+   // Remove the custom element, not only its pixels: stop gesture listeners and timers.
+   document.querySelectorAll('alquimago-familiar').forEach(element=>element.remove())
+  }else if(alquimagoVisible===true){
+   const api=(window as Window&{Alquimago?:{mount:(target:HTMLElement,mode:'web')=>HTMLElement}}).Alquimago
+   if(api&&!document.querySelector('alquimago-familiar'))api.mount(document.body,'web')
+  }
+ },[alquimagoVisible])
+ useEffect(()=>{
   // Use the actual release SHA for the script URL. Cloudflare builds do not
   // receive VITE_BUILD_SHA, and a fixed fallback previously froze the cache.
   let active=true
@@ -109,7 +153,7 @@ export function App(){
    Alquimago?:{version?:string;mount:(target:HTMLElement,mode:'web')=>HTMLElement}
   }
   host.ALQUIMAGO_AUTO_MOUNT=false
-  const mount=()=>{if(active&&!document.querySelector('alquimago-familiar'))host.Alquimago?.mount(document.body,'web')}
+  const mount=()=>{if(active&&document.documentElement.dataset.alquimagoVisible==='true'&&!document.querySelector('alquimago-familiar'))host.Alquimago?.mount(document.body,'web')}
   const load=async()=>{
    const base=import.meta.env.BASE_URL
    const buildSha=import.meta.env.VITE_BUILD_SHA
