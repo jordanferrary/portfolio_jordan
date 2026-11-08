@@ -36,7 +36,11 @@ for(const feature of [
  'class="orb-headset-right"', 'orb-expression-serene',
  'orb-expression-surprised', 'orb-expression-talk',
  'function createAffect(', 'function setAffectMusic(',
- 'this.$character.innerHTML=ROBOT_SVG'
+ 'this.$character.innerHTML=ROBOT_SVG',
+ // Conversation must use learned meanings, not only save teaching labels.
+ 'function learnedSocialResponse(', 'function learnedMilestoneResponse(',
+ 'function respondUsingApprovedMeanings(', 'teachingMemory:this.teaching',
+ 'const pragmatic=respondUsingApprovedMeanings(', 'Linguagem contextual'
 ]){
  assert.ok(text.includes(feature),'Funcionalidade ausente no bundle: '+feature);
 }
