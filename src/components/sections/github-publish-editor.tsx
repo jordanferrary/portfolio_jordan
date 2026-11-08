@@ -5,6 +5,7 @@ import { currentPublishedRevision } from '../../hooks/use-portfolio'
 import { publishPortfolioToGitHub,type GitHubPublishResult } from '../../lib/github-publish'
 import {getRepositoryMedia,type RepositoryMedia} from '../../lib/github-media'
 import {GITHUB_WORKER_SESSION,beginGitHubLogin,disconnectGitHubSession,hasGitHubLogin,isAuthCompletion,readGitHubSession,type GitHubSession} from '../../lib/github-auth'
+import {githubTokenVault,type GitHubTokenStatus} from '../../lib/github-token-vault'
 
 type Props={
  store:PortfolioStore
@@ -16,11 +17,14 @@ type Props={
 }
 export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClose,stagedDeletionPaths=[]}:Props){
  const [token,setToken]=useState('')
+ const [savedToken,setSavedToken]=useState('')
+ const [vaultStatus,setVaultStatus]=useState<GitHubTokenStatus>({status:'missing',description:'Nenhum token salvo.'})
+ const [vaultBusy,setVaultBusy]=useState(true)
  const [session,setSession]=useState<GitHubSession>({authenticated:false})
  const [checkingSession,setCheckingSession]=useState(hasGitHubLogin())
  const [authError,setAuthError]=useState('')
  const configured=hasGitHubLogin()
- const credential=session.authenticated?GITHUB_WORKER_SESSION:token.trim()
+ const credential=session.authenticated?GITHUB_WORKER_SESSION:(token.trim()||(vaultStatus.status==='ready'?savedToken:''))
  const [visible,setVisible]=useState(false)
  const [confirmed,setConfirmed]=useState(false)
  const [busy,setBusy]=useState(false)
@@ -47,6 +51,61 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
   void refresh()
   return()=>{active=false;window.removeEventListener('message',onAuth)}
  },[configured])
+ useEffect(()=>{
+  let active=true
+  const restore=async()=>{
+   try{
+    const saved=await githubTokenVault.load()
+    const check=saved?await githubTokenVault.check(saved):
+     {status:'missing' as const,description:'Nenhum token guardado neste dispositivo.'}
+    if(!active)return
+    setVaultStatus(check)
+    setSavedToken(check.status==='ready'?saved||'':'')
+   }catch{
+    if(active)setVaultStatus({status:'unavailable',description:'Não foi possível abrir o cofre de publicação.'})
+   }finally{if(active)setVaultBusy(false)}
+  }
+  void restore()
+  return()=>{active=false}
+ },[])
+ const saveToken=async()=>{
+  if(!token.trim()||vaultBusy||busy)return
+  setVaultBusy(true);setAuthError('')
+  try{
+   const check=await githubTokenVault.check(token.trim())
+   if(check.status!=='ready'){
+    setVaultStatus(check);setAuthError(check.description)
+    return
+   }
+   await githubTokenVault.save(token.trim())
+   setSavedToken(token.trim());setToken('')
+   setVaultStatus({status:'ready',description:'Token validado e protegido no cofre deste navegador.'})
+  }catch(e){
+   setAuthError(e instanceof Error?e.message:'Não foi possível proteger o token.')
+  }finally{setVaultBusy(false)}
+ }
+ const refreshSaved=async()=>{
+  if(vaultBusy||busy)return
+  setVaultBusy(true)
+  try{
+   const saved=await githubTokenVault.load()
+   const check=saved?await githubTokenVault.check(saved):
+    {status:'missing' as const,description:'Nenhum token guardado neste dispositivo.'}
+   setVaultStatus(check)
+   setSavedToken(check.status==='ready'?saved||'':'')
+  }catch{setSavedToken('');setVaultStatus({status:'unavailable',description:'Não foi possível abrir o cofre.'})}
+  finally{setVaultBusy(false)}
+ }
+ const forgetSaved=async()=>{
+  if(vaultBusy||busy||!window.confirm('Descartar o token armazenado neste dispositivo? Isso não o revoga automaticamente no GitHub.'))return
+  setVaultBusy(true)
+  try{
+   await githubTokenVault.forget()
+   setSavedToken('');setVaultStatus({status:'missing',description:'Token descartado deste navegador.'})
+   setToken('')
+  }catch(e){setAuthError(e instanceof Error?e.message:'Não foi possível descartar o token.')}
+  finally{setVaultBusy(false)}
+ }
  const connect=()=>{
   setAuthError('')
   if(!beginGitHubLogin())setAuthError('A integração segura ainda não está configurada.')
@@ -72,6 +131,16 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
   }
   setBusy(true);setError('');setResult(null)
   try{
+   if(!session.authenticated&&savedToken&&!token.trim()){
+    const check=await githubTokenVault.check(savedToken)
+    setVaultStatus(check)
+    if(check.status!=='ready'){
+     setSavedToken('')
+     throw new Error(check.status==='expired'?
+      'O pão mofou! Este token expirou ou foi revogado. Posso descartá-lo quando você confirmar.':
+      check.description)
+    }
+   }
    // The live familiar's uncommitted state is included only on this explicit
    // publication. Reloading without publishing discards its draft changes.
    const familiar=document.querySelector('alquimago-familiar') as (HTMLElement&{snapshot?:()=>unknown})|null
@@ -80,7 +149,13 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
    onPublished(finished.revision)
    setResult(finished)
    setStatus('As alterações estão no GitHub. A Cloudflare Pages publicará essa versão após a nova implantação concluir.')
-  }catch(e){setError(e instanceof Error?e.message:'Não foi possível publicar no GitHub.')}
+  }catch(e){
+   const msg=e instanceof Error?e.message:'Não foi possível publicar no GitHub.'
+   if(!session.authenticated&&savedToken&&/Token inválido ou expirado/.test(msg)){
+    setSavedToken('');setVaultStatus({status:'expired',description:'O pão mofou! O token não funciona mais. Você pode descartá-lo e guardar outro.'})
+   }
+   setError(msg)
+  }
   finally{setToken('');setBusy(false)}
  }
  const restore=()=>{
@@ -126,13 +201,26 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
       </details>
       
      </div>
-     {!session.authenticated&&<label className="github-publish-token-label">{configured?'Alternativa: token temporário':'Token temporário do GitHub'}
+     {!session.authenticated&&<div className="github-token-vault" aria-label="Cofre de publicação GitHub" style={{margin:'12px 0',padding:'12px',border:'1px solid var(--jf-border, #785c94)',borderRadius:12}}>
+       <p><ShieldCheck size={16}/> <strong>Cofre do Alquimago</strong></p>
+       <p className="editor-help">{vaultBusy?'Verificando o cofre...':vaultStatus.description}</p>
+       {vaultStatus.status==='ready'&&<p className="editor-help">Já tenho o dinheiro guardado! Posso reutilizar a autorização, mas cada publicação continua exigindo sua confirmação.</p>}
+       {vaultStatus.status==='expired'&&<p role="status" className="editor-help">O pão mofou... posso jogar fora? Descarte a autorização antiga e informe outra.</p>}
+       {vaultStatus.status==='forbidden'&&<p role="status" className="editor-help">O token está sem permissão suficiente. Você pode descartá-lo e autorizar outro.</p>}
+       <div className="actions" style={{display:'flex',flexWrap:'wrap',gap:8}}>
+        <button type="button" className="action" onClick={()=>void saveToken()} disabled={busy||vaultBusy||!token.trim()}><ShieldCheck size={15}/>Guardar token criptografado</button>
+        <button type="button" className="action" onClick={()=>void refreshSaved()} disabled={busy||vaultBusy}>Verificar validade</button>
+        <button type="button" className="action" onClick={()=>void forgetSaved()} disabled={busy||vaultBusy||vaultStatus.status==='missing'}><Trash2 size={15}/>Descartar token</button>
+       </div>
+       <p className="editor-help">Opcional: o token fica criptografado neste navegador com AES-256-GCM. Não o envie no chat. Scripts deste mesmo site ainda podem acessar a autorização; prefira a conexão GitHub App quando configurada.</p>
+      </div>}
+      {!session.authenticated&&<label className="github-publish-token-label">{configured?'Alternativa: token temporário':'Token temporário do GitHub'}
       <div className="github-publish-token-control">
        <input value={token} type={visible?'text':'password'} autoComplete="off" autoCapitalize="off" spellCheck={false} onChange={e=>setToken(e.target.value)} placeholder="Cole o token somente aqui" disabled={busy} aria-label="Token temporário de publicação GitHub"/>
        <button type="button" onClick={()=>setVisible(v=>!v)} aria-label={visible?'Ocultar token':'Mostrar token'} disabled={busy}>{visible?<EyeOff size={17}/>:<Eye size={17}/>}</button>
       </div>
      </label>}
-     <p className="github-publish-security"><ShieldCheck size={14}/> {session.authenticated?'A autorização fica no serviço seguro; nenhum token GitHub chega ao navegador.':'O token alternativo fica só na memória desta página; não é salvo no site.'}</p>
+     <p className="github-publish-security"><ShieldCheck size={14}/> {session.authenticated?'A autorização fica no serviço seguro; nenhum token GitHub chega ao navegador.':'O token digitado não é salvo automaticamente. Somente o botão Guardar token criptografado permite reutilizá-lo neste dispositivo.'}</p>
      <section className="github-media-cleanup" aria-label="Gerenciar arquivos publicados">
       <div className="github-media-cleanup-head"><div><h3><FolderOpen size={17}/> Gerenciar arquivos publicados</h3><p>Confira imagens, capas, áudios e também vídeos ou modelos 3D existentes nas pastas públicas. Exclua somente arquivos sem referência conhecida.</p></div><button type="button" onClick={()=>void scanMedia()} disabled={busy||mediaLoading||!credential}><FolderOpen size={15}/>{mediaLoading?'Analisando...':media?'Atualizar lista':'Analisar arquivos do GitHub'}</button></div>
       {mediaError&&<p className="github-publish-error" role="alert">{mediaError}</p>}
@@ -162,7 +250,7 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
     <p className="github-publish-footnote">Revise os textos destinados aos visitantes em inglês antes de publicar. Rascunhos antigos podem conter conteúdo em português. As alterações feitas no Local Studio continuam locais até a publicação. Mensagens privadas e curtidas compartilhadas exigem uma API separada.</p>
    </div>
    <footer><button type="button" className="subtle-action" onClick={close} disabled={busy}>{result?'Fechar':'Cancelar'}</button>
-    {!result&&<button type="button" className="save-action" onClick={()=>void publish()} disabled={busy||!credential||!confirmed}><CloudUpload size={17}/>{busy?'Publicando...':session.authenticated?'Confirmar publicação':'Publicar no GitHub'}</button>}
+    {!result&&<button type="button" className="save-action" onClick={()=>void publish()} disabled={busy||vaultBusy||!credential||!confirmed}><CloudUpload size={17}/>{busy?'Publicando...':session.authenticated?'Confirmar publicação':'Publicar no GitHub'}</button>}
    </footer>
   </section>
  </div>
