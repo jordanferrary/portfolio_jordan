@@ -23,7 +23,7 @@ export function useAssetSrc(source?:string){
  },[normalized])
  return url
 }
-export function AssetImage({src,alt='',sizes,srcSet,...props}:ComponentProps<'img'>){
+export function AssetImage({src,alt='',sizes,srcSet,loading='lazy',decoding='async',...props}:ComponentProps<'img'>){
  const resolved=useAssetSrc(src)
  const variants=useContext(VariantContext)
  const item=src?variants[src]:undefined
@@ -33,5 +33,5 @@ export function AssetImage({src,alt='',sizes,srcSet,...props}:ComponentProps<'im
   {url:resolved,width:item.largeWidth}
  ].sort((a,b)=>a.width-b.width).filter((part,index,arr)=>index===0||part.width!==arr[index-1].width):[]
  const autoSet=candidates.length>0?candidates.map(part=>part.url+' '+part.width+'w').join(', '):undefined
- return <img src={resolved||undefined} alt={alt} srcSet={srcSet??autoSet} sizes={sizes??(autoSet?'100vw':undefined)} {...props}/>
+ return <img src={resolved||undefined} alt={alt} srcSet={srcSet??autoSet} sizes={sizes??(autoSet?'100vw':undefined)} loading={loading} decoding={decoding} {...props}/>
 }

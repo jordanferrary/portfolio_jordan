@@ -2,10 +2,10 @@ import { lazy,Suspense,useEffect,useState } from 'react'
 import { Home,Grid2X2,UserRound,Mail,Image as ImageIcon,Heart,Music,Share2,Layers,Palette,Plus,MessageSquare,Eye,EyeOff } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
 import { SocialBar } from './components/layout/social-bar'
-import { Gallery } from './components/sections/gallery'
+const Gallery=lazy(()=>import('./components/sections/gallery').then(m=>({default:m.Gallery})))
 const GalleryBackgroundEditor=lazy(()=>import('./components/sections/gallery-background-editor').then(m=>({default:m.GalleryBackgroundEditor})))
 const BrandLogoEditor=lazy(()=>import('./components/sections/brand-logo-editor').then(m=>({default:m.BrandLogoEditor})))
-import { ProjectPage } from './components/sections/project-page'
+const ProjectPage=lazy(()=>import('./components/sections/project-page').then(m=>({default:m.ProjectPage})))
 const CustomPageView=lazy(()=>import('./components/sections/custom-page').then(m=>({default:m.CustomPageView})))
 const AdminEditor=lazy(()=>import('./components/sections/admin-editor').then(m=>({default:m.AdminEditor})))
 const AdminGate=lazy(()=>import('./components/sections/admin-gate').then(m=>({default:m.AdminGate})))
@@ -260,8 +260,8 @@ export function App(){
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
  return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':page==='contato'?'site-shell contact-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
- {page==='portfolio'&&<Gallery projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground} onEditBackground={()=>setGalleryBackgroundEditorOpen(true)}/>}
- {page==='project'&&project&&<ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts}/>}
+ {page==='portfolio'&&<Suspense fallback={<div className="simple-page" role="status">Loading portfolio…</div>}><Gallery projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground} onEditBackground={()=>setGalleryBackgroundEditorOpen(true)}/></Suspense>}
+ {page==='project'&&project&&<Suspense fallback={<div className="simple-page" role="status">Loading project…</div>}><ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts}/></Suspense>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
  {page==='custom'&&customPage&&<Suspense fallback={<div className="simple-page">Loading page…</div>}><CustomPageView page={customPage} editing={editing} onEdit={()=>setCustomPageEditorTarget(customPage.id)}/></Suspense>}
  {page==='custom'&&!customPage&&<section className="simple-page"><h1>Page not found</h1><p>This page may have moved or been removed.</p><button type="button" className="primary-action" onClick={()=>navigate('inicio')}>Return home</button></section>}
