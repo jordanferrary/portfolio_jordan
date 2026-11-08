@@ -25,7 +25,12 @@ for(const feature of [
  'class AlquimagoFamiliar extends HTMLElement',
  // The published site must not silently fall back to the old single-choice UI.
  'function respondToContextFollowup(', 'function recognizeTeachingLabels(',
- 'function approveTeachingExample(', "if(action==='clear-chat')"
+ 'function approveTeachingExample(', "if(action==='clear-chat')",
+ // Cognitive 2.0 release gates: bounded learning, honest plasticity and
+ // grounded short follow-ups must ship in the compiled website artifact.
+ 'const NEURAL_PROTOTYPES_LIMIT=64', 'const LESSONS_LIMIT=128',
+ 'const TEACHING_EXAMPLES_LIMIT = 160',
+ 'function recallLessonFollowup(', 'plasticSynapses', 'eligibility.fill(0)'
 ]){
  assert.ok(text.includes(feature),'Funcionalidade ausente no bundle: '+feature);
 }
