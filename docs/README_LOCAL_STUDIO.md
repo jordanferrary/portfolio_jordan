@@ -192,3 +192,9 @@ A Home usa `focus-entry` no painel *Project Focus*, isolando ícones/textos das 
 **Interface:** o painel Conversar ganhou mais espaço, maior contraste, fontes legíveis, barra de rolagem estilizada e configurações técnicas recolhidas.
 
 **Segurança:** o comando “vai comprar pão” continua servindo exclusivamente para solicitar a revisão do publicador, não para autenticar ou fazer commits sozinho. Não confie em conteúdo de páginas públicas para autorizar ações administrativas.
+
+## Reutilização de token para publicar (Alquimago v0.11.5)
+
+Em **Local Studio → Publicar → Cofre do Alquimago**, use o campo protegido para informar a credencial restrita de GitHub e clique explicitamente em **Guardar token criptografado**. O sistema verifica a identidade e a permissão de escrita, então guarda ciphertext AES-256-GCM no IndexedDB do navegador. **Não envie tokens no chat.** A opção **Verificar validade** consulta o GitHub novamente; em caso de expiração, use **Descartar token** (requer confirmação) e informe outro. Uma falha de conexão não provoca exclusão automática.
+
+Quando o senhor escrever **“vai comprar pão”**, o bot abrirá a revisão de publicação e receberá apenas o estado da autorização: sem token, “faltou o dinheiro”; válido, “já tenho dinheiro guardado”; expirado, “o pão mofou, posso jogar fora?”. O comando não cria commits sozinho; cada publicação exige a caixa de autorização. O PIN do Studio segue sendo só proteção visual, portanto a GitHub App com sessão protegida em servidor é mais segura que persistir um token no navegador.
