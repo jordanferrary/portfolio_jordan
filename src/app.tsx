@@ -173,6 +173,9 @@ export function App(){
   }
  },[editing,studioFamiliarVisible,publishedAlquimagoVisible])
  useEffect(()=>{
+  // Skip downloading the familiar entirely for public visitors when disabled.
+  // The Studio still loads it on demand after its owner unlocks editing.
+  if(!editing&&publishedAlquimagoVisible!==true)return
   // Use the actual release SHA for the script URL. Cloudflare builds do not
   // receive VITE_BUILD_SHA, and a fixed fallback previously froze the cache.
   let active=true
@@ -221,7 +224,7 @@ export function App(){
    script?.remove()
    document.querySelectorAll('alquimago-familiar').forEach(el=>el.remove())
   }
- },[editing])
+ },[editing,publishedAlquimagoVisible])
  useEffect(()=>{
   if(!editing)return;
   const openPublish=(event:Event)=>{
