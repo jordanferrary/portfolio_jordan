@@ -36,8 +36,8 @@
  * Do not alter geometry of layout-sensitive widgets and media previews. */
 .site-shell :is(
  .home-explore,.preview-cta,.home-cta,.primary-action,.secondary-action,
- .contact-send-button,.contact-social-primary-link,.contact-social-portfolio-link,
- .project-end,.back-link,.project-like,.about-page-edit,
+ .contact-send-button,.contact-social-primary-link,
+ .project-end,.project-like,.about-page-edit,
  .custom-page-cta,.artist-showcase-portfolio,
  .gallery-background-edit,.gallery-move-controls button,
  .chips button,.filter-button,.feedback-controls button,
@@ -56,7 +56,7 @@
 }
 
 /* Native-looking edge illumination for persistent floating navigation. */
-.site-shell :is(.side-icon,.socials a,.card-open,.work-arrow){
+.site-shell :is(.side-icon,.socials a,.card-open,){
  border-color:var(--jf-liquid-edge)!important;
  background:var(--jf-liquid-clear)!important;
  box-shadow:var(--jf-liquid-border-shadow)!important;
@@ -89,7 +89,7 @@
 
 /* Only meaningful calls-to-action get saturated color inside the glass. */
 .site-shell :is(
- .preview-cta,.home-cta,.primary-action,.contact-send-button,
+ .preview-cta,.home-cta,.primary-action,.contact-send-button,.contact-social-primary-link,
  .custom-page-cta:not(.outline),.artist-showcase-portfolio,
  .project-model-launch,.project-video-play,.music-main-toggle,
  .chips button.active,.filter-button.active
@@ -105,8 +105,8 @@
 }
 .site-shell :is(
  .home-explore,.preview-cta,.home-cta,.primary-action,.secondary-action,
- .contact-send-button,.contact-social-primary-link,.contact-social-portfolio-link,
- .project-end,.back-link,.project-like,.about-page-edit,
+ .contact-send-button,.contact-social-primary-link,
+ .project-end,.project-like,.about-page-edit,
  .custom-page-cta,.artist-showcase-portfolio,.gallery-background-edit,
  .chips button,.filter-button,.feedback-controls button,
  .page-slideshow-arrow,.page-slideshow-floating-play,
@@ -119,7 +119,7 @@
  filter:brightness(1.085);
 }
 .site-shell :is(
- .preview-cta,.home-cta,.primary-action,.contact-send-button,
+ .preview-cta,.home-cta,.primary-action,.contact-send-button,.contact-social-primary-link,
  .custom-page-cta:not(.outline),.artist-showcase-portfolio,.music-main-toggle
 ):hover:not(:disabled){
  box-shadow:var(--jf-liquid-tinted-shadow),0 0 18px var(--jf-liquid-glow)!important;
@@ -215,4 +215,12 @@
  .studio-hub button{transition:none!important}
  .site-shell :is(button,a,.side-icon,.socials a):active,
  .studio-dock button:active{transform:none!important}
+}
+
+/* A liked project remains distinct from unliked controls. */
+.site-shell .project-like.is-liked{
+ border-color:var(--jf-liquid-edge-hot)!important;
+ background:var(--jf-liquid-clear)!important;
+ color:var(--jf-secondary)!important;
+ box-shadow:var(--jf-liquid-border-shadow),0 0 14px var(--jf-liquid-glow)!important;
 }
