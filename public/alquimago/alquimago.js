@@ -1558,8 +1558,17 @@ const STYLE = `
 /* Visitor mode is a living character, not a floating stat/minigame widget. */
 :host([data-public-mode="true"]) .familiar-title,
 :host([data-public-mode="true"]) .panel{display:none!important}
+:host([data-public-mode="true"]) .shell{
+ position:relative!important;
+ /* The speech balloon is out of flow: its content can never move the mascot. */
+ gap:0!important;width:max-content;max-width:calc(100vw - 24px);
+}
 :host([data-public-mode="true"]) .thought{
- display:block;position:relative;max-width:min(260px,calc(100vw - 24px));
+ display:block;position:absolute!important;bottom:calc(100% + 10px)!important;
+ right:0!important;top:auto!important;left:auto!important;
+ width:max-content;min-width:160px;max-width:min(260px,calc(100vw - 24px));
+ height:auto!important;margin:0!important;flex:none!important;transform:none!important;
+ z-index:2;
  padding:10px 13px;border:1px solid #a887d6;
  border-radius:13px 13px 3px 13px;
  background:linear-gradient(130deg,#2d1b42f5,#191027f5);
