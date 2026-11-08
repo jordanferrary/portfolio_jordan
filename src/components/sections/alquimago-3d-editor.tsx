@@ -56,7 +56,7 @@ function Range({label,value,min,max,step,unit='',onChange}:{
 }
 export function Alquimago3DEditor({onClose,onPublish}:Props){
  const [tab,setTab]=useState<Tab>('model')
- const [activeAnimation,setActiveAnimation]=useState<AnimationKey>('Breath')
+ const [activeAnimation,setActiveAnimation]=useState<AnimationKey>('Pet')
  const [stage,setStage]=useState<AlquimagoStage>(()=>readAlquimagoStage(familiarElement()))
  const [animation,setAnimation]=useState<AnimationProfile>(()=>readAnimationProfile())
  const [busy,setBusy]=useState(false)
@@ -91,7 +91,7 @@ export function Alquimago3DEditor({onClose,onPublish}:Props){
  },[])
  const updateStage=(next:AlquimagoStage)=>setStage(writeAlquimagoStage(next))
  const updateAnimation=(next:AnimationProfile)=>setAnimation(writeAnimationProfile(next))
- const editTiming=(key:AnimationKey,field:'durationMs'|'intervalMs'|'intensity',value:number)=>{
+ const editTiming=(key:AnimationKey,field:'durationMs'|'intervalMs'|'intensity'|'loop',value:number|boolean)=>{
   updateAnimation({...animation,shapes:{...animation.shapes,[key]:{...animation.shapes[key],[field]:value}}})
  }
  const load=async(file:File|undefined)=>{
@@ -171,12 +171,15 @@ export function Alquimago3DEditor({onClose,onPublish}:Props){
     </div>}
     {tab==='timing'&&<div className="jf-skin-block">
      <div className="jf-skin-section-title"><span>04</span><div><h3>Direção de animação</h3><p>A duração e a intensidade de cada Shape Key podem ser ajustadas para a sua skin.</p></div></div>
-     <div className="jf-skin-info"><strong>Respiração em loop — Breath</strong>
+     <div className="jf-skin-info"><strong>Respiração — Breath</strong>
       <p>Modele o peito estufado com valor 1. O Alquimago interpola automaticamente 0 → 1 → 0; a velocidade muda conforme a emoção.</p>
       <Range label="Duração base da respiração" value={animation.shapes.Breath.durationMs} min={400} max={6000} step={100} unit=" ms"
        onChange={value=>editTiming('Breath','durationMs',value)}/>
       <Range label="Intensidade da respiração" value={animation.shapes.Breath.intensity} min={0} max={1} step={0.05}
        onChange={value=>editTiming('Breath','intensity',value)}/>
+      <label className="jf-skin-check"><input type="checkbox" checked={animation.shapes.Breath.loop}
+       onChange={event=>editTiming('Breath','loop',event.target.checked)}/>
+       Repetir respiração continuamente (loop)</label>
      </div>
      <h4>Velocidade da respiração por estado</h4>
      <p className="jf-skin-help">1,0× é o ritmo base. Acima disso, a respiração fica mais rápida.</p>
@@ -196,7 +199,14 @@ export function Alquimago3DEditor({onClose,onPublish}:Props){
        onChange={value=>editTiming(activeAnimation,'durationMs',value)}/>
       <Range label={'Intensidade — '+activeAnimation} value={selected.intensity} min={0} max={1} step={0.05}
        onChange={value=>editTiming(activeAnimation,'intensity',value)}/>
-      {(activeAnimation==='Blink'||activeAnimation==='Yawn')&&<Range label="Intervalo entre repetições"
+      <label className="jf-skin-check"><input type="checkbox" checked={selected.loop}
+       onChange={event=>editTiming(activeAnimation,'loop',event.target.checked)}/>
+       Repetir animação (loop)</label>
+      <p className="jf-skin-help">{selected.loop
+       ?'A animação repete o ciclo enquanto este estado estiver ativo.'
+       :'A animação toca uma vez e termina, sem reiniciar até acontecer um novo evento.'}
+       {' '}Esta opção já controla as Shape Keys; a reprodução de clips de Bones será integrada separadamente.</p>
+      {selected.loop&&(activeAnimation==='Blink'||activeAnimation==='Yawn')&&<Range label="Intervalo entre repetições"
        value={selected.intervalMs} min={800} max={30000} step={200} unit=" ms"
        onChange={value=>editTiming(activeAnimation,'intervalMs',value)}/>}
       <button type="button" className="jf-skin-test" onClick={()=>testExpression(activeAnimation)}>Testar {activeAnimation}</button>
