@@ -609,7 +609,7 @@ function enhanceGrimoire(root:ShadowRoot){
  heading.append(kicker,headline)
  const source=document.createElement('span')
  source.className='grimoire-answer-source'
- source.textContent='Memória local + mentor autorizado'
+ source.textContent=(root.host as HTMLElement & {lastAnswerSource?:string}).lastAnswerSource||'Cérebro local'
  conversationHeader.append(heading,source)
  const composer=document.createElement('div')
  composer.className='grimoire-composer'
@@ -650,7 +650,7 @@ function styleAlquimago(){
   shadowObserver.observe(root,{childList:true,subtree:true})
   // Escape closes only this familiar's creator panel; no global site UI changes.
   root.addEventListener('keydown',event=>{
-   if(event.key==='Escape'&&root.getElementById('panel')?.classList.contains('open')){
+   if(event instanceof KeyboardEvent&&event.key==='Escape'&&root.getElementById('panel')?.classList.contains('open')){
     const close=root.getElementById('close-panel') as HTMLButtonElement|null
     if(close){event.stopPropagation();close.click()}
    }
