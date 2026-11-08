@@ -468,6 +468,89 @@ const LAYOUT_STYLE=String.raw`
  .grimoire-layout>.content:has(.grimoire-conversation){min-height:0}
 }
 
+
+/* Grimório 2.2: compact header controls and a right-side training drawer.
+   Only Alquimago's shadow DOM is styled; portfolio layout is untouched. */
+:host([data-public-mode="false"]) .grimoire-conversation{position:relative!important}
+:host([data-public-mode="false"]) .grimoire-conversation-header{
+ flex-wrap:wrap;align-items:center;gap:8px 12px!important;padding:12px 20px!important
+}
+.grimoire-chat-actions{display:flex;align-items:center;gap:6px;margin-left:auto;flex:0 0 auto}
+.grimoire-chat-action{
+ appearance:none;cursor:pointer;border:1px solid #8e66ac;background:#332143;color:#efdafa;
+ border-radius:9px;padding:7px 10px;font:650 11px/1.3 system-ui;white-space:nowrap
+}
+.grimoire-chat-action:hover,.grimoire-chat-action[aria-pressed="true"]{
+ background:#6d4590;border-color:#c69af2;color:#fff
+}
+.grimoire-chat-action:focus-visible,.grimoire-drawer-close:focus-visible{
+ outline:2px solid #efd0ff;outline-offset:2px
+}
+:host([data-public-mode="false"]) .grimoire-conversation .chat-history{
+ flex:1 1 auto!important;min-height:0!important
+}
+.grimoire-side-panel{
+ display:flex;flex-direction:column;position:absolute;top:0;bottom:0;right:0;
+ width:min(430px,100%);max-width:100%;min-width:0;
+ background:linear-gradient(150deg,#281935 0%,#171022 75%);
+ border-left:1px solid #a878c4;box-shadow:-16px 0 42px #080412b3;
+ z-index:9;overflow:hidden;opacity:0;visibility:hidden;
+ transform:translateX(101%);pointer-events:none;
+ transition:transform .22s ease,opacity .22s ease,visibility .22s
+}
+.grimoire-side-panel.is-open{
+ transform:translateX(0);opacity:1;visibility:visible;pointer-events:auto
+}
+.grimoire-side-header{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;
+ flex:0 0 auto;padding:16px 18px;background:#322140;
+ border-bottom:1px solid #795499;color:#f8e8ff;font:700 14px system-ui
+}
+.grimoire-drawer-close{
+ appearance:none;border:1px solid #9066b0;background:#412853;
+ border-radius:10px;min-width:33px;height:33px;color:#f8eaff;cursor:pointer
+}
+.grimoire-panel-ai,.grimoire-panel-training{
+ min-height:0;overflow-y:auto;overscroll-behavior:contain;
+ padding:15px 18px 22px;flex:1 1 auto;color:#e5cfef;font:12px/1.55 system-ui
+}
+.grimoire-panel-ai>p,.grimoire-training-intro{
+ margin:0 0 14px;padding:10px 12px;border-radius:10px;
+ border:1px solid #76518d;background:#342248;color:#dfc8ec
+}
+.grimoire-side-panel:not([data-mode="ia"]) .grimoire-panel-ai,
+.grimoire-side-panel:not([data-mode="teach"]) .grimoire-panel-training{display:none!important}
+.grimoire-panel-training .neural-lesson,.grimoire-panel-training .reviewed-learning{
+ display:block;margin:9px 0 14px!important;max-width:100%
+}
+.grimoire-panel-training .neural-lesson summary{padding:3px 0;line-height:1.5}
+.grimoire-panel-training .learning-options{
+ grid-template-columns:repeat(2,minmax(0,1fr));max-height:none!important;overflow:visible!important
+}
+.grimoire-panel-training .learning-option{overflow-wrap:anywhere}
+.grimoire-panel-training .neural-teach{display:block!important}
+.grimoire-panel-training .neural-teach .learning-controls{margin-bottom:12px}
+.grimoire-panel-ai .arcane-ai-consent{
+ display:flex;align-items:flex-start;margin:10px 0!important;padding:12px!important
+}
+.grimoire-panel-training .reviewed-learning textarea{min-height:96px}
+:host([data-public-mode="false"]) .panel:has(.grimoire-conversation)>.feedback{display:none!important}
+@media(max-width:930px){
+ .grimoire-answer-source{display:none!important}
+ .grimoire-chat-actions{gap:5px}
+ .grimoire-chat-action{padding:7px 9px}
+}
+@media(max-width:760px){
+ .grimoire-chat-actions{width:100%;justify-content:flex-end}
+ .grimoire-side-panel{width:100%;border-left:0}
+ .grimoire-conversation-header{padding:10px 12px!important}
+ .grimoire-chat-action{font-size:11px}
+ .grimoire-panel-ai,.grimoire-panel-training{padding:12px 14px 18px}
+}
+@media(prefers-reduced-motion:reduce){
+ .grimoire-side-panel{transition:none!important}
+}
+
 `;
 let skinAvailable=false
 const observedRoots=new WeakSet<ShadowRoot>()
@@ -528,21 +611,20 @@ async function checkSkinAvailability(){
   if(root)refreshSkinUI(root)
  }
 }
+const grimoireDrawerState=new WeakMap<ShadowRoot,'ia'|'teach'|null>()
 function enhanceGrimoire(root:ShadowRoot){
  const panel=root.getElementById('panel')
  const tabs=root.getElementById('tabs')
  const content=root.getElementById('content')
  const feedback=root.getElementById('feedback')
  if(!panel||!tabs||!content)return
- // Build the two-column layout ONCE. The independent Alquimago widget keeps
- // its original DOM nodes, event listeners, and render() references intact.
+ // Keep the widget's original nodes and delegated event listeners intact.
  if(!panel.querySelector(':scope > .grimoire-layout')){
   const layout=document.createElement('div')
   layout.className='grimoire-layout'
   panel.insertBefore(layout,feedback)
   layout.append(tabs,content)
  }
- // Creator tools are not exposed to public visitors.
  if(root.host.getAttribute('data-public-mode')!=='false')return
  panel.setAttribute('role','dialog')
  panel.setAttribute('aria-label','Grimório do Alquimago')
@@ -578,7 +660,6 @@ function enhanceGrimoire(root:ShadowRoot){
   })
   header.insertBefore(resize,root.getElementById('close-panel'))
  }
- // Keep the familiar's own tab labels. Icons are visual assistance only.
  const icons=['✦','◈','↗','▣','◎','◇']
  for(const button of tabs.querySelectorAll<HTMLButtonElement>('button[data-tab]')){
   if(button.querySelector('.grimoire-nav-icon'))continue
@@ -589,8 +670,7 @@ function enhanceGrimoire(root:ShadowRoot){
   icon.textContent=icons[idx]||'✧'
   button.prepend(icon)
  }
- // The chat content is recreated on every Alquimago render. Reassemble it
- // without cloning nodes, preserving form events and reviewed teaching inputs.
+ // The native Alquimago rebuilds the active tab after each message.
  if(content.querySelector(':scope > .grimoire-conversation'))return
  const history=content.querySelector<HTMLElement>(':scope > .chat-history')
  const form=content.querySelector<HTMLFormElement>('#alquimago-chat-form')
@@ -603,36 +683,88 @@ function enhanceGrimoire(root:ShadowRoot){
  const heading=document.createElement('div')
  heading.className='grimoire-conversation-title'
  const kicker=document.createElement('span')
- kicker.textContent='CONVERSA LOCAL'
+ kicker.textContent='CONVERSA ATIVA'
  const headline=document.createElement('strong')
- headline.textContent='Mensagens & aprendizado'
+ headline.textContent='Converse com o Alquimago'
  heading.append(kicker,headline)
  const source=document.createElement('span')
  source.className='grimoire-answer-source'
  source.textContent=(root.host as HTMLElement & {lastAnswerSource?:string}).lastAnswerSource||'Cérebro local'
- conversationHeader.append(heading,source)
+ const actions=document.createElement('div')
+ actions.className='grimoire-chat-actions'
+ const makeAction=(label:string,title:string,action:string)=>{
+  const button=document.createElement('button')
+  button.type='button';button.textContent=label;button.title=title
+  button.className='grimoire-chat-action'
+  button.setAttribute('aria-label',title)
+  button.dataset.grimoireAction=action
+  return button
+ }
+ const ai=makeAction('IA','Professor Gemini (opcional)','ia')
+ const teach=makeAction('Ensinar','Ensinar significados, tom e conhecimento','teach')
+ const clear=makeAction('Limpar','Limpar somente a conversa; preservar o aprendizado','clear')
+ clear.dataset.action='clear-chat' // handled by the Alquimago's own event delegation
+ actions.append(ai,teach,clear)
+ conversationHeader.append(heading,source,actions)
  const composer=document.createElement('div')
  composer.className='grimoire-composer'
  const formWrapper=form.parentElement
  if(formWrapper&&content.contains(formWrapper))composer.append(formWrapper)
- const quickReplies=content.querySelector('.chat-suggestions')
- const repliesWrapper=quickReplies?.parentElement
- if(repliesWrapper&&content.contains(repliesWrapper))composer.append(repliesWrapper)
- const tools=document.createElement('details')
- tools.className='grimoire-mentor'
- const toolsSummary=document.createElement('summary')
- toolsSummary.textContent='✧ Professor Gemini, memória e treinamento'
- tools.append(toolsSummary)
- // Preserve the EXACT inputs from the widget; don't duplicate IDs or
- // introduce a second teaching/approval action.
+ const suggestions=content.querySelector('.chat-suggestions')
+ const suggestionsWrapper=suggestions?.parentElement
+ if(suggestionsWrapper&&content.contains(suggestionsWrapper))composer.append(suggestionsWrapper)
+ // Side drawer overlays the right edge and never shortens chat history.
+ const drawer=document.createElement('aside')
+ drawer.className='grimoire-side-panel'
+ drawer.setAttribute('aria-label','Ferramentas de aprendizado do Alquimago')
+ const drawerHeader=document.createElement('div')
+ drawerHeader.className='grimoire-side-header'
+ const drawerHeading=document.createElement('strong')
+ const close=document.createElement('button')
+ close.type='button';close.className='grimoire-drawer-close'
+ close.textContent='✕';close.title='Fechar ferramentas'
+ close.setAttribute('aria-label','Fechar ferramentas')
+ drawerHeader.append(drawerHeading,close)
+ const aiPanel=document.createElement('section')
+ aiPanel.className='grimoire-panel-ai'
+ const aiIntro=document.createElement('p')
+ aiIntro.textContent='O Gemini é um professor opcional: só consulto quando não encontro uma resposta local. Suas explicações precisam ser aprovadas antes de virar memória.'
+ aiPanel.append(aiIntro)
+ const trainingPanel=document.createElement('section')
+ trainingPanel.className='grimoire-panel-training'
+ const trainingIntro=document.createElement('p')
+ trainingIntro.className='grimoire-training-intro'
+ const lastText=(root.host as HTMLElement & {lastUserText?:string}).lastUserText||''
+ trainingIntro.textContent=lastText?'Última mensagem: “'+lastText.slice(0,155)+'”':'Envie uma mensagem no chat para ensinar o significado dela.'
+ trainingPanel.append(trainingIntro)
+ // Move native controls; do not clone, duplicate ids, or bypass lesson review.
  for(const item of Array.from(content.children)){
-  if(item===history||item===formWrapper||item===repliesWrapper)continue
-  tools.append(item)
+  if(item===history||item===formWrapper||item===suggestionsWrapper)continue
+  const hasIA=item.classList.contains('arcane-ai-consent')||Boolean(item.querySelector('.arcane-ai-consent'))
+  const hasTraining=item.classList.contains('neural-lesson')||
+    item.classList.contains('reviewed-learning')||Boolean(item.querySelector('.neural-lesson'))
+  if(hasIA&&!hasTraining)aiPanel.append(item)
+  else trainingPanel.append(item)
  }
- tools.open=Boolean(tools.querySelector<HTMLTextAreaElement>('#lesson-answer')?.value)
- conversation.append(conversationHeader,history,composer)
- if(tools.childElementCount>1)conversation.append(tools)
+ drawer.append(drawerHeader,aiPanel,trainingPanel)
+ const showMode=(mode:'ia'|'teach'|null)=>{
+  grimoireDrawerState.set(root,mode)
+  drawer.classList.toggle('is-open',mode!==null)
+  drawer.setAttribute('data-mode',mode||'closed')
+  drawerHeading.textContent=mode==='ia'?'IA · Professor Gemini':'Ensinar Alquimago'
+  ai.setAttribute('aria-pressed',String(mode==='ia'))
+  teach.setAttribute('aria-pressed',String(mode==='teach'))
+  if(mode!==null)close.focus()
+ }
+ ai.addEventListener('click',()=>showMode(grimoireDrawerState.get(root)==='ia'?null:'ia'))
+ teach.addEventListener('click',()=>showMode(grimoireDrawerState.get(root)==='teach'?null:'teach'))
+ close.addEventListener('click',()=>showMode(null))
+ conversation.append(conversationHeader,history,composer,drawer)
  content.append(conversation)
+ const current=grimoireDrawerState.get(root)||null
+ // The professor's pending explanation remains discoverable for approval.
+ const answer=trainingPanel.querySelector<HTMLTextAreaElement>('#lesson-answer')
+ showMode(answer?.value?'teach':current)
  history.scrollTop=history.scrollHeight
 }
 
@@ -650,7 +782,14 @@ function styleAlquimago(){
   shadowObserver.observe(root,{childList:true,subtree:true})
   // Escape closes only this familiar's creator panel; no global site UI changes.
   root.addEventListener('keydown',event=>{
-   if(event instanceof KeyboardEvent&&event.key==='Escape'&&root.getElementById('panel')?.classList.contains('open')){
+   if(!(event instanceof KeyboardEvent)||event.key!=='Escape')return
+   const drawer=root.querySelector('.grimoire-side-panel.is-open')
+   if(drawer){
+    (drawer.querySelector('.grimoire-drawer-close') as HTMLButtonElement|null)?.click()
+    event.stopPropagation()
+    return
+   }
+   if(root.getElementById('panel')?.classList.contains('open')){
     const close=root.getElementById('close-panel') as HTMLButtonElement|null
     if(close){event.stopPropagation();close.click()}
    }
