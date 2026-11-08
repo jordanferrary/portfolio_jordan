@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { defineConfig } from 'vite'
+import { defineConfig,type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -51,7 +51,7 @@ function socialMetadata(){
 }
 
 
-function buildDiagnostic(){
+function buildDiagnostic():Plugin{
  return {
   name:'jf-build-diagnostic',
   generateBundle(){
