@@ -1,7 +1,7 @@
 {
   "version": "0.9.0",
   "upstream": "jordanferrary/alquimago",
-  "bundleBlobSha": "ab0ad20ca6fd5b34ade91348bc9821763dde017a",
-  "note": "Assistência contextual local: orientar pelo Local Studio, não por arquivos-fonte; Gemini recebe mapa de ferramentas reais.",
+  "bundleBlobSha": "68ddf7a9bc6a9eada6ea810efe2f91e26ae50c50",
+  "note": "Grimório: perguntas sobre treinamento, lições e estado local respondidas pelo Alquimago sem Gemini. UI do Local Studio reorganizada.",
   "source": "Alquimago · cérebro local prioritário e lições aprovadas"
 }
