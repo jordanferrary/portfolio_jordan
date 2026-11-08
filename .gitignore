@@ -3,3 +3,9 @@ dist/
 .env
 .env.local
 .DS_Store
+
+# Conteúdo de trabalho e segredos não versionáveis
+.env.*
+!.env.example
+private/
+secrets/
