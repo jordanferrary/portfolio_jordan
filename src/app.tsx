@@ -48,6 +48,7 @@ export function App(){
  const [mediaManagerOpen,setMediaManagerOpen]=useState(false)
  const [skin3DOpen,setSkin3DOpen]=useState(false)
  const [alquimagoVisible,setAlquimagoVisible]=useState<boolean|null>(null)
+ const [publishedAlquimagoVisible,setPublishedAlquimagoVisible]=useState<boolean|null>(null)
  // A creator can keep the Studio familiar independently of public visibility.
  const [studioFamiliarVisible,setStudioFamiliarVisible]=useState(()=>{
   try{return localStorage.getItem('jf-alquimago-studio-visible')!=='false'}
@@ -144,13 +145,17 @@ export function App(){
      if(typeof config.appearance?.visible==='boolean')published=config.appearance.visible
     }
    }catch{/* A missing config keeps the historical visible default. */}
-   if(active)setAlquimagoVisible(readAlquimagoVisibilityDraft()??published)
+   if(active){
+    setPublishedAlquimagoVisible(published)
+    setAlquimagoVisible(readAlquimagoVisibilityDraft()??published)
+   }
   }
   void load()
   return()=>{active=false}
  },[])
  useEffect(()=>{
-  const show=editing?studioFamiliarVisible:alquimagoVisible
+  // Unpublished Studio drafts must never override the public site.
+  const show=editing?studioFamiliarVisible:publishedAlquimagoVisible
   document.documentElement.dataset.alquimagoVisible=show===null?'pending':String(show)
   if(show===false){
    // Remove listeners and animation when hidden in this particular context.
@@ -159,7 +164,7 @@ export function App(){
    const api=(window as Window&{Alquimago?:{mount:(target:HTMLElement,mode:'web')=>HTMLElement}}).Alquimago
    if(api&&!document.querySelector('alquimago-familiar'))api.mount(document.body,'web')
   }
- },[editing,studioFamiliarVisible,alquimagoVisible])
+ },[editing,studioFamiliarVisible,publishedAlquimagoVisible])
  useEffect(()=>{
   // Use the actual release SHA for the script URL. Cloudflare builds do not
   // receive VITE_BUILD_SHA, and a fixed fallback previously froze the cache.
