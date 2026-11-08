@@ -23,6 +23,8 @@ jobs:
       - run: npm run test:studio
       - name: Verify GitHub App and generative AI security
         run: node --test auth-worker/tests/*.test.mjs
+      - name: Verify Cloudflare Gemini image proxy
+        run: npm run test:assistant
       - name: Prepare social preview and favicon from published content
         run: |
           python3 -m pip install --disable-pip-version-check Pillow

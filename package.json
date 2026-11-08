@@ -10,7 +10,8 @@
     "sync:alquimago": "node scripts/sync-alquimago.mjs",
     "prebuild": "node scripts/sync-alquimago.mjs",
     "build": "tsc -b && vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "test:assistant": "node --test functions/api/*.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",

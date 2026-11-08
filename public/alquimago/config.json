@@ -68,6 +68,14 @@
       "Respeite o visual atual e o fluxo de publicação existente.",
       "Só leia recursos públicos explicitamente listados.",
       "Não envie tokens ou informações privadas para modelos de IA."
+    ],
+    "spotlights": [
+      {
+        "title": "Frankie",
+        "message": "Frankie is stealing the spotlight again. Honestly, can you blame him?",
+        "videoMessage": "Frankie looks amazing, right? Try the video player to see more!",
+        "hoverMessage": "Frankie is quite the star, huh? Go on, take a closer look!"
+      }
     ]
   },
   "language": {
