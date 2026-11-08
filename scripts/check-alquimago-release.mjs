@@ -30,9 +30,17 @@ for(const feature of [
  // grounded short follow-ups must ship in the compiled website artifact.
  'const NEURAL_PROTOTYPES_LIMIT=64', 'const LESSONS_LIMIT=128',
  'const TEACHING_EXAMPLES_LIMIT = 160',
- 'function recallLessonFollowup(', 'plasticSynapses', 'eligibility.fill(0)'
+ 'function recallLessonFollowup(', 'plasticSynapses', 'eligibility.fill(0)',
+ // The original animated robot must never be replaced by the wizard fallback.
+ 'class="alquimago-orb"', 'class="orb-headset-left"',
+ 'class="orb-headset-right"', 'orb-expression-serene',
+ 'orb-expression-surprised', 'orb-expression-talk',
+ 'function createAffect(', 'function setAffectMusic(',
+ 'this.$character.innerHTML=ROBOT_SVG'
 ]){
  assert.ok(text.includes(feature),'Funcionalidade ausente no bundle: '+feature);
 }
+assert.ok(!text.includes('id="arc-hat"')&&!text.includes('class="arc-sigils"'),
+  'A antiga skin de maguinho foi incluída indevidamente no bundle.');
 new Function(text); // syntax validation only; no DOM required
 console.log('Alquimago '+marker.version+' liberado e íntegro: '+sha.slice(0,12));
