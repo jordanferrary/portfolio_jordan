@@ -1,7 +1,7 @@
 {
   "version": "0.9.0",
   "upstream": "jordanferrary/alquimago",
-  "bundleBlobSha": "07f1912b5f27823fab514fc8aa077c7f5581c75b",
+  "bundleBlobSha": "2771c6fee4545f177897bf30aa78151d1f470df6",
   "note": "Manifesto do pacote versionado. No deploy, o workflow recompila o Alquimago da origem e recalcula seu hash automaticamente.",
-  "source": "Alquimago v0.9 verificado e sincronizado"
+  "source": "Alquimago v0.9 • balão estável e controle de visibilidade pelo Studio"
 }
