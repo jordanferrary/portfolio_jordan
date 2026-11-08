@@ -2401,6 +2401,7 @@ const STYLE = `
 .character[data-expression]:not([data-expression="idle"]) .orb-expression-idle{opacity:0}
 .character[data-expression="idle"] .orb-expression-idle,
 .character[data-expression="breath"] .orb-expression-breath,
+.character[data-expression="serene"] .orb-expression-serene,
 .character[data-expression="blink"] .orb-expression-blink,
 .character[data-expression="happy"] .orb-expression-happy,
 .character[data-expression="excited"] .orb-expression-excited,
@@ -2445,6 +2446,11 @@ const STYLE = `
 .character[data-expression="sad"] .orb-robot{animation:orb-sigh 4.6s ease-in-out infinite}
 .character[data-expression="tired"] .orb-robot{animation:orb-sigh 5s ease-in-out infinite}
 .character[data-expression="sleep"] .orb-robot{animation:orb-breath 6s ease-in-out infinite}
+.character[data-expression="serene"] .orb-robot{animation:orb-breath 6s ease-in-out infinite}
+.character[data-expression="serene"] .orb-crest{animation:orb-twinkle 6s ease-in-out infinite}
+.character[data-music="playing"] .orb-audio-bars{animation:orb-neon 3.6s ease-in-out infinite}
+.character[data-music="playing"] .orb-orbit{animation:orb-orbit-shimmer 11s ease-in-out infinite}
+.character[data-music="playing"] .orb-shadow-ring{animation:orb-neon 7s ease-in-out infinite}
 .character[data-expression="pet"] .orb-crest,
 .character[data-expression="love"] .orb-crest{animation:orb-twinkle .64s ease-in-out infinite}
 .character[data-expression="curious"] .orb-robot,
@@ -2482,6 +2488,10 @@ const orbNeutral=orbEye(60)+orbEye(100);
 const ORB_EXPRESSIONS={
  idle:orbFace(orbNeutral,orbSmile),
  breath:orbFace(orbClosed,orbSmile),
+ serene:orbFace(
+  orbArc('M50 82q10 8 20 0','#a9faff',3)+orbArc('M90 82q10 8 20 0','#a9faff',3),
+  orbMouth('M73 100q7 10 14 0'),
+  '<path d="M49 95q5 3 11 0m40 0q5 3 11 0" fill="none" stroke="#e79bf1" stroke-width="1.4" opacity=".75"/>'),
  blink:orbFace(orbClosed,orbSmile),
  happy:orbFace(orbArc('M51 82q9-11 18 0')+orbArc('M91 82q9-11 18 0'),
   '<path d="M70 98q10 20 20 0Z" fill="#ffa0e7" stroke="#ffcefb" stroke-width="2"/>'),
