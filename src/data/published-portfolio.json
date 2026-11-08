@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-08T00:49:04.401Z-8e84c0f6-f66a-4c7c-99ee-af04d52be469",
+  "revision": "2026-11-08T20:09:22.098Z-c3b66272-97f5-48e6-beea-27b521793e1d",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -65,6 +65,20 @@
         "medium": "site://images/studio/fb0b178ec424e7d181edaba141228021a6b5eabe1da953bb457de2c690ff3711.webp",
         "mediumWidth": 960,
         "largeWidth": 1200
+      },
+      "site://images/studio/1cffe372d322ecc7528be3784decf574778fe0d553e9c5dfa4b6e496cbf7a12f.webp": {
+        "small": "site://images/studio/2ee6d42b7480163a9c04cf71c52efbab724a41f656a6b4170c28ee837813b2c9.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/b01dc384f75e71cc0160d3917e417bf8d7e7da7c9f4c0692b3b6036c9f3dfed1.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2048
+      },
+      "site://images/studio/ef9429ce7080b73929382e233e56d13b0f566a85981d4ff7dcb1f263d8d77620.webp": {
+        "small": "site://images/studio/45deee7d11b60f6d00870a18da4869a896a9faaeca2c94d31db4fdd66cd5a4c5.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/25ade03e6a48b24e17c03757667cd61ef0946288502ca2b3c8acdf082f413e5b.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2048
       }
     },
     "customPages": [],
@@ -150,8 +164,8 @@
         ],
         "coverFocus": {
           "x": 50,
-          "y": 50,
-          "zoom": 1
+          "y": 52,
+          "zoom": 1.35
         },
         "heroFocus": {
           "x": 50,
@@ -161,23 +175,69 @@
       },
       {
         "id": "project-mw4y57pk",
-        "title": "frankie",
-        "category": "Props",
+        "title": "The Haunted Catch",
+        "category": "Stylized",
         "year": "2026",
-        "image": "https://i.pinimg.com/736x/d4/f1/97/d4f1979af7ab7c8b4b3ace345adda3ff.jpg",
-        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.",
-        "tools": [],
+        "image": "site://images/studio/1cffe372d322ecc7528be3784decf574778fe0d553e9c5dfa4b6e496cbf7a12f.webp",
+        "description": "A spooky little hammerhead shark based on a concept by Oscar Ibanez. I had a lot of fun bringing this character into 3D and playing around with its shapes, expressions, and Halloween-inspired details.",
+        "tools": [
+          "Zbrush",
+          "Blender"
+        ],
         "featured": true,
-        "blocks": [],
+        "blocks": [
+          {
+            "id": "b-dkwdth8hamo",
+            "type": "image",
+            "content": "site://images/studio/1cffe372d322ecc7528be3784decf574778fe0d553e9c5dfa4b6e496cbf7a12f.webp",
+            "slideAutoplay": false,
+            "slideEffect": "fade",
+            "slideInterval": 5000,
+            "slideHeight": 420,
+            "slideShowPauseButton": false
+          },
+          {
+            "id": "b-0cn08k0h0ybe",
+            "type": "divider",
+            "content": "",
+            "slideAutoplay": false,
+            "slideEffect": "fade",
+            "slideInterval": 5000,
+            "slideHeight": 420,
+            "slideShowPauseButton": false,
+            "dividerIcon": "sparkles",
+            "dividerStyle": "glow"
+          },
+          {
+            "id": "b-tlcl855ddml",
+            "type": "image",
+            "content": "site://images/studio/ef9429ce7080b73929382e233e56d13b0f566a85981d4ff7dcb1f263d8d77620.webp",
+            "slideAutoplay": false,
+            "slideEffect": "fade",
+            "slideInterval": 5000,
+            "slideHeight": 420,
+            "slideShowPauseButton": false
+          },
+          {
+            "id": "b-xn0y74fl8mk",
+            "type": "text",
+            "content": "# The Haunted Catch\n\nThis is my take on a hammerhead shark character originally designed by Oscar Ibanez.\n\nI really liked the concept and thought it would be a fun challenge to bring it into 3D. I focused on keeping the character's exaggerated shapes and personality while adding my own touches through the sculpting, textures, and final presentation.\n\nI had a lot of fun working on this one, especially with the facial expression, the little details, and the Halloween atmosphere.\n\n**Original Concept:** Oscar Ibanez  \n**3D Modeling & Texturing:** Jordan Ferrary",
+            "slideAutoplay": false,
+            "slideEffect": "fade",
+            "slideInterval": 5000,
+            "slideHeight": 420,
+            "slideShowPauseButton": false
+          }
+        ],
         "processSteps": [],
         "coverFocus": {
-          "x": 63.13672922252011,
-          "y": 27.59900331147328,
-          "zoom": 1
+          "x": 38,
+          "y": 22,
+          "zoom": 1.16
         },
         "heroFocus": {
-          "x": 53.48525469168901,
-          "y": 22.46767947572237,
+          "x": 55.36444932256149,
+          "y": 18.17237746229955,
           "zoom": 1
         }
       },
