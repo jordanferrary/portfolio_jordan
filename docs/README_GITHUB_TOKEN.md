@@ -16,6 +16,12 @@ Este documento é para o proprietário. A interface do Studio também oferece es
 Não é possível recuperar um token já criado. Acesse [Gerenciar tokens fine-grained](https://github.com/settings/personal-access-tokens), avalie quais ainda são necessários, revogue os que não utiliza mais e gere um novo seguindo os passos acima.
 
 ## Cuidados essenciais
-O PIN local não substitui credenciais. Quem obtiver um PAT válido com permissão de escrita pode utilizá-lo, mesmo sem a interface do portfólio. Não coloque o token em código, prints, mensagens, README ou arquivos publicados. O editor guarda o valor apenas em memória enquanto realiza a publicação e o envia para `api.github.com`; não o salva em localStorage ou no backup ZIP.
+O PIN local não substitui credenciais. Quem obtiver um PAT válido com permissão de escrita pode utilizá-lo, mesmo sem a interface do portfólio. Não coloque o token em código, prints, mensagens, README ou arquivos publicados. Por padrão, o editor conserva o token apenas em memória durante a publicação. Opcionalmente, o proprietário pode clicar em **Guardar token criptografado**, salvando um ciphertext AES-256-GCM no IndexedDB com chave WebCrypto não exportável. O valor não é salvo no localStorage ou nos backups do portfólio. O token descriptografado só é usado durante a sessão de publicação, mas scripts da mesma origem podem acessar a autorização. A GitHub App com Worker é a alternativa de maior isolamento.
 
 Leia a [documentação oficial do GitHub](https://docs.github.com/pt/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) para detalhes atualizados da interface.
+
+## Guardar a autorização apenas uma vez
+
+Em **Publicar → Cofre do Alquimago**, insira a credencial no campo protegido e clique **Guardar token criptografado**. O Studio só salva após verificar a conta e as permissões de escrita. Nas próximas publicações, carrega e verifica a credencial automaticamente. O comando **“vai comprar pão”** abre a revisão e consulta apenas seu status, sem ler nem divulgar o valor no chat.
+
+Se o GitHub rejeitar a credencial por expiração ou revogação, o Alquimago avisa que “o pão mofou” e pergunta se pode descartá-la. Use **Descartar token** com confirmação e informe outra. Falhas temporárias de rede não apagam a credencial automaticamente. Descartar no navegador **não revoga** a autorização no GitHub, que deve ser revogada separadamente caso necessário.
