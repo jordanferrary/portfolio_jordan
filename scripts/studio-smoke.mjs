@@ -7,6 +7,7 @@ import assert from 'node:assert/strict'
 import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises'
 import {join,resolve} from 'node:path'
 import {pathToFileURL,fileURLToPath} from 'node:url'
+import {createAffect,affectSignal,setAffectMusic,affectTick} from '../src/lib/alquimago-affect.mjs'
 import {build} from 'esbuild'
 import React from 'react'
 import {renderToStaticMarkup} from 'react-dom/server'
@@ -82,6 +83,23 @@ try{
   }
   assert.match(familiarCode,/data-expression/)
   assert.match(familiarCode,/prefers-reduced-motion/)
+ })
+ check('Local affect engine responds to real music without hardcoded emotion mapping',()=>{
+  const start=10000
+  const neutral=createAffect(99,start)
+  const music=affectTick(setAffectMusic(neutral,true,start+6000),start+6000)
+  assert.equal(music.expression,'serene')
+  assert.ok(music.calm>neutral.calm)
+  assert.ok(music.tension<neutral.tension)
+  const musicAndPet=affectTick(affectSignal(music,'pet',start+8000),start+8000)
+  assert.equal(musicAndPet.expression,'pet')
+  const neutralSelection=affectTick(affectSignal(neutral,'angry',start+6000),start+6000)
+  const musicSelection=affectTick(affectSignal(music,'angry',start+8000),start+8000)
+  assert.equal(neutralSelection.expression,'angry')
+  assert.notEqual(musicSelection.expression,'angry')
+  const stopped=affectTick(setAffectMusic(music,false,start+10000),start+14000)
+  assert.equal(stopped.music,false)
+  assert.notEqual(stopped.expression,'serene')
  })
  check('Shape Key playback profiles support loop and one-shot independently',()=>{
   const base=app.normalizeAnimationProfile({})
