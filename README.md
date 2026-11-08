@@ -108,3 +108,11 @@ Em **Local Studio → Publicar**, informe um token restrito de GitHub no campo p
 O comando **“vai comprar pão”** abre o diálogo de revisão. O Alquimago recebe somente o **status** do token, nunca o valor: se não houver autorização, diz que falta o dinheiro; se estiver válida, que há dinheiro guardado; se expirar, pergunta se pode descartar o pão mofado. A publicação sempre exige revisão e confirmação. **Não cole o token no chat do Alquimago ou em conversas externas.**
 
 O cofre é opcional. Se o proprietário preferir, pode usar o token sem guardá-lo ou configurar a [GitHub App com sessão protegida no Worker](auth-worker/README.md), que é mais segura. A criptografia local evita leitura casual do armazenamento, mas scripts maliciosos na mesma origem ainda poderiam usar a chave. Em outro navegador ou domínio, será necessária nova autorização. Execute `npm run test:github-vault` para validar o cofre.
+
+## Otimização de carregamento e controle de limites (novembro de 2026)
+
+Auditoria inicial: **49,2 MiB de arquivos na revisão analisada**, concentrados em **três áudios (~40,7 MiB)**; aproximadamente **7,2 MiB de imagens**. O tamanho de todas as revisões históricas do Git pode ser maior. A Home não deve baixar músicas até alguém apertar **Play**. Galeria e páginas de projeto têm importação dinâmica, imagens abaixo da dobra usam lazy loading e as principais usam prioridade alta. CSS de ferramentas específicas do Studio e do visualizador 3D é carregado apenas quando necessário.
+
+Após `npm run build`, execute `npm run audit:size` para medir arquivos de `dist/` e ver os avisos antes de publicar. O GitHub Actions executa essa inspeção automaticamente e interrompe deploys com mídias ou volume muito acima das metas de segurança.
+
+Leia o **[Guia de desempenho, formatos de mídia e limites do GitHub Pages](docs/GUIA_PERFORMANCE_GITHUB_PAGES.md)** para escolher entre importar imagens otimizadas, URLs externas, vídeo incorporado e modelos 3D sob demanda.
