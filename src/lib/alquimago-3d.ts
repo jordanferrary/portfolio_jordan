@@ -764,6 +764,12 @@ function enhanceGrimoire(root:ShadowRoot){
  const current=grimoireDrawerState.get(root)||null
  // The professor's pending explanation remains discoverable for approval.
  const answer=trainingPanel.querySelector<HTMLTextAreaElement>('#lesson-answer')
+ // When the user clicks "Ensinar", the actual multi-select labels are visible
+ // immediately, without opening a second nested disclosure.
+ const teachingDetails=trainingPanel.querySelector<HTMLDetailsElement>('.neural-lesson:not(.reviewed-learning)')
+ if(teachingDetails)teachingDetails.open=true
+ const reviewDetails=trainingPanel.querySelector<HTMLDetailsElement>('.reviewed-learning')
+ if(reviewDetails&&answer?.value)reviewDetails.open=true
  showMode(answer?.value?'teach':current)
  history.scrollTop=history.scrollHeight
 }
