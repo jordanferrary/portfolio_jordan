@@ -369,6 +369,8 @@ function respondToChat(input,context={}){
  if(calculation)return {reply:'O resultado é '+calculation.text+'. ✦',intent:'math'};
  const grounded=answerFromKnowledge(raw,{knowledge:context.knowledge,lastProjectId:context.lastProjectId,focusTitle:context.focusTitle});
  if(grounded)return grounded;
+ if(/\b(o que (voce|vc) (pode|consegue|sabe) fazer|o que voce faz|quais (suas|as) (funcoes|habilidades|capacidades)|para que voce serve|como voce funciona)\b/.test(q))
+  return {reply:'Sou o Alquimago! Posso explicar recursos do portfólio, reconhecer projetos públicos, fazer contas simples, mostrar meu estado e reutilizar lições que você aprovou. Quando eu não souber algo, posso consultar o Gemini com sua permissão; a resposta só vira meu conhecimento após sua revisão. ✦',intent:'help'};
  if(context.neuralIntent==='greeting'||/^(?:oi+e*|oie+|ola+|eai+|eae+|opa+|salve+)[!?. ]*$/.test(q)||/\b(bom dia|boa tarde|boa noite)\b/.test(q))
   return {reply:'Oi! Sou '+name+'. Conheço os projetos públicos deste site, posso resolver contas e sugerir melhorias. Diga o nome de uma obra ou faça uma pergunta.',intent:'greeting'};
  if(context.neuralIntent==='identity'||/\b(quem (e|eh) voce|seu nome|qual (e|eh) (o )?seu nome|como voce se chama|o que voce (e|eh)|vc (e|eh))\b/.test(q))
@@ -391,8 +393,6 @@ function respondToChat(input,context={}){
   const tip=tips.find(t=>!['route','studio'].includes(t.id))||tips[0];
   return {reply:tip?'Encontrei uma observação sobre '+page+': '+tip.title+'. '+tip.description+' Quer que eu mostre como continuar com uma IA?':'Estou acompanhando a seção '+page+'. Posso revisar títulos, imagens e navegação pública; para analisar o código completo, preciso de arquivos autorizados.',intent:'insight',...(tip?{pending:{kind:'ai-handoff'}}:{})};
  }
- if(/\b(o que (voce|vc) (pode|consegue|sabe) fazer|o que voce faz|quais (suas|as) (funcoes|habilidades|capacidades)|para que voce serve|como voce funciona)\b/.test(q))
-  return {reply:'Sou o Alquimago! Posso explicar recursos do portfólio, reconhecer projetos públicos, fazer contas simples, mostrar meu estado e reutilizar lições que você aprovou. Quando eu não souber algo, posso consultar o Gemini com sua permissão; a resposta só vira meu conhecimento após sua revisão. ✦',intent:'help'};
  if(context.neuralIntent==='help'||/\b(ajuda|comandos|o que (faz|sabe)|como funciona)\b/.test(q))
   return {reply:'Posso orientar sobre obras públicas, recursos da página, contas, minhas emoções e memória aprovada. Se o assunto exigir conhecimento novo, consulto o Gemini somente quando habilitado e ofereço a resposta para revisão antes de aprender.',intent:'help'};
  if(context.neuralIntent==='mood'||/\b(triste|feliz|humor|sentindo|emocao)\b/.test(q))
