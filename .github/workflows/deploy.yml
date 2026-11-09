@@ -25,6 +25,8 @@ jobs:
         run: npm run test:visitor-language
       - name: Verify mobile player drawer and familiar visibility
         run: npm run test:mobile-ui
+      - name: Verify recovery from stale JavaScript chunks and render errors
+        run: npm run test:runtime-recovery
       - name: Verify Liquid Glass design tokens and reduced-motion support
         run: npm run test:glass
       - name: Verify GitHub App and generative AI security
