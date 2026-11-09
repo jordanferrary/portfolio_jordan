@@ -10,19 +10,18 @@ import {VISITOR_PHRASES} from './visitor-phrases'
 const CACHE_KEY='jf-public-translation-cache-v1'
 const USAGE_KEY='jf-public-translation-usage-v1'
 const DAY=86_400_000
-const MAX_DAY_CHARS=3900
-const MAX_DAY_CALLS=35
+const MAX_DAY_CHARS=18000
+const MAX_DAY_CALLS=100
 const MAX_CACHE_ENTRIES=200
 const NO_TRANSLATE_SELECTOR=[
  '[translate="no"]','.notranslate','.language-switcher',
  '.editor-overlay','.editor-panel','.studio-dock','.studio-hub',
- '.admin-gate','.gate-overlay','.socials',
+ '.admin-gate','.gate-overlay',
  '.music-card-details strong','.music-card-details span',
  '.music-track-details b','.music-track-details small',
  '.feedback-content small',
- '.brand-wrap','.home-work .work-title','.project-copy b',
- '.project-hero-content h1','.project-artwork-heading h2',
- '.project-artwork-process-grid figcaption',
+ '.brand-wrap',
+
  '.contact-social-card-info strong','.project-hero .tools',
  'input','textarea','select','option','button[contenteditable]',
  '[contenteditable="true"]','pre','code','kbd','samp','script','style','svg','noscript'
@@ -68,7 +67,7 @@ function publicCopy(source:string){
   /[a-zA-ZÀ-ÿ]/.test(clean)&&
   !/^(https?:|site:|mailto:|#\/|www\.)/i.test(clean)&&
   !/^[\d\s.,;/\\+\-|:!?%]+$/.test(clean)&&
-  !/^(Jordan Ferrary|Room of the Palhacito|The Haunted Catch|Oscar Ibanez|GitHub|Instagram|Behance|ArtStation|YouTube|Blender|ZBrush|Krita|Substance Painter)$/i.test(clean)
+  !/^(Jordan Ferrary|Oscar Ibanez|GitHub|Instagram|Behance|ArtStation|YouTube|Blender|ZBrush|Krita|Substance Painter)$/i.test(clean)
 }
 export function localPhrase(source:string,language:VisitorLanguage):string|null{
  if(language==='en')return source
@@ -116,6 +115,22 @@ export async function translatePublicText(source:string,language:VisitorLanguage
  if(!publicCopy(text)||language==='en')return source
  const translatedLocal=localPhrase(text,language)
  if(translatedLocal)return translatedLocal
+ // Keep the artist name intact even inside a sentence not yet in the local phrasebook.
+ // Translate only the surrounding text, never send the name to a translation API.
+ if(/Jordan Ferrary/i.test(text)){
+  const parts=text.split(/(Jordan Ferrary)/gi)
+  const translatedParts:string[]=[]
+  for(const part of parts){
+   if(/^Jordan Ferrary$/i.test(part)){translatedParts.push('Jordan Ferrary');continue}
+   if(!part.trim()){translatedParts.push(part);continue}
+   const core=part.trim()
+   const translated=await translatePublicText(core,language)
+   translatedParts.push(part.replace(core,translated))
+  }
+  const assembled=translatedParts.join('')
+  if(assembled!==text)cacheTranslation(language+':'+text,assembled)
+  return assembled
+ }
  const key=language+':'+text
  if(known[key])return known[key].translated
  const chunks=chunkAtWords(text)
@@ -171,21 +186,29 @@ function applyText(node:Text,language:VisitorLanguage,active:()=>boolean){
  if(known[key]){setValue(known[key].translated);return}
  void translatePublicText(plain,language).then(setValue)
 }
-function translateAttributes(el:Element,language:VisitorLanguage){
+function translateAttributes(el:Element,language:VisitorLanguage,active:()=>boolean){
  if(!allowed(el))return
- for(const attr of ['placeholder','aria-label','title']){
+ for(const attr of ['placeholder','aria-label','title','alt']){
   const current=el.getAttribute(attr)
   if(!current)continue
   let perElement=attributes.get(el)
   if(!perElement){perElement=new Map();attributes.set(el,perElement)}
   let entry=perElement.get(attr)
   if(!entry||entry.shown!==current){entry={source:current,shown:current};perElement.set(attr,entry)}
-  const phrase=entry.source.trim()
-  const value=language==='en'?entry.source:localPhrase(phrase,language)
-  if(value&&entry.shown!==value){
-   el.setAttribute(attr,value)
-   entry.shown=value
+  const original=entry.source
+  const phrase=original.trim()
+  if(!publicCopy(phrase))continue
+  const apply=(translated:string)=>{
+   if(!active()||!el.isConnected||!allowed(el))return
+   const live=attributes.get(el)?.get(attr)
+   if(!live||live.source!==original||el.getAttribute(attr)!==live.shown)return
+   const next=original.replace(phrase,translated)
+   if(next!==live.shown){el.setAttribute(attr,next);live.shown=next}
   }
+  if(language==='en'){apply(phrase);continue}
+  const local=localPhrase(phrase,language)
+  if(local){apply(local);continue}
+  void translatePublicText(phrase,language).then(apply)
  }
 }
 /** Observe React route changes without changing source data or React state. */
@@ -198,7 +221,7 @@ export function observePublicTranslation(root:HTMLElement,language:VisitorLangua
   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT)
   let node:Node|null
   while((node=walker.nextNode()))applyText(node as Text,language,active)
-  for(const el of root.querySelectorAll('[placeholder],[aria-label],[title]'))translateAttributes(el,language)
+  for(const el of root.querySelectorAll('[placeholder],[aria-label],[title],[alt]'))translateAttributes(el,language,active)
  }
  const queue=()=>{
   if(scheduled!==null)return
