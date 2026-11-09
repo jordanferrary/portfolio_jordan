@@ -260,11 +260,13 @@ export function App(){
  useEffect(()=>{
   if(!editing)return
   const onAlquimagoPublish=(event:Event)=>{
-   // A chat command only opens review; it cannot trigger git writes.
-   if(githubPublishOpen)return
+   // Only the exact command submitted inside Alquimago's Studio chat opens this
+   // panel. A visible shortcut, generic browser event, or AI reply cannot.
+   if(githubPublishOpen||!(event instanceof CustomEvent)||
+    event.detail?.source!=='chat'||event.detail?.action!=='review-only')return
    setPublishSource('alquimago')
    setGitHubPublishOpen(true)
-   if(event instanceof CustomEvent&&event.detail?.source==='chat'){
+   {
     void alquimagoPublishTokenVault.inspect().then(status=>{
      // Never expose a PAT, a crypto key, or any credential in public events.
      window.dispatchEvent(new CustomEvent('alquimago:publish-auth-status',{detail:{status:status.status}}))
