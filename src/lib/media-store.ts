@@ -128,7 +128,7 @@ export async function saveUploadedMedia(file:File,folder:string,slot:string):Pro
  const persist=async():Promise<string>=>{
   const catalog=await listMediaAssets()
   // Historical duplicate refs are reused rather than rewritten.
-  const same=catalog.find(a=>a.hash===hash&&a.size===optimized.size&&isLocalMedia(a.ref))
+  const same=catalog.find(a=>a.hash===hash&&a.size===optimized.size&&isLocalMedia(a.ref)&&a.ref.toLowerCase().endsWith('.webp'))
   if(same){await linkAssetToFolder(same.ref,folder);return same.ref}
   // Content-addressed name plus serialized writes prevent simultaneous duplicates.
   await saveMediaBlob(uniqueRef,optimized)
