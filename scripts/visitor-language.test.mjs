@@ -30,7 +30,7 @@ test('IP country chooses a supported visitor language with sensible fallback',as
  assert.equal(lang.languageFromBrowser(['fr-FR','en-US']),'en')
 })
 test('no token, no IP collection, and manual language always has priority',()=>{
- assert.match(geo,/https:\/\/ip\.who\.is\/\?fields=success,country_code/)
+ assert.match(geo,/https:\/\/ipwho\.is\/\?fields=success,country_code/)
  assert.match(geo,/credentials:'omit'/)
  assert.match(geo,/referrerPolicy:'no-referrer'/)
  assert.match(geo,/const GEO_TTL=7\*24\*60\*60\*1000/)
