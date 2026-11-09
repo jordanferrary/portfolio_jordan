@@ -202,19 +202,19 @@ export function GitHubPublishEditor({store,onPublished,onRestore,onExport,onClos
       </details>
       
      </div>
-     {!session.authenticated&&<div className="github-token-vault" aria-label="Cofre de publicação GitHub" style={{margin:'12px 0',padding:'12px',border:'1px solid var(--jf-border, #785c94)',borderRadius:12}}>
-       <p><ShieldCheck size={16}/> <strong>Cofre do Alquimago</strong></p>
-       <p className="editor-help">{vaultBusy?'Verificando o cofre...':vaultStatus.description}</p>
+     {!session.authenticated&&<div className="github-token-vault" aria-label="Cofre de publicação GitHub">
+       <div className="github-token-vault-heading"><ShieldCheck size={17}/><strong>Cofre do Alquimago</strong></div>
+       <p role="status" className="editor-help github-token-vault-status">{vaultBusy?'Verificando o cofre...':vaultStatus.description}</p>
        {vaultStatus.status==='ready'&&<p className="editor-help">Já tenho o dinheiro guardado! Posso reutilizar a autorização, mas cada publicação continua exigindo sua confirmação.</p>}
        {vaultStatus.status==='expired'&&<p role="status" className="editor-help">O pão mofou... posso jogar fora? Descarte a autorização antiga e informe outra.</p>}
        {vaultStatus.status==='forbidden'&&<p role="status" className="editor-help">O token está sem permissão suficiente. Você pode descartá-lo e autorizar outro.</p>}
-       <div className="actions" style={{display:'flex',flexWrap:'wrap',gap:8}}>
-        <button type="button" className="action" onClick={()=>void saveToken()} disabled={busy||vaultBusy||!token.trim()}><ShieldCheck size={15}/>Guardar token criptografado</button>
-        <button type="button" className="action" onClick={()=>void refreshSaved()} disabled={busy||vaultBusy}>Verificar validade</button>
-        <button type="button" className="action" onClick={()=>void forgetSaved()} disabled={busy||vaultBusy||vaultStatus.status==='missing'}><Trash2 size={15}/>Descartar token</button>
+       <div className="github-token-vault-actions">
+        <button type="button" className="github-token-vault-button" onClick={()=>void saveToken()} disabled={busy||vaultBusy||!token.trim()}><ShieldCheck size={15}/>Guardar token criptografado</button>
+        <button type="button" className="github-token-vault-button" onClick={()=>void refreshSaved()} disabled={busy||vaultBusy}>Verificar validade</button>
+        <button type="button" className="github-token-vault-button" onClick={()=>void forgetSaved()} disabled={busy||vaultBusy||vaultStatus.status==='missing'}><Trash2 size={15}/>Descartar token</button>
        </div>
        {authError&&<p role="alert" className="github-publish-error">{authError}</p>}
-       <p className="editor-help">Opcional: o token fica criptografado neste navegador com AES-256-GCM. Não o envie no chat. Scripts deste mesmo site ainda podem acessar a autorização; prefira a conexão GitHub App quando configurada.</p>
+       <p className="editor-help github-token-vault-note">Opcional: o token fica criptografado neste navegador com AES-256-GCM. Não o envie no chat. Scripts deste mesmo site ainda podem acessar a autorização; prefira a conexão GitHub App quando configurada.</p>
       </div>}
       {!session.authenticated&&<label className="github-publish-token-label">{configured?'Alternativa: token temporário':'Token temporário do GitHub'}
       <div className="github-publish-token-control">
