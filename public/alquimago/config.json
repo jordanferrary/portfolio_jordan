@@ -49,7 +49,7 @@
       }
     ],
     "selectedSkin": "padrao",
-    "visible": false
+    "visible": true
   },
   "memory": {
     "namespace": "studio",

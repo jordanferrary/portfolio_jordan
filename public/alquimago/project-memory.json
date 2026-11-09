@@ -1,22 +1,23 @@
 {
   "schema": 2,
-  "updatedAt": "2026-11-08T00:49:04.402Z",
+  "updatedAt": "2026-11-09T11:09:48.031Z",
   "brain": {
     "energy": 100,
-    "curiosity": 68.25000000000007,
-    "focus": 18.96666666666671,
+    "curiosity": 73.70000000000029,
+    "focus": 10.973333333333363,
     "affinity": 57,
-    "xp": 30,
-    "interactions": 7,
+    "xp": 40,
+    "interactions": 8,
     "lastSeen": 1000000000000,
     "sleepUntil": 0,
-    "lastRewardAt": 1794098944402,
+    "lastRewardAt": 1794222588031,
     "lastAction": "publish",
     "lastRewardAction": "publish",
     "rewardedPages": {
       "pub-2026-11-07T18%3A43%3A31.935Z-57e9664a-1587-4bc9-9ff4-2a1c04376bfa": 20764,
       "pub-2026-11-07T21%3A25%3A45.343Z-0f60515e-bd5b-4264-b980-55a8ca82e670": 20764,
-      "pub-2026-11-08T00%3A49%3A04.401Z-8e84c0f6-f66a-4c7c-99ee-af04d52be469": 20765
+      "pub-2026-11-08T00%3A49%3A04.401Z-8e84c0f6-f66a-4c7c-99ee-af04d52be469": 20765,
+      "pub-2026-11-09T11%3A09%3A48.030Z-90ea1d8b-7a08-4de9-8028-6c6da6a462a8": 20766
     }
   },
   "neural": {
@@ -2668,9 +2669,9 @@
   "behavior": {
     "schema": 1,
     "seed": 77,
-    "energy": 57.50000000000015,
-    "curiosity": 51.000000000000085,
-    "stimulation": 29.5,
+    "energy": 44.200000000000095,
+    "curiosity": 47.96000000000015,
+    "stimulation": 20,
     "trust": 45,
     "rewardBias": [
       0,
@@ -2693,7 +2694,7 @@
     "contextWeights": {},
     "adaptation": {
       "quieto": 0,
-      "observar": 0,
+      "observar": 1,
       "dica": 0,
       "investigar": 0,
       "acenar": 0,
@@ -2711,14 +2712,14 @@
     },
     "episodes": [],
     "synapses": {},
-    "lastAction": "quieto",
+    "lastAction": "observar",
     "lastActionAt": 0,
-    "lastDecisionAt": 0,
+    "lastDecisionAt": 1794222581345,
     "lastRewardAt": 0,
     "feedbackCount": 0,
-    "autonomousCount": 0,
-    "lastActiveDay": 20765,
-    "lastCue": ""
+    "autonomousCount": 2,
+    "lastActiveDay": 20766,
+    "lastCue": "project"
   },
   "description": "Memória numérica pública do familiar. Nenhuma mensagem ou token é incluído."
 }

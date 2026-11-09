@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-08T20:50:32.381Z-8ca8ced2-6aab-477a-ab37-7ed82490945e",
+  "revision": "2026-11-09T11:09:48.030Z-90ea1d8b-7a08-4de9-8028-6c6da6a462a8",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -194,9 +194,9 @@
         "featured": true,
         "blocks": [
           {
-            "id": "b-dkwdth8hamo",
+            "id": "b-hz1kx7c54am",
             "type": "image",
-            "content": "site://images/studio/1cffe372d322ecc7528be3784decf574778fe0d553e9c5dfa4b6e496cbf7a12f.webp",
+            "content": "site://images/studio/59bc9ab8406c3cb8961e269c259462b562771cb5fc29d0c7762807c114720b54.webp",
             "slideAutoplay": false,
             "slideEffect": "fade",
             "slideInterval": 5000,
