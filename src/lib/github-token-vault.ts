@@ -115,6 +115,12 @@ export function createGitHubTokenVault({
  async function forget():Promise<void>{
   await getStore().delete(TOKEN_NAME)
  }
+ /** Retire an old credential and its encryption key without touching other vaults. */
+ async function purge():Promise<void>{
+  const db=getStore()
+  await db.delete(TOKEN_NAME)
+  await db.delete(KEY_NAME)
+ }
  async function check(token:string):Promise<GitHubTokenStatus>{
   if(!validTokenShape(token))return status('expired','Token ausente ou com formato inválido.')
   try{
@@ -154,7 +160,7 @@ export function createGitHubTokenVault({
    return status('unavailable','O cofre não pôde ser aberto. Os dados não foram enviados a nenhum serviço.')
   }
  }
- return {load,save,forget,check,inspect}
+ return {load,save,forget,purge,check,inspect}
 }
 
 function validTokenShape(value:unknown):value is string{
