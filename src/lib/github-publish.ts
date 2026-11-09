@@ -218,7 +218,8 @@ export async function publishPortfolioToGitHub(
   page.heroImage=await stage(page.heroImage,'image')
   for(const block of page.blocks){
    if(block.type==='slideshow'&&block.slideItems)for(const slide of block.slideItems)slide.image=await stage(slide.image,'image')
-   // Showcase images are remote URLs; preserve attribution and avoid storing participant artwork.
+   // Interactive showcase images may now be uploaded local WebP assets.
+   if(block.showcaseItems)for(const item of block.showcaseItems)item.image=await stage(item.image,'image')
    if(block.type==='image')block.content=await stage(block.content,'image')
    if(block.media)block.media=await stage(block.media,'image')
    if(block.after)block.after=await stage(block.after,'image')
