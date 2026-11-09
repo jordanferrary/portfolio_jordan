@@ -26,8 +26,6 @@ import {detectCountryByIp,initialLanguage,languageFromCountry,saveLanguageChoice
 import {observePublicTranslation} from './lib/public-page-translation'
 import {AppErrorBoundary} from './components/ui/app-error-boundary'
 import {readAlquimagoVisibilityDraft,writeAlquimagoVisibilityDraft} from './lib/alquimago-visibility'
-import {githubTokenVault,type GitHubTokenCheck} from './lib/github-token-vault'
-import {hasGitHubLogin,readGitHubSession} from './lib/github-auth'
 import type {StudioAction} from './components/sections/studio-dock'
 const StudioDock=lazy(()=>import('./components/sections/studio-dock').then(m=>({default:m.StudioDock})))
 const ImageConverter=lazy(()=>import('./components/sections/image-converter').then(m=>({default:m.ImageConverter})))
@@ -253,24 +251,6 @@ export function App(){
    document.querySelectorAll('alquimago-familiar').forEach(el=>el.remove())
   }
  },[editing,publishedAlquimagoVisible])
- useEffect(()=>{
-  if(!editing)return;
-  const openPublish=(event:Event)=>{
-   setGitHubPublishOpen(true)
-   if(!(event instanceof CustomEvent)||event.detail?.source!=='chat')return
-   void (async()=>{
-    let status:GitHubTokenCheck='missing'
-    try{
-     if(hasGitHubLogin()&&(await readGitHubSession()).authenticated)status='ready'
-     else status=(await githubTokenVault.inspect()).status
-    }catch{status='unavailable'}
-    // Public events carry a *status only*, never a token or session cookie.
-    window.dispatchEvent(new CustomEvent('alquimago:publish-auth-status',{detail:{status}}))
-   })()
-  }
-  window.addEventListener('alquimago:request-publish',openPublish)
-  return()=>window.removeEventListener('alquimago:request-publish',openPublish)
- },[editing])
  useEffect(()=>{
   window.dispatchEvent(new CustomEvent('alquimago:publish-dialog',{detail:{open:githubPublishOpen}}))
  },[githubPublishOpen])
