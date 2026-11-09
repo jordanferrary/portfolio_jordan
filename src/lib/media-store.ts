@@ -122,7 +122,7 @@ export async function saveUploadedMedia(file:File,folder:string,slot:string):Pro
   throw new Error('Não foi possível garantir a conversão da imagem para WebP.')
  if(optimized.size>12_000_000)throw new Error('Imagem convertida acima de 12 MB. Reduza a resolução no conversor do Studio.')
  const hash=await fingerprint(optimized)
- const clean=(value:string)=>value.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9-]/g,'-').slice(0,70)
+ const clean=(value:string)=>value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9-]/g,'-').slice(0,70)
  const folderPath=folder.split('/').map(clean).filter(Boolean).join('/')||'uploads'
  const uniqueRef=PREFIX+folderPath+'/'+clean(slot)+'-'+hash+'.webp'
  const persist=async():Promise<string>=>{
