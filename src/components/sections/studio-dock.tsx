@@ -153,9 +153,6 @@ export function StudioDock({
          <button type="button" onClick={()=>invoke(onEditCurrent)}>
           <FileText size={16}/> Editar {pageLabel}
          </button>
-         <button type="button" onClick={()=>invoke(onPublish)}>
-          <CloudUpload size={16}/> Revisar publicação
-         </button>
         </div>
        </div>
        <div className="studio-hub-section-heading">
@@ -217,9 +214,6 @@ export function StudioDock({
    </div>
    <footer className="studio-hub-footer">
     <div><span className="studio-hub-footer-dot"/><span>Build {buildCode} · Conteúdo {publishedRevision.slice(0,9)}</span></div>
-    <button type="button" className="studio-hub-footer-publish" onClick={()=>invoke(onPublish)}>
-     <CloudUpload size={16}/> Publicar alterações
-    </button>
    </footer>
   </div>}
   <nav className="studio-dock" aria-label="Controles do Local Studio">
