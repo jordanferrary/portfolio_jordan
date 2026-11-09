@@ -34,6 +34,8 @@ function collectSources(sources:Sources|null,catalog:LibraryAsset[]):AssetEntry[
    if(block.media)add(block.media,folder,page.title+' · Arte lateral / capa')
    if(block.after)add(block.after,folder,page.title+' · Comparação')
    for(const image of block.gallery??[])add(image,folder,page.title+' · Galeria')
+   for(const item of block.showcaseItems??[])add(item.image,folder,page.title+' · '+(item.name||'Galeria interativa'))
+   for(const slide of block.slideItems??[])add(slide.image,folder,page.title+' · Slide')
   }
  }
  for(const project of sources?.projects??[]){
