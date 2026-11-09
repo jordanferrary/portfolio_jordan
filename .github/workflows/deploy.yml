@@ -21,6 +21,8 @@ jobs:
       - run: npm install
       - run: npm run typecheck
       - run: npm run test:studio
+      - name: Audit Studio publishing and WebP upload deduplication
+        run: npm run test:studio-media
       - name: Verify IP-based automatic language detection and safe translations
         run: npm run test:visitor-language
       - name: Verify mobile player drawer and familiar visibility
