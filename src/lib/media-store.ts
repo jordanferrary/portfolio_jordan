@@ -118,7 +118,7 @@ export async function saveUploadedMedia(file:File,folder:string,slot:string):Pro
  // Source PNG/JPG/AVIF files are NEVER stored, only the converted WebP.
  const {optimizeImage}=await import('./image-optimize')
  const optimized=await optimizeImage(file)
- if(optimized.type!=='image/webp'||!/\\.webp$/i.test(optimized.name))
+ if(optimized.type!=='image/webp'||!/\.webp$/i.test(optimized.name))
   throw new Error('Não foi possível garantir a conversão da imagem para WebP.')
  if(optimized.size>12_000_000)throw new Error('Imagem convertida acima de 12 MB. Reduza a resolução no conversor do Studio.')
  const hash=await fingerprint(optimized)
