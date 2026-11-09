@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-09T11:09:48.030Z-90ea1d8b-7a08-4de9-8028-6c6da6a462a8",
+  "revision": "2026-11-09T11:13:35.497Z-c35ef93f-e580-499a-8a3c-2b7f783eb9f2",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -172,7 +172,7 @@
         "coverFocus": {
           "x": 50,
           "y": 52,
-          "zoom": 1.35
+          "zoom": 1
         },
         "heroFocus": {
           "x": 50,
