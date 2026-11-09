@@ -22,10 +22,10 @@ type CredentialStorage={
 }
 const status=(kind:GitHubTokenCheck,description:string):GitHubTokenStatus=>({status:kind,description})
 
-function indexedDbStorage():CredentialStorage{
+function indexedDbStorage(databaseName:string=DATABASE):CredentialStorage{
  if(typeof indexedDB==='undefined')throw Error('Este navegador não oferece IndexedDB.')
  const open=new Promise<IDBDatabase>((resolve,reject)=>{
-  const request=indexedDB.open(DATABASE,1)
+  const request=indexedDB.open(databaseName,1)
   request.onupgradeneeded=()=>{
    if(!request.result.objectStoreNames.contains(RECORDS))
     request.result.createObjectStore(RECORDS)
@@ -56,11 +56,14 @@ function indexedDbStorage():CredentialStorage{
 }
 
 export function createGitHubTokenVault({
- storage,indexedDb=()=>indexedDbStorage(),
+ storage,databaseName=DATABASE,associatedData=AAD,
+ indexedDb=()=>indexedDbStorage(databaseName),
  cryptoProvider=globalThis.crypto,
  fetcher=globalThis.fetch
 }:{
  storage?:CredentialStorage
+ databaseName?:string
+ associatedData?:Uint8Array
  indexedDb?:()=>CredentialStorage
  cryptoProvider?:Crypto
  fetcher?:typeof fetch
@@ -95,7 +98,7 @@ export function createGitHubTokenVault({
   if(!key)throw Error('A chave do token foi perdida. Descarte o registro antigo e configure outro.')
   try{
    const bytes=await ensureCrypto().subtle.decrypt(
-    {name:'AES-GCM',iv:record.iv,additionalData:AAD},key,record.cipher)
+    {name:'AES-GCM',iv:record.iv,additionalData:associatedData},key,record.cipher)
    const token=new TextDecoder().decode(bytes)
    if(!validTokenShape(token))throw Error('Registro inválido.')
    return token
@@ -106,7 +109,7 @@ export function createGitHubTokenVault({
   const crypto=ensureCrypto()
   const key=await getKey(true),iv=crypto.getRandomValues(new Uint8Array(12))
   const cipher=await crypto.subtle.encrypt(
-   {name:'AES-GCM',iv,additionalData:AAD},key!,new TextEncoder().encode(token.trim()))
+   {name:'AES-GCM',iv,additionalData:associatedData},key!,new TextEncoder().encode(token.trim()))
   await getStore().set(TOKEN_NAME,{version:1,iv,cipher} satisfies EncryptedToken)
  }
  async function forget():Promise<void>{
@@ -159,3 +162,9 @@ function validTokenShape(value:unknown):value is string{
 }
 
 export const githubTokenVault=createGitHubTokenVault()
+
+/** A separate protected credential; never automatically reads the Studio PAT. */
+export const alquimagoPublishTokenVault=createGitHubTokenVault({
+ databaseName:'alquimago-github-publisher-v2',
+ associatedData:new TextEncoder().encode('ALQ-PUBLISH-PAT-V2:jordanferrary/portfolio_jordan')
+})
