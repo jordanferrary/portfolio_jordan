@@ -26,6 +26,7 @@ import {detectCountryByIp,initialLanguage,languageFromCountry,saveLanguageChoice
 import {observePublicTranslation} from './lib/public-page-translation'
 import {AppErrorBoundary} from './components/ui/app-error-boundary'
 import {readAlquimagoVisibilityDraft,writeAlquimagoVisibilityDraft} from './lib/alquimago-visibility'
+import {alquimagoPublishTokenVault} from './lib/github-token-vault'
 import type {StudioAction} from './components/sections/studio-dock'
 const StudioDock=lazy(()=>import('./components/sections/studio-dock').then(m=>({default:m.StudioDock})))
 const ImageConverter=lazy(()=>import('./components/sections/image-converter').then(m=>({default:m.ImageConverter})))
@@ -68,6 +69,11 @@ export function App(){
  const [aboutEditorOpen,setAboutEditorOpen]=useState(false)
  const [contactEditorOpen,setContactEditorOpen]=useState(false)
  const [githubPublishOpen,setGitHubPublishOpen]=useState(false)
+ const [publishSource,setPublishSource]=useState<'studio'|'alquimago'>('studio')
+ const openPublishDialog=(source:'studio'|'alquimago')=>{
+  setPublishSource(source)
+  setGitHubPublishOpen(true)
+ }
  const [galleryBackgroundEditorOpen,setGalleryBackgroundEditorOpen]=useState(false)
  const [logoEditorOpen,setLogoEditorOpen]=useState(false)
  const [siteIdentityOpen,setSiteIdentityOpen]=useState(false)
@@ -252,6 +258,25 @@ export function App(){
   }
  },[editing,publishedAlquimagoVisible])
  useEffect(()=>{
+  if(!editing)return
+  const onAlquimagoPublish=(event:Event)=>{
+   // A chat command only opens review; it cannot trigger git writes.
+   if(githubPublishOpen)return
+   setPublishSource('alquimago')
+   setGitHubPublishOpen(true)
+   if(event instanceof CustomEvent&&event.detail?.source==='chat'){
+    void alquimagoPublishTokenVault.inspect().then(status=>{
+     // Never expose a PAT, a crypto key, or any credential in public events.
+     window.dispatchEvent(new CustomEvent('alquimago:publish-auth-status',{detail:{status:status.status}}))
+    }).catch(()=>{
+     window.dispatchEvent(new CustomEvent('alquimago:publish-auth-status',{detail:{status:'unavailable'}}))
+    })
+   }
+  }
+  window.addEventListener('alquimago:request-publish',onAlquimagoPublish)
+  return()=>window.removeEventListener('alquimago:request-publish',onAlquimagoPublish)
+ },[editing,githubPublishOpen])
+ useEffect(()=>{
   window.dispatchEvent(new CustomEvent('alquimago:publish-dialog',{detail:{open:githubPublishOpen}}))
  },[githubPublishOpen])
  useEffect(()=>{
@@ -280,19 +305,19 @@ export function App(){
  {page==='sobre'&&<AboutPage about={portfolio.about} editing={editing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
  {page==='contato'&&<ContactPage socials={portfolio.socialLinks} settings={portfolio.contact} demoEnabled={editing} onEdit={()=>setContactEditorOpen(true)}/>}
  </div>
- {editing&&<AppErrorBoundary compact><Suspense fallback={null}><StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onNewProject={()=>setEditor(null)} onPublish={()=>setGitHubPublishOpen(true)} onExport={portfolio.exportData} onRestorePublished={portfolio.restorePublished} publishedRevision={currentPublishedRevision} onLock={()=>{setEditing(false);setEditor(undefined)}} actions={studioActions}/></Suspense></AppErrorBoundary>} 
+ {editing&&<AppErrorBoundary compact><Suspense fallback={null}><StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onNewProject={()=>setEditor(null)} onPublish={()=>openPublishDialog('studio')} onExport={portfolio.exportData} onRestorePublished={portfolio.restorePublished} publishedRevision={currentPublishedRevision} onLock={()=>{setEditing(false);setEditor(undefined)}} actions={studioActions}/></Suspense></AppErrorBoundary>} 
   {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  <AppErrorBoundary compact><Suspense fallback={null}>
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>{setGateOpen(false);setSkin3DOpen(false)}}/>}
  {editing&&imageConverterOpen&&<ImageConverter onClose={()=>setImageConverterOpen(false)}/>}
  {editing&&customPageEditorTarget!==null&&<CustomPageEditor key={customPageEditorTarget} initialPageId={customPageEditorTarget} pages={portfolio.customPages} onSavePages={portfolio.setCustomPages} onNavigatePage={navigateCustomPage} onClose={()=>setCustomPageEditorTarget(null)}/>}
- {editing&&skin3DOpen&&<Alquimago3DEditor onClose={()=>setSkin3DOpen(false)} onPublish={()=>setGitHubPublishOpen(true)}/>}
- {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>{setMediaManagerOpen(false);setGitHubPublishOpen(true)}} onPreparePublished={paths=>{setStagedMediaDeletions(paths);setMediaManagerOpen(false);setGitHubPublishOpen(true)}}/>}
+ {editing&&skin3DOpen&&<Alquimago3DEditor onClose={()=>setSkin3DOpen(false)} onPublish={()=>openPublishDialog('studio')}/>}
+ {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>{setMediaManagerOpen(false);openPublishDialog('studio')}} onPreparePublished={paths=>{setStagedMediaDeletions(paths);setMediaManagerOpen(false);openPublishDialog('studio')}}/>}
  {editing&&themePaletteOpen&&<ThemePaletteEditor value={portfolio.themePalette} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}
  {editing&&siteIdentityOpen&&<SiteIdentityEditor value={{siteFavicon:portfolio.siteFavicon,seoTitle:portfolio.seoTitle,seoDescription:portfolio.seoDescription}} homeBanner={portfolio.home.background} onSave={portfolio.setSiteIdentity} onEditBanner={()=>openHomeTab('home')} onClose={()=>setSiteIdentityOpen(false)}/>}
  {editing&&logoEditorOpen&&<BrandLogoEditor value={{siteLogo:portfolio.siteLogo,siteLogoHover:portfolio.siteLogoHover,siteLogoSize:portfolio.siteLogoSize,siteLogoHoverScale:portfolio.siteLogoHoverScale}} onSave={portfolio.setBranding} onClose={()=>setLogoEditorOpen(false)}/>}
  {editing&&galleryBackgroundEditorOpen&&<GalleryBackgroundEditor value={portfolio.galleryBackground} onSave={portfolio.setGalleryBackground} onClose={()=>setGalleryBackgroundEditorOpen(false)}/>}
- {editing&&githubPublishOpen&&<GitHubPublishEditor store={portfolio} stagedDeletionPaths={stagedMediaDeletions} onPublished={revision=>{portfolio.markPublished(revision);setStagedMediaDeletions([])}} onRestore={portfolio.restorePublished} onExport={portfolio.exportData} onClose={()=>{setGitHubPublishOpen(false);setStagedMediaDeletions([])}}/>}
+ {editing&&githubPublishOpen&&<GitHubPublishEditor key={publishSource} entryPoint={publishSource} store={portfolio} stagedDeletionPaths={publishSource==='studio'?stagedMediaDeletions:[]} onPublished={revision=>{portfolio.markPublished(revision);setStagedMediaDeletions([])}} onRestore={portfolio.restorePublished} onExport={portfolio.exportData} onClose={()=>{setGitHubPublishOpen(false);setStagedMediaDeletions([])}}/>}
  {editing&&contactEditorOpen&&<ContactEditor settings={portfolio.contact} links={portfolio.socialLinks} onSave={portfolio.setContactPage} onClose={()=>setContactEditorOpen(false)}/>}
  {editing&&aboutEditorOpen&&<AboutEditor value={portfolio.about} onSave={portfolio.setAbout} onClose={()=>setAboutEditorOpen(false)}/>}
  {editing&&homeEditorOpen&&<HomeEditor initialTab={homeEditorTab} showLikeCounts={portfolio.showLikeCounts} onShowLikeCounts={portfolio.setShowLikeCounts} home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} links={portfolio.socialLinks} onLinks={portfolio.setSocialLinks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
