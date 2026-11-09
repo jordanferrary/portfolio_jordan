@@ -26,7 +26,7 @@ import {detectCountryByIp,initialLanguage,languageFromCountry,saveLanguageChoice
 import {observePublicTranslation} from './lib/public-page-translation'
 import {AppErrorBoundary} from './components/ui/app-error-boundary'
 import {readAlquimagoVisibilityDraft,writeAlquimagoVisibilityDraft} from './lib/alquimago-visibility'
-import {alquimagoPublishTokenVault} from './lib/github-token-vault'
+import {alquimagoPublishTokenVault,retireStudioSavedTokens} from './lib/github-token-vault'
 import type {StudioAction} from './components/sections/studio-dock'
 const StudioDock=lazy(()=>import('./components/sections/studio-dock').then(m=>({default:m.StudioDock})))
 const ImageConverter=lazy(()=>import('./components/sections/image-converter').then(m=>({default:m.ImageConverter})))
@@ -36,6 +36,13 @@ const CustomPageEditor=lazy(()=>import('./components/sections/custom-page-editor
 import type { Project } from './data/projects'
 function route():Page|'project'|'custom'{const part=location.hash.replace(/^#\/?/,'');return part.startsWith('project/')?'project':part.startsWith('page/')?'custom':(['inicio','portfolio','sobre','contato'].includes(part)?part as Page:'inicio')}
 export function App(){
+ // Migration: remove all legacy Studio publishing tokens on the next site load.
+ // The current Alquimago v2 vault is deliberately not touched.
+ useEffect(()=>{
+  void retireStudioSavedTokens().catch(()=>{
+   console.warn('[Studio] Browser did not allow old publishing credentials to be cleared.')
+  })
+ },[])
  const [page,setPage]=useState(route)
  const [editing,setEditing]=useState(false)
  // Keep an out-of-root Studio flag for safe recovery after a render crash.
