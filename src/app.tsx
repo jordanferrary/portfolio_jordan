@@ -22,6 +22,8 @@ const GitHubPublishEditor=lazy(()=>import('./components/sections/github-publish-
 const SiteIdentityEditor=lazy(()=>import('./components/sections/site-identity-editor').then(m=>({default:m.SiteIdentityEditor})))
 const ThemePaletteEditor=lazy(()=>import('./components/sections/theme-palette-editor').then(m=>({default:m.ThemePaletteEditor})))
 import { applyThemePalette } from './lib/theme-palette'
+import {detectCountryByIp,initialLanguage,languageFromCountry,saveLanguageChoice,savedLanguage,type VisitorLanguage} from './lib/visitor-language'
+import {observePublicTranslation} from './lib/public-page-translation'
 import {readAlquimagoVisibilityDraft,writeAlquimagoVisibilityDraft} from './lib/alquimago-visibility'
 import {githubTokenVault,type GitHubTokenCheck} from './lib/github-token-vault'
 import {hasGitHubLogin,readGitHubSession} from './lib/github-auth'
@@ -36,6 +38,26 @@ function route():Page|'project'|'custom'{const part=location.hash.replace(/^#\/?
 export function App(){
  const [page,setPage]=useState(route)
  const [editing,setEditing]=useState(false)
+ const [visitorLanguage,setVisitorLanguage]=useState<VisitorLanguage>(initialLanguage)
+ const changeVisitorLanguage=(next:VisitorLanguage)=>{
+  saveLanguageChoice(next)
+  setVisitorLanguage(next)
+ }
+ useEffect(()=>{
+  if(savedLanguage())return
+  const controller=new AbortController()
+  void detectCountryByIp(controller.signal).then(country=>{
+   if(country&&!controller.signal.aborted&&!savedLanguage())setVisitorLanguage(languageFromCountry(country))
+  })
+  return()=>controller.abort()
+ },[])
+ useEffect(()=>{
+  document.documentElement.lang=visitorLanguage==='pt'?'pt-BR':visitorLanguage
+  const root=document.querySelector<HTMLElement>('.site-shell')
+  if(!root)return
+  return observePublicTranslation(root,visitorLanguage)
+ },[visitorLanguage])
+
  const [gateOpen,setGateOpen]=useState(false)
  const [editor,setEditor]=useState<Project|null|undefined>(undefined)
  const [homeEditorOpen,setHomeEditorOpen]=useState(false)
@@ -262,7 +284,7 @@ export function App(){
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
- return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':page==='contato'?'site-shell contact-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}}/>
+ return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':page==='contato'?'site-shell contact-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}} language={visitorLanguage} onLanguageChange={changeVisitorLanguage}/>
  {page==='portfolio'&&<Suspense fallback={<div className="simple-page" role="status">Loading portfolio…</div>}><Gallery projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground} onEditBackground={()=>setGalleryBackgroundEditorOpen(true)}/></Suspense>}
  {page==='project'&&project&&<Suspense fallback={<div className="simple-page" role="status">Loading project…</div>}><ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts}/></Suspense>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}

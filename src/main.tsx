@@ -59,3 +59,6 @@ import './styles/liquid-glass-buttons.css'
 
 // Mobile player drawer overrides legacy fixed-player visibility rules.
 import './styles/mobile-music-drawer.css'
+
+// Compact language control for the existing social navigation rail.
+import './styles/visitor-language.css'

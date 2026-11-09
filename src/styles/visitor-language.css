@@ -1,0 +1,55 @@
+/* Site language switch, inside the existing social/navigation rail. */
+.site-shell .socials .language-switcher{
+ position:relative;
+ display:inline-flex;
+ flex:0 0 auto;
+ align-items:center;
+ justify-content:center;
+ gap:4px;
+ width:65px;
+ height:50px;
+ padding:0 7px;
+ margin:0;
+ border-radius:999px;
+ border:1px solid var(--jf-liquid-edge,var(--jf-border));
+ color:var(--jf-secondary);
+ background:var(--jf-liquid-clear,var(--jf-glass));
+ box-shadow:var(--jf-liquid-border-shadow,0 7px 20px #0005);
+ -webkit-backdrop-filter:blur(9px) saturate(125%);
+ backdrop-filter:blur(9px) saturate(125%);
+ z-index:2;
+}
+.site-shell .socials .language-switcher svg{flex:0 0 17px;width:17px;height:17px;pointer-events:none}
+.site-shell .socials .language-switcher select{
+ width:30px;
+ min-width:30px;
+ max-width:30px;
+ margin:0;
+ padding:0;
+ border:0;
+ outline:0;
+ appearance:none;
+ -webkit-appearance:none;
+ background:transparent;
+ color:var(--jf-text);
+ font:700 11px/1.2 system-ui,sans-serif;
+ cursor:pointer;
+ text-align:center;
+}
+.site-shell .socials .language-switcher select option{background:var(--jf-surface);color:var(--jf-text)}
+.site-shell .socials .language-switcher:focus-within{
+ border-color:var(--jf-secondary);
+ outline:2px solid var(--jf-secondary);
+ outline-offset:2px;
+}
+@media(max-width:750px){
+ .site-shell .socials .language-switcher{
+  width:55px;height:36px;padding:0 4px;gap:3px;
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+ }
+ .site-shell .socials .language-switcher svg{flex-basis:14px;width:14px;height:14px}
+ .site-shell .socials .language-switcher select{width:28px;min-width:28px;max-width:28px;font-size:10px}
+}
+@media(prefers-reduced-transparency:reduce){
+ .site-shell .socials .language-switcher{background:var(--jf-surface);-webkit-backdrop-filter:none;backdrop-filter:none}
+}

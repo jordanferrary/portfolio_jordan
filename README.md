@@ -132,3 +132,13 @@ No celular (até 750 px), o player de música é uma **gaveta lateral esquerda**
 O mascote **Alquimago inicia oculto para visitantes** (`public/alquimago/config.json → appearance.visible: false`); seu JavaScript não é baixado nessa situação. Ao desbloquear o **Local Studio**, o Alquimago continua disponível, respeitando a preferência de exibição do Studio. O proprietário pode mudar a visibilidade pública pelo controle independente **Familiar → Público · Ativar Alquimago** e publicar a alteração; a mudança local não afeta visitantes até a publicação.
 
 Os estilos da gaveta estão em `src/styles/mobile-music-drawer.css`, importados após as demais camadas de tema. O comando `npm run test:mobile-ui` verifica os principais contratos de responsividade, acessibilidade e configuração e é executado no GitHub Actions.
+
+## Tradução automática pelo país do visitante
+
+O portfólio detecta o país aproximado do visitante com a consulta HTTPS anônima a `https://ipwho.is/?fields=success,country_code` e escolhe **PT, EN ou ES**. O país é armazenado localmente por sete dias para evitar requisições repetidas e não guardamos o número de IP. Caso a consulta falhe, usa o idioma do navegador; uma escolha manual no controle de idioma próximo das redes sociais sempre prevalece.
+
+A interface e textos públicos existentes têm traduções humanas locais para português e espanhol, sem consultas remotas. Novos trechos **públicos** ainda não cadastrados podem ser traduzidos sob demanda pela API gratuita MyMemory, com limite conservador de chamadas e cache local. Se o serviço estiver indisponível ou atingir seu limite gratuito, o texto original em inglês permanece legível; o site continua funcionando sem erro e sem assinatura. Nomes próprios, títulos de obras e ferramentas do Local Studio não são enviados para tradução.
+
+**Aviso de privacidade:** a consulta de país expõe o IP de conexão ao provedor `ipwho.is` (como toda requisição a um servidor externo); a tradução opcional compartilha **somente o texto público solicitado** com `api.mymemory.translated.net`. Não enviar campos de formulários, conteúdo de rascunhos, credenciais nem conversas do Alquimago. O navegador pode usar VPN ou uma região de IP diferente do idioma preferido — por isso existe a troca manual.
+
+Documentação e limites: [Guia de idiomas](docs/GUIA_TRADUCAO_AUTOMATICA.md). Testes: `npm run test:visitor-language`.
