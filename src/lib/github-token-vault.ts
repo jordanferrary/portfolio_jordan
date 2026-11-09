@@ -1,14 +1,14 @@
 /**
- * Optional, device-local GitHub PAT vault. Unlike the owner-only GitHub App
- * Worker, this protects against casual reading of browser storage only:
- * scripts running on the same origin can still use the CryptoKey.
- * Never send a GitHub credential through the Alquimago chat or public events.
+ * Dedicated Local Studio GitHub PAT vault, separate from the Alquimago's legacy
+ * storage and assistant events. A non-extractable AES-GCM key reduces casual
+ * exposure, but same-origin scripts can still use it: this is not isolation
+ * from compromised JavaScript. Never send credentials through chat or events.
  */
-const DATABASE='alquimago-github-publisher-v1'
+const DATABASE='jf-local-studio-publisher-v2'
 const RECORDS='credentials'
 const KEY_NAME='portfolio-key'
 const TOKEN_NAME='portfolio-token'
-const AAD=new TextEncoder().encode('ALQ-GITHUB-PAT-V1:jordanferrary/portfolio_jordan')
+const AAD=new TextEncoder().encode('JF-LOCAL-STUDIO-PAT-V2:jordanferrary/portfolio_jordan')
 const OWNER='jordanferrary'
 const REPOSITORY='portfolio_jordan'
 
