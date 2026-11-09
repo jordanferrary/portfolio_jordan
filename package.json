@@ -17,7 +17,8 @@
     "test:glass": "node --test scripts/liquid-glass.test.mjs",
     "test:mobile-ui": "node --test scripts/mobile-music-visibility.test.mjs",
     "test:visitor-language": "node --test scripts/visitor-language.test.mjs",
-    "test:runtime-recovery": "node --test scripts/runtime-recovery.test.mjs"
+    "test:runtime-recovery": "node --test scripts/runtime-recovery.test.mjs",
+    "test:studio-media": "node --test scripts/studio-media-pipeline.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
