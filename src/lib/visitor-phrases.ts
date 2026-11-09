@@ -479,5 +479,28 @@ export const VISITOR_PHRASES:Record<string,{pt:string;es:string}>={
  "A whimsical little world where fantasy, color, and creativity come together.": {
   "pt": "Um pequeno mundo lúdico onde fantasia, cor e criatividade se encontram.",
   "es": "Un pequeño mundo de fantasía donde se unen el color y la creatividad."
- }
+ },
+
+ // Protected-name text nodes are split by React; translate both sides separately.
+ "I'm":{pt:"Sou",es:"Soy"},
+ ", a 3D artist focused on bringing ideas to life through art, modeling and creativity.":{
+  pt:", artista 3D dedicado a dar vida às ideias por meio da arte, da modelagem e da criatividade.",
+  es:", artista 3D dedicado a dar vida a las ideas a través del arte, el modelado y la creatividad."
+ },
+ ", a 3D artist, illustrator, and motion designer passionate about creating characters, environments, and memorable visual experiences.":{
+  pt:", artista 3D, ilustrador e motion designer apaixonado por criar personagens, ambientes e experiências visuais marcantes.",
+  es:", artista 3D, ilustrador y diseñador de movimiento apasionado por crear personajes, entornos y experiencias visuales memorables."
+ },
+ "Before":{pt:"Antes",es:"Antes"},
+ "After":{pt:"Depois",es:"Después"},
+ "Inspect":{pt:"Inspecionar",es:"Inspeccionar"},
+ "Inspect Before":{pt:"Inspecionar antes",es:"Inspeccionar antes"},
+ "Inspect After":{pt:"Inspecionar depois",es:"Inspeccionar después"},
+ "Compare before and after":{pt:"Comparar antes e depois",es:"Comparar antes y después"},
+ "Artist portrait":{pt:"Retrato do artista",es:"Retrato del artista"},
+ "Additional artwork":{pt:"Obra adicional",es:"Obra adicional"},
+ "Loading portfolio…":{pt:"Carregando portfólio…",es:"Cargando portafolio…"},
+ "Loading project…":{pt:"Carregando projeto…",es:"Cargando proyecto…"},
+ "Loading page…":{pt:"Carregando página…",es:"Cargando página…"},
+
 }
