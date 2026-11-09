@@ -28,6 +28,8 @@ test('one Studio dock publish entry and token-only authorization',()=>{
  assert.match(publisher,/viaAlquimago\?alquimagoPublishTokenVault:githubTokenVault/)
  assert.match(publisher,/confirmed/)
  assert.match(app,/window\.addEventListener\('alquimago:request-publish',onAlquimagoPublish\)/)
+ assert.match(app,/event\.detail\?\.source!=='chat'/)
+ assert.match(app,/event\.detail\?\.action!=='review-only'/)
  assert.match(app,/if\(!editing\)return/)
  assert.match(app,/setPublishSource\('alquimago'\)/)
  assert.match(app,/entryPoint=\{publishSource\}/)
