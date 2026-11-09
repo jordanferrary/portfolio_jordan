@@ -110,25 +110,34 @@ export async function listMediaAssets():Promise<LibraryAsset[]>{
  }
  return catalog.sort((a,b)=>b.createdAt-a.createdAt)
 }
+// Serialize catalog writes: parallel uploads of the same WebP must reuse one ref.
+let pendingImageWrite:Promise<void>=Promise.resolve()
 export async function saveUploadedMedia(file:File,folder:string,slot:string):Promise<string>{
  if(!['image/png','image/jpeg','image/webp','image/avif'].includes(file.type))throw new Error('Use PNG, JPG, WEBP ou AVIF.')
  if(file.size>35_000_000)throw new Error('Imagem acima de 35 MB. Reduza antes de importar.')
- // The optimizer is imported only when an owner uploads an image.
+ // Source PNG/JPG/AVIF files are NEVER stored, only the converted WebP.
  const {optimizeImage}=await import('./image-optimize')
  const optimized=await optimizeImage(file)
+ if(optimized.type!=='image/webp'||!/\\.webp$/i.test(optimized.name))
+  throw new Error('Não foi possível garantir a conversão da imagem para WebP.')
  if(optimized.size>12_000_000)throw new Error('Imagem convertida acima de 12 MB. Reduza a resolução no conversor do Studio.')
- file=optimized
- const hash=await fingerprint(file)
- const catalog=await listMediaAssets()
- const same=catalog.find(a=>a.hash===hash&&a.size===file.size&&isLocalMedia(a.ref))
- if(same){await linkAssetToFolder(same.ref,folder);return same.ref}
- const ext=file.type==='image/jpeg'?'jpg':file.type==='image/avif'?'avif':file.type==='image/png'?'png':'webp'
- const clean=(value:string)=>value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9-]/g,'-').slice(0,70)
- const folderPath=folder.split('/').map(clean).filter(Boolean).join('/')
- const ref=PREFIX+folderPath+'/'+clean(slot)+'-'+Date.now()+'-'+hash.slice(0,10)+'.'+ext
- await saveMediaBlob(ref,file)
- await updateCatalog({ref,name:file.name,folders:[folderPath],hash,size:file.size,mime:file.type,createdAt:Date.now()})
- return ref
+ const hash=await fingerprint(optimized)
+ const clean=(value:string)=>value.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9-]/g,'-').slice(0,70)
+ const folderPath=folder.split('/').map(clean).filter(Boolean).join('/')||'uploads'
+ const uniqueRef=PREFIX+folderPath+'/'+clean(slot)+'-'+hash+'.webp'
+ const persist=async():Promise<string>=>{
+  const catalog=await listMediaAssets()
+  // Historical duplicate refs are reused rather than rewritten.
+  const same=catalog.find(a=>a.hash===hash&&a.size===optimized.size&&isLocalMedia(a.ref))
+  if(same){await linkAssetToFolder(same.ref,folder);return same.ref}
+  // Content-addressed name plus serialized writes prevent simultaneous duplicates.
+  await saveMediaBlob(uniqueRef,optimized)
+  await updateCatalog({ref:uniqueRef,name:optimized.name,folders:[folderPath],hash,size:optimized.size,mime:'image/webp',createdAt:Date.now()})
+  return uniqueRef
+ }
+ const job=pendingImageWrite.then(persist,persist)
+ pendingImageWrite=job.then(()=>{},()=>{})
+ return job
 }
 export function mediaRefs(projects:{image:string;blocks:{media?:string;after?:string;gallery?:string[];content:string;type:string}[];processSteps?:{image:string}[]}[],categories:{image?:string}[]){
  const all=new Set<string>()
