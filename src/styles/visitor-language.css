@@ -1,55 +1,175 @@
-/* Site language switch, inside the existing social/navigation rail. */
+/*
+ * Compact manual language override. IP-based detection works without touching it.
+ * Uses the portfolio's configurable palette and Liquid Glass variables.
+ */
 .site-shell .socials .language-switcher{
  position:relative;
- display:inline-flex;
- flex:0 0 auto;
+ flex:0 0 50px;
+ width:50px;
+ height:50px;
+ margin:0;
+ z-index:12;
+}
+.site-shell .socials .language-switcher-trigger{
+ width:50px;
+ height:50px;
+ display:flex;
+ flex-direction:column;
  align-items:center;
  justify-content:center;
- gap:4px;
- width:65px;
- height:50px;
- padding:0 7px;
+ gap:1px;
+ padding:4px;
  margin:0;
- border-radius:999px;
+ border-radius:50%;
  border:1px solid var(--jf-liquid-edge,var(--jf-border));
- color:var(--jf-secondary);
- background:var(--jf-liquid-clear,var(--jf-glass));
- box-shadow:var(--jf-liquid-border-shadow,0 7px 20px #0005);
- -webkit-backdrop-filter:blur(9px) saturate(125%);
- backdrop-filter:blur(9px) saturate(125%);
- z-index:2;
+ background:var(--jf-liquid-clear,var(--jf-surface));
+ box-shadow:var(--jf-liquid-border-shadow,0 7px 18px #0005);
+ color:var(--jf-text);
+ cursor:pointer;
+ -webkit-tap-highlight-color:transparent;
+ -webkit-backdrop-filter:blur(9px) saturate(130%);
+ backdrop-filter:blur(9px) saturate(130%);
+ transition:border-color .18s ease,box-shadow .18s ease,filter .18s ease;
 }
-.site-shell .socials .language-switcher svg{flex:0 0 17px;width:17px;height:17px;pointer-events:none}
-.site-shell .socials .language-switcher select{
- width:30px;
- min-width:30px;
- max-width:30px;
- margin:0;
+.site-shell .socials .language-switcher-trigger svg{
+ width:19px;
+ height:19px;
+ stroke:var(--jf-secondary);
+ flex:0 0 auto;
+}
+.site-shell .socials .language-switcher-code{
+ color:var(--jf-text);
+ font:800 10px/1 system-ui,-apple-system,"Segoe UI",sans-serif;
+ letter-spacing:.045em;
+}
+.site-shell .socials .language-switcher-trigger:hover,
+.site-shell .socials .language-switcher.is-open .language-switcher-trigger{
+ border-color:var(--jf-liquid-edge-hot,var(--jf-secondary));
+ box-shadow:var(--jf-liquid-border-shadow,0 7px 18px #0005),0 0 16px var(--jf-liquid-glow);
+ filter:brightness(1.08);
+}
+.site-shell .socials .language-switcher-trigger:focus-visible,
+.site-shell .socials .language-switcher-option:focus-visible{
+ outline:2px solid var(--jf-secondary);
+ outline-offset:3px;
+}
+.site-shell .socials .language-switcher-menu{
+ position:absolute;
+ top:calc(100% + 11px);
+ right:0;
+ width:214px;
+ max-width:calc(100vw - 24px);
+ padding:10px;
+ display:flex;
+ flex-direction:column;
+ gap:4px;
+ border:1px solid var(--jf-liquid-edge,var(--jf-border));
+ border-radius:18px;
+ background:linear-gradient(155deg,
+  color-mix(in srgb,var(--jf-surface) 94%,var(--jf-background) 6%),
+  color-mix(in srgb,var(--jf-background) 67%,var(--jf-surface) 33%));
+ box-shadow:0 18px 40px color-mix(in srgb,var(--jf-background) 65%,transparent),
+  inset 0 1px 0 color-mix(in srgb,var(--jf-text) 12%,transparent);
+ -webkit-backdrop-filter:blur(14px) saturate(120%);
+ backdrop-filter:blur(14px) saturate(120%);
+ color:var(--jf-text);
+ isolation:isolate;
+ z-index:110;
+ animation:jf-language-menu-in .16s ease-out both;
+}
+.site-shell .socials .language-switcher-heading{
+ display:block;
+ margin:2px 9px 5px;
  padding:0;
- border:0;
- outline:0;
- appearance:none;
- -webkit-appearance:none;
+ color:var(--jf-muted);
+ font-size:10px;
+ font-weight:750;
+ line-height:1.35;
+ letter-spacing:.075em;
+ text-transform:uppercase;
+}
+.site-shell .socials .language-switcher-heading span{color:var(--jf-secondary)}
+.site-shell .socials .language-switcher-option{
+ display:flex;
+ flex-direction:row;
+ align-items:center;
+ gap:10px;
+ width:100%;
+ min-height:43px;
+ margin:0;
+ padding:8px 10px;
+ border-radius:11px;
+ border:1px solid transparent;
  background:transparent;
  color:var(--jf-text);
- font:700 11px/1.2 system-ui,sans-serif;
+ font-size:13px;
+ text-align:left;
  cursor:pointer;
- text-align:center;
+ transition:background-color .15s ease,border-color .15s ease;
 }
-.site-shell .socials .language-switcher select option{background:var(--jf-surface);color:var(--jf-text)}
-.site-shell .socials .language-switcher:focus-within{
- border-color:var(--jf-secondary);
- outline:2px solid var(--jf-secondary);
- outline-offset:2px;
+.site-shell .socials .language-switcher-option:hover{
+ background:color-mix(in srgb,var(--jf-primary) 14%,var(--jf-surface) 86%);
+ border-color:color-mix(in srgb,var(--jf-primary) 40%,transparent);
+}
+.site-shell .socials .language-switcher-option.is-selected{
+ background:color-mix(in srgb,var(--jf-primary) 21%,var(--jf-surface) 79%);
+ border-color:color-mix(in srgb,var(--jf-secondary) 43%,transparent);
+}
+.site-shell .socials .language-switcher-abbr{
+ display:grid;
+ place-items:center;
+ width:32px;
+ height:26px;
+ flex:0 0 32px;
+ border:1px solid color-mix(in srgb,var(--jf-border) 75%,var(--jf-secondary) 25%);
+ border-radius:8px;
+ background:color-mix(in srgb,var(--jf-background) 40%,var(--jf-surface) 60%);
+ color:var(--jf-secondary);
+ font:800 10px/1 system-ui,-apple-system,"Segoe UI",sans-serif;
+ letter-spacing:.045em;
+}
+.site-shell .socials .language-switcher-name{
+ display:block;
+ color:var(--jf-text);
+ font-weight:650;
+ flex:1 1 auto;
+}
+.site-shell .socials .language-switcher-check{color:var(--jf-secondary);flex:0 0 16px}
+.site-shell .socials .language-switcher-note{
+ margin:7px 7px 2px;
+ padding-top:9px;
+ border-top:1px solid color-mix(in srgb,var(--jf-border) 70%,transparent);
+ color:var(--jf-muted);
+ font-size:10px;
+ line-height:1.5;
+}
+@keyframes jf-language-menu-in{
+ from{opacity:0;transform:translateY(-5px)}
+ to{opacity:1;transform:translateY(0)}
 }
 @media(max-width:750px){
- .site-shell .socials .language-switcher{
-  width:55px;height:36px;padding:0 4px;gap:3px;
+ .site-shell .socials .language-switcher{flex-basis:36px;width:36px;height:36px}
+ .site-shell .socials .language-switcher-trigger{
+  width:36px;height:36px;padding:2px;gap:0;
   -webkit-backdrop-filter:none;backdrop-filter:none;
  }
- .site-shell .socials .language-switcher svg{flex-basis:14px;width:14px;height:14px}
- .site-shell .socials .language-switcher select{width:28px;min-width:28px;max-width:28px;font-size:10px}
+ .site-shell .socials .language-switcher-trigger svg{width:15px;height:15px}
+ .site-shell .socials .language-switcher-code{font-size:9px}
+ .site-shell .socials .language-switcher-menu{top:calc(100% + 9px);width:202px}
+}
+@media(max-width:400px){
+ .site-shell .socials .language-switcher-menu{right:0;max-width:calc(100vw - 16px)}
 }
 @media(prefers-reduced-transparency:reduce){
- .site-shell .socials .language-switcher{background:var(--jf-surface);-webkit-backdrop-filter:none;backdrop-filter:none}
+ .site-shell .socials .language-switcher-trigger,
+ .site-shell .socials .language-switcher-menu{
+  background:var(--jf-surface);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .site-shell .socials .language-switcher-menu{animation:none}
+ .site-shell .socials .language-switcher-trigger,
+ .site-shell .socials .language-switcher-option{transition:none}
 }
