@@ -96,6 +96,7 @@ function refsFor(store:PortfolioStore):string[]{
    if(block.after&&isLocalMedia(block.after))refs.add(block.after)
    for(const src of block.gallery??[])if(isLocalMedia(src))refs.add(src)
    for(const slide of block.slideItems??[])if(isLocalMedia(slide.image))refs.add(slide.image)
+   for(const item of block.showcaseItems??[])if(isLocalMedia(item.image))refs.add(item.image)
   }
  }
  if(isLocalMedia(store.home.avatar))refs.add(store.home.avatar)
