@@ -1,11 +1,18 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './app'
+import { AppErrorBoundary } from './components/ui/app-error-boundary'
+import { tryAutoRecoverChunk } from './lib/chunk-recovery'
 import {registerAlquimago3D} from './lib/alquimago-3d'
 import './styles/globals.css'
 import './styles/revision.css'
+// A tab kept open across deployments may request a removed lazy-load asset.
+window.addEventListener('vite:preloadError',(event:Event)=>{
+ const failure=event as Event&{payload?:unknown}
+ if(tryAutoRecoverChunk(failure.payload??'Failed to fetch dynamically imported module'))event.preventDefault()
+})
 registerAlquimago3D()
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>)
+createRoot(document.getElementById('root')!).render(<StrictMode><AppErrorBoundary><App /></AppErrorBoundary></StrictMode>)
 
 import './styles/home-revision.css'
 
