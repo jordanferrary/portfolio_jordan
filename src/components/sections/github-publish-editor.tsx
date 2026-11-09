@@ -22,10 +22,11 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
  const [token,setToken]=useState('')
  const [savedToken,setSavedToken]=useState('')
  const [vaultStatus,setVaultStatus]=useState<GitHubTokenStatus>({status:'missing',description:'Nenhum token salvo.'})
- const [vaultBusy,setVaultBusy]=useState(true)
+ const [vaultBusy,setVaultBusy]=useState(viaAlquimago)
  const [authError,setAuthError]=useState('')
- // Both entry points use an independently saved credential and explicit review.
- const credential=vaultStatus.status==='ready'?savedToken:''
+ // Studio accepts ONLY the token pasted for this dialog; never load or reuse it.
+ // Alquimago alone can reuse its separate AES-GCM protected credential.
+ const credential=viaAlquimago?(vaultStatus.status==='ready'?savedToken:''):token.trim()
  const [visible,setVisible]=useState(false)
  const [confirmed,setConfirmed]=useState(false)
  const [busy,setBusy]=useState(false)
@@ -39,6 +40,7 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
  const [mediaFilter,setMediaFilter]=useState<'unused'|'all'>('unused')
  const [confirmDeletion,setConfirmDeletion]=useState(false)
  useEffect(()=>{
+  if(!viaAlquimago){setVaultBusy(false);return}
   let active=true
   const restore=async()=>{
    try{
@@ -54,9 +56,9 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
   }
   void restore()
   return()=>{active=false}
- },[vault])
+ },[vault,viaAlquimago])
  const saveToken=async()=>{
-  if(!token.trim()||vaultBusy||busy)return
+  if(!viaAlquimago||!token.trim()||vaultBusy||busy)return
   setVaultBusy(true);setAuthError('')
   try{
    const check=await vault.check(token.trim())
@@ -72,7 +74,7 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
   }finally{setVaultBusy(false)}
  }
  const refreshSaved=async()=>{
-  if(vaultBusy||busy)return
+  if(!viaAlquimago||vaultBusy||busy)return
   setVaultBusy(true)
   try{
    const saved=await vault.load()
@@ -84,7 +86,7 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
   finally{setVaultBusy(false)}
  }
  const forgetSaved=async()=>{
-  if(vaultBusy||busy||!window.confirm('Descartar o token armazenado neste dispositivo? Isso não o revoga automaticamente no GitHub.'))return
+  if(!viaAlquimago||vaultBusy||busy||!window.confirm('Descartar o token armazenado neste dispositivo? Isso não o revoga automaticamente no GitHub.'))return
   setVaultBusy(true)
   try{
    await vault.forget()
@@ -110,15 +112,14 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
   }
   setBusy(true);setError('');setResult(null)
   try{
-   if(savedToken){
-    const check=await vault.check(savedToken)
-    setVaultStatus(check)
-    if(check.status!=='ready'){
-     setSavedToken('')
-     throw new Error(check.status==='expired'?
-      'O pão mofou! Este token expirou ou foi revogado. Posso descartá-lo quando você confirmar.':
-      check.description)
-    }
+   // No publishing without a fresh check of the selected credential.
+   const check=await vault.check(credential)
+   if(viaAlquimago)setVaultStatus(check)
+   if(check.status!=='ready'){
+    if(viaAlquimago)setSavedToken('')
+    throw new Error(check.status==='expired'?
+     'O token expirou ou foi revogado. Informe uma autorização válida.':
+     check.description)
    }
    // The live familiar's uncommitted state is included only on this explicit
    // publication. Reloading without publishing discards its draft changes.
@@ -130,7 +131,7 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
    setStatus('As alterações estão no GitHub. A Cloudflare Pages publicará essa versão após a nova implantação concluir.')
   }catch(e){
    const msg=e instanceof Error?e.message:'Não foi possível publicar no GitHub.'
-   if(savedToken&&/Token inválido ou expirado/.test(msg)){
+   if(viaAlquimago&&savedToken&&/Token inválido ou expirado/.test(msg)){
     setSavedToken('');setVaultStatus({status:'expired',description:'O pão mofou! O token não funciona mais. Você pode descartá-lo e guardar outro.'})
    }
    setError(msg)
@@ -164,25 +165,25 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
     </div>:<>
      <div className="github-publish-section">
       <div className="github-publish-section-title"><ShieldCheck size={18}/><h3>Autorizar publicação</h3></div>
-      <p className="editor-help">Cole seu token de publicação uma vez e salve-o neste navegador. Publicações posteriores exigem sua confirmação, mas não uma nova cópia do token enquanto ele continuar válido e armazenado.</p>
-      <div className="github-token-vault" aria-label={viaAlquimago?'Cofre de publicação do Alquimago':'Cofre independente do Local Studio'}>
-       <div className="github-token-vault-heading"><ShieldCheck size={17}/><strong>{viaAlquimago?'Cofre de publicação do Alquimago':'Cofre de publicação do Studio'}</strong></div>
-       <p role="status" className="editor-help github-token-vault-status">{vaultBusy?'Verificando o cofre...':vaultStatus.description}</p>
-       {vaultStatus.status==='ready'&&<p className="editor-help">{viaAlquimago?'Token criptografado do Alquimago disponível neste navegador. O robô não lê a credencial nem pode confirmar a publicação sozinho.':'Token do Studio disponível neste navegador, sem compartilhamento automático com o Alquimago.'}</p>}
-       {vaultStatus.status==='expired'&&<p className="editor-help">A autorização expirou ou foi revogada. Cole uma nova credencial válida.</p>}
+      <p className="editor-help">{viaAlquimago?'Cole e guarde um token criptografado apenas no Cofre do Alquimago. Cada publicação exige confirmação.':'Cole seu token do GitHub para esta publicação. Ele será usado apenas nesta janela e não será salvo nem reutilizado pelo Studio.'}</p>
+      <div className="github-token-vault" aria-label={viaAlquimago?'Cofre de publicação do Alquimago':'Autorização temporária do Local Studio'}>
+       <div className="github-token-vault-heading"><ShieldCheck size={17}/><strong>{viaAlquimago?'Cofre de publicação do Alquimago':'Token temporário · publicação única'}</strong></div>
+       {viaAlquimago&&<p role="status" className="editor-help github-token-vault-status">{vaultBusy?'Verificando o cofre...':vaultStatus.description}</p>}
+       {viaAlquimago&&vaultStatus.status==='ready'&&<p className="editor-help">Token criptografado do Alquimago disponível neste navegador. O robô não lê a credencial nem pode confirmar a publicação sozinho.</p>}
+       {viaAlquimago&&vaultStatus.status==='expired'&&<p className="editor-help">A autorização expirou ou foi revogada. Cole uma nova credencial válida.</p>}
        <label className="github-publish-token-label">Token GitHub de publicação
         <div className="github-publish-token-control">
-         <input value={token} type={visible?'text':'password'} autoComplete="off" autoCapitalize="off" spellCheck={false} onChange={e=>setToken(e.target.value)} placeholder={vaultStatus.status==='ready'?'Cole aqui somente para substituir o token salvo':'Cole seu token uma vez aqui'} disabled={busy||vaultBusy} aria-label={viaAlquimago?'Token de publicação do Alquimago':'Token exclusivo de publicação do Local Studio'}/>
+         <input value={token} type={visible?'text':'password'} autoComplete="off" autoCapitalize="off" spellCheck={false} onChange={e=>setToken(e.target.value)} placeholder={viaAlquimago&&vaultStatus.status==='ready'?'Cole aqui somente para substituir o token salvo':viaAlquimago?'Cole seu token uma vez aqui':'Cole o token para esta publicação'} disabled={busy||(viaAlquimago&&vaultBusy)} aria-label={viaAlquimago?'Token de publicação do Alquimago':'Token temporário do Local Studio'}/>
          <button type="button" onClick={()=>setVisible(v=>!v)} aria-label={visible?'Ocultar token':'Mostrar token'} disabled={busy}>{visible?<EyeOff size={17}/>:<Eye size={17}/>}</button>
         </div>
        </label>
-       <div className="github-token-vault-actions">
+       {viaAlquimago&&<div className="github-token-vault-actions">
         <button type="button" className="github-token-vault-button" onClick={()=>void saveToken()} disabled={busy||vaultBusy||!token.trim()}><ShieldCheck size={15}/>{vaultStatus.status==='ready'?'Substituir token salvo':'Guardar token criptografado'}</button>
         <button type="button" className="github-token-vault-button" onClick={()=>void refreshSaved()} disabled={busy||vaultBusy}>Verificar validade</button>
         <button type="button" className="github-token-vault-button" onClick={()=>void forgetSaved()} disabled={busy||vaultBusy||vaultStatus.status==='missing'}><Trash2 size={15}/>Descartar token</button>
-       </div>
+       </div>}
        {authError&&<p role="alert" className="github-publish-error">{authError}</p>}
-       <p className="editor-help github-token-vault-note">O token fica criptografado com AES-256-GCM em um cofre de {viaAlquimago?'Alquimago':'Studio'} separado. Nunca informe o token na conversa. A frase de acesso apenas abre esta tela dentro do Studio desbloqueado — não é uma senha. Scripts do mesmo domínio ainda podem acessar credenciais locais; revogar o token ou limpar os dados do navegador exigirá configurá-lo novamente.</p>
+       <p className="editor-help github-token-vault-note">{viaAlquimago?'O token fica criptografado com AES-256-GCM no cofre exclusivo do Alquimago. Nunca o envie no chat. A frase de acesso é um atalho, não uma senha. Scripts do mesmo domínio ainda podem acessar credenciais locais.':'O Studio não armazena nem recupera este token. O campo é limpo ao publicar ou fechar o painel. Confirme cada publicação manualmente.'}</p>
       </div>
       <details className="github-token-help">
        <summary>Como criar o token de publicação</summary>
@@ -219,7 +220,7 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
     <p className="github-publish-footnote">Revise os textos destinados aos visitantes em inglês antes de publicar. Rascunhos antigos podem conter conteúdo em português. As alterações feitas no Local Studio continuam locais até a publicação. Mensagens privadas e curtidas compartilhadas exigem uma API separada.</p>
    </div>
    <footer><button type="button" className="subtle-action" onClick={close} disabled={busy}>{result?'Fechar':'Cancelar'}</button>
-    {!result&&<button type="button" className="save-action" onClick={()=>void publish()} disabled={busy||vaultBusy||!credential||!confirmed}><CloudUpload size={17}/>{busy?'Publicando...':'Confirmar publicação'}</button>}
+    {!result&&<button type="button" className="save-action" onClick={()=>void publish()} disabled={busy||(viaAlquimago&&vaultBusy)||!credential||!confirmed}><CloudUpload size={17}/>{busy?'Publicando...':'Confirmar publicação'}</button>}
    </footer>
   </section>
  </div>
