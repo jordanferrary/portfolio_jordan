@@ -21,15 +21,6 @@ export function clampBrandScale(value:unknown,fallback:number,min:number,max:num
 function englishCategory(label:string):string{
  return label.toLowerCase()==='enviroment'?'Environments':label
 }
-/** Migrate a single published comparison that was saved with its two images reversed. */
-function fixLegacyBeforeAfter(block:Project['blocks'][number]):Project['blocks'][number]{
- if(block.id==='b-nxq09d3s1od'&&
-  block.media==='site://images/studio/87eb9b94f2355c69589f0e57336aaf4a2f490f8d005433af058c67a428cbcdc4.png'&&
-  block.after==='site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png'){
-  return {...block,media:block.after,after:block.media}
- }
- return block
-}
 function parseStore(raw:unknown):PortfolioStore{
  if(!raw||typeof raw!=='object')throw new Error('Arquivo de dados inválido')
  const obj=raw as Partial<PortfolioStore>
@@ -42,7 +33,7 @@ function parseStore(raw:unknown):PortfolioStore{
   return {...c,label:englishCategory(c.label)}
  })
  for(const p of obj.projects)if(typeof p.id!=='string'||typeof p.title!=='string'||!Array.isArray(p.blocks))throw new Error('Projeto inválido')
- const projects=obj.projects.map(p=>({...p,category:englishCategory(p.category),image:normalizeBundledImage(p.image),coverFocus:normalizeFraming(p.coverFocus),heroFocus:normalizeFraming(p.heroFocus),blocks:p.blocks.map(b=>fixLegacyBeforeAfter({...b,content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage),galleryEntries:b.galleryEntries?.map(item=>({...item,image:normalizeBundledImage(item.image)})),slides:b.slides?.map(item=>({...item,image:normalizeBundledImage(item.image)}))})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
+ const projects=obj.projects.map(p=>({...p,category:englishCategory(p.category),image:normalizeBundledImage(p.image),coverFocus:normalizeFraming(p.coverFocus),heroFocus:normalizeFraming(p.heroFocus),blocks:p.blocks.map(b=>({...b,content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage),galleryEntries:b.galleryEntries?.map(item=>({...item,image:normalizeBundledImage(item.image)})),slides:b.slides?.map(item=>({...item,image:normalizeBundledImage(item.image)}))})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
  const home={...defaultHome,...(obj.home??{}),avatar:normalizeBundledImage(obj.home?.avatar??defaultHome.avatar),background:normalizeBundledImage(obj.home?.background??defaultHome.background)}
  const galleryBackground=normalizeBundledImage(obj.galleryBackground??obj.home?.background??defaultGalleryBackground)
  const themePalette=normalizeThemePalette(obj.themePalette)
