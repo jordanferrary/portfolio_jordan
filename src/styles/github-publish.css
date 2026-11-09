@@ -127,3 +127,52 @@
 .github-publish-auth .editor-help{color:#b9a0ca;font-size:11px}
 .github-publish-auth .github-publish-error{color:#ffd4df}
 @media(max-width:540px){.github-publish-auth{padding:12px}.github-publish-auth button{width:100%}}
+
+
+/* Cofre do Alquimago: independent, responsive controls (no generic .action clashes). */
+.github-publish-editor .editor-scroll .github-token-vault{
+ display:flex;flex-direction:column;gap:10px;
+ margin:12px 0;padding:18px;
+ border:1px solid var(--jf-border,#785c94);border-radius:16px;
+ background:linear-gradient(140deg,rgba(37,19,56,.9),rgba(16,10,26,.94));
+ min-width:0;
+}
+.github-publish-editor .github-token-vault-heading{
+ display:flex;align-items:center;gap:9px;
+ color:#f5eaff;font-size:14px;font-weight:750;line-height:1.4;
+}
+.github-publish-editor .github-token-vault-heading svg{flex:0 0 auto;color:#d6a4ff}
+.github-publish-editor .github-token-vault .github-token-vault-status{
+ color:#d5bedf;font-size:12px;line-height:1.55;
+}
+.github-publish-editor .github-token-vault-actions{
+ display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,174px),1fr));
+ gap:9px;width:100%;min-width:0;margin:4px 0;
+}
+.github-publish-editor .github-token-vault-actions .github-token-vault-button{
+ display:inline-flex!important;align-items:center;justify-content:center;gap:8px;
+ min-height:43px;width:100%;min-width:0;padding:10px 13px;
+ border:1px solid #81539f;border-radius:12px;
+ background:linear-gradient(130deg,#412357,#291738);color:#f5e9ff;
+ font-size:12px;font-weight:650;line-height:1.35;
+ text-align:center;white-space:normal;cursor:pointer;
+ transition:background .18s ease,border-color .18s ease;
+}
+.github-publish-editor .github-token-vault-button svg{flex:0 0 15px}
+.github-publish-editor .github-token-vault-button:hover:not(:disabled){
+ border-color:#c487ed;background:linear-gradient(130deg,#63387f,#39204e);
+}
+.github-publish-editor .github-token-vault-button:focus-visible{
+ outline:2px solid #d4a6ff;outline-offset:2px;
+}
+.github-publish-editor .github-token-vault-button:disabled{
+ opacity:.43;cursor:not-allowed;
+}
+.github-publish-editor .github-token-vault .github-token-vault-note{
+ margin-top:2px;color:#bca5c9;font-size:11px;line-height:1.6;
+ overflow-wrap:anywhere;
+}
+@media(max-width:540px){
+ .github-publish-editor .editor-scroll .github-token-vault{padding:14px}
+ .github-publish-editor .github-token-vault-actions{grid-template-columns:1fr}
+}
