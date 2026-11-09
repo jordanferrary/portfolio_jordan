@@ -45,7 +45,7 @@ test('one Studio dock publish entry and token-only authorization',()=>{
  assert.match(app,/publishSource==='studio'\?stagedMediaDeletions:\[\]/)
  assert.match(app,/alquimago:publish-auth-status/)
  assert.match(creator,/jf-local-studio-publisher-v2/)
- assert.doesNotMatch(creator,/alquimago-github-publisher-v1/)
+ assert.match(creator,/databaseName:'alquimago-github-publisher-v1'/) // legacy cleanup only
  assert.match(creator,/alquimago-github-publisher-v2/)
  assert.match(creator,/ALQ-PUBLISH-PAT-V2/)
 })
