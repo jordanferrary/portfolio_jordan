@@ -174,3 +174,16 @@ export const alquimagoPublishTokenVault=createGitHubTokenVault({
  databaseName:'alquimago-github-publisher-v2',
  associatedData:new TextEncoder().encode('ALQ-PUBLISH-PAT-V2:jordanferrary/portfolio_jordan')
 })
+
+/**
+ * Remove all credentials formerly persisted by the Studio publishing button,
+ * including the original shared v1 record. This NEVER reads or purges the
+ * independent current Alquimago v2 vault.
+ */
+export async function retireStudioSavedTokens():Promise<void>{
+ const legacy=createGitHubTokenVault({databaseName:'alquimago-github-publisher-v1'})
+ const outcome=await Promise.allSettled([githubTokenVault.purge(),legacy.purge()])
+ const failed=outcome.find(result=>result.status==='rejected')
+ if(failed?.status==='rejected')throw failed.reason
+}
+
