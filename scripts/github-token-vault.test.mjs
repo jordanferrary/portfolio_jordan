@@ -102,3 +102,20 @@ test('Alquimago and Studio credentials remain independent, encrypted and non-int
  assert.match(source,/alquimago-github-publisher-v2/)
  assert.match(source,/jf-local-studio-publisher-v2/)
 })
+
+test('retiring the Studio PAT removes its key and token but preserves the Alquimago PAT',async()=>{
+ const studio=persistence(),alquimago=persistence(),f=fetcher()
+ const studioVault=createGitHubTokenVault({storage:studio.storage,cryptoProvider:webcrypto,fetcher:f.fetch})
+ const familiarVault=createGitHubTokenVault({
+  storage:alquimago.storage,cryptoProvider:webcrypto,fetcher:f.fetch,
+  associatedData:new TextEncoder().encode('ALQ-PUBLISH-PAT-V2:jordanferrary/portfolio_jordan')
+ })
+ await studioVault.save(sample)
+ await familiarVault.save('a'.repeat(50))
+ assert.equal(studio.map.has('portfolio-token'),true)
+ await studioVault.purge()
+ assert.equal(studio.map.has('portfolio-token'),false)
+ assert.equal(studio.map.has('portfolio-key'),false)
+ assert.equal(await studioVault.load(),null)
+ assert.equal(await familiarVault.load(),'a'.repeat(50))
+})
