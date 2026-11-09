@@ -200,6 +200,7 @@
 
 /* A página Sobre se centraliza no viewport; conteúdos longos continuam roláveis. */
 @media (min-width:751px){
+ .site-shell.about-route .site-main{padding-bottom:0}
  .site-shell .about-page{
   display:flex;flex-direction:column;justify-content:center;
   min-height:100vh;min-height:100svh;
