@@ -1,7 +1,7 @@
 import {Component,type ErrorInfo,type ReactNode} from 'react'
 import {isChunkLoadError,tryAutoRecoverChunk} from '../../lib/chunk-recovery'
 
-type Props={children:ReactNode}
+type Props={children:ReactNode;compact?:boolean}
 type State={error:Error|null}
 
 /** Keep a React exception from unmounting the entire portfolio to a blank page. */
@@ -30,7 +30,7 @@ export class AppErrorBoundary extends Component<Props,State>{
    :(pt?'Ocorreu um erro inesperado ao exibir o conteúdo.':es?'Ocurrió un error inesperado al mostrar el contenido.':'An unexpected error interrupted the page.')
   const refresh=pt?'Atualizar o site':es?'Actualizar el sitio':'Reload site'
   return <main role="alert" style={{
-   minHeight:'100svh',display:'grid',placeItems:'center',padding:24,
+   minHeight:this.props.compact?'280px':'100svh',display:'grid',placeItems:'center',padding:24,
    background:'var(--jf-background,#0b0712)',color:'var(--jf-text,#f5ebff)',
    fontFamily:'DM Sans,system-ui,sans-serif'
   }}>
