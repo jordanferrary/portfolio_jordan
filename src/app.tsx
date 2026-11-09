@@ -38,6 +38,11 @@ function route():Page|'project'|'custom'{const part=location.hash.replace(/^#\/?
 export function App(){
  const [page,setPage]=useState(route)
  const [editing,setEditing]=useState(false)
+ // Keep an out-of-root Studio flag for safe recovery after a render crash.
+ // Never automatically reload while an editor may contain unsaved form fields.
+ useEffect(()=>{
+  document.documentElement.dataset.jfStudioActive=editing?'true':'false'
+ },[editing])
  const [visitorLanguage,setVisitorLanguage]=useState<VisitorLanguage>(initialLanguage)
  const changeVisitorLanguage=(next:VisitorLanguage)=>{
   saveLanguageChoice(next)
