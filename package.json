@@ -16,7 +16,8 @@
     "audit:size": "node scripts/performance-budget.mjs --check",
     "test:glass": "node --test scripts/liquid-glass.test.mjs",
     "test:mobile-ui": "node --test scripts/mobile-music-visibility.test.mjs",
-    "test:visitor-language": "node --test scripts/visitor-language.test.mjs"
+    "test:visitor-language": "node --test scripts/visitor-language.test.mjs",
+    "test:runtime-recovery": "node --test scripts/runtime-recovery.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",
