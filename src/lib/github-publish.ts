@@ -196,9 +196,18 @@ export async function publishPortfolioToGitHub(
    if(cached)return cached
    const blob=await readMedia(value)
    if(!blob)throw new Error('Um arquivo do Studio não foi encontrado neste navegador ('+value.split('/').pop()+'). Importe-o novamente antes de publicar.')
-   const reference=await stageBlob(blob,kind,value)
+   // Legacy uploads kept as PNG/JPG/AVIF are converted on publish; their
+   // original blobs stay local until the owner reviews unused files.
+   let prepared=blob
+   if(kind==='image'&&blob.type!=='image/webp'){
+    const {optimizeImage}=await import('./image-optimize')
+    const detected=blob.type.startsWith('image/')?blob.type:
+     /\.jpe?g$/i.test(value)?'image/jpeg':/\.avif$/i.test(value)?'image/avif':'image/png'
+    prepared=await optimizeImage(new File([blob],'legacy-image.png',{type:detected}))
+   }
+   const reference=await stageBlob(prepared,kind,value)
    refCache.set(value,reference)
-   if(kind==='image')await createVariants(reference,blob)
+   if(kind==='image')await createVariants(reference,prepared)
    return reference
   }
   // Older already-published artwork can receive responsive versions at the next publication.
