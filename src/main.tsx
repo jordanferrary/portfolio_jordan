@@ -62,3 +62,6 @@ import './styles/mobile-music-drawer.css'
 
 // Compact language control for the existing social navigation rail.
 import './styles/visitor-language.css'
+
+// Phone-only bar: independent brand on the left, links grouped on the right.
+import './styles/mobile-nav-alignment.css'

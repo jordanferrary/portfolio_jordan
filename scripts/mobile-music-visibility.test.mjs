@@ -4,13 +4,14 @@ import {readFile} from 'node:fs/promises'
 import {transform} from 'esbuild'
 
 const read=async file=>readFile(new URL('../'+file,import.meta.url),'utf8')
-const [player,sidebar,drawerCss,config,app,main]=await Promise.all([
+const [player,sidebar,drawerCss,config,app,main,mobileNavCss]=await Promise.all([
  read('src/components/layout/music-player.tsx'),
  read('src/components/layout/sidebar.tsx'),
  read('src/styles/mobile-music-drawer.css'),
  read('public/alquimago/config.json'),
  read('src/app.tsx'),
- read('src/main.tsx')
+ read('src/main.tsx'),
+ read('src/styles/mobile-nav-alignment.css')
 ])
 test('mobile music starts collapsed with opening and closing controls',async()=>{
  await transform(player,{loader:'tsx'})
@@ -50,4 +51,19 @@ test('public familiar is opt-in; independent Studio visibility stays available',
  assert.match(app,/const show=editing\?studioFamiliarVisible:publishedAlquimagoVisible/)
  assert.match(app,/if\(!editing&&publishedAlquimagoVisible!==true\)return/)
  assert.match(app,/localStorage\.getItem\('jf-alquimago-studio-visible'\)!=='false'/)
+})
+
+test('mobile navigation keeps the logo left and groups page links to the right',async()=>{
+ await transform(mobileNavCss,{loader:'css'})
+ assert.match(mobileNavCss,/@media \(max-width:600px\)/)
+ assert.match(mobileNavCss,/\.site-shell \.sidebar \.brand-wrap\{/)
+ assert.match(mobileNavCss,/margin:0 auto 0 0/)
+ assert.match(mobileNavCss,/\.site-shell \.sidebar \.side-nav\{/)
+ assert.match(mobileNavCss,/margin:0 0 0 auto/)
+ assert.match(mobileNavCss,/justify-content:space-between/)
+ assert.match(mobileNavCss,/overflow-x:auto/)
+ assert.match(mobileNavCss,/\.side-link-label\{/)
+ assert.match(mobileNavCss,/text-overflow:ellipsis/)
+ assert.match(mobileNavCss,/@media \(max-width:350px\)/)
+ assert.ok(main.indexOf("import './styles/mobile-nav-alignment.css'")>main.indexOf("import './styles/visitor-language.css'"))
 })
