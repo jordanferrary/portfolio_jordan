@@ -4,7 +4,7 @@ import {LANGUAGE_OPTIONS,type VisitorLanguage} from '../../lib/visitor-language'
 
 /**
  * Language detection stays automatic. This is only the optional manual override:
- * a small glass button matching the social icons, never a native <select> popup.
+ * a small glass button matching the social icons, never a native dropdown popup.
  */
 export function LanguageSwitcher({language,onChange}:{language:VisitorLanguage;onChange:(value:VisitorLanguage)=>void}){
  const [open,setOpen]=useState(false)
@@ -12,6 +12,16 @@ export function LanguageSwitcher({language,onChange}:{language:VisitorLanguage;o
  const trigger=useRef<HTMLButtonElement>(null)
  const menuId=useId()
  const current=LANGUAGE_OPTIONS.find(option=>option.value===language)??LANGUAGE_OPTIONS[0]
+ const selectionLabels={
+  en:'Change portfolio language',
+  pt:'Alterar idioma do portfólio',
+  es:'Cambiar idioma del portafolio'
+ }
+ const descriptions={
+  en:'Detected automatically. You can change it here.',
+  pt:'Detectado automaticamente. Você pode trocar aqui.',
+  es:'Detectado automáticamente. Puedes cambiarlo aquí.'
+ }
 
  useEffect(()=>{
   if(!open)return
@@ -41,7 +51,7 @@ export function LanguageSwitcher({language,onChange}:{language:VisitorLanguage;o
  return <div ref={root} className={'language-switcher notranslate'+(open?' is-open':'')} translate="no">
   <button ref={trigger} type="button" className="language-switcher-trigger"
    title="Idioma / Language / Idioma"
-   aria-label={'Alterar idioma do portfólio. Atual: '+current.name}
+   aria-label={selectionLabels[language]+': '+current.name}
    aria-haspopup="true" aria-controls={menuId} aria-expanded={open}
    onClick={()=>setOpen(value=>!value)}>
    <Languages size={18} strokeWidth={1.9} aria-hidden="true"/>
@@ -62,7 +72,7 @@ export function LanguageSwitcher({language,onChange}:{language:VisitorLanguage;o
     <span className="language-switcher-name">{option.name}</span>
     {option.value===language&&<Check className="language-switcher-check" size={16} aria-hidden="true"/>}
    </button>)}
-   <p className="language-switcher-note">Idioma detectado automaticamente. Você pode alterar aqui.</p>
+   <p className="language-switcher-note">{descriptions[language]}</p>
   </div>}
  </div>
 }
