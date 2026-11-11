@@ -23,12 +23,13 @@ const templates:{type:BlockType;label:string;description:string}[]=[
  {type:'before-after',label:'Antes / depois',description:'Comparação arrastável'},
  {type:'gallery',label:'Múltiplas imagens',description:'Grade de imagens'},
  {type:'slideshow',label:'Carrossel de imagens',description:'Transições, duração e várias artes'},
+ {type:'process',label:'Processo criativo',description:'Etapas da guia Processo, na posição escolhida'},
  {type:'divider',label:'Linha divisória',description:'Linha com ícone opcional'},
  {type:'video',label:'Vídeo incorporado',description:'Miniatura + YouTube ou Vimeo'},
  {type:'model',label:'Modelo 3D interativo',description:'GLB / glTF, somente após clique'}
 ]
 const titleFor=(type:BlockType)=>templates.find(t=>t.type===type)?.label??type
-const blank=(category:string):Project=>({id:'project-'+Date.now().toString(36),title:'Novo projeto',category:category||'Others',year:String(new Date().getFullYear()),image:'',description:'',tools:[],featured:false,blocks:[]})
+const blank=(category:string):Project=>({id:'project-'+Date.now().toString(36),title:'Novo projeto',category:category||'Others',year:String(new Date().getFullYear()),image:'',description:'',tools:[],featured:false,blocks:[],processTemplateMigrated:true})
 
 function MediaField({value,onChange,folder,slot,label,onError}:{value:string;onChange:(url:string)=>void;folder:string;slot:string;label:string;onError:(text:string)=>void}){
  const [sending,setSending]=useState(false)
@@ -70,7 +71,12 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  const patch=(next:Partial<Project>)=>setDraft(prev=>({...prev,...next}))
  const updateBlock=(id:string,next:Partial<Block>)=>patch({blocks:draft.blocks.map(b=>b.id===id?{...b,...next}:b)})
  const addBlock=(type:BlockType,index=draft.blocks.length)=>{
-  const b:Block={id:'b-'+Math.random().toString(36).slice(2),type,content:'',gallery:type==='gallery'?['','']:undefined,galleryMode:type==='gallery'?'simple':undefined,galleryEntries:type==='gallery'?[]:undefined,slides:type==='slideshow'?[]:undefined,slideAutoplay:false,slideEffect:'fade',slideInterval:5000,slideHeight:420,slideShowPauseButton:false,dividerIcon:type==='divider'?'sparkles':undefined,dividerStyle:type==='divider'?'glow':undefined}
+  if(type==='process'&&draft.blocks.some(b=>b.type==='process')){
+   setMessage('O template de Processo Criativo já está no projeto. Arraste-o na Composição para mudar de posição.')
+   setInsertAt(null)
+   return
+  }
+  const b:Block={id:'b-'+Math.random().toString(36).slice(2),type,content:type==='process'?'Creative process':'',gallery:type==='gallery'?['','']:undefined,galleryMode:type==='gallery'?'simple':undefined,galleryEntries:type==='gallery'?[]:undefined,slides:type==='slideshow'?[]:undefined,slideAutoplay:false,slideEffect:'fade',slideInterval:5000,slideHeight:420,slideShowPauseButton:false,dividerIcon:type==='divider'?'sparkles':undefined,dividerStyle:type==='divider'?'glow':undefined}
   const result=[...draft.blocks];result.splice(index,0,b);patch({blocks:result});setInsertAt(null);requestAnimationFrame(()=>document.querySelector('[data-block-id="'+b.id+'"]')?.scrollIntoView({block:'nearest',behavior:'smooth'}))
  }
  const move=(from:number,to:number)=>{
@@ -118,11 +124,16 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <p className="local-warning">Organize apenas a apresentação deste projeto. Os blocos abaixo formarão a página completa da obra.</p>
  {media.length>0&&<><div className="editor-section-title"><h3>Meus assets deste projeto</h3><p>Arraste estas miniaturas até um campo de imagem abaixo.</p></div><div className="asset-shelf">{media.map(src=><div key={src} className="asset-shelf-item" draggable onDragStart={event=>event.dataTransfer.setData('application/x-jf-asset',src)} title="Arraste para uma área de imagem"><AssetImage src={src} alt="Asset disponível"/></div>)}</div></>}
  <div className="editor-section-title"><h3>Blocos visuais do projeto</h3><p>Clique para adicionar. Você também pode arrastar um modelo para a sequência de blocos.</p></div>
- <div className="template-gallery">{templates.map(t=><button type="button" key={t.type} className="template-tile" draggable onDragStart={e=>e.dataTransfer.setData('application/x-jf-template',t.type)} onClick={()=>addBlock(t.type)}><span className={'template-sketch '+t.type} aria-hidden="true">{t.type==='video'?<Clapperboard size={27}/>:t.type==='model'?<BoxIcon size={29}/>:<><i/><i/><i/></>}</span><b>{t.label}</b><small>{t.description}</small></button>)}</div>
+ <div className="template-gallery">{templates.map(t=><button type="button" key={t.type} className="template-tile" draggable={t.type!=='process'||!draft.blocks.some(b=>b.type==='process')} disabled={t.type==='process'&&draft.blocks.some(b=>b.type==='process')} title={t.type==='process'&&draft.blocks.some(b=>b.type==='process')?'Já adicionado. Arraste o bloco na composição para reposicionar.':t.description} onDragStart={e=>e.dataTransfer.setData('application/x-jf-template',t.type)} onClick={()=>addBlock(t.type)}><span className={'template-sketch '+t.type} aria-hidden="true">{t.type==='video'?<Clapperboard size={27}/>:t.type==='model'?<BoxIcon size={29}/>:<><i/><i/><i/></>}</span><b>{t.label}</b><small>{t.description}</small></button>)}</div>
  <div className="editor-section-title"><h3>Composição do projeto</h3><p>Arraste pela alça para reordenar; use as setas como alternativa.</p></div>
  <div className="blocks-list" onDragOver={e=>e.preventDefault()} onDrop={e=>{if(e.target===e.currentTarget){const t=e.dataTransfer.getData('application/x-jf-template') as BlockType;if(templates.some(a=>a.type===t))addBlock(t)}}}>
  {draft.blocks.map((b,i)=><section key={b.id} data-block-id={b.id} className={'edit-block '+(dragged===b.id?'dragging':'')} onDragOver={e=>e.preventDefault()} onDrop={e=>onBlockDrop(e,i)}>
  <div className="edit-block-top"><span className="drag-handle" draggable onDragStart={e=>{e.dataTransfer.setData('application/x-jf-block',b.id);setDragged(b.id)}} onDragEnd={()=>setDragged('')} title="Arrastar bloco"><GripVertical size={18}/></span><b>{i+1}. {titleFor(b.type)}</b><div><button type="button" onClick={()=>move(i,i-1)} aria-label="Mover acima"><ArrowUp size={16}/></button><button type="button" onClick={()=>move(i,i+1)} aria-label="Mover abaixo"><ArrowDown size={16}/></button><button type="button" onClick={()=>patch({blocks:draft.blocks.filter(x=>x.id!==b.id)})} aria-label="Excluir bloco"><Trash2 size={16}/></button></div></div>
+ {b.type==='process'&&<div className="project-composition-enhanced">
+  <label>Título da seção<input value={b.content} onChange={e=>updateBlock(b.id,{content:e.target.value})} maxLength={90} placeholder="Creative process"/></label>
+  <p className="editor-help">Este template exibe as {(draft.processSteps??[]).filter(step=>step.image?.trim()).length} etapa(s) com imagem da guia Processo. No computador, ocupa uma linha; no celular, vira um carrossel. Mova este bloco usando as setas ou a alça acima.</p>
+  <button type="button" className="subtle-action" onClick={()=>setTab('process')}>Editar imagens e nomes das etapas</button>
+ </div>}
  {b.type==='heading'&&<TextComposer heading label="Título formatável" rows={3} value={b.content} onChange={content=>updateBlock(b.id,{content})}/>} 
  {b.type==='text'&&<TextComposer label="Conteúdo formatável" value={b.content} onChange={content=>updateBlock(b.id,{content})}/>} 
  {b.type==='image'&&<MediaField label="Imagem única" folder={'projects/'+draft.id} slot={b.id} value={b.content} onChange={content=>updateBlock(b.id,{content})} onError={setMessage}/>}
@@ -157,11 +168,11 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <div className="add-blocks"><button type="button" onClick={()=>setInsertAt(draft.blocks.length)}><Plus size={16}/>Adicionar bloco — escolher layout</button></div>
  </>}
  {tab==='process'&&<>
- <p className="local-warning">Estas etapas aparecem em uma seção própria da página do projeto, mesmo quando houver galeria, vídeo ou comparador de imagens. A ordem e os títulos são mantidos. Use apenas imagens reais do seu processo criativo.</p>
+ <p className="local-warning">As etapas são exibidas pelo template “Processo criativo” da guia Composição, na posição que você escolher. No computador formam uma única linha e no celular um carrossel. Use apenas imagens reais do processo.</p>
  <div className="editor-section-title"><h3>Etapas do processo criativo</h3><p>Quantidade livre, títulos editáveis e ordem personalizada.</p></div>
  {steps.map((step,index)=><article className="process-edit-card" key={step.id}><div className="edit-block-top"><b>Etapa {index+1}</b><div><button type="button" aria-label="Mover etapa acima" onClick={()=>moveStep(index,index-1)}><ArrowUp size={16}/></button><button type="button" aria-label="Mover etapa abaixo" onClick={()=>moveStep(index,index+1)}><ArrowDown size={16}/></button><button type="button" aria-label="Excluir etapa" onClick={()=>patch({processSteps:steps.filter(s=>s.id!==step.id)})}><Trash2 size={16}/></button></div></div><label>Nome da etapa<input value={step.label} onChange={e=>updateStep(step.id,{label:e.target.value})} placeholder="Sculpt, Retopology, Texturing, Final..."/></label><MediaField value={step.image} onChange={image=>updateStep(step.id,{image})} label={'Imagem '+step.label} folder={'projects/'+draft.id} slot={'process-'+step.id} onError={setMessage}/></article>)}
  <button type="button" className="subtle-action" onClick={addStep}><Plus size={16}/>Adicionar etapa</button>
- {steps.length===0&&<p className="editor-help">Sem etapas cadastradas: a página do projeto ainda apresenta a arte principal em tamanho maior.</p>}
+ {steps.length===0&&<p className="editor-help">Adicione etapas e, na guia Composição, insira o template “Processo criativo” para exibi-las no projeto.</p>}
  </>}
  {tab==='filters'&&<>
  <p className="local-warning">Cada filtro usa um ícone Lucide ou um arquivo na pasta lógica <strong>filter-icons/</strong>. Apenas projetos vinculados à categoria aparecerão quando ela for selecionada.</p>
