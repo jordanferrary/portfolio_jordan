@@ -142,3 +142,22 @@ test('process is part of editable composition and forms one row / mobile carouse
  assert.match(styles,/grid-auto-columns:calc\(100% - 20px\)/)
  assert.match(styles,/\.project-process-navigation\{display:flex\}/)
 })
+
+test('comparison inspection controls use responsive glass group and preserve separate lightboxes',async()=>{
+ const [page,css]=await Promise.all([
+  text('src/components/sections/project-page.tsx'),
+  text('src/styles/media-extras.css')
+ ])
+ assert.match(page,/className="comparison-zoom-actions" role="group"/)
+ assert.match(page,/onClick=\{\(\)=>setExpanded\('before'\)\}/)
+ assert.match(page,/onClick=\{\(\)=>setExpanded\('after'\)\}/)
+ assert.match(page,/expanded==='before'\?\(block\.media\?\?''\):\(block\.after\?\?''\)/)
+ assert.match(page,/aria-label=\{'Inspect '\+\(block\.beforeLabel\?\?'Before'\)\}/)
+ assert.match(page,/aria-label=\{'Inspect '\+\(block\.afterLabel\?\?'After'\)\}/)
+ assert.match(css,/\.site-shell \.comparison-zoom-actions\{/)
+ assert.match(css,/backdrop-filter:blur\(16px\) saturate\(140%\)/)
+ assert.match(css,/color-mix\(in srgb,var\(--jf-border/)
+ assert.match(css,/@media\(max-width:560px\)/)
+ assert.match(css,/flex:1 1 50%/)
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/)
+})
