@@ -91,26 +91,54 @@ test('every persistent image upload input routes through WebP path',async()=>{
  }
 })
 
-test('creative process appears for editorial projects without replacing their gallery',async()=>{
- const [page,styles,editor,publishedRaw]=await Promise.all([
+test('creative process template migrates once and is freely movable or removable',async()=>{
+ const {build}=await import('esbuild')
+ const result=await build({
+  entryPoints:[new URL('../src/data/projects.ts',import.meta.url).pathname],
+  bundle:true,write:false,platform:'node',format:'esm',logLevel:'silent',
+  define:{'import.meta.env.BASE_URL':'"/"'}
+ })
+ const {upgradeProcessTemplate}=await import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].text).toString('base64'))
+ const published=JSON.parse(await text('src/data/published-portfolio.json')).store
+ const legacy=published.projects.find(project=>project.title==='Room of the Palhacito')
+ assert.ok(legacy)
+ assert.ok(legacy.blocks.some(block=>block.type==='gallery'))
+ assert.equal(legacy.processSteps?.filter(step=>step.image?.trim()).length,4)
+ const migrated=upgradeProcessTemplate(legacy)
+ assert.equal(migrated.processTemplateMigrated,true)
+ assert.equal(migrated.blocks.filter(block=>block.type==='process').length,1)
+ assert.ok(migrated.blocks.findIndex(block=>block.type==='process')<migrated.blocks.findIndex(block=>block.type==='before-after'))
+ assert.deepEqual(migrated.processSteps,legacy.processSteps)
+ assert.equal(upgradeProcessTemplate(migrated).blocks.length,migrated.blocks.length)
+ const removed={...migrated,blocks:migrated.blocks.filter(block=>block.type!=='process')}
+ assert.equal(upgradeProcessTemplate(removed).blocks.some(block=>block.type==='process'),false)
+})
+
+test('process is part of editable composition and forms one row / mobile carousel',async()=>{
+ const [page,carousel,styles,editor,store]=await Promise.all([
   text('src/components/sections/project-page.tsx'),
+  text('src/components/sections/project-process.tsx'),
   text('src/styles/portfolio-review.css'),
   text('src/components/sections/admin-editor.tsx'),
-  text('src/data/published-portfolio.json')
+  text('src/hooks/use-portfolio.ts')
  ])
- const project=JSON.parse(publishedRaw).store.projects.find(item=>item.title==='Room of the Palhacito')
- assert.ok(project,'Published project fixture should exist')
- assert.ok(project.blocks.some(block=>block.type==='gallery'))
- assert.equal(project.processSteps?.filter(step=>step.image?.trim()).length,4)
- assert.match(page,/className="project-artwork-process project-process-section"/)
- assert.equal((page.match(/processImages\.length>0&&/g)||[]).length,1,'Process is rendered once only')
- assert.ok(page.indexOf('project-process-section')>page.indexOf('needsArtworkShowcase&&<section'),'Process must not be gated by the fallback artwork block')
- assert.match(page,/processImages\.map\(\(step,index\)=>/)
- assert.match(page,/typeof step\.image==='string'&&step\.image\.trim\(\)\.length>0/)
- assert.match(page,/<ZoomableArt src=\{step\.image\}/)
- assert.match(page,/project-process-index/)
- assert.match(styles,/\.site-shell \.project-process-section/)
- assert.match(styles,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/)
+ assert.match(page,/if\(block\.type==='process'\)return <ProjectProcess/)
+ assert.match(page,/processSteps=\{project\.processSteps\}/)
+ assert.doesNotMatch(page,/processImages\.length>0&&/)
+ assert.match(store,/projects:projects\.map\(upgradeProcessTemplate\)/)
+ assert.match(editor,/type:'process',label:'Processo criativo'/)
+ assert.match(editor,/t\.type==='process'&&draft\.blocks\.some/)
+ assert.match(editor,/if\(type==='process'&&draft\.blocks\.some/)
+ assert.match(editor,/data-block-id=\{b\.id\}/)
+ assert.match(carousel,/process-count-'\+Math\.min\(images\.length,4\)/)
+ assert.match(carousel,/ref=\{scroller\} onScroll=\{syncPosition\}/)
+ assert.match(carousel,/scrollTo\(\{left:cards\[target\]\.offsetLeft-first/)
+ assert.match(carousel,/aria-label="Next process image"/)
+ assert.match(carousel,/<ZoomableArt src=\{step\.image\}/)
+ assert.match(styles,/grid-auto-flow:column/)
+ assert.match(styles,/scroll-snap-type:x mandatory/)
+ assert.match(styles,/\.process-count-4\{grid-auto-columns:calc\(\(100% - 42px\)\/4\)\}/)
  assert.match(styles,/@media\(max-width:680px\)/)
- assert.match(editor,/mesmo quando houver galeria, vídeo ou comparador/)
+ assert.match(styles,/grid-auto-columns:calc\(100% - 20px\)/)
+ assert.match(styles,/\.project-process-navigation\{display:flex\}/)
 })
