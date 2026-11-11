@@ -1,5 +1,5 @@
 import type { ImageFraming } from '../lib/image-framing'
-export type BlockType = 'heading' | 'text' | 'image' | 'image-left' | 'image-right' | 'before-after' | 'gallery' | 'divider' | 'video' | 'model' | 'slideshow'
+export type BlockType = 'heading' | 'text' | 'image' | 'image-left' | 'image-right' | 'before-after' | 'gallery' | 'divider' | 'video' | 'model' | 'slideshow' | 'process'
 export type GalleryEntry = {id:string;image:string;artist:string;title:string;description:string;portfolioUrl:string}
 export type SlideEntry = {id:string;image:string;title:string;caption:string}
 export type SlideEffect = 'fade'|'slide'|'zoom'|'none'
@@ -7,7 +7,25 @@ export type Block = { id:string; type:BlockType; content:string; videoTitle?:str
 export type ProcessStep = { id:string; label:string; image:string }
 export type CategoryIcon = 'user'|'mountain'|'box'|'sparkles'|'grid'|'palette'|'film'|'brush'|'shapes'
 export type Category = { id:string; label:string; icon:CategoryIcon; image?:string }
-export type Project = { id:string;title:string;category:string;year:string;image:string;description:string;tools:string[];featured:boolean;blocks:Block[];processSteps?:ProcessStep[];coverFocus?:ImageFraming;heroFocus?:ImageFraming }
+export type Project = { id:string;title:string;category:string;year:string;image:string;description:string;tools:string[];featured:boolean;blocks:Block[];processSteps?:ProcessStep[];processTemplateMigrated?:boolean;coverFocus?:ImageFraming;heroFocus?:ImageFraming }
+/**
+ * Migrate the old, end-of-page process presentation into a movable block once.
+ * The marker prevents a deliberately removed template from returning on reload.
+ */
+export function upgradeProcessTemplate(project:Project):Project{
+ if(project.processTemplateMigrated)return project
+ const blocks=project.blocks??[]
+ const alreadyPresent=blocks.some(block=>block.type==='process')
+ const hasImages=(project.processSteps??[]).some(step=>typeof step.image==='string'&&step.image.trim().length>0)
+ if(alreadyPresent||!hasImages)return {...project,processTemplateMigrated:true}
+ const firstComparison=blocks.findIndex(block=>block.type==='before-after')
+ const firstGallery=blocks.findIndex(block=>block.type==='gallery'||block.type==='slideshow')
+ const insertAt=firstComparison>=0?firstComparison:firstGallery>=0?firstGallery+1:blocks.length
+ const movableBlock:Block={id:'b-process-'+project.id,type:'process',content:'Creative process'}
+ const upgraded=[...blocks]
+ upgraded.splice(insertAt,0,movableBlock)
+ return {...project,blocks:upgraded,processTemplateMigrated:true}
+}
 export const imageUrl = (name:string)=>import.meta.env.BASE_URL+'images/'+name
 const sample=(id:string,title:string,category:string,year:string,image:string,description:string,tools:string[],featured:boolean):Project=>({
  id,title,category,year,image:imageUrl('projects/'+id+'/'+image),description,tools,featured,
