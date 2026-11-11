@@ -90,3 +90,27 @@ test('every persistent image upload input routes through WebP path',async()=>{
   }
  }
 })
+
+test('creative process appears for editorial projects without replacing their gallery',async()=>{
+ const [page,styles,editor,publishedRaw]=await Promise.all([
+  text('src/components/sections/project-page.tsx'),
+  text('src/styles/portfolio-review.css'),
+  text('src/components/sections/admin-editor.tsx'),
+  text('src/data/published-portfolio.json')
+ ])
+ const project=JSON.parse(publishedRaw).store.projects.find(item=>item.title==='Room of the Palhacito')
+ assert.ok(project,'Published project fixture should exist')
+ assert.ok(project.blocks.some(block=>block.type==='gallery'))
+ assert.equal(project.processSteps?.filter(step=>step.image?.trim()).length,4)
+ assert.match(page,/className="project-artwork-process project-process-section"/)
+ assert.equal((page.match(/processImages\.length>0&&/g)||[]).length,1,'Process is rendered once only')
+ assert.ok(page.indexOf('project-process-section')>page.indexOf('needsArtworkShowcase&&<section'),'Process must not be gated by the fallback artwork block')
+ assert.match(page,/processImages\.map\(\(step,index\)=>/)
+ assert.match(page,/typeof step\.image==='string'&&step\.image\.trim\(\)\.length>0/)
+ assert.match(page,/<ZoomableArt src=\{step\.image\}/)
+ assert.match(page,/project-process-index/)
+ assert.match(styles,/\.site-shell \.project-process-section/)
+ assert.match(styles,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/)
+ assert.match(styles,/@media\(max-width:680px\)/)
+ assert.match(editor,/mesmo quando houver galeria, vídeo ou comparador/)
+})
