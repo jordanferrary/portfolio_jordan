@@ -23,6 +23,16 @@ test('mobile music starts collapsed with opening and closing controls',async()=>
  assert.match(player,/aria-hidden=\{mobile&&!drawerOpen\}/)
  assert.match(player,/setDrawerOpen\(value=>!value\)/)
 })
+test('repeat button switches between full and broken infinity icons',async()=>{
+ await transform(player,{loader:'tsx'})
+ assert.match(player,/function BrokenInfinityIcon\(\)/)
+ assert.match(player,/repeatOne\?<InfinityIcon size=\{17\}\/\>:<BrokenInfinityIcon\/>/)
+ assert.match(player,/className=\{repeatOne\?'music-repeat is-on':'music-repeat is-off'\}/)
+ assert.match(player,/aria-pressed=\{repeatOne\}/)
+ assert.match(player,/loop=\{repeatOne\}/)
+ assert.match(player,/onEnded=\{\(\)=>\{setPlaying\(false\);if\(!repeatOne\)next\(\)\}\}/)
+ assert.match(player,/localStorage\.setItem\('jf-music-repeat',repeatOne\?'one':'next'\)/)
+})
 test('outside taps, Escape, and route changes close mobile drawer',()=>{
  assert.match(player,/document\.addEventListener\('pointerdown',onPointer\)/)
  assert.match(player,/!card\.current\.contains\(event\.target as Node\)/)
