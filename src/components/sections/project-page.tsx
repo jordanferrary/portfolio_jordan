@@ -1,6 +1,6 @@
 import { lazy,Suspense,useState } from 'react'
 import { ArrowLeft,ArrowUpRight,Pencil,Sparkles,Star,Diamond,Circle,ScanSearch } from 'lucide-react'
-import type { Block,Project } from '../../data/projects'
+import type { Block,Project,ProcessStep } from '../../data/projects'
 import { AssetImage } from '../ui/asset-image'
 import { ZoomableArt } from '../ui/zoomable-art'
 const ArtLightbox=lazy(()=>import('../ui/art-lightbox').then(m=>({default:m.ArtLightbox})))
@@ -9,6 +9,7 @@ import { ProjectVideo } from '../ui/project-video'
 import { ProjectModel } from '../ui/project-model'
 import { ArtistShowcase,PageSlideshow } from './page-media-blocks'
 import { ProjectLike } from './project-like'
+import { ProjectProcess } from './project-process'
 import { framingStyle } from '../../lib/image-framing'
 function BeforeAfter({block,title}:{block:Block;title:string}){
  const [percent,setPercent]=useState(50)
@@ -16,7 +17,8 @@ function BeforeAfter({block,title}:{block:Block;title:string}){
  const [ratio,setRatio]=useState(1)
  return <div className="comparison-block"><div className="comparison-images" style={{aspectRatio:ratio}}><AssetImage src={block.media} alt={title+' before'} onLoad={e=>{const image=e.currentTarget;if(image.naturalWidth&&image.naturalHeight)setRatio(Math.min(4,Math.max(.33,image.naturalWidth/image.naturalHeight)))}}/><div className="comparison-after" style={{clipPath:'inset(0 0 0 '+percent+'%)'}}><AssetImage src={block.after} alt={title+' after'}/></div><span className="compare-label left">{block.beforeLabel??'Before'}</span><span className="compare-label right">{block.afterLabel??'After'}</span><div className="compare-line" style={{left:percent+'%'}}><span>↔</span></div><input type="range" min="0" max="100" value={percent} onChange={e=>setPercent(Number(e.target.value))} aria-label="Compare before and after"/></div><div className="comparison-zoom-actions"><button type="button" onClick={()=>setExpanded('before')}><ScanSearch size={13}/>Inspect {block.beforeLabel??'Before'}</button><button type="button" onClick={()=>setExpanded('after')}><ScanSearch size={13}/>Inspect {block.afterLabel??'After'}</button></div>{block.content&&<RichText className="media-caption" value={block.content}/>} {expanded&&<Suspense fallback={null}><ArtLightbox src={expanded==='before'?(block.media??''):(block.after??'')} alt={title+' '+expanded} onClose={()=>setExpanded(null)}/></Suspense>}</div>
 }
-export function StoryBlock({block,projectTitle}:{block:Block;projectTitle:string}){
+export function StoryBlock({block,projectTitle,processSteps=[]}:{block:Block;projectTitle:string;processSteps?:ProcessStep[]}){
+ if(block.type==='process')return <ProjectProcess steps={processSteps} heading={block.content} projectTitle={projectTitle}/>
  if(block.type==='heading')return <section className="story-block block-heading"><RichText heading value={block.content}/></section>
  if(block.type==='text')return <section className="story-block block-text"><RichText value={block.content}/></section>
  if(block.type==='image')return <section className="story-block block-image"><ZoomableArt src={block.content} alt={'Artwork from '+projectTitle} loading="lazy" sizes="(max-width: 800px) 100vw, 900px"/></section>
@@ -32,30 +34,14 @@ export function StoryBlock({block,projectTitle}:{block:Block;projectTitle:string
 }
 export function ProjectPage({project,onBack,editing,onEdit,showLikeCounts}:{project:Project;onBack:()=>void;editing:boolean;onEdit:()=>void;showLikeCounts:boolean}){
  const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery','video','model','slideshow'].includes(block.type))
- const processImages=(project.processSteps??[]).filter(step=>typeof step.image==='string'&&step.image.trim().length>0)
  const needsArtworkShowcase=!hasDetailedArtwork
  return <main data-alquimago-project={project.title} data-alquimago-category={project.category} data-alquimago-year={String(project.year??'')} data-alquimago-tools={project.tools?.join(', ')??''} className={'project-page'+(needsArtworkShowcase?' project-page-artwork-only':'')}><button className="back-link" onClick={onBack}><ArrowLeft size={18}/> Back to portfolio</button><div className="project-hero"><AssetImage src={project.image} alt={project.title} style={framingStyle(project.heroFocus)}/><div className="project-hero-content"><span className="eyebrow">✦ {project.category} / {project.year}</span><h1>{project.title}</h1><RichText className="project-hero-description" value={project.description}/><div className="tools">{project.tools.map(t=><span key={t}>{t}</span>)}</div>{editing&&<button className="primary-action" onClick={onEdit}><Pencil size={16}/>Editar projeto</button>}</div></div><div className="project-engagement"><ProjectLike projectId={project.id} showCount={showLikeCounts}/></div><div className="case-study">
-  {project.blocks.length>0&&<div className="story-blocks">{project.blocks.map(b=><StoryBlock key={b.id} block={b} projectTitle={project.title}/>)}</div>}
+  {project.blocks.length>0&&<div className="story-blocks">{project.blocks.map(b=><StoryBlock key={b.id} block={b} projectTitle={project.title} processSteps={project.processSteps}/>)}</div>}
   {needsArtworkShowcase&&<section className="project-artwork-showcase" aria-label={'Artwork from '+project.title}>
    <div className="project-artwork-heading"><span>✦ FEATURED ARTWORK</span><h2>{project.title}</h2><p>{project.category}{project.year?' · '+project.year:''}</p></div>
    <figure className="project-artwork-frame"><ZoomableArt src={project.image} alt={'Full artwork: '+project.title} loading="lazy" sizes="(max-width: 800px) 100vw, 1000px"/></figure>
 
   </section>}
  </div>
-  {processImages.length>0&&<section className="project-artwork-process project-process-section" aria-labelledby="project-process-title">
-   <header className="project-artwork-process-heading">
-    <span className="project-process-eyebrow">✦ BEHIND THE ARTWORK</span>
-    <h2 id="project-process-title">Creative process</h2>
-    <p>A visual look at the stages behind this project.</p>
-   </header>
-   <div className={'project-artwork-process-grid'+(processImages.length===1?' is-single':'')}>
-    {processImages.map((step,index)=><figure className="project-process-step" key={step.id}>
-     <div className="project-process-image">
-      <ZoomableArt src={step.image} alt={project.title+' — '+(step.label.trim()||'Step '+(index+1))} loading="lazy" sizes="(max-width: 680px) 100vw, (max-width: 1200px) 50vw, 560px"/>
-     </div>
-     <figcaption><span className="project-process-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span><span>{step.label.trim()||'Step '+(index+1)}</span></figcaption>
-    </figure>)}
-   </div>
-  </section>}
   <button className="project-end" onClick={onBack}>Explore more projects <ArrowUpRight size={18}/></button></main>
 }
