@@ -32,14 +32,30 @@ export function StoryBlock({block,projectTitle}:{block:Block;projectTitle:string
 }
 export function ProjectPage({project,onBack,editing,onEdit,showLikeCounts}:{project:Project;onBack:()=>void;editing:boolean;onEdit:()=>void;showLikeCounts:boolean}){
  const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery','video','model','slideshow'].includes(block.type))
- const processImages=(project.processSteps??[]).filter(step=>step.image.trim().length>0)
+ const processImages=(project.processSteps??[]).filter(step=>typeof step.image==='string'&&step.image.trim().length>0)
  const needsArtworkShowcase=!hasDetailedArtwork
  return <main data-alquimago-project={project.title} data-alquimago-category={project.category} data-alquimago-year={String(project.year??'')} data-alquimago-tools={project.tools?.join(', ')??''} className={'project-page'+(needsArtworkShowcase?' project-page-artwork-only':'')}><button className="back-link" onClick={onBack}><ArrowLeft size={18}/> Back to portfolio</button><div className="project-hero"><AssetImage src={project.image} alt={project.title} style={framingStyle(project.heroFocus)}/><div className="project-hero-content"><span className="eyebrow">✦ {project.category} / {project.year}</span><h1>{project.title}</h1><RichText className="project-hero-description" value={project.description}/><div className="tools">{project.tools.map(t=><span key={t}>{t}</span>)}</div>{editing&&<button className="primary-action" onClick={onEdit}><Pencil size={16}/>Editar projeto</button>}</div></div><div className="project-engagement"><ProjectLike projectId={project.id} showCount={showLikeCounts}/></div><div className="case-study">
   {project.blocks.length>0&&<div className="story-blocks">{project.blocks.map(b=><StoryBlock key={b.id} block={b} projectTitle={project.title}/>)}</div>}
   {needsArtworkShowcase&&<section className="project-artwork-showcase" aria-label={'Artwork from '+project.title}>
    <div className="project-artwork-heading"><span>✦ FEATURED ARTWORK</span><h2>{project.title}</h2><p>{project.category}{project.year?' · '+project.year:''}</p></div>
    <figure className="project-artwork-frame"><ZoomableArt src={project.image} alt={'Full artwork: '+project.title} loading="lazy" sizes="(max-width: 800px) 100vw, 1000px"/></figure>
-   {processImages.length>0&&<div className="project-artwork-process"><div className="project-artwork-process-heading"><h3>Creative process</h3><p>Images shared with this project</p></div><div className="project-artwork-process-grid">{processImages.map(step=><figure key={step.id}><ZoomableArt src={step.image} alt={step.label||project.title} loading="lazy" sizes="(max-width: 800px) 100vw, 450px"/><figcaption>{step.label}</figcaption></figure>)}</div></div>}
+
   </section>}
- </div><button className="project-end" onClick={onBack}>Explore more projects <ArrowUpRight size={18}/></button></main>
+ </div>
+  {processImages.length>0&&<section className="project-artwork-process project-process-section" aria-labelledby="project-process-title">
+   <header className="project-artwork-process-heading">
+    <span className="project-process-eyebrow">✦ BEHIND THE ARTWORK</span>
+    <h2 id="project-process-title">Creative process</h2>
+    <p>A visual look at the stages behind this project.</p>
+   </header>
+   <div className={'project-artwork-process-grid'+(processImages.length===1?' is-single':'')}>
+    {processImages.map((step,index)=><figure className="project-process-step" key={step.id}>
+     <div className="project-process-image">
+      <ZoomableArt src={step.image} alt={project.title+' — '+(step.label.trim()||'Step '+(index+1))} loading="lazy" sizes="(max-width: 680px) 100vw, (max-width: 1200px) 50vw, 560px"/>
+     </div>
+     <figcaption><span className="project-process-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span><span>{step.label.trim()||'Step '+(index+1)}</span></figcaption>
+    </figure>)}
+   </div>
+  </section>}
+  <button className="project-end" onClick={onBack}>Explore more projects <ArrowUpRight size={18}/></button></main>
 }
