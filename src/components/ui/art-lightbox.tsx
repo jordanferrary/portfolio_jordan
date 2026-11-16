@@ -3,6 +3,7 @@ import {useEffect,useRef,useState,type PointerEvent as ReactPointerEvent,type Wh
 import {createPortal} from 'react-dom'
 import {Minus,Plus,RotateCcw,X} from 'lucide-react'
 import {useAssetSrc} from './asset-image'
+import {isPointOnDisplayedArtwork} from '../../lib/lightbox-hit-test'
 
 type Props={src:string;alt:string;onClose:()=>void}
 type Point={x:number;y:number}
@@ -14,6 +15,8 @@ export function ArtLightbox({src,alt,onClose}:Props){
  const [zoom,setZoom]=useState(1)
  const [pan,setPan]=useState<Point>({x:0,y:0})
  const stage=useRef<HTMLDivElement>(null)
+ const imageRef=useRef<HTMLImageElement>(null)
+ const outsideTap=useRef<{id:number;point:Point}|null>(null)
  const closeButton=useRef<HTMLButtonElement>(null)
  const points=useRef(new Map<number,Point>())
  const drag=useRef<{start:Point;pan:Point}|null>(null)
@@ -41,13 +44,23 @@ export function ArtLightbox({src,alt,onClose}:Props){
  },[])
  const pointerDown=(event:ReactPointerEvent<HTMLDivElement>)=>{
   if(event.target instanceof HTMLElement&&event.target.closest('button'))return
+  const point={x:event.clientX,y:event.clientY}
+  const image=imageRef.current
+  // With object-fit: contain, the image element fills the stage even when the
+  // actual artwork has blank bars. Hit-test the visible artwork, not its box.
+  const outside=image&&image.naturalWidth>0&&image.naturalHeight>0
+   ?!isPointOnDisplayedArtwork(point,image.getBoundingClientRect(),image.naturalWidth,image.naturalHeight)
+   :false
+  outsideTap.current=points.current.size===0&&outside?{id:event.pointerId,point}:null
   event.currentTarget.setPointerCapture(event.pointerId)
-  points.current.set(event.pointerId,{x:event.clientX,y:event.clientY})
-  if(points.current.size===1){drag.current={start:{x:event.clientX,y:event.clientY},pan};pinch.current=null}
+  points.current.set(event.pointerId,point)
+  if(points.current.size===1){drag.current={start:point,pan};pinch.current=null}
   else if(points.current.size===2){const [a,b]=[...points.current.values()];pinch.current={distance:Math.max(1,distance(a,b)),zoom};drag.current=null}
  }
  const pointerMove=(event:ReactPointerEvent<HTMLDivElement>)=>{
   if(!points.current.has(event.pointerId))return
+  const candidate=outsideTap.current
+  if(candidate?.id===event.pointerId&&distance(candidate.point,{x:event.clientX,y:event.clientY})>8)outsideTap.current=null
   points.current.set(event.pointerId,{x:event.clientX,y:event.clientY})
   if(points.current.size>=2&&pinch.current){
    const [a,b]=[...points.current.values()]
@@ -57,11 +70,16 @@ export function ArtLightbox({src,alt,onClose}:Props){
   }
  }
  const pointerEnd=(event:ReactPointerEvent<HTMLDivElement>)=>{
+  const candidate=outsideTap.current
+  const shouldClose=event.type==='pointerup'&&candidate?.id===event.pointerId&&points.current.size===1
+   &&distance(candidate.point,{x:event.clientX,y:event.clientY})<=8
+  outsideTap.current=null
   points.current.delete(event.pointerId)
   if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId)
   pinch.current=null
   const first=[...points.current.values()][0]
   drag.current=first?{start:first,pan}:null
+  if(shouldClose)onCloseRef.current()
  }
  const wheel=(event:WheelEvent<HTMLDivElement>)=>{event.preventDefault();changeZoom(zoom+(event.deltaY<0?.25:-.25))}
  return createPortal(<div className="art-lightbox" role="dialog" aria-modal="true" aria-label={'Artwork viewer: '+alt} onMouseDown={event=>{if(event.target===event.currentTarget)onClose()}}>
@@ -76,8 +94,8 @@ export function ArtLightbox({src,alt,onClose}:Props){
    </div>
   </div>
   <div className="art-lightbox-stage" ref={stage} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerEnd} onPointerCancel={pointerEnd} onWheel={wheel} onDoubleClick={()=>changeZoom(zoom===1?2:1)}>
-   {resolved&&<img src={resolved} alt={alt} draggable={false} style={{transform:'translate('+pan.x+'px,'+pan.y+'px) scale('+zoom+')',cursor:zoom>1?'grab':'zoom-in'}}/>}
+   {resolved&&<img ref={imageRef} src={resolved} alt={alt} draggable={false} style={{transform:'translate('+pan.x+'px,'+pan.y+'px) scale('+zoom+')',cursor:zoom>1?'grab':'zoom-in'}}/>}
   </div>
-  <p className="art-lightbox-help">Scroll or pinch to zoom · Drag to inspect · Esc to close</p>
+  <p className="art-lightbox-help">Scroll or pinch to zoom · Drag to inspect · Tap outside to close · Esc to close</p>
  </div>,document.body)
 }

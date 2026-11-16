@@ -26,6 +26,7 @@ const entry=[
  "export {masonryColumnCount,distributeMasonry} from './src/lib/masonry.ts'",
  "export {HomePage} from './src/components/sections/home-page.tsx'",
  "export {ProjectFramingEditor} from './src/components/sections/project-framing-editor.tsx'",
+ "export {isPointOnDisplayedArtwork} from './src/lib/lightbox-hit-test.ts'",
  "export {MusicLibraryEditor} from './src/components/sections/music-library-editor.tsx'",
  "export {ContactPage} from './src/components/sections/contact-page.tsx'",
  "export {ContactEditor} from './src/components/sections/contact-editor.tsx'",
@@ -50,6 +51,22 @@ try{
  const awaitCss=await readFile(join(root,'src/styles/theme-coverage.css'),'utf8')
  const awaitMain=await readFile(join(root,'src/main.tsx'),'utf8')
  const element=(Component,props)=>renderToStaticMarkup(React.createElement(Component,props))
+ check('Lightbox closes only for a stationary click outside the visible artwork',()=>{
+  const hit=app.isPointOnDisplayedArtwork
+  const stage={left:0,top:0,width:1200,height:700}
+  // Panoramic artwork occupies y=150..550; black bars are outside.
+  assert.equal(hit({x:600,y:90},stage,2400,800),false)
+  assert.equal(hit({x:600,y:350},stage,2400,800),true)
+  assert.equal(hit({x:600,y:620},stage,2400,800),false)
+  // Tall artwork leaves blank bars left and right.
+  assert.equal(hit({x:80,y:350},stage,800,2400),false)
+  assert.equal(hit({x:600,y:350},stage,800,2400),true)
+  // The hit-test follows the transformed bounds while zooming/panning.
+  assert.equal(hit({x:600,y:90},{left:-600,top:-350,width:2400,height:1400},2400,800),true)
+  assert.equal(hit({x:600,y:-100},{left:-600,top:-350,width:2400,height:1400},2400,800),false)
+  // Before an image loads, never interpret an empty preview as a backdrop click.
+  assert.equal(hit({x:600,y:90},stage,0,0),true)
+ })
  check('Image framing controls both crop and zoom origin on either axis',()=>{
   assert.deepEqual(app.normalizeFraming({x:120,y:-7,zoom:7}),{x:100,y:0,zoom:2.5})
   const focus=app.framingStyle({x:23,y:61,zoom:1.7})

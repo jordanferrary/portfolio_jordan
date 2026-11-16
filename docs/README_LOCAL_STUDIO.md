@@ -80,6 +80,10 @@ Em **Local Studio → Minhas páginas → Editar → Composição → Slides**, 
 
 Slides antigos são migrados para largura natural de 100% e altura anterior de 520 px quando não houver configuração de altura. As propriedades antigas de largura personalizada e contagem manual não são mais usadas no layout. Todas as alterações precisam ser salvas e publicadas no GitHub para chegarem ao público.
 
+## Fechar visualização de arte com clique fora
+
+No visualizador em tela cheia de projetos, clicar ou tocar uma vez **fora dos pixels visíveis da imagem**, sobre a faixa escura, fecha a ampliação e retorna ao projeto. A área real da imagem é calculada respeitando `object-fit: contain`, zoom e arraste. Tocar na arte não fecha; arrastar, dar pinça com dois dedos, rolar para ampliar e usar os controles da barra superior continuam funcionando. O botão X e a tecla Esc permanecem disponíveis.
+
 ## Zoom sem corte em slides e certificados
 
 O zoom dos slides e o dos demais projetos compartilham `ArtLightbox`. O visualizador foi ajustado para dimensionar a imagem original dentro da área da tela com `object-fit: contain` mesmo para imagens muito grandes ou verticais. **Ao abrir, a imagem inteira deve ficar visível**; só deve ser cortada visualmente se o visitante ampliá-la e mover o enquadramento. Redefinir o zoom para 100% também limpa o deslocamento anterior. Miniaturas configuradas como `cover` podem aparecer recortadas no card, mas não no zoom.
