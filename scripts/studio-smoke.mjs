@@ -50,10 +50,21 @@ try{
  const awaitCss=await readFile(join(root,'src/styles/theme-coverage.css'),'utf8')
  const awaitMain=await readFile(join(root,'src/main.tsx'),'utf8')
  const element=(Component,props)=>renderToStaticMarkup(React.createElement(Component,props))
- check('Image framing clamps input, preserves zoom and object position',()=>{
+ check('Image framing controls both crop and zoom origin on either axis',()=>{
   assert.deepEqual(app.normalizeFraming({x:120,y:-7,zoom:7}),{x:100,y:0,zoom:2.5})
-  assert.equal(app.framingStyle({x:23,y:61,zoom:1.7}).objectPosition,'23% 61%')
-  assert.equal(app.framingStyle({x:23,y:61,zoom:1.7})['--jf-frame-zoom'],1.7)
+  const focus=app.framingStyle({x:23,y:61,zoom:1.7})
+  assert.equal(focus.objectPosition,'23% 61%')
+  assert.equal(focus.transformOrigin,'23% 61%')
+  assert.equal(focus['--jf-frame-zoom'],1.7)
+  assert.equal(app.framingStyle({x:50,y:0,zoom:1.93}).transformOrigin,'50% 0%')
+  assert.equal(app.framingStyle({x:50,y:100,zoom:1.93}).transformOrigin,'50% 100%')
+  const preview=element(app.ProjectFramingEditor,{
+   image:'https://example.com/art.webp',heroFocus:{x:50,y:13,zoom:1.93},onChange:()=>{}
+  })
+  assert.match(preview,/transform-origin:50% 13%/)
+  const project={id:'framed',title:'Focus',category:'3D',year:'2026',image:'https://example.com/art.webp',description:'',tools:[],blocks:[],heroFocus:{x:50,y:13,zoom:1.93}}
+  const page=element(app.ProjectPage,{project,onBack:()=>{},editing:false,onEdit:()=>{},showLikeCounts:false})
+  assert.match(page,/transform-origin:50% 13%/)
  })
  check('Local Studio dock renders with safe creator actions',()=>{
   const html=element(app.StudioDock,{
