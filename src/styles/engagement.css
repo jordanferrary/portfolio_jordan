@@ -8,7 +8,9 @@
 .composer-toolbar button[aria-label="Destaque roxo"]:hover{background:#6a2ca1;border-color:#cb85fa}
 .v2-editor .divider-editor-fields{margin:6px 0 10px;padding:12px;border:1px solid #542f74;border-radius:13px;background:linear-gradient(135deg,#221334,#150b25)}
 .v2-editor .divider-editor-fields label{display:flex;flex-direction:column;gap:8px;margin:0;color:#d6bbea;font-size:12px}
-.v2-editor .divider-editor-preview{display:flex;align-items:center;justify-content:center;letter-spacing:9px;color:#ab52ec;text-shadow:0 0 13px #a32de574;font-size:17px;margin:13px auto 2px}
+.v2-editor .divider-editor-preview{display:block;width:100%;margin:12px auto 0;padding:2px 12px}
+.v2-editor .divider-editor-preview .art-divider{min-height:44px;margin:0!important;padding:5px 0;gap:14px}
+.v2-editor .divider-editor-preview .art-divider-symbol{flex:0 0 auto}
 .story-block.art-divider{display:flex;align-items:center;justify-content:center;gap:17px;width:100%;min-height:50px;margin:32px auto 45px;padding:4px 0;color:#b64fff}
 .art-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,#923ec69e 52%,#bd61ee);min-width:0}
 .art-divider-line:last-child{background:linear-gradient(90deg,#bd61ee,transparent)}

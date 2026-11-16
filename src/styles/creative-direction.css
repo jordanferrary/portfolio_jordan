@@ -22,6 +22,8 @@ body{background:var(--jf-background);transition:background-color .35s ease}
   radial-gradient(ellipse 680px 490px at 95% 18%,color-mix(in srgb,var(--jf-secondary) 12%,transparent),transparent 78%),
   radial-gradient(ellipse 500px 460px at 45% 95%,color-mix(in srgb,var(--jf-primary) 8%,transparent),transparent 75%),
   var(--jf-background)!important;
+ /* Anchor all palette-based ambient glows to the viewport, not the page height. */
+ background-attachment:fixed!important;
 }
 .site-shell::before{
  content:"";
@@ -256,7 +258,18 @@ body{background:var(--jf-background);transition:background-color .35s ease}
  background:var(--jf-primary-soft)!important;
 }
 .site-shell .art-divider-symbol{color:var(--jf-primary)!important;text-shadow:0 0 18px var(--jf-primary-glow)}
-.site-shell .art-divider-line{background:linear-gradient(90deg,transparent,var(--jf-primary),transparent)!important}
+.site-shell .art-divider-glow .art-divider-line{
+ background:linear-gradient(90deg,transparent,var(--jf-primary),transparent)!important;
+ box-shadow:0 0 10px var(--jf-primary-glow);
+}
+.site-shell .art-divider-solid .art-divider-line{
+ background:color-mix(in srgb,var(--jf-primary) 72%,var(--jf-secondary) 28%)!important;
+ box-shadow:none;
+}
+.site-shell .art-divider-dashed .art-divider-line{
+ background:repeating-linear-gradient(90deg,var(--jf-primary) 0 9px,transparent 9px 17px)!important;
+ box-shadow:none;
+}
 .site-shell .case-study .story-blocks>section{border-color:var(--jf-panel-edge)}
 .site-shell .story-block img{box-shadow:0 12px 40px #0007;border-radius:16px}
 .site-shell .about-art-primary,.site-shell .about-art-secondary{border-color:var(--jf-panel-edge);box-shadow:0 21px 57px #0008,0 0 24px var(--jf-primary-soft)}

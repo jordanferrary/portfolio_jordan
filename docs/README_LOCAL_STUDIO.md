@@ -18,6 +18,14 @@ A aba **Enquadramento** possui **três controladores independentes por projeto**
 
 Na comparação antes/depois, utilize os botões **Inspect Before/After** para examinar cada imagem individualmente.
 
+### Divisórias com prévia fiel
+
+Em **Projeto → Composição → Linha divisória**, a amostra agora mostra exatamente o ícone escolhido (ou nenhum) e o estilo visual Brilho suave, Linha contínua ou Pontilhada. A prévia e a página publicada reutilizam o mesmo componente, incluindo a cor definida na paleta do Studio.
+
+### Fundo ambiente durante a rolagem
+
+O fundo do portfólio mantém os gradientes de cor fixos em relação à área visível da tela, inclusive nas páginas extensas de projetos. As cores seguem a paleta global e não alteram as imagens das obras.
+
 ## 5. Miniaturas e desempenho
 A publicação prepara versões WebP menores para imagens novas e, quando viável, imagens já publicadas. O navegador usa automaticamente `srcset` para exibir a resolução apropriada. As imagens antigas que não possuam miniaturas continuam abrindo normalmente. Quando o zoom abre, carrega a imagem de maior resolução disponível.
 

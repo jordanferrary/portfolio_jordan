@@ -26,6 +26,7 @@ const entry=[
  "export {masonryColumnCount,distributeMasonry} from './src/lib/masonry.ts'",
  "export {HomePage} from './src/components/sections/home-page.tsx'",
  "export {ProjectFramingEditor} from './src/components/sections/project-framing-editor.tsx'",
+ "export {ProjectDivider} from './src/components/ui/project-divider.tsx'",
  "export {isPointOnDisplayedArtwork} from './src/lib/lightbox-hit-test.ts'",
  "export {MusicLibraryEditor} from './src/components/sections/music-library-editor.tsx'",
  "export {ContactPage} from './src/components/sections/contact-page.tsx'",
@@ -49,8 +50,34 @@ try{
  await writeFile(bundle,output.outputFiles.find(file=>file.path.endsWith('.js'))?.contents??output.outputFiles[0].contents)
  const app=await import(pathToFileURL(bundle).href)
  const awaitCss=await readFile(join(root,'src/styles/theme-coverage.css'),'utf8')
+ const ambientCss=await readFile(join(root,'src/styles/creative-direction.css'),'utf8')
+ const editorSource=await readFile(join(root,'src/components/sections/admin-editor.tsx'),'utf8')
  const awaitMain=await readFile(join(root,'src/main.tsx'),'utf8')
  const element=(Component,props)=>renderToStaticMarkup(React.createElement(Component,props))
+ check('Portfolio ambient glow stays in the viewport while scrolling',()=>{
+  assert.match(ambientCss,/\.site-shell\s*\{[\s\S]*?background-attachment:fixed!important;/)
+  assert.match(ambientCss,/radial-gradient\(ellipse 720px 560px at 8% 5%,color-mix\(in srgb,var\(--jf-primary\)/)
+ })
+ check('Divider preview uses the public renderer and updates for every icon and style',()=>{
+  assert.match(editorSource,/<ProjectDivider icon=\{b\.dividerIcon\} variant=\{b\.dividerStyle\} preview\/>/)
+  const star=element(app.ProjectDivider,{icon:'star',variant:'solid',preview:true})
+  assert.match(star,/art-divider-solid/)
+  assert.match(star,/lucide-star/)
+  assert.match(star,/Prévia da linha divisória/)
+  const diamond=element(app.ProjectDivider,{icon:'diamond',variant:'dashed',preview:true})
+  assert.match(diamond,/art-divider-dashed/)
+  assert.match(diamond,/lucide-diamond/)
+  const circle=element(app.ProjectDivider,{icon:'circle',variant:'glow',preview:true})
+  assert.match(circle,/lucide-circle/)
+  const plain=element(app.ProjectDivider,{icon:'none',variant:'solid',preview:true})
+  assert.doesNotMatch(plain,/art-divider-symbol/)
+  const projectDivider=element(app.StoryBlock,{projectTitle:'Test',block:{id:'divider',type:'divider',dividerIcon:'diamond',dividerStyle:'dashed'}})
+  assert.match(projectDivider,/art-divider-dashed/)
+  assert.match(projectDivider,/lucide-diamond/)
+  assert.doesNotMatch(projectDivider,/art-divider-preview/)
+  assert.match(ambientCss,/\.site-shell \.art-divider-solid \.art-divider-line/)
+  assert.match(ambientCss,/\.site-shell \.art-divider-dashed \.art-divider-line/)
+ })
  check('Lightbox closes only for a stationary click outside the visible artwork',()=>{
   const hit=app.isPointOnDisplayedArtwork
   const stage={left:0,top:0,width:1200,height:700}
