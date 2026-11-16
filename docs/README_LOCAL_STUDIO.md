@@ -4,6 +4,8 @@
 Abra o portfólio e pressione **Ctrl + \\** no computador. Digite seu PIN na tela de acesso. O PIN é uma trava visual; a autorização para publicar depende separadamente do token do GitHub.
 
 ## 2. Gerenciar projetos
+Os botões contextuais **Editar página** (Home) e **Editar galeria** (galeria) abrem seus editores. Na galeria, a edição do fundo fica apenas nesse botão e em **Ferramentas → Páginas → Galeria**; o botão flutuante **Editar fundo** foi removido por duplicidade. Ao desbloquear o Studio, esses editores são pré-carregados. Se a sessão estiver usando arquivos obsoletos após um deploy, uma mensagem de recuperação é mostrada em primeiro plano, sem recarregar automaticamente e descartar alterações de campos não salvos.
+
 **Ferramentas → Projetos → Novo projeto** ou abra um projeto e escolha **Editar projeto**. Preencha informações, capa, ferramentas e escolha os blocos de **Composição**. Entre as opções estão imagem única, imagens com texto, galeria, comparador antes/depois, divisória e **Vídeo incorporado**.
 
 Para o vídeo, cole um URL do YouTube/Shorts ou Vimeo. Pode adicionar uma miniatura própria. O vídeo só é carregado na página pública depois que alguém clica para reproduzir.

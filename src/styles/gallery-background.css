@@ -1,24 +1,5 @@
 
 /* Gallery hero is its own editable asset, visually independent from Home. */
-.gallery-page .gallery-background-edit{
- position:absolute;z-index:8;
- top:25px;right:17px;
- display:inline-flex;align-items:center;justify-content:center;gap:8px;
- padding:9px 13px;
- border:1px solid rgba(179,91,239,.74);
- border-radius:999px;
- background:linear-gradient(130deg,rgba(71,24,108,.9),rgba(22,9,38,.92));
- backdrop-filter:blur(12px);
- color:#eed8ff;font-size:12px;font-weight:600;
- box-shadow:0 7px 24px #09021666,inset 0 1px #e4a6ff19;
- cursor:pointer;
-}
-.gallery-page .gallery-background-edit:hover,
-.gallery-page .gallery-background-edit:focus-visible{
- border-color:#d38dff;
- background:linear-gradient(130deg,#7133a9,#311350);
- box-shadow:0 0 17px #a943ed5c;
-}
 .gallery-background-editor{width:min(550px,100%)}
 .gallery-background-editor .gallery-background-hint{
  color:#c9aedb;
@@ -59,6 +40,5 @@
 .gallery-background-editor .gallery-background-reset:hover{color:#f1d9ff;border-color:#aa65df}
 .gallery-background-editor footer .save-action{display:inline-flex;align-items:center;gap:8px}
 @media(max-width:650px){
- .gallery-page .gallery-background-edit{right:4px;top:5px;padding:8px 10px;font-size:11px}
  .gallery-background-editor .gallery-background-actions{gap:7px}
 }

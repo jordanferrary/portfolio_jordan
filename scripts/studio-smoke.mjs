@@ -26,6 +26,9 @@ const entry=[
  "export {masonryColumnCount,distributeMasonry} from './src/lib/masonry.ts'",
  "export {HomePage} from './src/components/sections/home-page.tsx'",
  "export {ProjectFramingEditor} from './src/components/sections/project-framing-editor.tsx'",
+ "export {HomeEditor} from './src/components/sections/home-editor.tsx'",
+ "export {GalleryBackgroundEditor} from './src/components/sections/gallery-background-editor.tsx'",
+ "export {Gallery} from './src/components/sections/gallery.tsx'",
  "export {ProjectDivider} from './src/components/ui/project-divider.tsx'",
  "export {isPointOnDisplayedArtwork} from './src/lib/lightbox-hit-test.ts'",
  "export {MusicLibraryEditor} from './src/components/sections/music-library-editor.tsx'",
@@ -53,7 +56,28 @@ try{
  const ambientCss=await readFile(join(root,'src/styles/creative-direction.css'),'utf8')
  const editorSource=await readFile(join(root,'src/components/sections/admin-editor.tsx'),'utf8')
  const awaitMain=await readFile(join(root,'src/main.tsx'),'utf8')
+ const appSource=await readFile(join(root,'src/app.tsx'),'utf8')
  const element=(Component,props)=>renderToStaticMarkup(React.createElement(Component,props))
+ check('Home and Gallery contextual editors mount and the duplicate background button is absent',()=>{
+  const noop=()=>{}
+  const home=element(app.HomeEditor,{
+   home:app.defaultHome,testimonials:[],tracks:[],links:[],
+   onLinks:noop,onHome:noop,onTestimonials:noop,onTracks:noop,onClose:noop,
+   onExport:async()=>{},showLikeCounts:false,onShowLikeCounts:noop
+  })
+  assert.match(home,/Personalizar Home/)
+  const galleryEditor=element(app.GalleryBackgroundEditor,{value:'https://example.com/background.webp',onSave:noop,onClose:noop})
+  assert.match(galleryEditor,/Fundo da galeria/)
+  const gallery=element(app.Gallery,{
+   projects:[],categories:[],onOpen:noop,editing:true,onAdd:noop,onEdit:noop,
+   heroImage:'https://example.com/background.webp',onReorder:noop
+  })
+  assert.doesNotMatch(gallery,/gallery-background-edit|Editar fundo/)
+  assert.match(appSource,/onEditCurrent=\{editCurrent\}/)
+  assert.match(appSource,/AppErrorBoundary compact editorOverlay/)
+  assert.match(appSource,/import\('\.\/components\/sections\/home-editor'\)\.catch/)
+  assert.match(appSource,/import\('\.\/components\/sections\/gallery-background-editor'\)\.catch/)
+ })
  check('Portfolio ambient glow stays in the viewport while scrolling',()=>{
   assert.match(ambientCss,/\.site-shell\s*\{[\s\S]*?background-attachment:fixed!important;/)
   assert.match(ambientCss,/radial-gradient\(ellipse 720px 560px at 8% 5%,color-mix\(in srgb,var\(--jf-primary\)/)

@@ -73,6 +73,13 @@ export function App(){
  const [gateOpen,setGateOpen]=useState(false)
  const [editor,setEditor]=useState<Project|null|undefined>(undefined)
  const [homeEditorOpen,setHomeEditorOpen]=useState(false)
+ // Preload contextual editors when Studio unlocks so frequent deployments do
+ // not invalidate their lazy chunks while the owner is working on the page.
+ useEffect(()=>{
+  if(!editing)return
+  void import('./components/sections/home-editor').catch(()=>{})
+  void import('./components/sections/gallery-background-editor').catch(()=>{})
+ },[editing])
  const [aboutEditorOpen,setAboutEditorOpen]=useState(false)
  const [contactEditorOpen,setContactEditorOpen]=useState(false)
  const [githubPublishOpen,setGitHubPublishOpen]=useState(false)
@@ -305,7 +312,7 @@ export function App(){
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
  return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':page==='contato'?'site-shell contact-route':page==='sobre'?'site-shell about-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}} language={visitorLanguage} onLanguageChange={changeVisitorLanguage}/>
- {page==='portfolio'&&<AppErrorBoundary compact><Suspense fallback={<div className="simple-page" role="status">Loading portfolio…</div>}><Gallery projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground} onEditBackground={()=>setGalleryBackgroundEditorOpen(true)}/></Suspense></AppErrorBoundary>}
+ {page==='portfolio'&&<AppErrorBoundary compact><Suspense fallback={<div className="simple-page" role="status">Loading portfolio…</div>}><Gallery projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground}/></Suspense></AppErrorBoundary>}
  {page==='project'&&project&&<AppErrorBoundary compact><Suspense fallback={<div className="simple-page" role="status">Loading project…</div>}><ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts}/></Suspense></AppErrorBoundary>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
  {page==='custom'&&customPage&&<AppErrorBoundary compact><Suspense fallback={<div className="simple-page">Loading page…</div>}><CustomPageView page={customPage} editing={editing} onEdit={()=>setCustomPageEditorTarget(customPage.id)}/></Suspense></AppErrorBoundary>}
@@ -316,7 +323,7 @@ export function App(){
  </div>
  {editing&&<AppErrorBoundary compact><Suspense fallback={null}><StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onNewProject={()=>setEditor(null)} onPublish={()=>openPublishDialog('studio')} onExport={portfolio.exportData} onRestorePublished={portfolio.restorePublished} publishedRevision={currentPublishedRevision} onLock={()=>{setEditing(false);setEditor(undefined)}} actions={studioActions}/></Suspense></AppErrorBoundary>} 
   {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
- <AppErrorBoundary compact><Suspense fallback={null}>
+ <AppErrorBoundary compact editorOverlay><Suspense fallback={null}>
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>{setGateOpen(false);setSkin3DOpen(false)}}/>}
  {editing&&imageConverterOpen&&<ImageConverter onClose={()=>setImageConverterOpen(false)}/>}
  {editing&&customPageEditorTarget!==null&&<CustomPageEditor key={customPageEditorTarget} initialPageId={customPageEditorTarget} pages={portfolio.customPages} onSavePages={portfolio.setCustomPages} onNavigatePage={navigateCustomPage} onClose={()=>setCustomPageEditorTarget(null)}/>}
