@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "revision": "2026-11-16T19:52:21.217Z-a4ee0461-12de-41df-b6c1-932f26682236",
-  "updatedAt": "2026-11-16T19:52:21.218Z",
+  "revision": "2026-11-16T20:28:42.058Z-2350ae05-c176-4e37-86d4-25a1fafffa36",
+  "updatedAt": "2026-11-16T20:28:42.058Z",
   "site": {
     "type": "react-portfolio",
     "editor": "Local Studio"
   },
   "counts": {
-    "projects": 7,
+    "projects": 2,
     "pages": 0,
     "categories": 4
   },

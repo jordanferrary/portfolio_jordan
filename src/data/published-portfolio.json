@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-16T19:52:21.217Z-a4ee0461-12de-41df-b6c1-932f26682236",
+  "revision": "2026-11-16T20:28:42.058Z-2350ae05-c176-4e37-86d4-25a1fafffa36",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -200,14 +200,19 @@
           "y": 72,
           "zoom": 1
         },
-        "processTemplateMigrated": true
+        "processTemplateMigrated": true,
+        "homeFocus": {
+          "x": 50,
+          "y": 52,
+          "zoom": 1
+        }
       },
       {
         "id": "project-mw4y57pk",
         "title": "The Haunted Catch",
         "category": "Stylized",
         "year": "2026",
-        "image": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
+        "image": "site://images/studio/f7eecbb7701d31b7685fab59434689e3b261696ebc814996dd13b3f9dff339b7.webp",
         "description": "A spooky little hammerhead shark based on a concept by Oscar Ibanez. I had a lot of fun bringing this character into 3D and playing around with its shapes, expressions, and Halloween-inspired details.",
         "tools": [
           "Zbrush",
@@ -286,135 +291,21 @@
         ],
         "processSteps": [],
         "coverFocus": {
-          "x": 0,
+          "x": 3,
+          "y": 17,
+          "zoom": 1.32
+        },
+        "heroFocus": {
+          "x": 3,
+          "y": 16,
+          "zoom": 1.96
+        },
+        "processTemplateMigrated": true,
+        "homeFocus": {
+          "x": 10,
           "y": 1,
           "zoom": 1
-        },
-        "heroFocus": {
-          "x": 55.36444932256149,
-          "y": 18.17237746229955,
-          "zoom": 1
-        },
-        "processTemplateMigrated": true
-      },
-      {
-        "id": "project-mw4yafaa",
-        "title": "plants",
-        "category": "Props",
-        "year": "2026",
-        "image": "https://i.pinimg.com/1200x/55/cb/c3/55cbc3c021045f5189d7d5330a9d7d16.jpg",
-        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.",
-        "tools": [],
-        "featured": false,
-        "blocks": [],
-        "processSteps": [],
-        "coverFocus": {
-          "x": 50,
-          "y": 50,
-          "zoom": 1
-        },
-        "heroFocus": {
-          "x": 50,
-          "y": 50,
-          "zoom": 1
-        },
-        "processTemplateMigrated": true
-      },
-      {
-        "id": "project-mw4y09kv",
-        "title": "Bruxa 3D",
-        "category": "Props",
-        "year": "2026",
-        "image": "https://i.pinimg.com/1200x/91/24/7f/91247f70fc6116e6d7a14f2aafa62290.jpg",
-        "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since 1966, when designers at Letraset and James Mosley, the librarian at St Bride Printing Library in London, took a 1914 Cicero translation and scrambled it to make dummy text for Letraset's Body Type sheets. It has survived not only many decades, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised thanks to these sheets and more recently with desktop publishing software like Aldus PageMaker and Microsoft Word including versions of Lorem Ipsum.",
-        "tools": [],
-        "featured": false,
-        "blocks": [],
-        "processSteps": [],
-        "coverFocus": {
-          "x": 50,
-          "y": 50,
-          "zoom": 1
-        },
-        "heroFocus": {
-          "x": 50,
-          "y": 50,
-          "zoom": 1
-        },
-        "processTemplateMigrated": true
-      },
-      {
-        "id": "project-mw4y7bfq",
-        "title": "Alice",
-        "category": "Props",
-        "year": "2026",
-        "image": "https://i.pinimg.com/1200x/a8/77/4f/a8774f356dba78e983efc7060438e0a0.jpg",
-        "description": "",
-        "tools": [],
-        "featured": false,
-        "blocks": [],
-        "processSteps": [],
-        "coverFocus": {
-          "x": 50,
-          "y": 50,
-          "zoom": 1
-        },
-        "heroFocus": {
-          "x": 50,
-          "y": 50,
-          "zoom": 1
-        },
-        "processTemplateMigrated": true
-      },
-      {
-        "id": "project-mw4ygym0",
-        "title": "Piplup",
-        "category": "Props",
-        "year": "2026",
-        "image": "https://i.pinimg.com/1200x/06/29/d1/0629d1133e787c0d60c721767c7b33dd.jpg",
-        "description": "",
-        "tools": [],
-        "featured": false,
-        "blocks": [],
-        "processSteps": [],
-        "coverFocus": {
-          "x": 50,
-          "y": 50,
-          "zoom": 1
-        },
-        "heroFocus": {
-          "x": 50,
-          "y": 50,
-          "zoom": 1
-        },
-        "processTemplateMigrated": true
-      },
-      {
-        "id": "project-mw4vi9s4",
-        "title": "Novo projeto",
-        "category": "Props",
-        "year": "2026",
-        "image": "https://i.pinimg.com/736x/e8/62/14/e86214cec1a1ef001493e302ad4ef17d.jpg",
-        "description": "## mecha - ==sci fy==",
-        "tools": [
-          "Blender",
-          "Zbrush",
-          "Substance Painter"
-        ],
-        "featured": true,
-        "blocks": [],
-        "processSteps": [],
-        "coverFocus": {
-          "x": 50,
-          "y": 50,
-          "zoom": 1
-        },
-        "heroFocus": {
-          "x": 50,
-          "y": 50,
-          "zoom": 1
-        },
-        "processTemplateMigrated": true
+        }
       }
     ],
     "categories": [
