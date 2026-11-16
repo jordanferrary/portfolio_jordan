@@ -208,21 +208,22 @@ try{
   assert.equal(columns.length,2)
   assert.deepEqual(columns.flat().map(item=>item.project.id).sort(),projects.map(p=>p.id).sort())
  })
- check('Home featured cards apply the same cover framing as the project gallery',()=>{
+ check('Legacy Home cards inherit gallery framing when homeFocus is absent',()=>{
   const project={id:'smoke',title:'Smoke Test',image:'https://example.com/cover.webp',featured:true,coverFocus:{x:28,y:72,zoom:1.6}}
   const html=element(app.HomePage,{home:app.defaultHome,testimonials:[],projects:[project],editing:false,onOpenProject:()=>{},onEditProject:()=>{},onEditHome:()=>{},onNavigatePortfolio:()=>{}})
   assert.match(html,/object-position:28% 72%/)
   assert.match(html,/--jf-frame-zoom:1.6/)
  })
- check('Framing tool has one cover editor, a read-only Home preview and an independent banner',()=>{
-  const html=element(app.ProjectFramingEditor,{image:'https://example.com/art.webp',coverFocus:{x:22,y:71,zoom:1.4},heroFocus:{x:78,y:33,zoom:1.1},onChange:()=>{}})
-  assert.match(html,/Prévia na Home/)
-  assert.match(html,/Somente visualização/)
-  assert.match(html,/Capa dos projetos/)
+ check('Framing tool has independent Gallery, Home and Banner controls',()=>{
+  const html=element(app.ProjectFramingEditor,{image:'https://example.com/art.webp',coverFocus:{x:22,y:71,zoom:1.4},homeFocus:{x:15,y:60,zoom:1.3},heroFocus:{x:78,y:33,zoom:1.1},onChange:()=>{}})
+  assert.match(html,/Capa da galeria/)
+  assert.match(html,/Destaque da Home/)
   assert.match(html,/Banner do projeto/)
-  assert.equal((html.match(/type="range"/g)||[]).length,6)
-  assert.equal((html.match(/class="framing-canvas /g)||[]).length,2)
+  assert.doesNotMatch(html,/Somente visualização/)
+  assert.equal((html.match(/type="range"/g)||[]).length,9)
+  assert.equal((html.match(/class="framing-canvas /g)||[]).length,3)
   assert.match(html,/object-position:22% 71%/)
+  assert.match(html,/object-position:15% 60%/)
   assert.match(html,/object-position:78% 33%/)
  })
  check('Music library displays Internet cover artwork without YouTube metadata',()=>{
