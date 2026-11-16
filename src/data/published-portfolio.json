@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-09T11:13:35.497Z-c35ef93f-e580-499a-8a3c-2b7f783eb9f2",
+  "revision": "2026-11-16T19:52:21.217Z-a4ee0461-12de-41df-b6c1-932f26682236",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -86,6 +86,27 @@
         "medium": "site://images/studio/aa9a056919d942834641dc1dc98448a26f0d47e49f9009bfbf8656a7adb7ea31.webp",
         "mediumWidth": 960,
         "largeWidth": 2048
+      },
+      "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp": {
+        "small": "site://images/studio/00458e265abfdbc86fe75c417f75e8960fb875bc878b90b3c59be00b1906ff8c.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/79eae0348e671144974d79ecd393f218488e329f277fbd60ebf3010630e93e0c.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2048
+      },
+      "site://images/studio/f7eecbb7701d31b7685fab59434689e3b261696ebc814996dd13b3f9dff339b7.webp": {
+        "small": "site://images/studio/67d097e15053ce0feef5cd8a100710dfc7b4598eefe67386cd3c1aeddc0b7f71.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/ba3bb3e0120b8bdf30301edf5d6d4696da36209b4e1506a52b389bbe6c1a6697.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2048
+      },
+      "site://images/studio/16dab4152e1208daab2ca9d9dca1e98530385b2a8ea6c7a0313cb2f7ad43797e.webp": {
+        "small": "site://images/studio/5729672523c9f63098371c48952b6a648522f0d0956b67cfdcedfaa0292c3fe4.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/c12281f76ae4ee32e7acc196960c8a723dbb79bba4e371ebb5ca79c0d58f5421.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2048
       }
     },
     "customPages": [],
@@ -108,6 +129,11 @@
             "id": "b-54ng20cikjv",
             "type": "image",
             "content": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png"
+          },
+          {
+            "id": "b-process-project-mw4oyna3",
+            "type": "process",
+            "content": "Creative process"
           },
           {
             "id": "b-zdh6t2l9edc",
@@ -140,11 +166,6 @@
             "content": "",
             "media": "site://images/studio/87eb9b94f2355c69589f0e57336aaf4a2f490f8d005433af058c67a428cbcdc4.png",
             "after": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png"
-          },
-          {
-            "id": "b-v3t4ga80b3q",
-            "type": "video",
-            "content": "https://www.youtube.com/live/rFZHOHl-L8A?si=VOUbQeieVGdFcalV"
           }
         ],
         "processSteps": [
@@ -178,14 +199,15 @@
           "x": 50,
           "y": 72,
           "zoom": 1
-        }
+        },
+        "processTemplateMigrated": true
       },
       {
         "id": "project-mw4y57pk",
         "title": "The Haunted Catch",
         "category": "Stylized",
         "year": "2026",
-        "image": "site://images/studio/59bc9ab8406c3cb8961e269c259462b562771cb5fc29d0c7762807c114720b54.webp",
+        "image": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
         "description": "A spooky little hammerhead shark based on a concept by Oscar Ibanez. I had a lot of fun bringing this character into 3D and playing around with its shapes, expressions, and Halloween-inspired details.",
         "tools": [
           "Zbrush",
@@ -196,7 +218,7 @@
           {
             "id": "b-hz1kx7c54am",
             "type": "image",
-            "content": "site://images/studio/59bc9ab8406c3cb8961e269c259462b562771cb5fc29d0c7762807c114720b54.webp",
+            "content": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
             "slideAutoplay": false,
             "slideEffect": "fade",
             "slideInterval": 5000,
@@ -216,14 +238,40 @@
             "dividerStyle": "glow"
           },
           {
-            "id": "b-tlcl855ddml",
+            "id": "b-976w9arfy7d",
             "type": "image",
-            "content": "site://images/studio/ef9429ce7080b73929382e233e56d13b0f566a85981d4ff7dcb1f263d8d77620.webp",
+            "content": "site://images/studio/f7eecbb7701d31b7685fab59434689e3b261696ebc814996dd13b3f9dff339b7.webp",
             "slideAutoplay": false,
             "slideEffect": "fade",
             "slideInterval": 5000,
             "slideHeight": 420,
             "slideShowPauseButton": false
+          },
+          {
+            "id": "b-npptb3g1b5",
+            "type": "divider",
+            "content": "",
+            "slideAutoplay": false,
+            "slideEffect": "fade",
+            "slideInterval": 5000,
+            "slideHeight": 420,
+            "slideShowPauseButton": false,
+            "dividerIcon": "sparkles",
+            "dividerStyle": "glow"
+          },
+          {
+            "id": "b-0h0p35f2h71c",
+            "type": "before-after",
+            "content": "",
+            "slideAutoplay": false,
+            "slideEffect": "fade",
+            "slideInterval": 5000,
+            "slideHeight": 420,
+            "slideShowPauseButton": false,
+            "media": "site://images/studio/16dab4152e1208daab2ca9d9dca1e98530385b2a8ea6c7a0313cb2f7ad43797e.webp",
+            "after": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
+            "beforeLabel": "Untextured",
+            "afterLabel": "Textured"
           },
           {
             "id": "b-xn0y74fl8mk",
@@ -238,15 +286,16 @@
         ],
         "processSteps": [],
         "coverFocus": {
-          "x": 38,
-          "y": 22,
-          "zoom": 1.16
+          "x": 0,
+          "y": 1,
+          "zoom": 1
         },
         "heroFocus": {
           "x": 55.36444932256149,
           "y": 18.17237746229955,
           "zoom": 1
-        }
+        },
+        "processTemplateMigrated": true
       },
       {
         "id": "project-mw4yafaa",
@@ -268,7 +317,8 @@
           "x": 50,
           "y": 50,
           "zoom": 1
-        }
+        },
+        "processTemplateMigrated": true
       },
       {
         "id": "project-mw4y09kv",
@@ -290,7 +340,8 @@
           "x": 50,
           "y": 50,
           "zoom": 1
-        }
+        },
+        "processTemplateMigrated": true
       },
       {
         "id": "project-mw4y7bfq",
@@ -312,7 +363,8 @@
           "x": 50,
           "y": 50,
           "zoom": 1
-        }
+        },
+        "processTemplateMigrated": true
       },
       {
         "id": "project-mw4ygym0",
@@ -334,7 +386,8 @@
           "x": 50,
           "y": 50,
           "zoom": 1
-        }
+        },
+        "processTemplateMigrated": true
       },
       {
         "id": "project-mw4vi9s4",
@@ -360,7 +413,8 @@
           "x": 50,
           "y": 50,
           "zoom": 1
-        }
+        },
+        "processTemplateMigrated": true
       }
     ],
     "categories": [

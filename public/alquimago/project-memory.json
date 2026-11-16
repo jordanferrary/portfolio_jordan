@@ -1,16 +1,16 @@
 {
   "schema": 2,
-  "updatedAt": "2026-11-09T11:13:35.498Z",
+  "updatedAt": "2026-11-16T19:52:21.218Z",
   "brain": {
     "energy": 100,
-    "curiosity": 78.45000000000034,
-    "focus": 4.006666666666693,
+    "curiosity": 83.10000000000038,
+    "focus": 0,
     "affinity": 57,
-    "xp": 50,
-    "interactions": 9,
+    "xp": 60,
+    "interactions": 10,
     "lastSeen": 1000000000000,
     "sleepUntil": 0,
-    "lastRewardAt": 1794222815498,
+    "lastRewardAt": 1794858741218,
     "lastAction": "publish",
     "lastRewardAction": "publish",
     "rewardedPages": {
@@ -18,7 +18,8 @@
       "pub-2026-11-07T21%3A25%3A45.343Z-0f60515e-bd5b-4264-b980-55a8ca82e670": 20764,
       "pub-2026-11-08T00%3A49%3A04.401Z-8e84c0f6-f66a-4c7c-99ee-af04d52be469": 20765,
       "pub-2026-11-09T11%3A09%3A48.030Z-90ea1d8b-7a08-4de9-8028-6c6da6a462a8": 20766,
-      "pub-2026-11-09T11%3A13%3A35.497Z-c35ef93f-e580-499a-8a3c-2b7f783eb9f2": 20766
+      "pub-2026-11-09T11%3A13%3A35.497Z-c35ef93f-e580-499a-8a3c-2b7f783eb9f2": 20766,
+      "pub-2026-11-16T19%3A52%3A21.217Z-a4ee0461-12de-41df-b6c1-932f26682236": 20773
     }
   },
   "neural": {
@@ -2670,9 +2671,9 @@
   "behavior": {
     "schema": 1,
     "seed": 77,
-    "energy": 40.70000000000008,
-    "curiosity": 47.16000000000017,
-    "stimulation": 17.5,
+    "energy": 38.60000000000007,
+    "curiosity": 46.68000000000018,
+    "stimulation": 16,
     "trust": 45,
     "rewardBias": [
       0,
@@ -2695,7 +2696,7 @@
     "contextWeights": {},
     "adaptation": {
       "quieto": 0,
-      "observar": 0.4343884542236323,
+      "observar": 0.26339361174458875,
       "dica": 0,
       "investigar": 0,
       "acenar": 0,
@@ -2718,8 +2719,8 @@
     "lastDecisionAt": 1794222581345,
     "lastRewardAt": 0,
     "feedbackCount": 0,
-    "autonomousCount": 2,
-    "lastActiveDay": 20766,
+    "autonomousCount": 0,
+    "lastActiveDay": 20773,
     "lastCue": "project"
   },
   "description": "Memória numérica pública do familiar. Nenhuma mensagem ou token é incluído."
