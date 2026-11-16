@@ -114,12 +114,12 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <p className="local-warning">Edição exclusiva deste projeto. O rascunho fica neste navegador; depois de salvar, use “Publicar no GitHub” para atualizar o portfólio público.</p>
  <label>Título<input value={draft.title} onChange={e=>patch({title:e.target.value})}/></label>
  <div className="editor-two"><label>Filtro do projeto<select value={draft.category} onChange={e=>patch({category:e.target.value})}>{categories.map(c=><option key={c.id} value={c.label}>{c.label}</option>)}</select></label><label>Ano<input value={draft.year} onChange={e=>patch({year:e.target.value})}/></label></div>
- <MediaField value={draft.image} onChange={image=>patch({image})} folder={'projects/'+draft.id} slot="cover" label="Capa" onError={setMessage}/>{draft.image&&<button type="button" className="framing-shortcut" onClick={()=>setTab('framing')}>✦ Ajustar enquadramento da capa e do banner</button>}
+ <MediaField value={draft.image} onChange={image=>patch({image})} folder={'projects/'+draft.id} slot="cover" label="Capa" onError={setMessage}/>{draft.image&&<button type="button" className="framing-shortcut" onClick={()=>setTab('framing')}>✦ Ajustar enquadramento da galeria, Home e banner</button>}
  <div className="project-description-composer"><p>Descrição principal</p><TextComposer label="Descrição do projeto" rows={4} value={draft.description} onChange={description=>patch({description})}/></div>
  <div className="tools-control"><p>Ferramentas utilizadas</p><ToolTags tools={draft.tools} onChange={tools=>patch({tools})}/></div>
  <label className="checkbox-line"><input type="checkbox" checked={draft.featured} onChange={e=>patch({featured:e.target.checked})}/>Exibir em trabalhos de destaque</label>
  </>}
- {tab==='framing'&&<ProjectFramingEditor image={draft.image} coverFocus={draft.coverFocus} heroFocus={draft.heroFocus} onChange={values=>patch(values)}/>}
+ {tab==='framing'&&<ProjectFramingEditor image={draft.image} coverFocus={draft.coverFocus} homeFocus={draft.homeFocus} heroFocus={draft.heroFocus} onChange={values=>patch(values)}/>}
  {tab==='composition'&&<>
  <p className="local-warning">Organize apenas a apresentação deste projeto. Os blocos abaixo formarão a página completa da obra.</p>
  {media.length>0&&<><div className="editor-section-title"><h3>Meus assets deste projeto</h3><p>Arraste estas miniaturas até um campo de imagem abaixo.</p></div><div className="asset-shelf">{media.map(src=><div key={src} className="asset-shelf-item" draggable onDragStart={event=>event.dataTransfer.setData('application/x-jf-asset',src)} title="Arraste para uma área de imagem"><AssetImage src={src} alt="Asset disponível"/></div>)}</div></>}

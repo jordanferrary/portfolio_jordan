@@ -58,13 +58,28 @@ try{
   assert.equal(focus['--jf-frame-zoom'],1.7)
   assert.equal(app.framingStyle({x:50,y:0,zoom:1.93}).transformOrigin,'50% 0%')
   assert.equal(app.framingStyle({x:50,y:100,zoom:1.93}).transformOrigin,'50% 100%')
+  const coverFocus={x:20,y:10,zoom:1.4}
+  const homeFocus={x:73,y:42,zoom:1.8}
+  const heroFocus={x:50,y:13,zoom:1.93}
   const preview=element(app.ProjectFramingEditor,{
-   image:'https://example.com/art.webp',heroFocus:{x:50,y:13,zoom:1.93},onChange:()=>{}
+   image:'https://example.com/art.webp',coverFocus,homeFocus,heroFocus,onChange:()=>{}
   })
+  assert.match(preview,/Capa da galeria/)
+  assert.match(preview,/Destaque da Home/)
+  assert.match(preview,/Banner do projeto/)
+  assert.match(preview,/transform-origin:20% 10%/)
+  assert.match(preview,/transform-origin:73% 42%/)
   assert.match(preview,/transform-origin:50% 13%/)
-  const project={id:'framed',title:'Focus',category:'3D',year:'2026',image:'https://example.com/art.webp',description:'',tools:[],blocks:[],heroFocus:{x:50,y:13,zoom:1.93}}
+  assert.doesNotMatch(preview,/Somente visualização/)
+  const project={id:'framed',title:'Focus',category:'3D',year:'2026',image:'https://example.com/art.webp',description:'',tools:[],featured:true,blocks:[],coverFocus,homeFocus,heroFocus}
   const page=element(app.ProjectPage,{project,onBack:()=>{},editing:false,onEdit:()=>{},showLikeCounts:false})
   assert.match(page,/transform-origin:50% 13%/)
+  const props={home:app.defaultHome,testimonials:[],projects:[project],editing:false,onOpenProject:()=>{},onEditProject:()=>{},onEditHome:()=>{},onNavigatePortfolio:()=>{}}
+  const homePage=element(app.HomePage,props)
+  assert.match(homePage,/transform-origin:73% 42%/)
+  assert.doesNotMatch(homePage,/transform-origin:20% 10%/)
+  const legacyPage=element(app.HomePage,{...props,projects:[{...project,homeFocus:undefined}]})
+  assert.match(legacyPage,/transform-origin:20% 10%/)
  })
  check('Local Studio dock renders with safe creator actions',()=>{
   const html=element(app.StudioDock,{

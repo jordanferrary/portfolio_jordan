@@ -14,7 +14,7 @@ As imagens importadas pelo Studio são convertidas **automaticamente** para WebP
 **Ferramentas → Conteúdo → Conversor WebP** oferece exportação manual em 1024, 1600, 2048 ou 4096 px com qualidade regulável. Ele gera um arquivo WebP para baixar, sem serviço externo.
 
 ## 4. Ajustar e inspecionar imagens
-A aba **Enquadramento** tem apenas **dois conjuntos de controles independentes**: **Capa** (usado na galeria e na Home) e **Banner** (usado na página interna). A Home aparece como **prévia somente visual** dentro da configuração da capa, sem um terceiro conjunto de controles ou arraste próprio. A imagem original não é alterada. Na página do projeto, clique na imagem para ampliar no visualizador.
+A aba **Enquadramento** possui **três controladores independentes por projeto**: **Capa da galeria**, **Destaque da Home** e **Banner do projeto**. Cada quadro oferece arraste, sliders Horizontal/Vertical/Zoom, campos numéricos e botão Centralizar. O destaque da Home deixou de ser uma prévia vinculada à capa. Os comandos **Copiar ajustes** transferem valores somente quando clicados. Projetos e backups antigos sem `homeFocus` herdam inicialmente `coverFocus` para evitar alterações inesperadas; depois os dois enquadramentos podem ser editados separadamente. Os valores são salvos no rascunho do projeto e publicados com o restante do portfólio; a imagem original permanece intacta.
 
 Na comparação antes/depois, utilize os botões **Inspect Before/After** para examinar cada imagem individualmente.
 
