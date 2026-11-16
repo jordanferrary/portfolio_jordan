@@ -20,6 +20,10 @@ export function framingStyle(value:unknown):CSSProperties{
  const frame=normalizeFraming(value)
  return {
   objectPosition:frame.x+'% '+frame.y+'%',
+  // object-position alone cannot move an image along an axis that has no
+  // intrinsic cover crop. Scaling around the selected focus keeps both
+  // sliders effective whenever zoom creates room to pan (with no blank edges).
+  transformOrigin:frame.x+'% '+frame.y+'%',
   '--jf-frame-zoom':frame.zoom
  } as CSSProperties
 }
