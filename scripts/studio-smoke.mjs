@@ -64,7 +64,6 @@ try{
  const studioCss=await readFile(join(root,'src/styles/studio-centered.css'),'utf8')
  const studioPaletteCss=await readFile(join(root,'src/styles/studio-palette-coverage.css'),'utf8')
  const contactCss=await readFile(join(root,'src/styles/contact-social.css'),'utf8')
- const contactCss=await readFile(join(root,'src/styles/contact-social.css'),'utf8')
  const element=(Component,props)=>renderToStaticMarkup(React.createElement(Component,props))
  check('Home and Gallery contextual editors mount and the duplicate background button is absent',()=>{
   const noop=()=>{}
