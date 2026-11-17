@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-17T11:07:08.179Z-7100ce42-8511-4f44-b6c5-4e90d5ae854f",
+  "revision": "2026-11-17T14:33:38.692Z-b12b6a8a-bf6d-4d93-aaac-66dfd2a9da1c",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -336,7 +336,12 @@
       "titleSecond": "worlds.",
       "introduction": "I'm Jordan Ferrary, a 3D artist focused on bringing ideas to life through art, modeling and creativity.",
       "avatar": "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg",
-      "background": "site://images/studio/5f5db0accc8c625c55ac22172769e03bc4e723816e5990a9a33e0ded87341807.webp",
+      "background": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
+      "backgroundFocus": {
+        "x": 50,
+        "y": 8,
+        "zoom": 1
+      },
       "available": true,
       "aboutTagline": "Turning imagination into reality.",
       "specialties": [
@@ -418,7 +423,21 @@
         "CREATIVE DIRECTION"
       ]
     },
-    "galleryBackground": "site://images/studio/5f5db0accc8c625c55ac22172769e03bc4e723816e5990a9a33e0ded87341807.webp",
+    "galleryBackground": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
+    "galleryFocus": {
+      "x": 90,
+      "y": 12,
+      "zoom": 1
+    },
+    "galleryContent": {
+      "eyebrow": "Explore my portfolio",
+      "titleFirst": "A world of art,\nin every",
+      "titleAccent": "detail.",
+      "introduction": "Dive into my 3D creations and discover the stories\nbehind each project.",
+      "allLabel": "All",
+      "searchPlaceholder": "Search for projects...",
+      "emptyMessage": "No projects found. Try another filter or search term."
+    },
     "siteLogo": "site://images/studio/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5.png",
     "siteLogoHover": "",
     "siteLogoSize": 140,
@@ -433,6 +452,7 @@
       "muted": "#B7A0CD",
       "border": "#7335A7"
     },
+    "headingSymbol": "sparkle",
     "seoTitle": "Jordan Ferrary — Creative Portfolio",
     "seoDescription": "Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects."
   }
