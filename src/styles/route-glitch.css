@@ -4,7 +4,7 @@
  --jf-glitch-magenta:#D84CFF;
  --jf-glitch-cyan:#5CF4FF;
  --jf-glitch-lime:#ACFF58;
- --jf-glitch-noise:#F6F7FF;
+ --jf-glitch-noise:#554467;
  --jf-glitch-dark:#060410;
  --jf-glitch-intensity:1;
 }
@@ -61,12 +61,14 @@
  position:absolute;inset:-8%;
  background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'128'%3E%3Cfilter%20id%3D'n'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'.83'%20numOctaves%3D'3'%20seed%3D'12'%20stitchTiles%3D'stitch'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'128'%20height%3D'128'%20filter%3D'url(%23n)'%20opacity%3D'.85'%2F%3E%3C%2Fsvg%3E");
  background-repeat:repeat;background-size:128px 128px;
- background-color:var(--jf-glitch-noise);
+ /* Even with a white user swatch, blend most of the grain into the dark
+    background before screening; do not let the SVG become a white flash. */
+ background-color:color-mix(in srgb,var(--jf-glitch-noise) 42%,var(--jf-glitch-dark) 58%);
  background-blend-mode:multiply;
  image-rendering:pixelated;
  mix-blend-mode:screen;
- filter:contrast(240%) brightness(1.16);
- opacity:calc(.42 * var(--jf-glitch-intensity));
+ filter:contrast(140%) brightness(.72);
+ opacity:calc(.18 * min(var(--jf-glitch-intensity),1.1));
  animation:jf-glitch-static-noise 670ms steps(3,end) infinite;
 }
 .jf-glitch-chroma{
@@ -94,8 +96,10 @@
  89%{opacity:.12}
 }
 @keyframes jf-glitch-pending-fade{
- 0%,100%{opacity:.98}13%{opacity:.88}22%{opacity:1}
- 49%{opacity:.92}63%{opacity:1}81%{opacity:.94}
+ /* No full-screen brightness pulse on long waits; texture supplies motion. */
+ 0%,100%{opacity:1}
+ 25%,75%{opacity:.97}
+ 50%{opacity:.99}
 }
 @keyframes jf-glitch-block-jump{
  0%,100%{opacity:0;transform:translate3d(0,0,0) scaleX(.85)}
@@ -117,12 +121,12 @@
  82%{opacity:.42;transform:translate3d(8vw,0,0)}
 }
 @keyframes jf-glitch-static-noise{
- 0%,100%{transform:translate3d(0,0,0);opacity:.28}
- 14%{transform:translate3d(-19px,13px,0);opacity:calc(.63 * var(--jf-glitch-intensity))}
- 33%{transform:translate3d(24px,-29px,0);opacity:.4}
- 47%{transform:translate3d(-39px,19px,0);opacity:calc(.77 * var(--jf-glitch-intensity))}
- 71%{transform:translate3d(17px,36px,0);opacity:.38}
- 87%{transform:translate3d(-15px,-31px,0);opacity:.6}
+ 0%,100%{transform:translate3d(0,0,0);opacity:.1}
+ 14%{transform:translate3d(-19px,13px,0);opacity:calc(.23 * min(var(--jf-glitch-intensity),1.1))}
+ 33%{transform:translate3d(24px,-29px,0);opacity:.14}
+ 47%{transform:translate3d(-39px,19px,0);opacity:calc(.27 * min(var(--jf-glitch-intensity),1.1))}
+ 71%{transform:translate3d(17px,36px,0);opacity:.12}
+ 87%{transform:translate3d(-15px,-31px,0);opacity:.18}
 }
 @keyframes jf-glitch-chroma-jitter{
  0%,100%{opacity:0;transform:translate3d(0,0,0)}

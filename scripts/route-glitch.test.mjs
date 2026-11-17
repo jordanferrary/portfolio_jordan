@@ -76,3 +76,15 @@ test('Palette remains separate from original seven colors and reduced motion is 
  assert.match(entry,/styles\/route-glitch\.css/)
  assert.match(workflow,/npm run test:route-glitch/)
 })
+
+test('Visual comfort: darker default noise and capped brightness, while retaining user colors',()=>{
+ assert.match(palette,/noise:'#554467'/)
+ assert.match(css,/--jf-glitch-noise:#554467;/)
+ assert.match(css,/color-mix\(in srgb,var\(--jf-glitch-noise\) 42%,var\(--jf-glitch-dark\) 58%\)/)
+ assert.match(css,/filter:contrast\(140%\) brightness\(\.72\)/)
+ assert.match(css,/opacity:calc\(\.27 \* min\(var\(--jf-glitch-intensity\),1\.1\)\)/)
+ assert.doesNotMatch(css,/contrast\(240%\) brightness\(1\.16\)/)
+ assert.match(css,/No full-screen brightness pulse on long waits/)
+ assert.match(palette,/noise:normalizeHexColor\(raw\.noise\)\?\?DEFAULT_GLITCH_PALETTE\.noise/)
+ assert.match(store,/glitchPalette=normalizeGlitchPalette\(obj\.glitchPalette\)/)
+})

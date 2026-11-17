@@ -7,13 +7,13 @@ export type GlitchPalette={
 }
 export type GlitchColorKey=Exclude<keyof GlitchPalette,'intensity'>
 export const DEFAULT_GLITCH_PALETTE:GlitchPalette={
- magenta:'#D84CFF',cyan:'#5CF4FF',lime:'#ACFF58',noise:'#F6F7FF',dark:'#060410',intensity:1
+ magenta:'#D84CFF',cyan:'#5CF4FF',lime:'#ACFF58',noise:'#554467',dark:'#060410',intensity:1
 }
 export const GLITCH_COLORS:{key:GlitchColorKey;label:string;description:string}[]=[
  {key:'magenta',label:'Magenta neon',description:'Rupturas e interferências violetas'},
  {key:'cyan',label:'Ciano elétrico',description:'Canal digital e bordas cromáticas'},
  {key:'lime',label:'Verde-limão',description:'Falhas intensas e blocos luminosos'},
- {key:'noise',label:'Ruído e pixels',description:'Granulação e fragmentos claros'},
+ {key:'noise',label:'Ruído e pixels',description:'Granulação suavizada; o brilho é limitado por segurança visual'},
  {key:'dark',label:'Base escura',description:'Contraste atrás dos blocos'}
 ]
 export const GLITCH_PRESETS:{name:string;palette:GlitchPalette}[]=[
