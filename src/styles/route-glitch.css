@@ -142,7 +142,7 @@ html.jf-native-route-glitch::view-transition-new(root){
  transform:translate3d(-14px,-4px,0);
 }
 .jf-glitch-fragment::after{
- background:color-mix(in srgb,var(--jf-secondary,#cb89ff) 48%,transparent);
+ background:color-mix(in srgb,var(--jf-secondary,#cb89ff) 45%,var(--jf-text,#f8f3ff) 55%);
  transform:translate3d(17px,3px,0);
 }
 .jf-glitch-fragment:nth-child(1){--frag-top:5%;--frag-left:-7%;--frag-width:62%;--frag-height:13%;animation-delay:-47ms}
