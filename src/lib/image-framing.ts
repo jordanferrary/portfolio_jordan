@@ -4,6 +4,8 @@ import type { CSSProperties } from 'react'
 export type ImageFraming={x:number;y:number;zoom:number}
 export type ImageFramingKey='coverFocus'|'heroFocus'
 export const DEFAULT_FRAMING:ImageFraming={x:50,y:50,zoom:1}
+/** Legacy gallery banner used a 38% vertical position; preserve its visual crop. */
+export const DEFAULT_GALLERY_BANNER_FRAMING:ImageFraming={x:50,y:38,zoom:1}
 export function normalizeFraming(input:unknown):ImageFraming{
  const candidate=input&&typeof input==='object'?input as Partial<ImageFraming>:{}
  const limit=(value:unknown,defaultValue:number,min:number,max:number)=>{

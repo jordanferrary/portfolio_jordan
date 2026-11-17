@@ -81,3 +81,6 @@ import './styles/gallery-hero-refinement.css'
 
 // Final public route grid: shared margins and typographic hierarchy.
 import './styles/page-layout-consistency.css'
+
+// Banner framing is applied after legacy gallery object-fit rules.
+import './styles/banner-framing.css'

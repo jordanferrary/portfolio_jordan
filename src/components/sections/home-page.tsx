@@ -15,7 +15,7 @@ export function HomePage({home,testimonials,projects,editing,onOpenProject,onEdi
  const featured=getFeaturedProjects(projects)
  const focusIcons=[Shapes,Gamepad2,Palette]
  return <main className="home-dashboard">
-  <div className="home-wallpaper" aria-hidden="true"><AssetImage src={home.background} alt="" loading="eager" fetchPriority="high"/></div>
+  <div className="home-wallpaper" aria-hidden="true"><AssetImage src={home.background} alt="" style={framingStyle(home.backgroundFocus)} loading="eager" fetchPriority="high"/></div>
   <div className="home-upper">
    <div className="home-intro"><p className="home-eyebrow"><HeadingSymbol symbol={headingSymbol}/>{home.eyebrow}</p><h1>{home.titleFirst.split('\n').map((line,index)=><span key={index}>{line}<br/></span>)}<em>{home.titleSecond}</em></h1><p className="home-blurb">{protectArtistName(home.introduction)}</p><button className="home-explore" onClick={onNavigatePortfolio}>Explore my portfolio <span><ArrowUpRight size={18}/></span></button></div>
    <aside className="home-about-panel"><div className="home-avatar-ring"><AssetImage src={home.avatar} alt="Artist portrait" loading="eager"/><span className="avatar-status"/></div><h2 translate="no" className="notranslate">Jordan Ferrary</h2><p className="home-profile-role">3D Artist</p><p className="home-availability"><i/>{home.available?'Available for projects':'Open to new ideas'}</p><p className="home-tagline">{home.aboutTagline}</p><div className="home-specialties"><small>Specialties</small><div>{home.specialties.map(item=><span key={item}>{item}</span>)}</div></div></aside>

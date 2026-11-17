@@ -6,10 +6,13 @@ import {AssetImage} from '../ui/asset-image'
 import {AssetClipButton} from '../ui/asset-picker'
 import {QuickEditImageButton} from '../ui/image-quick-editor'
 import {HeadingSymbol} from '../ui/heading-symbol'
+import {BannerFramingControl} from './banner-framing-control'
+import {DEFAULT_GALLERY_BANNER_FRAMING,normalizeFraming,type ImageFraming} from '../../lib/image-framing'
 import type {HeadingSymbolStyle} from '../../lib/heading-symbol'
-type Props={value:string;content?:GalleryContent;headingSymbol?:HeadingSymbolStyle;onSave:(next:{background:string;content:GalleryContent})=>void;onClose:()=>void}
-export function GalleryBackgroundEditor({value,content=defaultGalleryContent,headingSymbol,onSave,onClose}:Props){
+type Props={value:string;content?:GalleryContent;focus?:ImageFraming;headingSymbol?:HeadingSymbolStyle;onSave:(next:{background:string;content:GalleryContent;focus:ImageFraming})=>void;onClose:()=>void}
+export function GalleryBackgroundEditor({value,content=defaultGalleryContent,focus,headingSymbol,onSave,onClose}:Props){
  const [image,setImage]=useState(value)
+ const [frame,setFrame]=useState<ImageFraming>(()=>normalizeFraming(focus??DEFAULT_GALLERY_BANNER_FRAMING))
  const [draft,setDraft]=useState<GalleryContent>(()=>normalizeGalleryContent(content))
  const [error,setError]=useState('')
  const [uploading,setUploading]=useState(false)
@@ -20,7 +23,7 @@ export function GalleryBackgroundEditor({value,content=defaultGalleryContent,hea
   catch(e){setError(e instanceof Error?e.message:'Não foi possível importar a imagem.')}
   finally{setUploading(false)}
  }
- const save=()=>{onSave({background:image||defaultGalleryBackground,content:normalizeGalleryContent(draft)});onClose()}
+ const save=()=>{onSave({background:image||defaultGalleryBackground,content:normalizeGalleryContent(draft),focus:frame});onClose()}
  return <div className="editor-overlay" lang="pt-BR" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section className="editor-panel gallery-background-editor" role="dialog" aria-modal="true" aria-label="Editar página da galeria">
    <header><div><span className="eyebrow">✦ LOCAL STUDIO · GALERIA</span><h2>Personalizar galeria</h2></div><button type="button" onClick={onClose} aria-label="Fechar editor"><X size={20}/></button></header>
@@ -48,13 +51,13 @@ export function GalleryBackgroundEditor({value,content=defaultGalleryContent,hea
        <div className="gallery-copy-preview-controls"><span>{draft.allLabel}</span><span>{draft.searchPlaceholder}</span></div>
       </div>
       <div className="gallery-edit-section-title"><span>04 · VISUAL</span><h3>Fundo da galeria</h3></div>
-      <div className="gallery-background-preview">{image?<AssetImage src={image} alt="Prévia do fundo da galeria"/>:<div className="gallery-background-empty"><ImagePlus size={27}/><span>Nenhuma imagem escolhida</span></div>}</div>
+      <BannerFramingControl variant="gallery" image={image} value={frame} onChange={setFrame}/>
       <div className="gallery-background-actions">
        <label className="media-upload-button"><Upload size={15}/>{uploading?'Importando...':'Importar imagem'}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" disabled={uploading} onChange={e=>{const f=e.target.files?.[0];if(f)void upload(f);e.target.value=''}}/></label>
        <AssetClipButton folder="gallery" onSelect={setImage}/>
        {image&&<QuickEditImageButton source={image} folder="gallery" onSave={setImage}/>}
       </div>
-      <button type="button" className="gallery-background-reset" onClick={()=>setImage(defaultGalleryBackground)}><RotateCcw size={15}/>Restaurar arte padrão</button>
+      <button type="button" className="gallery-background-reset" onClick={()=>{setImage(defaultGalleryBackground);setFrame({...DEFAULT_GALLERY_BANNER_FRAMING})}}><RotateCcw size={15}/>Restaurar arte padrão</button>
      </section>
     </div>
     {error&&<p className="editor-status" role="alert">{error}</p>}

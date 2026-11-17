@@ -32,6 +32,8 @@ const entry=[
  "export {FEATURED_LIMIT,getFeaturedProjects,applyFeaturedSelection} from './src/lib/featured-projects.ts'",
  "export {FeaturedProjectsEditor} from './src/components/sections/featured-projects-editor.tsx'",
  "export {ProjectFramingEditor} from './src/components/sections/project-framing-editor.tsx'",
+ "export {BannerFramingControl} from './src/components/sections/banner-framing-control.tsx'",
+ "export {DEFAULT_GALLERY_BANNER_FRAMING,DEFAULT_FRAMING} from './src/lib/image-framing.ts'",
  "export {HomeEditor} from './src/components/sections/home-editor.tsx'",
  "export {GalleryBackgroundEditor} from './src/components/sections/gallery-background-editor.tsx'",
  "export {Gallery} from './src/components/sections/gallery.tsx'",
@@ -155,6 +157,21 @@ try{
   assert.equal(hit({x:600,y:-100},{left:-600,top:-350,width:2400,height:1400},2400,800),false)
   // Before an image loads, never interpret an empty preview as a backdrop click.
   assert.equal(hit({x:600,y:90},stage,0,0),true)
+ })
+ check('Home and Gallery banners have separate pan/zoom controls and persisted snapshots',()=>{
+  const noop=()=>{}
+  const home=element(app.HomeEditor,{home:{...app.defaultHome},projects:[],onFeaturedProjects:noop,testimonials:[],tracks:[],links:[],onLinks:noop,onHome:noop,onTestimonials:noop,onTracks:noop,onClose:noop,onExport:async()=>{},showLikeCounts:false,onShowLikeCounts:noop})
+  assert.match(home,/Enquadramento do banner/)
+  assert.match(home,/Horizontal do Banner de fundo da Home/)
+  assert.match(home,/Vertical do Banner de fundo da Home/)
+  const gallery=element(app.GalleryBackgroundEditor,{value:'https://example.com/hero.webp',onSave:noop,onClose:noop})
+  assert.match(gallery,/Enquadramento do banner/)
+  assert.match(gallery,/Horizontal do Banner da galeria/)
+  assert.match(gallery,/Zoom do Banner da galeria/)
+  assert.deepEqual(app.DEFAULT_GALLERY_BANNER_FRAMING,{x:50,y:38,zoom:1})
+  assert.match(appSource,/heroFocus=\{portfolio\.galleryFocus\}/)
+  assert.match(appSource,/focus=\{portfolio\.galleryFocus\}/)
+  assert.match(appSource,/setGalleryPage\(background,content,focus\)/)
  })
  check('Image framing controls both crop and zoom origin on either axis',()=>{
   assert.deepEqual(app.normalizeFraming({x:120,y:-7,zoom:7}),{x:100,y:0,zoom:2.5})

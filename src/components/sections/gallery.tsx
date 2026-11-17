@@ -11,8 +11,8 @@ import {cleanHeadingText} from '../../lib/heading-symbol'
 import {galleryFilterSummary} from '../../lib/gallery-language'
 import type {VisitorLanguage} from '../../lib/visitor-language'
 import { distributeMasonry,masonryColumnCount } from '../../lib/masonry'
-interface Props { projects:Project[]; categories:Category[];onOpen:(project:Project)=>void;editing:boolean;onAdd:()=>void;onEdit:(project:Project)=>void;heroImage:string;content?:GalleryContent;headingSymbol?:HeadingSymbolStyle;language?:VisitorLanguage;onReorder:(sourceId:string,targetId:string,after?:boolean)=>void }
-export function Gallery({projects,categories,onOpen,editing,onAdd,onEdit,heroImage,content=defaultGalleryContent,headingSymbol,language='en',onReorder}:Props){
+interface Props { projects:Project[]; categories:Category[];onOpen:(project:Project)=>void;editing:boolean;onAdd:()=>void;onEdit:(project:Project)=>void;heroImage:string;heroFocus?:import('../../lib/image-framing').ImageFraming;content?:GalleryContent;headingSymbol?:HeadingSymbolStyle;language?:VisitorLanguage;onReorder:(sourceId:string,targetId:string,after?:boolean)=>void }
+export function Gallery({projects,categories,onOpen,editing,onAdd,onEdit,heroImage,heroFocus,content=defaultGalleryContent,headingSymbol,language='en',onReorder}:Props){
  const [filter,setFilter]=useState('All')
  const [search,setSearch]=useState('')
  const [filtersOpen,setFiltersOpen]=useState(false)
@@ -25,7 +25,7 @@ export function Gallery({projects,categories,onOpen,editing,onAdd,onEdit,heroIma
  const filtered=useMemo(()=>projects.filter(p=>(filter==='All'||p.category===filter)&&(p.title+' '+p.description+' '+p.category+' '+p.tools.join(' ')).toLowerCase().includes(search.toLowerCase().trim())),[projects,filter,search])
  const balancedColumns=useMemo(()=>distributeMasonry(filtered,columnCount),[filtered,columnCount])
  return <section className="gallery-page">
-  <div className="gallery-banner"><AssetImage src={heroImage} alt="" loading="eager" fetchPriority="high"/></div>
+  <div className="gallery-banner"><AssetImage src={heroImage} alt="" style={framingStyle(heroFocus)} loading="eager" fetchPriority="high"/></div>
   <header className="gallery-heading"><p className="eyebrow"><HeadingSymbol symbol={headingSymbol}/>{cleanHeadingText(content.eyebrow)}</p><h1><span className="gallery-title-first">{content.titleFirst}</span>{content.titleAccent&&<>{' '}<em>{content.titleAccent}</em></>}</h1><p className="gallery-introduction">{content.introduction}</p><div className="accent-line"/></header>
   <div className="toolbar"><div className="chips" role="group" aria-label="Filter by category"><button className={filter==='All'?'active':''} onClick={()=>setFilter('All')}><Sparkles/>{content.allLabel}</button>{categories.map(c=><button key={c.id} className={filter===c.label?'active':''} onClick={()=>setFilter(c.label)}><FilterIcon category={c}/>{c.label}</button>)}</div><div className="search-group"><label className="search"><Search size={17}/><input aria-label="Search for projects" value={search} onChange={e=>setSearch(e.target.value)} placeholder={content.searchPlaceholder}/>{search&&<button onClick={()=>setSearch('')} aria-label="Clear search"><X size={15}/></button>}</label><button className={filtersOpen?'filter-button active':'filter-button'} onClick={()=>setFiltersOpen(v=>!v)} aria-label="Project filters" aria-expanded={filtersOpen}><SlidersHorizontal size={19}/></button></div></div>
   {filtersOpen&&<p className="filter-details" role="status" translate="no">{galleryFilterSummary(filtered.length,projects.length,filter,language)}</p>}

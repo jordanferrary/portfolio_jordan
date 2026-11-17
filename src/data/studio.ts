@@ -1,5 +1,6 @@
 import type { Project } from './projects'
 import { bundledAsset } from '../lib/default-assets'
+import type {ImageFraming} from '../lib/image-framing'
 export interface Testimonial { id:string; author:string; role:string; quote:string }
 export interface MusicTrack { id:string; title:string; artist:string; src:string; cover?:string }
 export type SocialIcon = 'github'|'instagram'|'behance'|'youtube'|'linkedin'|'twitter'|'facebook'|'twitch'|'dribbble'|'discord'|'tiktok'|'pinterest'|'reddit'|'artstation'|'globe'|'mail'|'custom'
@@ -17,6 +18,7 @@ export interface HomeContent {
  introduction:string
  avatar:string
  background:string
+ backgroundFocus?:ImageFraming
  available:boolean
  aboutTagline:string
  specialties:string[]
@@ -29,6 +31,7 @@ export const defaultHome:HomeContent = {
  introduction:"I'm Jordan Ferrary, a 3D artist focused on bringing ideas to life through art, modeling and creativity.",
  avatar:bundledAsset('profile/avatar.webp'),
  background:bundledAsset('hero/hero-character.webp'),
+ backgroundFocus:{x:50,y:50,zoom:1},
  available:true,
  aboutTagline:'Turning imagination into reality.',
  specialties:['3D Modeling','LookDev','Stylized Art','Animation'],
