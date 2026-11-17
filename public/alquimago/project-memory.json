@@ -1,16 +1,16 @@
 {
   "schema": 2,
-  "updatedAt": "2026-11-16T20:28:42.059Z",
+  "updatedAt": "2026-11-17T11:07:08.180Z",
   "brain": {
     "energy": 100,
-    "curiosity": 88.35000000000055,
+    "curiosity": 92.87500000000055,
     "focus": 0,
     "affinity": 57,
-    "xp": 70,
-    "interactions": 11,
+    "xp": 80,
+    "interactions": 12,
     "lastSeen": 1000000000000,
     "sleepUntil": 0,
-    "lastRewardAt": 1794860922059,
+    "lastRewardAt": 1794913628180,
     "lastAction": "publish",
     "lastRewardAction": "publish",
     "rewardedPages": {
@@ -20,7 +20,8 @@
       "pub-2026-11-09T11%3A09%3A48.030Z-90ea1d8b-7a08-4de9-8028-6c6da6a462a8": 20766,
       "pub-2026-11-09T11%3A13%3A35.497Z-c35ef93f-e580-499a-8a3c-2b7f783eb9f2": 20766,
       "pub-2026-11-16T19%3A52%3A21.217Z-a4ee0461-12de-41df-b6c1-932f26682236": 20773,
-      "pub-2026-11-16T20%3A28%3A42.058Z-2350ae05-c176-4e37-86d4-25a1fafffa36": 20773
+      "pub-2026-11-16T20%3A28%3A42.058Z-2350ae05-c176-4e37-86d4-25a1fafffa36": 20773,
+      "pub-2026-11-17T11%3A07%3A08.179Z-7100ce42-8511-4f44-b6c5-4e90d5ae854f": 20774
     }
   },
   "neural": {
@@ -2672,9 +2673,9 @@
   "behavior": {
     "schema": 1,
     "seed": 77,
-    "energy": 28.10000000000003,
-    "curiosity": 44.28000000000023,
-    "stimulation": 8.5,
+    "energy": 27.75000000000003,
+    "curiosity": 44.20000000000023,
+    "stimulation": 8.25,
     "trust": 45,
     "rewardBias": [
       0,
@@ -2697,7 +2698,7 @@
     "contextWeights": {},
     "adaptation": {
       "quieto": 0,
-      "observar": 0.02158937440122737,
+      "observar": 0.01986222444912918,
       "dica": 0,
       "investigar": 0,
       "acenar": 0,
@@ -2721,7 +2722,7 @@
     "lastRewardAt": 0,
     "feedbackCount": 0,
     "autonomousCount": 0,
-    "lastActiveDay": 20773,
+    "lastActiveDay": 20774,
     "lastCue": "project"
   },
   "description": "Memória numérica pública do familiar. Nenhuma mensagem ou token é incluído."

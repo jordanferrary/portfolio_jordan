@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-16T20:28:42.058Z-2350ae05-c176-4e37-86d4-25a1fafffa36",
+  "revision": "2026-11-17T11:07:08.179Z-7100ce42-8511-4f44-b6c5-4e90d5ae854f",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -212,7 +212,7 @@
         "title": "The Haunted Catch",
         "category": "Stylized",
         "year": "2026",
-        "image": "site://images/studio/f7eecbb7701d31b7685fab59434689e3b261696ebc814996dd13b3f9dff339b7.webp",
+        "image": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
         "description": "A spooky little hammerhead shark based on a concept by Oscar Ibanez. I had a lot of fun bringing this character into 3D and playing around with its shapes, expressions, and Halloween-inspired details.",
         "tools": [
           "Zbrush",
@@ -292,13 +292,13 @@
         "processSteps": [],
         "coverFocus": {
           "x": 3,
-          "y": 17,
+          "y": 0,
           "zoom": 1.32
         },
         "heroFocus": {
-          "x": 3,
-          "y": 16,
-          "zoom": 1.96
+          "x": 4,
+          "y": 5,
+          "zoom": 1.11
         },
         "processTemplateMigrated": true,
         "homeFocus": {
