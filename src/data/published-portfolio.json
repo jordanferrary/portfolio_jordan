@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-17T16:18:14.457Z-35da575d-bfd3-4fba-99c2-17baa48bf7fd",
+  "revision": "2026-11-17T16:22:39.748Z-bfb0af6d-d527-48d2-a343-e23579583ded",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -409,7 +409,7 @@
       "name": "Jordan Ferrary",
       "bio": "I'm Jordan Ferrary, a 3D artist, illustrator, and motion designer passionate about creating characters, environments, and memorable visual experiences.\n\nMy work brings together digital sculpting, modeling, stylized art, and creative storytelling. From game-ready concepts to expressive illustrations, I aim to give every project its own personality and artistic direction.",
       "portrait": "site://images/studio/cca24d05f412fd14bca387e820a181462d646e787de96a5951d7980d830a662e.webp",
-      "secondaryImage": "site://images/studio/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5.png",
+      "secondaryImage": "site://images/studio/8b23a0566cd3aa416614c88d2ce3ff43d71dc7580fe98b192f00246c70100d98.webp",
       "specialties": [
         "3D Modeling",
         "Sculpting",
