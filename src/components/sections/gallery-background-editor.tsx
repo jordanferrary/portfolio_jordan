@@ -1,12 +1,14 @@
 import {useState} from 'react'
-import {ImagePlus,RotateCcw,Save,Upload,X,Sparkles} from 'lucide-react'
+import {ImagePlus,RotateCcw,Save,Upload,X} from 'lucide-react'
 import {defaultGalleryBackground,defaultGalleryContent,normalizeGalleryContent,type GalleryContent} from '../../data/studio'
 import {saveUploadedMedia} from '../../lib/media-store'
 import {AssetImage} from '../ui/asset-image'
 import {AssetClipButton} from '../ui/asset-picker'
 import {QuickEditImageButton} from '../ui/image-quick-editor'
-type Props={value:string;content?:GalleryContent;onSave:(next:{background:string;content:GalleryContent})=>void;onClose:()=>void}
-export function GalleryBackgroundEditor({value,content=defaultGalleryContent,onSave,onClose}:Props){
+import {HeadingSymbol} from '../ui/heading-symbol'
+import type {HeadingSymbolStyle} from '../../lib/heading-symbol'
+type Props={value:string;content?:GalleryContent;headingSymbol?:HeadingSymbolStyle;onSave:(next:{background:string;content:GalleryContent})=>void;onClose:()=>void}
+export function GalleryBackgroundEditor({value,content=defaultGalleryContent,headingSymbol,onSave,onClose}:Props){
  const [image,setImage]=useState(value)
  const [draft,setDraft]=useState<GalleryContent>(()=>normalizeGalleryContent(content))
  const [error,setError]=useState('')
@@ -40,7 +42,7 @@ export function GalleryBackgroundEditor({value,content=defaultGalleryContent,onS
      <section className="gallery-art-editor" aria-label="Prévia e imagem da galeria">
       <div className="gallery-edit-section-title"><span>03 · PRÉVIA</span><h3>Visualização dos textos</h3></div>
       <div className="gallery-copy-preview">
-       <p className="eyebrow"><Sparkles size={14}/>{draft.eyebrow}</p>
+       <p className="eyebrow"><HeadingSymbol symbol={headingSymbol} size={14}/>{draft.eyebrow}</p>
        <h3><span>{draft.titleFirst}</span>{draft.titleAccent&&<>{' '}<em>{draft.titleAccent}</em></>}</h3>
        <p className="gallery-copy-preview-description">{draft.introduction}</p>
        <div className="gallery-copy-preview-controls"><span>{draft.allLabel}</span><span>{draft.searchPlaceholder}</span></div>
