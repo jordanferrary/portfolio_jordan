@@ -1,4 +1,5 @@
-import { lazy,Suspense,useEffect,useState } from 'react'
+import { lazy,Suspense,useEffect,useRef,useState } from 'react'
+import {flushSync} from 'react-dom'
 import { Home,Grid2X2,UserRound,Mail,Image as ImageIcon,Heart,Music,Share2,Layers,Palette,Plus,MessageSquare,Eye,EyeOff } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
 import {RouteGlitchFallback,RouteGlitchTransition} from './components/ui/route-glitch-transition'
@@ -46,6 +47,8 @@ export function App(){
  },[])
  const [page,setPage]=useState(route)
  const [routeIdentity,setRouteIdentity]=useState(()=>location.hash||'#/inicio')
+ const routeRef=useRef(location.hash||'#/inicio')
+ const routeTransitionSerial=useRef(0)
  const [editing,setEditing]=useState(false)
  // Keep an out-of-root Studio flag for safe recovery after a render crash.
  // Never automatically reload while an editor may contain unsaved form fields.
@@ -122,32 +125,48 @@ export function App(){
  const [stagedMediaDeletions,setStagedMediaDeletions]=useState<string[]>([])
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'featured'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
- const navigate=(next:Page)=>{
-  const hash='#/'+next
-  if(location.hash!==hash)location.hash='/'+next
-  setRouteIdentity(hash)
-  setPage(next)
-  window.scrollTo(0,0)
+ // Native View Transitions briefly capture both real page frames. Unlike
+ // a static overlay, the cyberpunk tear now displaces visible artwork and text.
+ // The React route is still committed immediately, without loading delays.
+ const switchRoute=(hash:string,next:Page|'project'|'custom',writeHash:boolean)=>{
+  if(routeRef.current===hash)return
+  routeRef.current=hash
+  const serial=++routeTransitionSerial.current
+  const commit=()=>{
+   if(serial!==routeTransitionSerial.current)return
+   flushSync(()=>{
+    if(writeHash&&location.hash!==hash)location.hash=hash
+    setRouteIdentity(hash)
+    setPage(next)
+   })
+   window.scrollTo(0,0)
+  }
+  type NativeViewTransition={finished:Promise<void>}
+  const start=(document as Document & {
+   startViewTransition?:(update:()=>void)=>NativeViewTransition
+  }).startViewTransition
+  if(start&&!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
+   document.documentElement.classList.add('jf-native-route-glitch')
+   try{
+    const transition=start.call(document,commit)
+    void transition.finished.catch(()=>{}).then(()=>{
+     if(serial===routeTransitionSerial.current)
+      document.documentElement.classList.remove('jf-native-route-glitch')
+    })
+   }catch{
+    document.documentElement.classList.remove('jf-native-route-glitch')
+    commit()
+   }
+  }else commit()
  }
- const navigateCustomPage=(id:string)=>{
-  const hash='#/page/'+id
-  if(location.hash!==hash)location.hash='/page/'+id
-  setRouteIdentity(hash)
-  setPage('custom')
-  window.scrollTo(0,0)
- }
+ const navigate=(next:Page)=>switchRoute('#/'+next,next,true)
+ const navigateCustomPage=(id:string)=>switchRoute('#/page/'+id,'custom',true)
  const openHomeTab=(tab:'home'|'featured'|'feedback'|'music'|'socials'|'likes')=>{setHomeEditorTab(tab);setHomeEditorOpen(true)}
  const projectId=location.hash.replace(/^#\/project\//,'')
  const project=portfolio.projects.find(p=>p.id===projectId)
  const customPageId=location.hash.replace(/^#\/page\//,'').split('/')[0]
  const customPage=page==='custom'?portfolio.customPages.find(item=>item.id===customPageId):undefined
- const openProject=(p:Project)=>{
-  const hash='#/project/'+p.id
-  if(location.hash!==hash)location.hash='/project/'+p.id
-  setRouteIdentity(hash)
-  setPage('project')
-  window.scrollTo(0,0)
- }
+ const openProject=(p:Project)=>switchRoute('#/project/'+p.id,'project',true)
  const pageLabels:Record<Page|'project'|'custom',string>={inicio:'Home',portfolio:'Galeria',sobre:'Sobre',contato:'Contato',project:'Projeto',custom:customPage?.navLabel??'Página'}
  const editCurrent=()=>{if(page==='inicio')openHomeTab('home');else if(page==='portfolio')setGalleryBackgroundEditorOpen(true);else if(page==='sobre')setAboutEditorOpen(true);else if(page==='contato')setContactEditorOpen(true);else if(page==='custom')setCustomPageEditorTarget(customPage?.id??'manage');else setEditor(project??null)}
  const editingLabel=page==='project'?'Editar projeto':page==='custom'?'Editar página':page==='portfolio'?'Editar galeria':'Editar página'
@@ -328,11 +347,7 @@ export function App(){
  },[editing,page,portfolio.projects.length,portfolio.customPages.length])
 
  useEffect(()=>{
-  const sync=()=>{
-   setRouteIdentity(location.hash||'#/inicio')
-   setPage(route())
-   window.scrollTo(0,0)
-  }
+  const sync=()=>switchRoute(location.hash||'#/inicio',route(),false)
   window.addEventListener('hashchange',sync)
   return()=>window.removeEventListener('hashchange',sync)
  },[])
