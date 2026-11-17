@@ -5,7 +5,7 @@ import {RichText} from '../ui/rich-text'
 import {HeadingSymbol} from '../ui/heading-symbol'
 import type {HeadingSymbolStyle} from '../../lib/heading-symbol'
 import {cleanHeadingText} from '../../lib/heading-symbol'
-export function AboutPage({about,editing,onEdit,onContact}:{about:AboutContent;editing:boolean;onEdit:()=>void;onContact:()=>void;headingSymbol?:HeadingSymbolStyle}){
+export function AboutPage({about,editing,onEdit,onContact,headingSymbol}:{about:AboutContent;editing:boolean;onEdit:()=>void;onContact:()=>void;headingSymbol?:HeadingSymbolStyle}){
  return <main className="simple-page about-page">
   <div className="about-page-header"><span className="eyebrow"><HeadingSymbol symbol={headingSymbol}/> {cleanHeadingText(about.eyebrow)}</span><h1>{about.titleFirst}<br/><em>{about.titleAccent}</em></h1>{editing&&<button type="button" className="about-page-edit" onClick={onEdit}><Pencil size={17}/>Editar Sobre</button>}</div>
   <div className="about-page-body">

@@ -40,7 +40,7 @@ function PageAction({block}: {block:PageBlock}){
   {message&&<span className="custom-page-action-feedback" role="status">{message}</span>}
  </section>
 }
-export function CustomPageView({page,editing,onEdit}:{page:CustomPage;editing:boolean;onEdit:()=>void;headingSymbol?:HeadingSymbolStyle}){
+export function CustomPageView({page,editing,onEdit,headingSymbol}:{page:CustomPage;editing:boolean;onEdit:()=>void;headingSymbol?:HeadingSymbolStyle}){
  return <main className={'custom-page custom-page-'+page.layout}>
   <header className={'custom-page-hero'+(page.heroImage?' has-image':'')}>
    {page.heroImage&&<AssetImage src={page.heroImage} className="custom-page-hero-image" alt="" style={{objectPosition:page.heroPositionX+'% '+page.heroPositionY+'%'}}/>}
