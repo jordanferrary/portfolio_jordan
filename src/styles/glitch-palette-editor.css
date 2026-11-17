@@ -1,0 +1,30 @@
+.glitch-palette-editor{width:min(1050px,100%)!important}
+.glitch-palette-editor>.editor-scroll{padding:22px 26px!important;display:flex;flex-direction:column;gap:19px}
+.glitch-editor-description{margin:0;font-size:12px;color:var(--jf-copy-soft);line-height:1.6}
+.glitch-palette-workspace{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:17px;align-items:start}
+.glitch-editor-options,.glitch-editor-demo{padding:17px;border:1px solid var(--jf-border);border-radius:16px;background:var(--jf-studio-deep,var(--jf-surface));min-width:0}
+.glitch-editor-options>h3,.glitch-editor-demo>h3{font-size:15px;margin:0 0 15px;color:var(--jf-text)}
+.glitch-editor-color-list{display:grid;gap:9px}
+.glitch-editor-color-row{display:grid!important;grid-template-columns:42px minmax(0,1fr) 85px;align-items:center;gap:10px;padding:9px;border:1px solid var(--jf-border);border-radius:12px;background:var(--jf-studio-panel,var(--jf-background));margin:0!important}
+.glitch-editor-color-row>input[type=color]{padding:0;width:40px;height:37px;border:1px solid var(--jf-border);border-radius:9px;background:transparent;cursor:pointer}
+.glitch-editor-color-row>span{min-width:0;display:grid;gap:2px}
+.glitch-editor-color-row strong{font-size:11px;color:var(--jf-text)}
+.glitch-editor-color-row small{font-size:10px;color:var(--jf-muted);line-height:1.3}
+.glitch-editor-color-row>input[type=text]{min-width:0;width:85px;text-transform:uppercase;padding:9px 5px;border-radius:9px;border:1px solid var(--jf-border);background:var(--jf-background);color:var(--jf-text);font:11px ui-monospace,monospace}
+.glitch-editor-intensity{display:grid!important;gap:9px;margin-top:16px!important}
+.glitch-editor-intensity>span{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--jf-copy-soft)}
+.glitch-editor-intensity b{margin-left:auto;color:var(--jf-secondary)}
+.glitch-editor-intensity input{width:100%;accent-color:var(--jf-primary)}
+.jf-glitch-preview{aspect-ratio:16/9;min-height:200px;border-radius:12px;border:1px solid var(--jf-border)}
+.glitch-editor-demo p{font-size:10px;color:var(--jf-muted);line-height:1.6;margin:10px 0 17px}
+.glitch-editor-demo h4{font-size:12px;color:var(--jf-text);margin:0 0 11px}
+.glitch-editor-presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.glitch-editor-presets button{display:flex;align-items:center;gap:8px;text-align:left;min-width:0;padding:9px;border:1px solid var(--jf-border);border-radius:10px;background:var(--jf-background);color:var(--jf-copy-soft);font-size:10px}
+.glitch-editor-presets button:hover{border-color:var(--jf-secondary)}
+.glitch-preset-swatches{display:flex;flex:0 0 auto}
+.glitch-preset-swatches i{width:15px;height:15px;border:1px solid var(--jf-background);border-radius:4px;margin-left:-3px}
+.glitch-editor-note{display:flex;gap:15px;align-items:center;justify-content:space-between}
+.glitch-editor-note p{font-size:11px;line-height:1.6;color:var(--jf-muted);max-width:400px;margin:0}
+.glitch-editor-note button{display:flex;align-items:center;gap:6px;font-size:11px}
+@media(max-width:760px){.glitch-palette-workspace{grid-template-columns:1fr}.glitch-palette-editor>.editor-scroll{padding:14px!important}.glitch-editor-note{flex-wrap:wrap}.jf-glitch-preview{min-height:165px}}
+@media(max-width:400px){.glitch-editor-color-row{grid-template-columns:38px minmax(0,1fr) 73px;gap:6px;padding:7px}.glitch-editor-color-row>input[type=color]{width:36px}.glitch-editor-color-row>input[type=text]{width:73px;font-size:10px}}

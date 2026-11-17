@@ -1,40 +1,66 @@
-import {useLayoutEffect,useRef,useState} from 'react'
-import type {AnimationEvent} from 'react'
+import {useLayoutEffect,useRef,useState,type CSSProperties,type AnimationEvent} from 'react'
 import {createPortal} from 'react-dom'
 
-/** CSS-only fallback on browsers without native screenshot-based transitions. */
-export function RouteGlitchTransition({routeKey}:{routeKey:string}){
- const previous=useRef(routeKey)
- const count=useRef(0)
- const [run,setRun]=useState<number|null>(null)
- useLayoutEffect(()=>{
-  if(previous.current===routeKey)return
-  previous.current=routeKey
-  if(typeof document.startViewTransition==='function'||
-     window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
-   setRun(null)
-   return
-  }
-  setRun(++count.current)
- },[routeKey])
- const finish=(event:AnimationEvent<HTMLDivElement>)=>{
-  if(event.target!==event.currentTarget||event.animationName!=='jf-fallback-glitch')return
-  setRun(current=>current===run?null:current)
- }
- if(run===null)return null
- return <div key={run} className="jf-route-glitch" aria-hidden="true" onAnimationEnd={finish}>
-  {Array.from({length:10},(_,i)=><span className="jf-glitch-fragment" key={i}/>)}
+/** Fixed deterministic coordinates avoid layout recalculation, assets, or randomness. */
+const fragments=Array.from({length:54},(_,i)=>({
+ left:((i*43+7)%112-9)+'%',
+ top:((i*67+Math.floor(i/5)*19)%97)+'%',
+ width:(i%6===0?65+(i*11)%38:8+(i*23)%55)+'%',
+ height:(i%7===0?.45+(i%4)*.55:1.2+(i*17)%11)+'%',
+ delay:'-'+((i*79)%850)+'ms'
+}))
+const bands=Array.from({length:14},(_,i)=>({
+ top:((i*31+11)%97)+'%',
+ height:(i%4===0?4.8:0.25+(i%5)*.6)+'%',
+ delay:'-'+((i*103)%850)+'ms'
+}))
+export function GlitchSignalArt(){
+ return <div className="jf-glitch-scene" aria-hidden="true">
+  <div className="jf-glitch-gradient-field"/>
+  <div className="jf-glitch-blocks">
+   {fragments.map((f,i)=><span key={i} className="jf-glitch-block" style={{
+    left:f.left,top:f.top,width:f.width,height:f.height,animationDelay:f.delay
+   } as CSSProperties}/>)}
+  </div>
+  <div className="jf-glitch-bands">
+   {bands.map((f,i)=><span key={i} className="jf-glitch-band" style={{
+    top:f.top,height:f.height,animationDelay:f.delay
+   } as CSSProperties}/>)}
+  </div>
+  <div className="jf-glitch-grain"/>
+  <div className="jf-glitch-chroma"/>
  </div>
 }
 
-/** Actual lazy-route fallback: no visible text; vivid bursts until resolved. */
+/** One 560ms burst whenever the route key changes. No overlay on first load. */
+export function RouteGlitchTransition({routeKey}:{routeKey:string}){
+ const previous=useRef(routeKey)
+ const counter=useRef(0)
+ const [active,setActive]=useState<number|null>(null)
+ useLayoutEffect(()=>{
+  if(previous.current===routeKey)return
+  previous.current=routeKey
+  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
+   setActive(null);return
+  }
+  setActive(++counter.current)
+ },[routeKey])
+ const finish=(event:AnimationEvent<HTMLDivElement>)=>{
+  if(event.currentTarget!==event.target||event.animationName!=='jf-glitch-entrance')return
+  setActive(current=>current===active?null:current)
+ }
+ if(active===null)return null
+ return createPortal(<div className="jf-route-glitch" key={active} aria-hidden="true" onAnimationEnd={finish}>
+  <GlitchSignalArt/>
+ </div>,document.body)
+}
+
+/** Real Suspense fallback; its animated signal continues until the chunk arrives. */
 export function RouteGlitchFallback(){
  const lang=typeof document!=='undefined'?document.documentElement.lang.toLowerCase():'en'
  const description=lang.startsWith('pt')?'Carregando conteúdo':lang.startsWith('es')?'Cargando contenido':'Loading content'
- const element=<div className="jf-route-glitch-pending" role="status" aria-label={description}>
-  <div className="jf-glitch-corruption" aria-hidden="true">
-   {Array.from({length:10},(_,i)=><span className="jf-glitch-fragment" key={i}/>)}
-  </div>
+ const node=<div className="jf-route-glitch-pending" role="status" aria-label={description}>
+  <GlitchSignalArt/>
  </div>
- return typeof document!=='undefined'?createPortal(element,document.body):element
+ return typeof document!=='undefined'?createPortal(node,document.body):node
 }

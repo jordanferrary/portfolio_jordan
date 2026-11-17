@@ -1,200 +1,155 @@
-/*
-  JF / SIGNAL CORRUPTION
-  Native View Transition API animates REAL screenshots of outgoing/incoming
-  routes. This is actual image tearing, not simulated scanlines on a blank page.
-  Four Studio palette tokens drive chromatic aberration and digital artifacts.
-*/
-
-/* The browser's screenshot layers remain fully click-through. */
-html.jf-native-route-glitch::view-transition{
- pointer-events:none;
+/* DIGITAL SIGNAL CORRUPTION / Reference: rectangular neon block noise. */
+/* Independent palette — never touches --jf-primary or other site tokens. */
+:root{
+ --jf-glitch-magenta:#D84CFF;
+ --jf-glitch-cyan:#5CF4FF;
+ --jf-glitch-lime:#ACFF58;
+ --jf-glitch-noise:#F6F7FF;
+ --jf-glitch-dark:#060410;
+ --jf-glitch-intensity:1;
 }
-html.jf-native-route-glitch::view-transition-group(root){
- animation-duration:470ms;
- animation-timing-function:steps(1,end);
+.jf-route-glitch,.jf-route-glitch-pending{
+ position:fixed;inset:0;z-index:100000;
+ pointer-events:none;overflow:hidden;isolation:isolate;
+ background:var(--jf-glitch-dark);
 }
-html.jf-native-route-glitch::view-transition-old(root){
- animation:jf-image-tear-out 470ms steps(1,end) both;
- transform-origin:50% 50%;
+.jf-route-glitch{
+ animation:jf-glitch-entrance 560ms steps(1,end) both;
 }
-html.jf-native-route-glitch::view-transition-new(root){
- animation:jf-image-tear-in 470ms steps(1,end) both;
- transform-origin:50% 50%;
+.jf-route-glitch-pending{animation:jf-glitch-pending-fade 850ms steps(1,end) infinite}
+.jf-glitch-scene{position:absolute;inset:0;isolation:isolate;overflow:hidden;background:var(--jf-glitch-dark)}
+.jf-glitch-gradient-field{
+ position:absolute;inset:-4%;
+ background:
+  linear-gradient(0deg,transparent 12%,color-mix(in srgb,var(--jf-glitch-magenta) 22%,transparent) 22%,transparent 31%),
+  linear-gradient(90deg,transparent 8%,color-mix(in srgb,var(--jf-glitch-cyan) 16%,transparent) 34%,transparent 56%),
+  radial-gradient(ellipse at 60% 57%,color-mix(in srgb,var(--jf-glitch-lime) 11%,transparent),transparent 67%);
+ animation:jf-glitch-field 780ms steps(1,end) infinite;
 }
-
-/* A copy of the OLD page breaks into moving horizontal strips over the new
-   page. Hue/contrast shifts and physical X jumps create RGB-channel errors. */
-@keyframes jf-image-tear-out{
- 0%,7%{opacity:1;clip-path:inset(0 0 0 0);transform:translate3d(0,0,0);filter:none}
- 11%{opacity:.94;clip-path:inset(12% 0 69% 0);transform:translate3d(-46px,0,0);filter:hue-rotate(74deg) saturate(2.7) contrast(1.45)}
- 16%{opacity:.83;clip-path:inset(55% 0 21% 0);transform:translate3d(53px,0,0);filter:hue-rotate(-63deg) saturate(2.5) contrast(1.6)}
- 22%{opacity:1;clip-path:inset(25% 0 51% 0);transform:translate3d(-35px,0,0);filter:hue-rotate(96deg) saturate(2.4)}
- 29%{opacity:.87;clip-path:inset(70% 0 12% 0);transform:translate3d(67px,0,0);filter:hue-rotate(-52deg) saturate(2.8)}
- 36%{opacity:1;clip-path:inset(7% 0 76% 0);transform:translate3d(-24px,0,0);filter:saturate(2.6) contrast(1.8)}
- 45%{opacity:.86;clip-path:inset(42% 0 39% 0);transform:translate3d(31px,0,0);filter:hue-rotate(49deg) saturate(2)}
- 57%{opacity:.6;clip-path:inset(80% 0 8% 0);transform:translate3d(-52px,0,0);filter:hue-rotate(-75deg) saturate(2.2)}
- 68%{opacity:.35;clip-path:inset(21% 0 69% 0);transform:translate3d(18px,0,0);filter:saturate(1.8)}
- 79%,100%{opacity:0;clip-path:inset(0 0 100% 0);transform:translate3d(0,0,0);filter:none}
+.jf-glitch-blocks,.jf-glitch-bands{position:absolute;inset:0;overflow:hidden}
+.jf-glitch-block{
+ position:absolute;display:block;opacity:0;
+ background:linear-gradient(180deg,
+  var(--jf-glitch-cyan) 0 19%,
+  var(--jf-glitch-magenta) 19% 52%,
+  var(--jf-glitch-lime) 52% 87%,
+  var(--jf-glitch-cyan) 87%);
+ image-rendering:pixelated;
+ box-shadow:-5px 0 0 color-mix(in srgb,var(--jf-glitch-magenta) 80%,transparent),
+  5px 0 0 color-mix(in srgb,var(--jf-glitch-cyan) 75%,transparent);
+ animation:jf-glitch-block-jump 820ms steps(1,end) infinite;
 }
-
-/* The NEXT page is not static behind it: whole frames skip, brighten and
-   temporarily split into chromatic errors before settling to original colors. */
-@keyframes jf-image-tear-in{
- 0%,7%{opacity:0;transform:translate3d(0,0,0);filter:contrast(1)}
- 10%{opacity:.9;transform:translate3d(12px,0,0);filter:hue-rotate(-21deg) saturate(1.7) contrast(1.5)}
- 15%{opacity:1;transform:translate3d(-8px,0,0);filter:hue-rotate(28deg) saturate(1.9)}
- 22%{opacity:.88;transform:translate3d(21px,0,0);filter:contrast(1.9) saturate(1.9)}
- 30%{opacity:1;transform:translate3d(-14px,0,0);filter:hue-rotate(-36deg) saturate(1.7)}
- 38%{opacity:.84;transform:translate3d(9px,0,0);filter:contrast(1.8) brightness(1.1)}
- 46%{opacity:1;transform:translate3d(-7px,0,0);filter:hue-rotate(15deg) saturate(1.4)}
- 58%{opacity:1;transform:translate3d(4px,0,0);filter:contrast(1.2)}
- 71%{opacity:1;transform:translate3d(-2px,0,0);filter:none}
- 82%,100%{opacity:1;transform:translate3d(0,0,0);filter:none}
+.jf-glitch-block:nth-child(3n){background:var(--jf-glitch-lime)}
+.jf-glitch-block:nth-child(3n+1){background:linear-gradient(90deg,var(--jf-glitch-cyan),var(--jf-glitch-magenta) 68%,transparent)}
+.jf-glitch-block:nth-child(5n){background:var(--jf-glitch-magenta);opacity:.7}
+.jf-glitch-block:nth-child(7n){background:linear-gradient(90deg,var(--jf-glitch-lime),var(--jf-glitch-cyan),var(--jf-glitch-magenta));filter:blur(.6px)}
+.jf-glitch-band{
+ position:absolute;left:-10%;width:120%;display:block;
+ background:linear-gradient(90deg,transparent 0 5%,
+  var(--jf-glitch-magenta) 6% 25%,var(--jf-glitch-cyan) 25% 62%,
+  var(--jf-glitch-lime) 62% 87%,transparent 92%);
+ box-shadow:0 -2px 0 color-mix(in srgb,var(--jf-glitch-cyan) 60%,transparent),
+  0 3px 0 color-mix(in srgb,var(--jf-glitch-magenta) 78%,transparent);
+ opacity:0;animation:jf-glitch-band-tear 830ms steps(1,end) infinite;
 }
-
-/* A fallback is necessary where the browser lacks screenshot transitions.
-   Full irregular blocks jump around instead of showing horizontal guide lines. */
-.site-shell>.jf-route-glitch{
- position:fixed;inset:0;z-index:250;pointer-events:none;
- overflow:hidden;isolation:isolate;
- animation:jf-fallback-glitch 470ms steps(1,end) both;
+.jf-glitch-band:nth-child(3n){background:linear-gradient(90deg,
+ transparent 0 10%,var(--jf-glitch-lime) 10% 32%,var(--jf-glitch-magenta) 32% 53%,
+ transparent 53% 68%,var(--jf-glitch-cyan) 68% 89%,transparent 89%)}
+.jf-glitch-band:nth-child(4n){height:1px!important;background:var(--jf-glitch-cyan)}
+/* 128px locally generated fractal-noise tile, no network requests, no bitmap. */
+.jf-glitch-grain{
+ position:absolute;inset:-8%;
+ background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'128'%3E%3Cfilter%20id%3D'n'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'.83'%20numOctaves%3D'3'%20seed%3D'12'%20stitchTiles%3D'stitch'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'128'%20height%3D'128'%20filter%3D'url(%23n)'%20opacity%3D'.85'%2F%3E%3C%2Fsvg%3E");
+ background-repeat:repeat;background-size:128px 128px;
+ image-rendering:pixelated;
+ mix-blend-mode:screen;
+ filter:contrast(240%) brightness(1.16);
+ opacity:calc(.42 * var(--jf-glitch-intensity));
+ animation:jf-glitch-static-noise 670ms steps(3,end) infinite;
 }
-.site-shell>.jf-route-glitch~.site-main{
- animation:jf-fallback-scene-dislocation 470ms steps(1,end) both;
+.jf-glitch-chroma{
+ position:absolute;inset:0;
+ background:
+  repeating-linear-gradient(90deg,transparent 0 42px,
+   color-mix(in srgb,var(--jf-glitch-lime) 34%,transparent) 43px 48px,
+   transparent 49px 131px),
+  repeating-linear-gradient(0deg,transparent 0 13px,
+   color-mix(in srgb,var(--jf-glitch-magenta) 22%,transparent) 14px 16px,
+   transparent 17px 77px);
+ mix-blend-mode:screen;
+ opacity:calc(.7 * var(--jf-glitch-intensity));
+ clip-path:polygon(0 6%,100% 6%,100% 20%,0 20%,0 43%,100% 43%,100% 55%,0 55%,0 71%,100% 71%,100% 89%,0 89%);
+ animation:jf-glitch-chroma-jitter 710ms steps(1,end) infinite;
 }
-@keyframes jf-fallback-scene-dislocation{
- 0%,100%{transform:translate3d(0,0,0);filter:none}
- 14%{transform:translate3d(-12px,0,0);filter:hue-rotate(34deg) saturate(1.7)}
- 24%{transform:translate3d(17px,0,0);filter:contrast(1.75)}
- 33%{transform:translate3d(-9px,0,0);filter:hue-rotate(-25deg)}
- 46%{transform:translate3d(6px,0,0);filter:none}
- 62%{transform:translate3d(-3px,0,0);filter:contrast(1.35)}
-}
-@keyframes jf-fallback-glitch{
+@keyframes jf-glitch-entrance{
  0%,100%{opacity:0}
- 7%{opacity:.12}12%{opacity:.8}
- 19%{opacity:.42}26%{opacity:1}
- 39%{opacity:.6}50%{opacity:.87}
- 68%{opacity:.22}84%{opacity:0}
+ 7%{opacity:.3}
+ 13%{opacity:1}
+ 28%{opacity:.9}
+ 43%{opacity:1}
+ 65%{opacity:.95}
+ 76%{opacity:.62}
+ 89%{opacity:.12}
 }
-
-/* When a lazy chunk truly has not arrived, pixel-corruption persists. Do not
-   show a fake progress screen, text, or a static pattern of identical bars. */
-.jf-route-glitch-pending{
- position:fixed;inset:0;z-index:245;pointer-events:none;overflow:hidden;
- background:
-  radial-gradient(ellipse at 28% 50%,color-mix(in srgb,var(--jf-primary,#a234fa) 20%,var(--jf-background,#090611)),transparent 75%),
-  var(--jf-background,#090611);
- isolation:isolate;
+@keyframes jf-glitch-pending-fade{
+ 0%,100%{opacity:.98}13%{opacity:.88}22%{opacity:1}
+ 49%{opacity:.92}63%{opacity:1}81%{opacity:.94}
 }
-.jf-glitch-corruption{position:absolute;inset:0;overflow:hidden;isolation:isolate}
-.jf-route-glitch-pending::before,
-.jf-route-glitch-pending::after{
- content:"";position:absolute;inset:-10%;
- pointer-events:none;
+@keyframes jf-glitch-block-jump{
+ 0%,100%{opacity:0;transform:translate3d(0,0,0) scaleX(.85)}
+ 7%{opacity:calc(.86 * var(--jf-glitch-intensity));transform:translate3d(-7vw,0,0) scaleX(1.15)}
+ 19%{opacity:.46;transform:translate3d(9vw,0,0) scaleX(.87)}
+ 31%{opacity:.93;transform:translate3d(-13vw,0,0) scaleX(1.23)}
+ 46%{opacity:.2;transform:translate3d(5vw,0,0) scaleX(.68)}
+ 54%{opacity:.98;transform:translate3d(-4vw,0,0) scaleX(1.1)}
+ 71%{opacity:.5;transform:translate3d(14vw,0,0) scaleX(.95)}
+ 86%{opacity:.81;transform:translate3d(-3vw,0,0)}
 }
-.jf-route-glitch-pending::before{
- background:linear-gradient(90deg,
-  var(--jf-background,#090611) 0%,
-  color-mix(in srgb,var(--jf-primary,#a234fa) 58%,var(--jf-background,#090611)) 28%,
-  color-mix(in srgb,var(--jf-secondary,#cb89ff) 36%,var(--jf-background,#090611)) 51%,
-  var(--jf-background,#090611) 74%);
- clip-path:polygon(0 17%,63% 17%,63% 24%,100% 24%,100% 46%,42% 46%,42% 51%,0 51%,0 78%,82% 78%,82% 87%,0 87%);
- animation:jf-corrupt-field 740ms steps(1,end) infinite;
-}
-.jf-route-glitch-pending::after{
- inset:0;
- background:
-  repeating-linear-gradient(90deg,
-   transparent 0 17px,
-   color-mix(in srgb,var(--jf-primary,#a234fa) 24%,transparent) 17px 31px,
-   transparent 31px 61px),
-  repeating-linear-gradient(0deg,
-   color-mix(in srgb,var(--jf-secondary,#cb89ff) 20%,transparent) 0 5px,
-   transparent 5px 24px);
- clip-path:polygon(6% 14%,41% 14%,41% 25%,87% 25%,87% 32%,24% 32%,24% 62%,94% 62%,94% 73%,6% 73%);
- opacity:.4;
- animation:jf-corrupt-pixels 740ms steps(1,end) infinite;
-}
-
-/* Each fragment is a wide displaced piece of a corrupted digital frame.
-   Two secondary color channels split sideways, matching the Studio palette. */
-.jf-glitch-fragment{
- position:absolute;display:block;overflow:visible;
- left:var(--frag-left,0%);top:var(--frag-top,20%);
- width:var(--frag-width,82%);height:var(--frag-height,8%);
- opacity:0;
- background:linear-gradient(90deg,
-  color-mix(in srgb,var(--jf-background,#090611) 35%,var(--jf-primary,#a234fa)),
-  color-mix(in srgb,var(--jf-secondary,#cb89ff) 70%,transparent) 36%,
-  color-mix(in srgb,var(--jf-primary,#a234fa) 60%,var(--jf-background,#090611)) 76%,
-  transparent);
- clip-path:polygon(0 0,96% 0,96% 23%,100% 23%,100% 79%,74% 79%,74% 100%,0 100%);
- animation:jf-corrupt-fragment 740ms steps(1,end) infinite;
-}
-.jf-glitch-fragment::before,
-.jf-glitch-fragment::after{
- content:"";position:absolute;inset:0;opacity:.65;
- clip-path:polygon(0 0,100% 0,100% 40%,62% 40%,62% 100%,0 100%);
-}
-.jf-glitch-fragment::before{
- background:color-mix(in srgb,var(--jf-primary,#a234fa) 44%,transparent);
- transform:translate3d(-14px,-4px,0);
-}
-.jf-glitch-fragment::after{
- background:color-mix(in srgb,var(--jf-secondary,#cb89ff) 45%,var(--jf-text,#f8f3ff) 55%);
- transform:translate3d(17px,3px,0);
-}
-.jf-glitch-fragment:nth-child(1){--frag-top:5%;--frag-left:-7%;--frag-width:62%;--frag-height:13%;animation-delay:-47ms}
-.jf-glitch-fragment:nth-child(2){--frag-top:17%;--frag-left:39%;--frag-width:68%;--frag-height:8%;animation-delay:-155ms}
-.jf-glitch-fragment:nth-child(3){--frag-top:27%;--frag-left:10%;--frag-width:90%;--frag-height:19%;animation-delay:-73ms}
-.jf-glitch-fragment:nth-child(4){--frag-top:44%;--frag-left:-12%;--frag-width:85%;--frag-height:6%;animation-delay:-224ms}
-.jf-glitch-fragment:nth-child(5){--frag-top:51%;--frag-left:27%;--frag-width:72%;--frag-height:16%;animation-delay:-19ms}
-.jf-glitch-fragment:nth-child(6){--frag-top:65%;--frag-left:-3%;--frag-width:79%;--frag-height:9%;animation-delay:-292ms}
-.jf-glitch-fragment:nth-child(7){--frag-top:75%;--frag-left:42%;--frag-width:59%;--frag-height:14%;animation-delay:-125ms}
-.jf-glitch-fragment:nth-child(8){--frag-top:88%;--frag-left:-2%;--frag-width:81%;--frag-height:7%;animation-delay:-360ms}
-.jf-glitch-fragment:nth-child(9){--frag-top:38%;--frag-left:57%;--frag-width:46%;--frag-height:6%;animation-delay:-440ms}
-.jf-glitch-fragment:nth-child(10){--frag-top:59%;--frag-left:-5%;--frag-width:49%;--frag-height:5%;animation-delay:-98ms}
-@keyframes jf-corrupt-field{
+@keyframes jf-glitch-band-tear{
  0%,100%{opacity:0;transform:translate3d(0,0,0)}
- 9%{opacity:.65;transform:translate3d(-9vw,0,0)}
- 16%{opacity:.2;transform:translate3d(7vw,0,0)}
- 29%{opacity:.8;transform:translate3d(-6vw,4vh,0)}
- 42%{opacity:.32;transform:translate3d(11vw,-2vh,0)}
- 57%{opacity:.68;transform:translate3d(-10vw,0,0)}
- 73%{opacity:.12;transform:translate3d(4vw,0,0)}
- 87%{opacity:.55;transform:translate3d(-2vw,0,0)}
+ 10%{opacity:.84;transform:translate3d(-12vw,0,0)}
+ 24%{opacity:.52;transform:translate3d(17vw,0,0)}
+ 37%{opacity:1;transform:translate3d(-6vw,0,0)}
+ 52%{opacity:.25;transform:translate3d(10vw,0,0)}
+ 67%{opacity:.88;transform:translate3d(-18vw,0,0)}
+ 82%{opacity:.42;transform:translate3d(8vw,0,0)}
 }
-@keyframes jf-corrupt-pixels{
+@keyframes jf-glitch-static-noise{
+ 0%,100%{transform:translate3d(0,0,0);opacity:.28}
+ 14%{transform:translate3d(-19px,13px,0);opacity:calc(.63 * var(--jf-glitch-intensity))}
+ 33%{transform:translate3d(24px,-29px,0);opacity:.4}
+ 47%{transform:translate3d(-39px,19px,0);opacity:calc(.77 * var(--jf-glitch-intensity))}
+ 71%{transform:translate3d(17px,36px,0);opacity:.38}
+ 87%{transform:translate3d(-15px,-31px,0);opacity:.6}
+}
+@keyframes jf-glitch-chroma-jitter{
  0%,100%{opacity:0;transform:translate3d(0,0,0)}
- 13%{opacity:.52;transform:translate3d(-6vw,0,0)}
- 21%{opacity:.16;transform:translate3d(8vw,0,0)}
- 34%{opacity:.75;transform:translate3d(-10vw,0,0)}
- 46%{opacity:.23;transform:translate3d(12vw,0,0)}
- 66%{opacity:.5;transform:translate3d(-5vw,0,0)}
- 83%{opacity:.17;transform:translate3d(4vw,0,0)}
+ 10%{opacity:.6;transform:translate3d(-12px,0,0)}
+ 27%{opacity:.25;transform:translate3d(24px,0,0)}
+ 39%{opacity:.78;transform:translate3d(-38px,0,0)}
+ 57%{opacity:.14;transform:translate3d(41px,0,0)}
+ 76%{opacity:.63;transform:translate3d(-16px,0,0)}
 }
-@keyframes jf-corrupt-fragment{
- 0%,100%{opacity:0;transform:translate3d(0,0,0) scaleX(.9)}
- 10%{opacity:.88;transform:translate3d(-5vw,0,0) scaleX(1.07)}
- 18%{opacity:.32;transform:translate3d(8vw,0,0) scaleX(.91)}
- 31%{opacity:.96;transform:translate3d(-9vw,0,0) scaleX(1.1)}
- 43%{opacity:.36;transform:translate3d(5vw,0,0) scaleX(.95)}
- 58%{opacity:.72;transform:translate3d(-7vw,0,0) scaleX(1.03)}
- 73%{opacity:.16;transform:translate3d(9vw,0,0) scaleX(.88)}
- 88%{opacity:.43;transform:translate3d(-2vw,0,0) scaleX(1)}
+@keyframes jf-glitch-field{
+ 0%,100%{opacity:.25;transform:translate3d(0,0,0)}
+ 21%{opacity:.65;transform:translate3d(-6vw,0,0)}
+ 36%{opacity:.32;transform:translate3d(7vw,0,0)}
+ 54%{opacity:.72;transform:translate3d(-9vw,0,0)}
+ 83%{opacity:.23;transform:translate3d(5vw,0,0)}
 }
 
-/* A reduced-motion visitor sees a calm palette surface, not flashing artifacts. */
+/* The preview uses the same actual signal, clipped into its own aspect ratio. */
+.jf-glitch-preview{
+ position:relative;isolation:isolate;overflow:hidden;min-height:175px;
+ background:var(--jf-glitch-dark);
+}
+.jf-glitch-preview .jf-glitch-scene{
+ animation:jf-glitch-pending-fade 850ms steps(1,end) infinite;
+}
 @media(prefers-reduced-motion:reduce){
- html.jf-native-route-glitch::view-transition-old(root),
- html.jf-native-route-glitch::view-transition-new(root){animation:none!important}
- .site-shell>.jf-route-glitch,
- .site-shell>.jf-route-glitch~.site-main{animation:none!important}
- .jf-route-glitch-pending::before,
- .jf-route-glitch-pending::after,
- .jf-glitch-fragment{animation:none!important}
- .jf-route-glitch-pending::before,
- .jf-route-glitch-pending::after,
- .jf-glitch-fragment{display:none!important}
+ .jf-route-glitch{display:none!important;animation:none!important}
+ .jf-route-glitch-pending,.jf-glitch-preview .jf-glitch-scene{animation:none!important}
+ .jf-glitch-scene :is(.jf-glitch-gradient-field,.jf-glitch-block,.jf-glitch-band,.jf-glitch-grain,.jf-glitch-chroma){animation:none!important}
+ .jf-route-glitch-pending .jf-glitch-block,.jf-glitch-preview .jf-glitch-block{opacity:.45}
+ .jf-glitch-band,.jf-glitch-chroma{display:none!important}
 }
