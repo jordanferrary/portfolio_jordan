@@ -32,6 +32,10 @@ O fundo do portfólio mantém os gradientes de cor fixos em relação à área v
 
 O botão de volume abre uma **cápsula vertical compacta, totalmente arredondada** à direita do player, sem aumentar sua altura. O slider ajusta o volume de baixo para cima, com ícone de silenciar e porcentagem. Clique novamente no botão ou fora do player para fechá-lo. No celular, o controle se posiciona após a alça lateral do player expansível. O volume continua salvo neste navegador.
 
+### Gerenciar os três projetos em destaque na Home
+
+No Local Studio, use **Home → Destaques** ou **Ferramentas → Projetos → Projetos em destaque**. O editor apresenta até 3 espaços com miniaturas e controles **subir, descer, substituir e remover**. A busca abaixo permite selecionar qualquer projeto existente sem abrir seu editor. As escolhas atualizam o rascunho da Home e só ficam públicas após **Publicar**. A ordem é independente da galeria; backups e publicações usam os campos `featured` e `featuredOrder` dos projetos. Projetos publicados antes dessa alteração continuam selecionados na mesma ordem. A opção individual de destaque permanece disponível em cada projeto, mas impede ativar uma quarta obra, direcionando para o gerenciador central.
+
 ## 5. Miniaturas e desempenho
 A publicação prepara versões WebP menores para imagens novas e, quando viável, imagens já publicadas. O navegador usa automaticamente `srcset` para exibir a resolução apropriada. As imagens antigas que não possuam miniaturas continuam abrindo normalmente. Quando o zoom abre, carrega a imagem de maior resolução disponível.
 

@@ -118,11 +118,11 @@ export function App(){
  }
  const [customPageEditorTarget,setCustomPageEditorTarget]=useState<string|null>(null)
  const [stagedMediaDeletions,setStagedMediaDeletions]=useState<string[]>([])
- const [homeEditorTab,setHomeEditorTab]=useState<'home'|'feedback'|'music'|'socials'|'likes'>('home')
+ const [homeEditorTab,setHomeEditorTab]=useState<'home'|'featured'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
  const navigate=(next:Page)=>{location.hash='/'+next;setPage(next);window.scrollTo(0,0)}
  const navigateCustomPage=(id:string)=>{location.hash='/page/'+id;setPage('custom');window.scrollTo(0,0)}
- const openHomeTab=(tab:'home'|'feedback'|'music'|'socials'|'likes')=>{setHomeEditorTab(tab);setHomeEditorOpen(true)}
+ const openHomeTab=(tab:'home'|'featured'|'feedback'|'music'|'socials'|'likes')=>{setHomeEditorTab(tab);setHomeEditorOpen(true)}
  const projectId=location.hash.replace(/^#\/project\//,'')
  const project=portfolio.projects.find(p=>p.id===projectId)
  const customPageId=location.hash.replace(/^#\/page\//,'').split('/')[0]
@@ -133,6 +133,7 @@ export function App(){
  const editingLabel=page==='project'?'Editar projeto':page==='custom'?'Editar página':page==='portfolio'?'Editar galeria':'Editar página'
  const studioActions:StudioAction[]=[
   {id:'home',label:'Home',description:'Apresentação, banner e conteúdo inicial',section:'Páginas',icon:Home,onClick:()=>openHomeTab('home')},
+  {id:'featured-projects',label:'Projetos em destaque',description:'Escolher e reorganizar as 3 obras exibidas na Home',section:'Projetos',icon:Grid2X2,onClick:()=>openHomeTab('featured')},
   {id:'about',label:'Sobre',description:'Bio, especialidades e imagens',section:'Páginas',icon:UserRound,onClick:()=>setAboutEditorOpen(true)},
   {id:'contact',label:'Contato',description:'Apresentação e redes para contato direto',section:'Páginas',icon:Mail,onClick:()=>setContactEditorOpen(true)},
   {id:'gallery',label:'Galeria',description:'Imagem de fundo da galeria',section:'Páginas',icon:Grid2X2,onClick:()=>setGalleryBackgroundEditorOpen(true)},
@@ -317,7 +318,7 @@ export function App(){
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
  {page==='custom'&&customPage&&<AppErrorBoundary compact><Suspense fallback={<div className="simple-page">Loading page…</div>}><CustomPageView page={customPage} editing={editing} onEdit={()=>setCustomPageEditorTarget(customPage.id)}/></Suspense></AppErrorBoundary>}
  {page==='custom'&&!customPage&&<section className="simple-page"><h1>Page not found</h1><p>This page may have moved or been removed.</p><button type="button" className="primary-action" onClick={()=>navigate('inicio')}>Return home</button></section>}
- {page==='inicio'&&<HomePage home={portfolio.home} testimonials={portfolio.testimonials} projects={portfolio.projects} editing={editing} onOpenProject={openProject} onEditProject={setEditor} onEditHome={()=>{setHomeEditorTab('feedback');setHomeEditorOpen(true)}} onNavigatePortfolio={()=>navigate('portfolio')}/>}
+ {page==='inicio'&&<HomePage home={portfolio.home} testimonials={portfolio.testimonials} projects={portfolio.projects} editing={editing} onOpenProject={openProject} onEditProject={setEditor} onEditHome={()=>openHomeTab('feedback')} onManageFeatured={()=>openHomeTab('featured')} onNavigatePortfolio={()=>navigate('portfolio')}/>}
  {page==='sobre'&&<AboutPage about={portfolio.about} editing={editing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
  {page==='contato'&&<ContactPage socials={portfolio.socialLinks} settings={portfolio.contact} demoEnabled={editing} onEdit={()=>setContactEditorOpen(true)}/>}
  </div>
@@ -336,7 +337,7 @@ export function App(){
  {editing&&githubPublishOpen&&<GitHubPublishEditor key={publishSource} entryPoint={publishSource} store={portfolio} stagedDeletionPaths={publishSource==='studio'?stagedMediaDeletions:[]} onPublished={revision=>{portfolio.markPublished(revision);setStagedMediaDeletions([])}} onRestore={portfolio.restorePublished} onExport={portfolio.exportData} onClose={()=>{setGitHubPublishOpen(false);setStagedMediaDeletions([])}}/>}
  {editing&&contactEditorOpen&&<ContactEditor settings={portfolio.contact} links={portfolio.socialLinks} onSave={portfolio.setContactPage} onClose={()=>setContactEditorOpen(false)}/>}
  {editing&&aboutEditorOpen&&<AboutEditor value={portfolio.about} onSave={portfolio.setAbout} onClose={()=>setAboutEditorOpen(false)}/>}
- {editing&&homeEditorOpen&&<HomeEditor initialTab={homeEditorTab} showLikeCounts={portfolio.showLikeCounts} onShowLikeCounts={portfolio.setShowLikeCounts} home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} links={portfolio.socialLinks} onLinks={portfolio.setSocialLinks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
+ {editing&&homeEditorOpen&&<HomeEditor initialTab={homeEditorTab} projects={portfolio.projects} onFeaturedProjects={portfolio.setFeaturedProjects} showLikeCounts={portfolio.showLikeCounts} onShowLikeCounts={portfolio.setShowLikeCounts} home={portfolio.home} testimonials={portfolio.testimonials} tracks={portfolio.musicTracks} links={portfolio.socialLinks} onLinks={portfolio.setSocialLinks} onHome={portfolio.setHome} onTestimonials={portfolio.setTestimonials} onTracks={portfolio.setMusicTracks} onClose={()=>setHomeEditorOpen(false)} onExport={portfolio.exportData}/>} 
  {editing&&editor!==undefined&&<AdminEditor key={editor?.id??'new'} project={editor} projects={portfolio.projects} categories={portfolio.categories} onSave={portfolio.update} onDelete={portfolio.remove} onClose={()=>setEditor(undefined)} onCategories={portfolio.setCategories} onExport={portfolio.exportData} onImport={portfolio.importData}/>}
  </Suspense></AppErrorBoundary>
  </div></AssetLibraryProvider></ImageVariantProvider>

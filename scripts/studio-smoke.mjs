@@ -25,6 +25,8 @@ const entry=[
  "export {parseModelUrl} from './src/lib/model-embed.ts'",
  "export {masonryColumnCount,distributeMasonry} from './src/lib/masonry.ts'",
  "export {HomePage} from './src/components/sections/home-page.tsx'",
+ "export {FEATURED_LIMIT,getFeaturedProjects,applyFeaturedSelection} from './src/lib/featured-projects.ts'",
+ "export {FeaturedProjectsEditor} from './src/components/sections/featured-projects-editor.tsx'",
  "export {ProjectFramingEditor} from './src/components/sections/project-framing-editor.tsx'",
  "export {HomeEditor} from './src/components/sections/home-editor.tsx'",
  "export {GalleryBackgroundEditor} from './src/components/sections/gallery-background-editor.tsx'",
@@ -63,7 +65,7 @@ try{
  check('Home and Gallery contextual editors mount and the duplicate background button is absent',()=>{
   const noop=()=>{}
   const home=element(app.HomeEditor,{
-   home:app.defaultHome,testimonials:[],tracks:[],links:[],
+   home:app.defaultHome,testimonials:[],tracks:[],links:[],projects:[],onFeaturedProjects:noop,
    onLinks:noop,onHome:noop,onTestimonials:noop,onTracks:noop,onClose:noop,
    onExport:async()=>{},showLikeCounts:false,onShowLikeCounts:noop
   })
@@ -79,6 +81,27 @@ try{
   assert.match(appSource,/AppErrorBoundary compact editorOverlay/)
   assert.match(appSource,/import\('\.\/components\/sections\/home-editor'\)\.catch/)
   assert.match(appSource,/import\('\.\/components\/sections\/gallery-background-editor'\)\.catch/)
+ })
+ check('Featured Home manager selects, replaces and orders exactly 3 independent of gallery',()=>{
+  const base=Array.from({length:5},(_,i)=>({id:'p'+i,title:'Art '+i,image:'https://example.com/'+i+'.webp',category:'3D',year:'2026',description:'',tools:[],featured:i<2,blocks:[]}))
+  assert.equal(app.FEATURED_LIMIT,3)
+  assert.deepEqual(app.getFeaturedProjects(base).map(p=>p.id),['p0','p1'])
+  const chosen=app.applyFeaturedSelection(base,['p3','p1','p4','p0','p3'])
+  assert.deepEqual(chosen.map(p=>p.id),base.map(p=>p.id))
+  assert.deepEqual(app.getFeaturedProjects(chosen).map(p=>p.id),['p3','p1','p4'])
+  assert.deepEqual(base.filter(p=>p.featured).map(p=>p.id),['p0','p1'])
+  const replaced=app.applyFeaturedSelection(chosen,['p4','p0'])
+  assert.deepEqual(app.getFeaturedProjects(replaced).map(p=>p.id),['p4','p0'])
+  const manager=element(app.FeaturedProjectsEditor,{projects:chosen,onChange:()=>{}})
+  assert.match(manager,/Projetos em destaque/)
+  assert.match(manager,/3 \/ 3/)
+  assert.match(manager,/Substituir Art 3/)
+  assert.match(manager,/Remover Art 4 dos destaques/)
+  const html=element(app.HomePage,{home:app.defaultHome,testimonials:[],projects:chosen,editing:true,onOpenProject:()=>{},onEditProject:()=>{},onEditHome:()=>{},onManageFeatured:()=>{},onNavigatePortfolio:()=>{}})
+  assert.match(html,/Gerenciar projetos em destaque/)
+  assert.ok(html.indexOf('Art 3')<html.indexOf('Art 1'))
+  assert.ok(html.indexOf('Art 1')<html.indexOf('Art 4'))
+  assert.doesNotMatch(html,/data-alquimago-project="Art 0"/)
  })
  check('Portfolio ambient glow stays in the viewport while scrolling',()=>{
   assert.match(ambientCss,/\.site-shell\s*\{[\s\S]*?background-attachment:fixed!important;/)

@@ -2,6 +2,7 @@ import { useCallback,useState } from 'react'
 import { DEFAULT_THEME,normalizeThemePalette,type ThemePalette } from '../lib/theme-palette'
 import { isKnownDemoTestimonial } from '../lib/testimonial-safety'
 import { normalizeFraming } from '../lib/image-framing'
+import {applyFeaturedSelection} from '../lib/featured-projects'
 import type {ResponsiveImageMap} from '../lib/image-variants'
 import {normalizeCustomPages,type CustomPage} from '../data/custom-pages'
 import publishedPackage from '../data/published-portfolio.json'
@@ -33,7 +34,7 @@ function parseStore(raw:unknown):PortfolioStore{
   return {...c,label:englishCategory(c.label)}
  })
  for(const p of obj.projects)if(typeof p.id!=='string'||typeof p.title!=='string'||!Array.isArray(p.blocks))throw new Error('Projeto inválido')
- const projects=obj.projects.map(p=>({...p,category:englishCategory(p.category),image:normalizeBundledImage(p.image),coverFocus:normalizeFraming(p.coverFocus),homeFocus:normalizeFraming(p.homeFocus??p.coverFocus),heroFocus:normalizeFraming(p.heroFocus),blocks:p.blocks.map(b=>({...b,content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage),galleryEntries:b.galleryEntries?.map(item=>({...item,image:normalizeBundledImage(item.image)})),slides:b.slides?.map(item=>({...item,image:normalizeBundledImage(item.image)}))})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
+ const projects=obj.projects.map(p=>({...p,category:englishCategory(p.category),image:normalizeBundledImage(p.image),featuredOrder:Number.isInteger(p.featuredOrder)&&p.featuredOrder!>=0&&p.featuredOrder!<3?p.featuredOrder:undefined,coverFocus:normalizeFraming(p.coverFocus),homeFocus:normalizeFraming(p.homeFocus??p.coverFocus),heroFocus:normalizeFraming(p.heroFocus),blocks:p.blocks.map(b=>({...b,content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage),galleryEntries:b.galleryEntries?.map(item=>({...item,image:normalizeBundledImage(item.image)})),slides:b.slides?.map(item=>({...item,image:normalizeBundledImage(item.image)}))})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
  const home={...defaultHome,...(obj.home??{}),avatar:normalizeBundledImage(obj.home?.avatar??defaultHome.avatar),background:normalizeBundledImage(obj.home?.background??defaultHome.background)}
  const galleryBackground=normalizeBundledImage(obj.galleryBackground??obj.home?.background??defaultGalleryBackground)
  const themePalette=normalizeThemePalette(obj.themePalette)
@@ -120,6 +121,7 @@ export function usePortfolio(editing=false){
  const save=useCallback((next:PortfolioStore)=>{setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('')}catch{setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[])
  const update=(project:Project)=>save({...store,projects:store.projects.some(p=>p.id===project.id)?store.projects.map(p=>p.id===project.id?project:p):[project,...store.projects]})
  const remove=(id:string)=>save({...store,projects:store.projects.filter(p=>p.id!==id)})
+ const setFeaturedProjects=(ids:string[])=>save({...store,projects:applyFeaturedSelection(store.projects,ids)})
  const reorderProjects=(sourceId:string,targetId:string,after=false)=>{
   if(sourceId===targetId)return
   const list=[...store.projects]
@@ -192,5 +194,5 @@ export function usePortfolio(editing=false){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setCategories,setCustomPages,setHome,setGalleryBackground,setBranding,setSiteIdentity,setThemePalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setHome,setGalleryBackground,setBranding,setSiteIdentity,setThemePalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }

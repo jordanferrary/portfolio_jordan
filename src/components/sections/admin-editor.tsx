@@ -118,7 +118,7 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <MediaField value={draft.image} onChange={image=>patch({image})} folder={'projects/'+draft.id} slot="cover" label="Capa" onError={setMessage}/>{draft.image&&<button type="button" className="framing-shortcut" onClick={()=>setTab('framing')}>✦ Ajustar enquadramento da galeria, Home e banner</button>}
  <div className="project-description-composer"><p>Descrição principal</p><TextComposer label="Descrição do projeto" rows={4} value={draft.description} onChange={description=>patch({description})}/></div>
  <div className="tools-control"><p>Ferramentas utilizadas</p><ToolTags tools={draft.tools} onChange={tools=>patch({tools})}/></div>
- <label className="checkbox-line"><input type="checkbox" checked={draft.featured} onChange={e=>patch({featured:e.target.checked})}/>Exibir em trabalhos de destaque</label>
+ <label className="checkbox-line"><input type="checkbox" checked={draft.featured} disabled={!draft.featured&&projects.filter(p=>p.featured&&p.id!==draft.id).length>=3} onChange={e=>patch({featured:e.target.checked})}/>Exibir em trabalhos de destaque (máximo 3)</label>{!draft.featured&&projects.filter(p=>p.featured&&p.id!==draft.id).length>=3&&<small>Os 3 espaços estão ocupados. Use Home → Destaques para substituir e reorganizar os projetos.</small>}
  </>}
  {tab==='framing'&&<ProjectFramingEditor image={draft.image} coverFocus={draft.coverFocus} homeFocus={draft.homeFocus} heroFocus={draft.heroFocus} onChange={values=>patch(values)}/>}
  {tab==='composition'&&<>
