@@ -109,3 +109,23 @@
 .theme-mini-actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center}
 .theme-mini-actions .theme-mini-action{margin-top:0;min-width:0;flex:0 1 auto;min-height:38px;gap:9px;box-sizing:border-box;padding:9px 13px;font-size:10px;line-height:1.35}
 .theme-mini-actions .theme-mini-action span{font-size:15px}
+
+/* Sitewide eyebrow ornament selection lives next to the seven color tokens. */
+.theme-symbol-panel{margin:18px 0;padding:20px;border:1px solid var(--jf-border);background:color-mix(in srgb,var(--jf-surface) 86%,var(--jf-background));border-radius:19px}
+.theme-symbol-panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:16px}
+.theme-symbol-panel-heading h3{font-size:18px;color:var(--jf-text);margin:5px 0}
+.theme-symbol-panel-heading p{font-size:12px;line-height:1.55;color:var(--jf-muted);max-width:600px;margin:0}
+.theme-symbol-panel-heading .eyebrow{font-size:10px;color:var(--jf-secondary)}
+.theme-symbol-reset{display:flex;align-items:center;gap:6px;flex:0 0 auto;background:var(--jf-background);color:var(--jf-text);border:1px solid var(--jf-border);border-radius:10px;padding:8px 10px;cursor:pointer}
+.theme-symbol-options{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.theme-symbol-option{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:85px;background:var(--jf-background);border:1px solid var(--jf-border);color:var(--jf-muted);border-radius:13px;cursor:pointer;padding:10px 6px;transition:border-color .18s,background .18s}
+.theme-symbol-option:hover{border-color:var(--jf-secondary);background:color-mix(in srgb,var(--jf-primary) 12%,var(--jf-background))}
+.theme-symbol-option.selected{border-color:var(--jf-secondary);background:color-mix(in srgb,var(--jf-primary) 22%,var(--jf-background));color:var(--jf-text);box-shadow:inset 0 0 0 1px var(--jf-primary-glow)}
+.theme-symbol-option-graphic{min-height:25px;color:var(--jf-secondary);display:grid;place-items:center}
+.theme-symbol-option small{font-size:10px;text-align:center;line-height:1.3}
+.theme-symbol-none{font-size:24px;line-height:1}
+.theme-symbol-example{display:flex;flex-direction:column;gap:9px;margin-top:15px;padding:14px 16px;border:1px solid var(--jf-border);border-radius:12px;background:var(--jf-background)}
+.theme-symbol-example>span,.theme-mini-heading{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.09em}
+.theme-symbol-example>strong{font-size:17px}
+@media(max-width:700px){.theme-symbol-options{grid-template-columns:repeat(3,minmax(0,1fr))}.theme-symbol-panel{padding:14px}.theme-symbol-panel-heading{gap:9px}.theme-symbol-reset{padding:7px}}
+@media(prefers-reduced-motion:reduce){.theme-symbol-option{transition:none}}

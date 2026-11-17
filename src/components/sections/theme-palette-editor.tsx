@@ -3,8 +3,10 @@ import { useEffect,useRef,useState } from 'react'
 import { Check,Palette,RotateCcw,Save,Sparkles,X } from 'lucide-react'
 import { ChromaticPicker } from '../ui/chromatic-picker'
 import { applyThemePalette,contrastRatio,DEFAULT_THEME,PALETTE_FIELDS,type ThemeColorKey,type ThemePalette } from '../../lib/theme-palette'
+import {HeadingSymbol} from '../ui/heading-symbol'
+import {DEFAULT_HEADING_SYMBOL,HEADING_SYMBOL_OPTIONS,type HeadingSymbolStyle} from '../../lib/heading-symbol'
 
-type Props={value:ThemePalette;onSave:(theme:ThemePalette)=>void;onClose:()=>void}
+type Props={value:ThemePalette;symbol?:HeadingSymbolStyle;onSave:(theme:ThemePalette,symbol:HeadingSymbolStyle)=>void;onClose:()=>void}
 const PRESETS:{name:string;palette:ThemePalette}[]=[
  {name:'Neon Dream',palette:{...DEFAULT_THEME}},
  {name:'Cyber Aurora',palette:{...DEFAULT_THEME,primary:'#3D91FF',secondary:'#43EDCD',background:'#070D1C',surface:'#111D32',muted:'#ACCEDE',border:'#3A729A'}},
@@ -12,15 +14,16 @@ const PRESETS:{name:string;palette:ThemePalette}[]=[
  {name:'Solar Flare',palette:{...DEFAULT_THEME,primary:'#FF8145',secondary:'#FFCE54',background:'#130A0E',surface:'#281719',muted:'#E0C1B4',border:'#995539'}},
  {name:'Moonlight',palette:{...DEFAULT_THEME,primary:'#B4AAFF',secondary:'#91DFFF',background:'#090B19',surface:'#1C1C34',muted:'#C0C0DC',border:'#6669A6'}}
 ]
-export function ThemePaletteEditor({value,onSave,onClose}:Props){
+export function ThemePaletteEditor({value,symbol=DEFAULT_HEADING_SYMBOL,onSave,onClose}:Props){
  const [draft,setDraft]=useState<ThemePalette>(()=>({...value}))
  const [active,setActive]=useState<ThemeColorKey>('primary')
+ const [draftSymbol,setDraftSymbol]=useState<HeadingSymbolStyle>(symbol)
  const original=useRef({...value})
  const saved=useRef(false)
  useEffect(()=>()=>{if(!saved.current)applyThemePalette(original.current)},[])
  useEffect(()=>{applyThemePalette(draft)},[draft])
  const setColor=(color:string)=>setDraft(prev=>({...prev,[active]:color}))
- const save=()=>{saved.current=true;onSave(draft);onClose()}
+ const save=()=>{saved.current=true;onSave(draft,draftSymbol);onClose()}
  const contrastBackground=contrastRatio(draft.text,draft.background)
  const contrastSurface=contrastRatio(draft.text,draft.surface)
  const mutedContrast=contrastRatio(draft.muted,draft.background)
@@ -40,7 +43,7 @@ export function ThemePaletteEditor({value,onSave,onClose}:Props){
       <div className="theme-live-preview" style={{background:draft.background,color:draft.text}}>
        <div className="theme-mini-top"><span className="theme-mini-mark" style={{background:draft.primary}}/> <span>JORDAN FERRARY</span><span className="theme-mini-dot" style={{background:draft.secondary}}/></div>
        <div className="theme-mini-card" style={{background:draft.surface,borderColor:draft.border,color:draft.text}}>
-        <span style={{color:draft.secondary}}>✦ CREATIVE PORTFOLIO</span>
+        <span className="theme-mini-heading" style={{color:draft.secondary}}><HeadingSymbol symbol={draftSymbol} size={14}/> CREATIVE PORTFOLIO</span>
         <h4>Art beyond<br/><em style={{color:draft.primary}}>the ordinary.</em></h4>
         <div className="theme-mini-actions"><div className="theme-mini-action theme-mini-glass-primary">Explore my work <span>↗</span></div><div className="theme-mini-action theme-mini-glass-secondary">Discover <span>✦</span></div></div>
        </div>
@@ -59,6 +62,20 @@ export function ThemePaletteEditor({value,onSave,onClose}:Props){
       {lowContrast&&<p className="theme-contrast-note" role="status">Textos e descrições precisam de contraste 4,5:1 ou maior sobre os fundos. Revise as cores antes de publicar.</p>}
      </div>
     </div>
+
+    <section className="theme-symbol-panel" aria-label="Símbolos dos títulos">
+     <div className="theme-symbol-panel-heading">
+      <div><span className="eyebrow">IDENTIDADE VISUAL / SÍMBOLOS</span><h3>Símbolos dos títulos</h3><p>Uma identidade consistente nas apresentações das páginas, sem ícones duplicados.</p></div>
+      <button type="button" className="theme-symbol-reset" onClick={()=>setDraftSymbol(DEFAULT_HEADING_SYMBOL)}><RotateCcw size={15}/>Padrão</button>
+     </div>
+     <div className="theme-symbol-options" role="group" aria-label="Estilo global dos símbolos">
+      {HEADING_SYMBOL_OPTIONS.map(option=><button key={option.id} type="button" className={'theme-symbol-option'+(draftSymbol===option.id?' selected':'')} onClick={()=>setDraftSymbol(option.id)} aria-pressed={draftSymbol===option.id} title={option.label}>
+       <span className="theme-symbol-option-graphic"><HeadingSymbol symbol={option.id} size={21}/>{option.id==='none'&&<span className="theme-symbol-none">—</span>}</span>
+       <small>{option.label}</small>
+      </button>)}
+     </div>
+     <div className="theme-symbol-example"><span style={{color:draft.secondary}}><HeadingSymbol symbol={draftSymbol} size={16}/> EXPLORAR MEU PORTFÓLIO</span><strong style={{color:draft.text}}>Prévia do título</strong></div>
+    </section>
     <div className="theme-preset-area"><div><h3>Direções de cor</h3><p>Uma base rápida para experimentar — todos os valores continuam editáveis.</p></div><div className="theme-presets">{PRESETS.map(preset=><button type="button" key={preset.name} onClick={()=>setDraft({...preset.palette})} className="theme-preset"><span className="theme-preset-dots">{PALETTE_FIELDS.map(field=><i key={field.key} style={{background:preset.palette[field.key]}}/>)}</span><strong>{preset.name}</strong></button>)}</div></div>
     <div className="theme-editor-bottom"><button type="button" className="theme-reset" onClick={()=>setDraft({...DEFAULT_THEME})}><RotateCcw size={15}/>Restaurar cores originais</button><p><Palette size={15}/> A visualização é imediata. Somente <b>Salvar paleta</b> grava o rascunho local; <b>Publicar</b> atualiza o site para todos.</p></div>
    </div>
