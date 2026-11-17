@@ -78,3 +78,6 @@ import './styles/mobile-nav-alignment.css'
 import './styles/studio-palette-coverage.css'
 import './styles/heading-symbol.css'
 import './styles/gallery-hero-refinement.css'
+
+// Final public route grid: shared margins and typographic hierarchy.
+import './styles/page-layout-consistency.css'

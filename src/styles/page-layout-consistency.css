@@ -1,0 +1,106 @@
+/* Shared page composition — one editorial grid across the four public routes.
+   Artwork backgrounds can still bleed to the viewport; content follows one
+   baseline after the fixed navigation rail. */
+.site-shell{
+ --jf-page-layout-max:1470px;
+ --jf-page-display:clamp(39px,3.45vw,60px);
+ --jf-page-description:clamp(13px,1vw,16px);
+}
+@media(min-width:1100px){
+ .site-shell :is(.home-dashboard,.gallery-page,.about-page,.contact-social-page){
+  width:100%;
+  max-width:var(--jf-page-layout-max)!important;
+  margin-inline:auto!important;
+ }
+ /* Older editors independently inset the headers, creating a 100px+ drift. */
+ .site-shell .gallery-heading{margin-left:0!important}
+ .site-shell.about-route .about-page{padding-inline:0!important}
+ .site-shell.contact-route .contact-social-page{padding-inline:0!important}
+ /* Avoid stretching the portrait and biography across the entire desktop. */
+ .site-shell .about-page-body{width:100%;max-width:1330px}
+ /* Gallery art retains its right-edge bleed after changing the content width.
+    209px = 175px left site rail + 34px right site padding. */
+ .site-shell .gallery-page{
+  --gallery-hero-bleed:calc(34px + max(0px,(100vw - 1679px) / 2));
+ }
+}
+@media(min-width:751px){
+ .site-shell :is(.home-intro h1,.gallery-heading h1,.about-page-header h1,.contact-social-intro h1){
+  font-size:var(--jf-page-display)!important;
+  line-height:1.06;
+  letter-spacing:-.055em;
+ }
+ .site-shell .contact-social-intro h1{
+  max-width:650px;
+  margin-bottom:clamp(15px,2.5vh,24px);
+  overflow-wrap:break-word;
+ }
+ .site-shell .contact-social-directory-head h2{
+  font-size:clamp(24px,2vw,32px)!important;
+  letter-spacing:-.035em;
+  line-height:1.13;
+  overflow-wrap:break-word;
+ }
+ .site-shell .contact-social-intro .contact-social-description{
+  font-size:var(--jf-page-description);
+  line-height:1.65;
+ }
+ /* A slightly lower gallery headline creates a similar vertical rhythm to
+    Contact and About, without moving the image out of its hero container. */
+ .site-shell .gallery-page{padding-top:clamp(88px,8.7vh,108px)}
+ .site-shell .gallery-heading{
+  min-height:225px;
+  height:auto;
+  margin-bottom:22px;
+ }
+}
+/* Reduced desktop widths: keep the same baseline but stack Contact once two
+   columns would squeeze the heading. The page remains scrollable. */
+@media(min-width:751px) and (max-width:1099px){
+ .site-shell :is(.home-dashboard,.gallery-page,.about-page,.contact-social-page){
+  width:100%;max-width:100%!important;margin-inline:0!important;
+ }
+ .site-shell .gallery-heading{margin-left:0!important}
+ .site-shell.about-route .about-page{padding-inline:0!important}
+ .site-shell.contact-route .contact-social-page{
+  padding-inline:0!important;
+  min-height:100dvh!important;
+  height:auto!important;
+  display:block!important;
+ }
+ .site-shell.contact-route,
+ .site-shell.contact-route>.site-main{
+  height:auto!important;
+  min-height:100dvh!important;
+  overflow:visible!important;
+ }
+ .site-shell.contact-route .contact-social-layout{
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:clamp(18px,3vw,30px);
+ }
+ .site-shell.contact-route .contact-social-directory{
+  max-width:720px;
+  width:100%;
+ }
+ .site-shell .contact-social-intro h1{font-size:clamp(40px,5vw,54px)!important}
+}
+/* Phone typography: legible headings without the previous 12vw contact title.
+   Single-column media layouts and bottom nav remain untouched. */
+@media(max-width:750px){
+ .site-shell .contact-social-intro h1{
+  font-size:clamp(34px,8.4vw,48px)!important;
+  line-height:1.08;
+  letter-spacing:-.052em;
+  overflow-wrap:break-word;
+ }
+ .site-shell .contact-social-directory-head h2{
+  font-size:clamp(22px,5vw,29px)!important;
+  line-height:1.16;
+ }
+ .site-shell .gallery-heading{margin-left:0!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .site-shell :is(.home-dashboard,.gallery-page,.about-page,.contact-social-page){
+  scroll-behavior:auto;
+ }
+}
