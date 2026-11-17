@@ -49,7 +49,8 @@
 .music-widget .music-seek{min-width:0;flex:1;width:auto!important}
 .music-widget .music-volume-toggle{border:1px solid #733a9d;border-radius:50%;background:#3c195c;color:#d19af4;display:grid;place-items:center;width:23px;height:23px;min-width:23px;flex:0 0 23px;padding:0;box-shadow:inset 0 1px #e7b4ff22}
 .music-widget .music-volume-toggle:hover,.music-widget .music-volume-toggle.is-open{border-color:#ba66f7;background:#6b2b93;color:#f3d3ff;box-shadow:0 0 10px #af45fa45}
-/* Side-mounted volume pill: never participates in the player's column height. */
+/* Vertical side-mounted volume slider. It never increases the player height. */
+.music-widget .music-card{overflow:visible}
 .music-widget .music-volume-popover{
  position:absolute;
  z-index:12;
@@ -57,14 +58,17 @@
  right:auto;
  bottom:7px;
  display:flex;
+ flex-direction:column-reverse;
  align-items:center;
- gap:6px;
- width:150px;
- min-height:38px;
- padding:7px 9px;
+ justify-content:center;
+ gap:9px;
+ width:48px;
+ height:160px;
+ min-height:0;
+ padding:10px 7px;
  border:1px solid color-mix(in srgb,var(--jf-border,#9953cb) 78%,var(--jf-secondary,#cf91f4) 22%);
- border-radius:14px;
- background:linear-gradient(135deg,color-mix(in srgb,var(--jf-surface,#2e1146) 92%,transparent),color-mix(in srgb,var(--jf-background,#0e0820) 94%,transparent));
+ border-radius:18px;
+ background:linear-gradient(160deg,color-mix(in srgb,var(--jf-surface,#2e1146) 92%,transparent),color-mix(in srgb,var(--jf-background,#0e0820) 94%,transparent));
  box-shadow:0 9px 26px #030008b0,inset 0 1px #e2adff20;
  backdrop-filter:blur(15px);
 }
@@ -74,43 +78,48 @@
  color:var(--jf-secondary,#cb91f1);
  display:grid;
  place-items:center;
- width:22px;
- height:25px;
+ width:28px;
+ height:26px;
  padding:0;
- flex:0 0 22px;
+ flex:0 0 26px;
 }
 .music-widget .music-volume-popover input{
  appearance:none;
  -webkit-appearance:none;
- width:100%;
- min-width:0;
- flex:1;
- height:5px;
+ writing-mode:vertical-lr;
+ direction:rtl;
+ width:6px;
+ height:82px;
+ min-width:6px;
+ min-height:0;
+ flex:0 0 82px;
  margin:0;
+ padding:0;
  border:0;
  border-radius:999px;
  cursor:pointer;
+ touch-action:none;
 }
 .music-widget .music-volume-popover input::-webkit-slider-thumb{
  -webkit-appearance:none;
- width:12px;
- height:12px;
+ width:14px;
+ height:14px;
  border:1px solid #efd5ff;
  border-radius:50%;
  background:var(--jf-primary,#b148ff);
  box-shadow:0 0 7px var(--jf-primary-glow,#b148ff88);
 }
 .music-widget .music-volume-popover input::-moz-range-thumb{
- width:11px;
- height:11px;
+ width:13px;
+ height:13px;
  border:1px solid #efd5ff;
  border-radius:50%;
  background:var(--jf-primary,#b148ff);
 }
 .music-widget .music-volume-popover span{
- width:27px;
- flex:0 0 27px;
- text-align:right;
+ width:auto;
+ flex:0 0 auto;
+ text-align:center;
  font-size:10px;
  color:var(--jf-muted,#dbc1ec);
  font-variant-numeric:tabular-nums;
@@ -122,18 +131,7 @@
  .music-widget .music-volume-toggle{width:19px;height:19px;min-width:19px;flex-basis:19px}
  .music-widget .music-volume-toggle svg{width:14px;height:14px}
  .music-widget .music-card-footer{gap:3px!important}
- /* On phones the drawer handle occupies 43px to the right of the card. */
- .site-shell>.music-widget .music-volume-popover{
-  left:calc(100% + 48px);
-  right:auto;
-  bottom:8px;
-  width:min(124px,calc(100vw - 194px));
-  min-height:37px;
-  padding:6px;
-  gap:4px;
- }
- .site-shell>.music-widget .music-volume-popover button{width:18px;flex-basis:18px}
- .site-shell>.music-widget .music-volume-popover span{width:23px;flex-basis:23px;font-size:9px}
+
  .case-study{margin-top:37px!important}
  .project-engagement{margin-top:13px}
 }
@@ -212,3 +210,32 @@
 @keyframes jf-like-heart-pop{0%{transform:scale(.85)}35%{transform:scale(1.45)}58%{transform:scale(.93)}80%{transform:scale(1.07)}100%{transform:scale(1)}}
 @keyframes jf-like-spark{0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}25%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--spark-x)),calc(-50% + var(--spark-y))) scale(.5)}}
 @media(prefers-reduced-motion:reduce){.project-like .like-heart-pop,.like-spark-burst i{animation:none!important}.like-spark-burst{display:none}}
+
+/* The mobile drawer handle occupies 43px to the right of the 144px card.
+   Position the vertical pill beyond that handle, even on 601–750px screens. */
+@media(max-width:750px){
+ .site-shell>.music-widget .music-volume-popover{
+  left:calc(100% + 52px);
+  right:auto;
+  bottom:7px;
+  width:44px;
+  height:144px;
+  padding:8px 6px;
+  gap:7px;
+ }
+ .site-shell>.music-widget .music-volume-popover input{
+  height:73px;
+  flex-basis:73px;
+ }
+ .site-shell>.music-widget .music-volume-popover button{
+  width:26px;
+  height:24px;
+  flex-basis:24px;
+ }
+}
+@media(max-width:270px){
+ .site-shell>.music-widget .music-volume-popover{
+  left:calc(100% + 44px);
+  width:38px;
+ }
+}
