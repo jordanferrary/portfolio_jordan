@@ -503,4 +503,52 @@ export const VISITOR_PHRASES:Record<string,{pt:string;es:string}>={
  "Loading project…":{pt:"Carregando projeto…",es:"Cargando proyecto…"},
  "Loading page…":{pt:"Carregando página…",es:"Cargando página…"},
 
+ "Search by software or technique as well.":{
+  pt:"Pesquise também por software ou técnica.",
+  es:"También puedes buscar por software o técnica."
+ },
+ "More projects are coming soon.":{
+  pt:"Mais projetos em breve.",
+  es:"Pronto habrá más proyectos."
+ },
+ "View Project:":{
+  pt:"Ver projeto:",
+  es:"Ver proyecto:"
+ },
+ "Open full project:":{
+  pt:"Abrir projeto completo:",
+  es:"Abrir proyecto completo:"
+ },
+ "Project details":{
+  pt:"Detalhes do projeto",
+  es:"Detalles del proyecto"
+ },
+ "Play next track":{
+  pt:"Reproduzir a próxima faixa",
+  es:"Reproducir la siguiente pista"
+ },
+ "Repeat this track":{
+  pt:"Repetir esta faixa",
+  es:"Repetir esta pista"
+ },
+ "Music volume":{
+  pt:"Volume da música",
+  es:"Volumen de la música"
+ },
+ "Playback volume":{
+  pt:"Volume da reprodução",
+  es:"Volumen de reproducción"
+ },
+ "Change portfolio language":{
+  pt:"Alterar idioma do portfólio",
+  es:"Cambiar idioma del portafolio"
+ },
+ "No matches":{
+  pt:"Nenhum resultado",
+  es:"Sin resultados"
+ },
+ "Gallery":{
+  pt:"Galeria",
+  es:"Galería"
+ }
 }

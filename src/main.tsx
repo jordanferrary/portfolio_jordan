@@ -77,3 +77,4 @@ import './styles/mobile-nav-alignment.css'
 // Loaded last to override legacy violet hex colors without affecting artwork.
 import './styles/studio-palette-coverage.css'
 import './styles/heading-symbol.css'
+import './styles/gallery-hero-refinement.css'

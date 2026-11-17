@@ -240,3 +240,9 @@ Em **Ferramentas → Identidade → Paleta de cores**, a seção **Símbolos dos
 Discord, TikTok, Pinterest, Reddit e ArtStation agora usam vetores locais do catálogo Simple Icons (CC0), preservando o suporte a imagens personalizadas como substituições. Não dependem de serviços externos.
 
 O controle vertical de volume também aceita `wheel` em passos de **2%** enquanto a cápsula está aberta e o ponteiro está sobre ela. Fora desse elemento, o scroll da página continua normal. Eventos muito pequenos de touchpad são acumulados para evitar saltos.
+
+### Revisão da tradução automática e banner da galeria
+
+O tradutor público agora interpreta campos do editor da Galeria com quebras de linha: o título e a descrição padrão são traduzidos localmente para português e espanhol sem depender da API. Os estados dinâmicos dos filtros também são produzidos diretamente no idioma do visitante. A observação de alterações de atributos atualiza `placeholder`, `aria-label`, `title` e `alt` quando a interface muda, sem enviar inputs, senhas ou textos privados do Studio para terceiros. Frases autorais novas que não tenham tradução offline ainda dependem da tradução opcional, sujeita a cotas e indisponibilidade externa.
+
+O banner da Galeria preenche a margem direita do viewport, sem esticar a página para a horizontal. A borda esquerda mantém o degradê de integração e a região inferior recebe uma máscara de 16% de altura, revelando o fundo atual configurado pela paleta. Os breakpoints de tablet e celular preservam o recorte responsivo.

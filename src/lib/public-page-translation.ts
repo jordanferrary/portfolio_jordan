@@ -71,8 +71,26 @@ function publicCopy(source:string){
 }
 export function localPhrase(source:string,language:VisitorLanguage):string|null{
  if(language==='en')return source
- const lookup=VISITOR_PHRASES[source.trim()]
- return lookup?.[language]??null
+ const text=source.trim()
+ const exact=VISITOR_PHRASES[text]?.[language]
+ if(exact!==undefined)return exact
+ // Gallery text is now authored in a textarea. Preserve its line breaks while
+ // reusing the existing human-reviewed translations for each complete line.
+ if(/\r?\n/.test(text)){
+  const lines=text.split(/\r?\n/)
+  const translated=lines.map(line=>VISITOR_PHRASES[line.trim()]?.[language])
+  if(translated.every((line):line is string=>typeof line==='string'))
+   return translated.join('\n')
+ }
+ // Keep user-authored artwork titles intact in generated accessibility labels.
+ const prefixes:{start:string;pt:string;es:string}[]=[
+  {start:'View project ',pt:'Ver projeto ',es:'Ver proyecto '},
+  {start:'View Project: ',pt:'Ver projeto: ',es:'Ver proyecto: '},
+  {start:'Open full project: ',pt:'Abrir projeto completo: ',es:'Abrir proyecto completo: '}
+ ]
+ for(const prefix of prefixes)if(text.startsWith(prefix.start)&&text.length>prefix.start.length)
+  return prefix[language]+text.slice(prefix.start.length)
+ return null
 }
 function decodeEntities(value:string){
  return value.replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#39;|&apos;/g,"'")
@@ -228,9 +246,9 @@ export function observePublicTranslation(root:HTMLElement,language:VisitorLangua
   scheduled=setTimeout(()=>{scheduled=null;scan()},55)
  }
  const observer=new MutationObserver(records=>{
-  if(records.some(record=>record.type==='childList'||record.type==='characterData'))queue()
+  if(records.some(record=>record.type==='childList'||record.type==='characterData'||record.type==='attributes'))queue()
  })
- observer.observe(root,{childList:true,subtree:true,characterData:true})
+ observer.observe(root,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['placeholder','aria-label','title','alt']})
  scan()
  return ()=>{
   live=false

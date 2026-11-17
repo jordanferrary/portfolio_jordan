@@ -1,0 +1,35 @@
+/* Gallery banner flush with the right viewport edge.
+   At 1570px max content width, the unused centered margin also becomes artwork.
+   Preserve the left fade and gently fade the image below the hero copy. */
+.site-shell .gallery-page{
+ --gallery-hero-bleed:max(34px,calc((100vw - 1711px) / 2));
+}
+.site-shell .gallery-page .gallery-banner{
+ right:calc(-1 * var(--gallery-hero-bleed));
+ width:calc(57% + var(--gallery-hero-bleed));
+ height:clamp(290px,25vw,370px);
+ max-width:none;
+ opacity:.94;
+ -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 19%,#000 100%),linear-gradient(180deg,#000 0%,#000 84%,transparent 100%);
+ mask-image:linear-gradient(90deg,transparent 0%,#000 19%,#000 100%),linear-gradient(180deg,#000 0%,#000 84%,transparent 100%);
+ -webkit-mask-composite:source-in;
+ mask-composite:intersect;
+}
+.site-shell .gallery-page .gallery-banner::after{
+ background:linear-gradient(90deg,color-mix(in srgb,var(--jf-background) 55%,transparent),transparent 35%);
+}
+@media(max-width:900px){
+ .site-shell .gallery-page{--gallery-hero-bleed:20px}
+ .site-shell .gallery-page .gallery-banner{
+  width:calc(70% + var(--gallery-hero-bleed));
+ }
+}
+@media(max-width:600px){
+ .site-shell .gallery-page{--gallery-hero-bleed:14px}
+ .site-shell .gallery-page .gallery-banner{
+  width:calc(87% + var(--gallery-hero-bleed));
+  height:245px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 22%,#000 100%),linear-gradient(180deg,#000 0%,#000 82%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 22%,#000 100%),linear-gradient(180deg,#000 0%,#000 82%,transparent 100%);
+ }
+}
