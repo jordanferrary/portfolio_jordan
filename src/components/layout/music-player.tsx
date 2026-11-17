@@ -29,6 +29,7 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
  const pendingPlay=useRef(false)
  const card=useRef<HTMLDivElement>(null)
  const drawerButton=useRef<HTMLButtonElement>(null)
+ const volumePanel=useRef<HTMLDivElement>(null)
  const current=tracks.find(t=>t.id===selectedId)??tracks[0]
  const source=useAssetSrc(current?.src)
  const sourceKind=classifyAudioSource(current?.src??'')
@@ -86,6 +87,28 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
  },[])
 
  useEffect(()=>{if(audio.current){audio.current.volume=volume/100;audio.current.muted=volume===0}try{localStorage.setItem('jf-music-volume',String(volume))}catch{/* storage unavailable */}},[volume])
+ // A non-passive listener is intentionally bound ONLY to the visible volume
+ // capsule. Elsewhere (especially the portfolio) wheel scrolling is untouched.
+ useEffect(()=>{
+  if(!volumeOpen||!volumePanel.current)return
+  const panel=volumePanel.current
+  let accumulated=0
+  const onVolumeWheel=(event:WheelEvent)=>{
+   if(event.ctrlKey||!Number.isFinite(event.deltaY)||event.deltaY===0)return
+   event.preventDefault()
+   // A restrained 2% per wheel notch, including small trackpad motions.
+   // Accumulate sub-threshold deltas instead of jumping on each pixel.
+   accumulated+=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?120:1)
+   const notch=75
+   const steps=Math.min(3,Math.floor(Math.abs(accumulated)/notch))
+   if(steps===0)return
+   const direction=accumulated<0?1:-1
+   accumulated-=Math.sign(accumulated)*steps*notch
+   setVolume(v=>Math.max(0,Math.min(100,v+direction*steps*2)))
+  }
+  panel.addEventListener('wheel',onVolumeWheel,{passive:false})
+  return ()=>panel.removeEventListener('wheel',onVolumeWheel)
+ },[volumeOpen])
  const tryPlay=()=>{
   const player=audio.current
   if(!pendingPlay.current||!player||!playableSource||player.readyState<2)return
@@ -146,7 +169,7 @@ export function MusicPlayer({tracks}:{tracks:MusicTrack[]}){
   <div className="music-card">
    <div className="music-card-top"><button type="button" className="music-cover-button" onClick={()=>setOpen(v=>!v)} aria-label="Open music library" aria-expanded={open} title="Choose a song"><AssetImage src={cover} alt={current?'Cover art for '+current.title:'Playlist cover art'}/></button><button type="button" className="music-main-toggle" onClick={toggle} aria-label={playing?'Pause':'Play'} aria-pressed={playing} disabled={!current}>{playing?<Pause size={31} fill="currentColor"/>:<Play size={28} fill="currentColor"/>}</button></div>
    <button type="button" className="music-card-details" onClick={()=>setOpen(v=>!v)} aria-label="Choose a song"><strong title={current?.title}>{current?.title||'Your playlist'}</strong><span title={current?.artist}>{current?.artist||'No tracks yet'}</span></button>
-   <div className="music-card-footer"><button type="button" className={repeatOne?'music-repeat is-on':'music-repeat is-off'} aria-pressed={repeatOne} aria-label={repeatOne?'Loop enabled: repeat this track. Click for next track.':'Loop disabled: play next track. Click to repeat this track.'} title={repeatOne?'Loop on · Repeat this track':'Loop off · Play next track'} onClick={()=>setRepeatOne(value=>!value)}>{repeatOne?<InfinityIcon size={17}/>:<BrokenInfinityIcon/>}</button><input className="music-seek" type="range" min="0" max="100" step="0.1" value={progress} onChange={e=>seek(Number(e.target.value))} disabled={!current} aria-label="Playback progress" style={{background:'linear-gradient(to right, var(--jf-primary,#a02aff) '+progress+'%,var(--jf-surface-deep,#27143b) '+progress+'%)'}}/><button type="button" className={volumeOpen?'music-volume-toggle is-open':'music-volume-toggle'} aria-label="Adjust volume" title={'Volume: '+volume+'%'} aria-expanded={volumeOpen} aria-controls="jf-music-volume-control" onClick={()=>{setOpen(false);setVolumeOpen(v=>!v)}}>{volume===0?<VolumeX size={16}/>:<Volume2 size={16}/>}</button></div>{volumeOpen&&<div id="jf-music-volume-control" className="music-volume-popover" role="group" aria-label="Music volume"><button type="button" onClick={()=>setVolume(v=>v===0?70:0)} aria-label={volume===0?'Unmute':'Mute'}>{volume===0?<VolumeX size={17}/>:<Volume2 size={17}/>}</button><input type="range" min="0" max="100" step="1" value={volume} onChange={e=>setVolume(Number(e.target.value))} aria-label="Playback volume" aria-orientation="vertical" style={{background:'linear-gradient(to top,var(--jf-primary,#b148ff) 0%,var(--jf-primary,#b148ff) '+volume+'%,var(--jf-surface-deep,#39204f) '+volume+'%,var(--jf-surface-deep,#39204f) 100%)'}}/><span>{volume}%</span></div>}
+   <div className="music-card-footer"><button type="button" className={repeatOne?'music-repeat is-on':'music-repeat is-off'} aria-pressed={repeatOne} aria-label={repeatOne?'Loop enabled: repeat this track. Click for next track.':'Loop disabled: play next track. Click to repeat this track.'} title={repeatOne?'Loop on · Repeat this track':'Loop off · Play next track'} onClick={()=>setRepeatOne(value=>!value)}>{repeatOne?<InfinityIcon size={17}/>:<BrokenInfinityIcon/>}</button><input className="music-seek" type="range" min="0" max="100" step="0.1" value={progress} onChange={e=>seek(Number(e.target.value))} disabled={!current} aria-label="Playback progress" style={{background:'linear-gradient(to right, var(--jf-primary,#a02aff) '+progress+'%,var(--jf-surface-deep,#27143b) '+progress+'%)'}}/><button type="button" className={volumeOpen?'music-volume-toggle is-open':'music-volume-toggle'} aria-label="Adjust volume" title={'Volume: '+volume+'%'} aria-expanded={volumeOpen} aria-controls="jf-music-volume-control" onClick={()=>{setOpen(false);setVolumeOpen(v=>!v)}}>{volume===0?<VolumeX size={16}/>:<Volume2 size={16}/>}</button></div>{volumeOpen&&<div id="jf-music-volume-control" ref={volumePanel} className="music-volume-popover" title="Role o mouse aqui para ajustar o volume em passos de 2%" role="group" aria-label="Music volume"><button type="button" onClick={()=>setVolume(v=>v===0?70:0)} aria-label={volume===0?'Unmute':'Mute'}>{volume===0?<VolumeX size={17}/>:<Volume2 size={17}/>}</button><input type="range" min="0" max="100" step="1" value={volume} onChange={e=>setVolume(Number(e.target.value))} aria-label="Playback volume" aria-orientation="vertical" style={{background:'linear-gradient(to top,var(--jf-primary,#b148ff) 0%,var(--jf-primary,#b148ff) '+volume+'%,var(--jf-surface-deep,#39204f) '+volume+'%,var(--jf-surface-deep,#39204f) 100%)'}}/><span>{volume}%</span></div>}
    {(error||sourceExplanation)&&<p className="music-card-error" role="status">{error||sourceExplanation}</p>}
   </div>
   </div>
