@@ -17,7 +17,7 @@ const cache=await mkdtemp(join(root,'node_modules','studio-smoke-'))
 const entry=[
  "export {normalizeFraming,framingStyle} from './src/lib/image-framing.ts'",
  "export {normalizeHexColor,normalizeThemePalette,applyThemePalette,contrastRatio,DEFAULT_THEME} from './src/lib/theme-palette.ts'",
- "export {defaultContact,normalizeContactTags,defaultHome} from './src/data/studio.ts'",
+ "export {defaultContact,normalizeContactTags,defaultHome,defaultAbout} from './src/data/studio.ts'",
  "export {normalizeHeadingSymbol,DEFAULT_HEADING_SYMBOL,HEADING_SYMBOL_OPTIONS,cleanHeadingText} from './src/lib/heading-symbol.ts'",
  "export {HeadingSymbol} from './src/components/ui/heading-symbol.tsx'",
  "export {SocialMark} from './src/components/ui/social-mark.tsx'",
