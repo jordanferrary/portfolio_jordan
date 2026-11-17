@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-17T15:58:14.538Z-8bf9a7e4-c3d5-4591-bd62-029d72179070",
+  "revision": "2026-11-17T16:03:57.616Z-eef4a6e3-7cb8-46dc-bbd7-669562b04e39",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -121,7 +121,7 @@
       {
         "id": "project-mw4oyna3",
         "title": "Room of the Palhacito",
-        "category": "Props",
+        "category": "Environments",
         "year": "2026",
         "image": "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png",
         "description": " A whimsical little world where fantasy, color, and creativity come together. ==Room of the Palhacito== is a stylized 3D diorama that explores a playful and cozy atmosphere, blending circus-inspired elements, cartoon-like shapes, and charming details.\n\nThrough vibrant colors, expressive textures, and soft lighting, the scene captures a sense of wonder and imagination, bringing a unique and personality-filled environment to life.",
