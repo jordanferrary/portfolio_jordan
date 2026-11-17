@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-17T16:03:57.616Z-eef4a6e3-7cb8-46dc-bbd7-669562b04e39",
+  "revision": "2026-11-17T16:18:14.457Z-35da575d-bfd3-4fba-99c2-17baa48bf7fd",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -460,11 +460,11 @@
       "border": "#7335A7"
     },
     "glitchPalette": {
-      "magenta": "#D22EFF",
-      "cyan": "#42F2FF",
-      "lime": "#ABFE58",
-      "noise": "#616161",
-      "dark": "#060316",
+      "magenta": "#D84CFF",
+      "cyan": "#5CF4FF",
+      "lime": "#ACFF58",
+      "noise": "#554467",
+      "dark": "#060410",
       "intensity": 1
     },
     "headingSymbol": "sparkle",
