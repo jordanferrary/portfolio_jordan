@@ -224,3 +224,9 @@ Quando o senhor escrever **“vai comprar pão”**, o bot abrirá a revisão de
 ### Contato responsivo para múltiplas redes
 
 Com 1–3 perfis válidos, a página pública exibe uma lista compacta; com 4–8, uma grade de duas colunas; com 9 ou mais, uma grade de ícones. Os cards têm somente ícone e nome (sem descrição repetitiva), e o ícone isolado mantém nome acessível e tooltip. Links, ordem, primeiro destaque e paleta continuam controlados pelo Studio. Em telas altas, a página tende a caber numa composição única; celulares e telas baixas podem rolar para preservar todos os links.
+
+### Continuidade do gradiente no Contato e paleta no Studio
+
+A página Contato agora reutiliza apenas os gradientes globais fixados ao viewport. O campo atmosférico extra, que ficava dentro de uma área limitada e causava bordas verticais, está desativado. A composição de contato, seus cards e links não foram modificados.
+
+Uma camada CSS própria, `src/styles/studio-palette-coverage.css`, conecta as sete variáveis `--jf-primary`, `--jf-secondary`, `--jf-background`, `--jf-surface`, `--jf-text`, `--jf-muted` e `--jf-border` aos editores do Local Studio, menu e dock, Projetos em destaque, enquadramento, contatos, galeria e painel de cores. Mudar a paleta gera atualização imediata; Cancelar restaura a anterior e Salvar guarda apenas no rascunho. Os swatches, a roda cromática e as imagens de projetos preservam suas cores reais, e os avisos semânticos mantêm suas cores de status.

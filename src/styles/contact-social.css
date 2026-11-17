@@ -441,3 +441,11 @@
  .site-shell.contact-route .contact-social-directory.contact-directory-icons .contact-social-cards{grid-template-columns:repeat(3,minmax(0,1fr))}
  .site-shell.contact-route .contact-social-directory.contact-directory-icons .contact-social-card{min-height:54px}
 }
+
+/* Contact previously rendered a second, clipped atmosphere within a 1450px
+   content box. Its hard vertical edges were visible alongside the sidebar.
+   The site-shell already paints viewport-fixed ambient gradients on every
+   route, so keep that single uninterrupted background on Contact as well. */
+.site-shell.contact-route .contact-social-atmosphere{
+ display:none!important;
+}

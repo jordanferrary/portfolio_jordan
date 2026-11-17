@@ -62,6 +62,8 @@ try{
  const musicSource=await readFile(join(root,'src/components/layout/music-player.tsx'),'utf8')
  const musicCss=await readFile(join(root,'src/styles/engagement.css'),'utf8')
  const studioCss=await readFile(join(root,'src/styles/studio-centered.css'),'utf8')
+ const studioPaletteCss=await readFile(join(root,'src/styles/studio-palette-coverage.css'),'utf8')
+ const contactCss=await readFile(join(root,'src/styles/contact-social.css'),'utf8')
  const contactCss=await readFile(join(root,'src/styles/contact-social.css'),'utf8')
  const element=(Component,props)=>renderToStaticMarkup(React.createElement(Component,props))
  check('Home and Gallery contextual editors mount and the duplicate background button is absent',()=>{
@@ -276,6 +278,30 @@ try{
   assert.match(awaitCss,/\.site-shell\.contact-route/)
   // Public palette CSS must never override editor overlays: deployment guard.
   assert.doesNotMatch(awaitCss,/\.editor-overlay[\s.{:]|\.theme-palette-editor[\s.{:]/)
+ })
+ check('Contact uses continuous site-shell glow without clipped internal overlay',()=>{
+  assert.match(contactCss,/\.site-shell\.contact-route \.contact-social-atmosphere\s*\{\s*display:none!important;/)
+  assert.match(ambientCss,/background-attachment:fixed!important;/)
+ })
+ check('Studio live theme reaches panels, dock, featured, framing, contact and palette editor',()=>{
+  const main=awaitMain
+  assert.match(main,/styles\/studio-palette-coverage\.css/)
+  for(const selector of [
+   '.editor-overlay:not(.project-focus-overlay)>.editor-panel',
+   '.studio-dock-anchor .studio-dock',
+   '.studio-dock-anchor .studio-hub',
+   '.editor-overlay .editor-tabs button',
+   '.studio-featured-slot',
+   '.framing-view',
+   '.contact-editor-copy',
+   '.gallery-copy-preview',
+   '.theme-controls',
+   '.studio-hub-item'
+  ])assert.ok(studioPaletteCss.includes(selector),'Studio missing palette coverage: '+selector)
+  for(const variable of ['--jf-primary','--jf-secondary','--jf-background','--jf-surface','--jf-text','--jf-muted','--jf-border'])
+   assert.ok(studioPaletteCss.includes('var('+variable),'Unused Studio palette variable: '+variable)
+  assert.ok(studioPaletteCss.includes('color-mix('))
+  assert.ok(!studioPaletteCss.includes('.chromatic-hue-ring{'))
  })
  check('Contact specialties support add, remove, duplicate removal and hidden ribbon',()=>{
   assert.deepEqual(app.normalizeContactTags(['  MOTION DESIGN  ','3D ART','motion design','']),['MOTION DESIGN','3D ART'])

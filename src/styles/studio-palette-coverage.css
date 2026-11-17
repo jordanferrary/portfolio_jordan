@@ -1,0 +1,215 @@
+/* Local Studio — seven-token palette coverage.
+   All values derive from the live :root --jf-* palette. No palette change
+   to uploaded images, editor swatches, semantic errors, or hue wheel art. */
+:root{
+ --jf-studio-layer:color-mix(in srgb,var(--jf-background) 91%,transparent);
+ --jf-studio-panel:color-mix(in srgb,var(--jf-surface) 93%,var(--jf-background));
+ --jf-studio-raised:color-mix(in srgb,var(--jf-surface) 80%,var(--jf-primary) 20%);
+ --jf-studio-deep:color-mix(in srgb,var(--jf-background) 67%,var(--jf-surface) 33%);
+ --jf-studio-line:color-mix(in srgb,var(--jf-border) 72%,var(--jf-surface) 28%);
+ --jf-studio-strong-line:color-mix(in srgb,var(--jf-border) 65%,var(--jf-secondary) 35%);
+ --jf-studio-label:color-mix(in srgb,var(--jf-secondary) 65%,var(--jf-text) 35%);
+ --jf-studio-wash:color-mix(in srgb,var(--jf-primary) 15%,var(--jf-surface));
+}
+
+/* Panels, headers, footers and dock glass. Keep spatial styles untouched. */
+.editor-overlay:not(.project-focus-overlay){background:var(--jf-studio-layer)!important}
+.editor-overlay:not(.project-focus-overlay)>.editor-panel,
+.editor-overlay .jf-skin-editor{
+ background:linear-gradient(160deg,var(--jf-studio-panel),var(--jf-studio-deep))!important;
+ border-color:var(--jf-studio-strong-line)!important;
+ color:var(--jf-text)!important;
+ box-shadow:0 28px 65px color-mix(in srgb,var(--jf-background) 78%,transparent),0 0 33px var(--jf-primary-glow)!important;
+}
+.editor-overlay:not(.project-focus-overlay)>.editor-panel>header,
+.editor-overlay:not(.project-focus-overlay)>.editor-panel>footer,
+.editor-overlay:not(.project-focus-overlay)>.editor-panel>.editor-tabs,
+.project-focus-overlay .editor-head,
+.project-focus-overlay .editor-tabs,
+.project-focus-overlay .v2-editor>footer{
+ background:var(--jf-studio-panel)!important;
+ border-color:var(--jf-studio-line)!important;
+}
+.editor-overlay:not(.project-focus-overlay)>.editor-panel :is(h2,h3,h4,strong),
+.project-focus-overlay .editor-head h2{color:var(--jf-text)!important}
+.editor-overlay:not(.project-focus-overlay)>.editor-panel .eyebrow,
+.project-focus-overlay .editor-head .eyebrow{color:var(--jf-studio-label)!important}
+.editor-overlay:not(.project-focus-overlay)>.editor-panel>.editor-scroll,
+.project-focus-overlay .editor-scroll{
+ scrollbar-color:var(--jf-border) var(--jf-studio-deep)!important;
+}
+.project-focus-overlay{
+ background:var(--jf-background)!important;
+}
+.project-focus-overlay::before{
+ background:radial-gradient(ellipse at 50% -40%,var(--jf-primary-soft),transparent 65%)!important;
+}
+.project-focus-overlay .v2-editor{
+ background:var(--jf-studio-panel)!important;
+ border-color:var(--jf-studio-strong-line)!important;
+}
+
+/* Inputs: match the current theme, not hard-coded purple. */
+.editor-overlay :is(.editor-panel,.v2-editor,.jf-skin-editor)
+ :is(input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]),textarea,select){
+ border-color:var(--jf-studio-line)!important;
+ background:var(--jf-studio-deep)!important;
+ color:var(--jf-text)!important;
+ caret-color:var(--jf-primary)!important;
+}
+.editor-overlay :is(.editor-panel,.v2-editor,.jf-skin-editor)
+ :is(input,textarea,select)::placeholder{color:var(--jf-muted)!important}
+.editor-overlay :is(input[type="range"],input[type="checkbox"],input[type="radio"]){
+ accent-color:var(--jf-primary);
+}
+.editor-overlay :is(.editor-panel,.v2-editor,.jf-skin-editor)
+ :is(input,textarea,select,button):focus-visible{
+ outline:2px solid var(--jf-secondary)!important;
+ outline-offset:2px;
+}
+.editor-overlay :is(.editor-panel,.v2-editor,.jf-skin-editor) label{
+ color:var(--jf-copy-soft);
+}
+
+/* Tabs, common controls and publish affordances. */
+.editor-overlay .editor-tabs button{
+ color:var(--jf-muted)!important;
+ border-color:transparent;
+}
+.editor-overlay .editor-tabs button:is([aria-selected="true"],[aria-pressed="true"]),
+.editor-overlay .editor-tabs button.active{
+ background:var(--jf-studio-raised)!important;
+ border-color:var(--jf-studio-strong-line)!important;
+ color:var(--jf-text)!important;
+}
+.editor-overlay .editor-tabs button:hover:not([aria-selected="true"]):not([aria-pressed="true"]){
+ background:var(--jf-studio-wash)!important;
+ color:var(--jf-text)!important;
+}
+.editor-overlay :is(.save-action,.primary-action,.media-upload-button){
+ border-color:var(--jf-primary)!important;
+ background:linear-gradient(125deg,var(--jf-primary),var(--jf-studio-raised))!important;
+ color:var(--jf-text)!important;
+}
+.editor-overlay :is(.subtle-action,.asset-clip-button,.gallery-background-reset,.quick-edit-image-button){
+ border-color:var(--jf-studio-line)!important;
+ background:var(--jf-studio-deep)!important;
+ color:var(--jf-studio-label)!important;
+}
+.editor-overlay :is(.editor-section-title,.contact-editor-section-title,.home-editor-group-title,.gallery-edit-section-title) > span{
+ color:var(--jf-secondary)!important;
+}
+
+/* Studio menu and the fixed action dock. These are outside editor overlays. */
+.studio-dock-anchor .studio-dock,
+.studio-dock-anchor .studio-hub{
+ border-color:var(--jf-studio-strong-line)!important;
+ background:linear-gradient(130deg,var(--jf-studio-panel),var(--jf-studio-deep))!important;
+ color:var(--jf-text)!important;
+ box-shadow:0 17px 46px color-mix(in srgb,var(--jf-background) 80%,transparent),0 0 25px var(--jf-primary-glow);
+}
+.studio-dock-anchor :is(.studio-dock-brand,.studio-hub-header,.studio-hub-sidebar,.studio-hub-footer){
+ border-color:var(--jf-studio-line)!important;
+}
+.studio-dock-anchor :is(.studio-hub-header,.studio-hub-sidebar,.studio-hub-search,.studio-hub-workspace-scroll){
+ background:var(--jf-studio-panel)!important;
+}
+.studio-dock-anchor :is(.studio-dock-mark,.studio-hub-emblem){
+ background:linear-gradient(145deg,var(--jf-primary),var(--jf-studio-raised))!important;
+ border-color:var(--jf-secondary)!important;
+ color:var(--jf-text)!important;
+}
+.studio-dock-anchor :is(.studio-dock-brand strong,.studio-hub-header h2,.studio-hub-item-copy strong,.studio-hub-welcome h3,.studio-hub-section-heading h3){
+ color:var(--jf-text)!important;
+}
+.studio-dock-anchor :is(.studio-dock-brand small,.studio-hub-header p,.studio-hub-item-copy small,.studio-hub-section-heading p){
+ color:var(--jf-muted)!important;
+}
+.studio-dock-anchor :is(.studio-hub-item,.studio-context-button,.studio-hub-category-grid>button,.studio-hub-welcome-actions button){
+ background:var(--jf-studio-deep)!important;
+ border-color:var(--jf-studio-line)!important;
+ color:var(--jf-copy-soft)!important;
+}
+.studio-dock-anchor :is(.studio-hub-item,.studio-hub-nav-item,.studio-hub-category-grid>button):hover{
+ background:var(--jf-studio-wash)!important;
+ border-color:var(--jf-primary)!important;
+}
+.studio-dock-anchor :is(.studio-hub-nav-item.selected,.studio-menu-button.active){
+ background:var(--jf-studio-raised)!important;
+ border-color:var(--jf-studio-strong-line)!important;
+ color:var(--jf-text)!important;
+}
+.studio-dock-anchor :is(.studio-dock-publish,.studio-hub-footer-publish){
+ background:linear-gradient(130deg,var(--jf-primary),var(--jf-studio-raised))!important;
+ border-color:var(--jf-secondary)!important;
+ color:var(--jf-text)!important;
+}
+.studio-dock-anchor :is(.studio-hub-icon,.studio-hub-nav-caption,.studio-hub-header .studio-hub-eyebrow){
+ color:var(--jf-secondary)!important;
+}
+.studio-dock-anchor .studio-hub-icon{background:var(--jf-studio-wash)!important}
+.studio-dock-anchor .studio-hub .studio-hub-search input{
+ background:transparent!important;color:var(--jf-text)!important;
+}
+.studio-dock-anchor :is(button,input):focus-visible{
+ outline:2px solid var(--jf-secondary)!important;outline-offset:2px;
+}
+
+/* Page editor compositions: media, feature manager, contact, gallery, framing. */
+.editor-overlay :is(.contact-editor-copy,.contact-editor-networks,.contact-editor-head,
+ .home-editor-image,.about-editor-media,.about-editor-image-frame,
+ .gallery-copy-preview,.gallery-background-preview,.gallery-art-editor,
+ .project-composition-enhanced,.framing-intro,.framing-view,.framing-transfer,
+ .studio-featured-slot,.studio-featured-library,.studio-featured-candidate,
+ .music-editor-item,.review-edit-card,.theme-controls,.theme-color-workspace,
+ .theme-preset-area,.theme-editor-intro,.theme-token,.theme-contrast-audit,
+ .jf-skin-info,.jf-skin-hint,.jf-skin-upload){
+ background:var(--jf-studio-deep)!important;
+ border-color:var(--jf-studio-line)!important;
+ color:var(--jf-copy-soft)!important;
+}
+.editor-overlay :is(.contact-editor-section-title,.gallery-edit-section-title,
+ .framing-view-heading,.framing-intro,.studio-featured-manager,.theme-controls) :is(p,small){
+ color:var(--jf-muted)!important;
+}
+.editor-overlay :is(.framing-intro,.framing-view-heading,.studio-featured-heading,.gallery-edit-section-title,.theme-controls) :is(h3,strong){
+ color:var(--jf-text)!important;
+}
+.editor-overlay :is(.studio-featured-count,.studio-featured-search,.framing-numeric,.theme-current-label,.theme-token.selected){
+ border-color:var(--jf-studio-strong-line)!important;
+}
+.editor-overlay :is(.framing-view-heading button,.framing-transfer button,
+ .studio-featured-slot-actions button,.studio-featured-library-head>button,
+ .gallery-background-reset,.theme-reset,.theme-preset,.studio-featured-candidate){
+ background:var(--jf-studio-raised)!important;
+ border-color:var(--jf-studio-line)!important;
+ color:var(--jf-text)!important;
+}
+.editor-overlay :is(.framing-view-heading button,.framing-transfer button,
+ .studio-featured-slot-actions button,.studio-featured-candidate,.theme-preset):hover:not(:disabled){
+ border-color:var(--jf-primary)!important;
+ background:var(--jf-studio-wash)!important;
+}
+.editor-overlay :is(.framing-view-heading span,.studio-featured-kicker,
+ .studio-featured-slot-info small,.theme-token>svg,.theme-token-hex,
+ .theme-current-label>div>span,.contact-editor-section-title>span,
+ .gallery-edit-section-title>span){
+ color:var(--jf-secondary)!important;
+}
+.editor-overlay :is(.framing-view-heading p,.framing-footnote,.studio-featured-tip,
+ .studio-featured-candidate-label small,.theme-token-copy small,
+ .contact-editor-helper,.gallery-background-hint){
+ color:var(--jf-muted)!important;
+}
+.editor-overlay .theme-token-copy strong,
+.editor-overlay .theme-preset strong{color:var(--jf-text)!important}
+.editor-overlay .theme-token.selected{
+ background:var(--jf-studio-wash)!important;
+ box-shadow:inset 0 0 0 1px var(--jf-primary-soft)!important;
+}
+.editor-overlay .theme-preset-area .theme-preset-dots i{
+ border-color:var(--jf-studio-deep)!important;
+}
+
+/* The seven live swatches and chromatic picker canvas are intentionally
+   excluded: overriding them would falsify the colors being edited. */
