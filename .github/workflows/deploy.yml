@@ -25,6 +25,8 @@ jobs:
         run: npm run test:studio-media
       - name: Verify IP-based automatic language detection and safe translations
         run: npm run test:visitor-language
+      - name: Verify published media cards and chat privacy
+        run: npm run test:published-media
       - name: Verify page margins, headline hierarchy and gallery bleed
         run: npm run test:page-layout
       - name: Verify palette-based, text-free route transitions

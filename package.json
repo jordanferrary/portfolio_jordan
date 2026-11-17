@@ -20,7 +20,8 @@
     "test:page-layout": "node --test scripts/page-layout.test.mjs",
     "test:route-glitch": "node --test scripts/route-glitch.test.mjs",
     "test:runtime-recovery": "node --test scripts/runtime-recovery.test.mjs",
-    "test:studio-media": "node --test scripts/studio-media-pipeline.test.mjs"
+    "test:studio-media": "node --test scripts/studio-media-pipeline.test.mjs",
+    "test:published-media": "node --test scripts/published-media.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",

@@ -176,3 +176,29 @@
  .github-publish-editor .editor-scroll .github-token-vault{padding:14px}
  .github-publish-editor .github-token-vault-actions{grid-template-columns:1fr}
 }
+
+/* Visual media audit: real lazy thumbnails, independent deletion selection. */
+.github-publish-editor .github-media-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,205px),1fr));gap:12px;max-height:min(55vh,490px);overflow:auto;align-content:start;padding:5px 7px 10px 2px}
+.github-publish-editor .github-media-help{margin:7px 0 10px;line-height:1.6}
+.github-publish-editor .github-media-card{border:1px solid var(--jf-border,#654379);border-radius:13px;min-width:0;overflow:hidden;background:var(--jf-surface,#26162f);content-visibility:auto;contain-intrinsic-size:auto 250px}
+.github-publish-editor .github-media-card.is-selected{border-color:var(--jf-primary,#a64bf3);box-shadow:0 0 0 1px var(--jf-primary,#a64bf3)}
+.github-publish-editor .github-media-card-preview{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--jf-background,#100b17);display:grid;place-items:center}
+.github-publish-editor .github-media-card-image{position:absolute;inset:0;display:block;cursor:zoom-in}
+.github-publish-editor .github-media-card-image img{display:block;width:100%;height:100%;object-fit:contain}
+.github-publish-editor .github-media-preview-link{position:absolute;right:8px;bottom:8px;border-radius:7px;padding:3px;box-sizing:content-box;background:var(--jf-background,#100b17);color:var(--jf-text,#fff)}
+.github-publish-editor .github-media-card-symbol{display:grid;gap:7px;justify-items:center;color:var(--jf-secondary,#bb88ed);font-size:11px;text-align:center}
+.github-publish-editor .github-media-card-symbol a{color:var(--jf-text,#fff);font-size:10px;text-decoration:underline}
+.github-publish-editor .github-media-select{position:absolute;right:7px;top:7px;display:grid;place-items:center;width:32px;height:32px;border-radius:8px;background:color-mix(in srgb,var(--jf-background,#100b17) 90%,transparent);border:1px solid var(--jf-border,#654379);cursor:pointer}
+.github-publish-editor .github-media-select input{width:17px;height:17px;margin:0;accent-color:var(--jf-primary,#a64bf3)}
+.github-publish-editor .github-media-select:has(input:disabled){opacity:.45;cursor:not-allowed}
+.github-publish-editor .github-media-usage{position:absolute;bottom:7px;left:7px;font-size:9px;max-width:calc(100% - 46px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:5px 7px;border-radius:7px;color:var(--jf-text,#fff);background:color-mix(in srgb,var(--jf-background,#100b17) 88%,transparent)}
+.github-publish-editor .github-media-card-details{display:grid;gap:5px;padding:10px;min-width:0}
+.github-publish-editor .github-media-card-details strong{font-size:12px;color:var(--jf-text,#fff)}
+.github-publish-editor .github-media-card-details small{font-size:10px;color:var(--jf-muted,#aa92b6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.github-publish-editor .github-media-card-details details{border-top:1px solid var(--jf-border,#654379);padding-top:7px;margin-top:3px}
+.github-publish-editor .github-media-card-details summary{cursor:pointer;color:var(--jf-secondary,#bb88ed);font-size:10px}
+.github-publish-editor .github-media-card-details code{display:block;overflow-wrap:anywhere;color:var(--jf-muted,#aa92b6);font:9px/1.6 ui-monospace,monospace;margin-top:7px;user-select:text}
+.github-publish-editor .github-publish-privacy{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border:1px solid var(--jf-border,#654379);border-radius:11px;font-size:11px;line-height:1.5;color:var(--jf-copy-soft,#e3d4ee);background:var(--jf-surface,#26162f)}
+.github-publish-editor .github-publish-privacy svg{flex:0 0 auto;margin-top:1px;color:var(--jf-secondary,#bb88ed)}
+@media(max-width:560px){.github-publish-editor .github-media-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.github-publish-editor .github-media-card-preview{aspect-ratio:1/1}}
+@media(max-width:350px){.github-publish-editor .github-media-list{grid-template-columns:1fr}}

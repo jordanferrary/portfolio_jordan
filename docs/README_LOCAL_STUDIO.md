@@ -272,3 +272,10 @@ O glitch de 560ms agora é sempre uma sobreposição em portal ao `body` ao troc
 ### Ajuste de conforto visual do glitch
 
 O ruído padrão foi escurecido para `#554467` em vez do quase branco anterior. A própria textura é combinada com 58% da cor de fundo escura, usa menor contraste e tem opacidade limitada mesmo quando o usuário escolhe um canal de ruído claro e aumenta a intensidade. Removemos também os pulsos fortes de opacidade durante carregamentos longos. Os retângulos magenta/ciano/verde e os deslocamentos continuam. **Paletas já personalizadas e salvas não são alteradas**: só muda a cor padrão para quem ainda não tem uma configuração e a proteção visual aplica-se a todas as configurações.
+
+
+### Prévia de arquivos no painel Publicar e privacidade do Alquimago
+
+A listagem **Gerenciar arquivos publicados** foi convertida em cartões com miniaturas reais (`loading=lazy`), visualização da imagem original em nova aba, estado de uso e caixa de exclusão separada. Nome e hash ficam recolhidos em **Nome e caminho técnico**. Modelos, áudio e vídeo exibem ícones especializados. Arquivos em uso/protegidos permanecem indisponíveis para remoção; o fluxo de confirmação não foi alterado.
+
+Na integração `memory.mode='publish'` do núcleo do Alquimago, a conversa e o aprendizado temporário ficam **somente em RAM** durante a sessão; o código tenta limpar registros antigos exclusivos do bot. O token de publicação permanece no cofre independente `alquimago-github-publisher-v2`, criptografado em AES-GCM. As preferências e rascunhos do próprio Local Studio não são alterados. O GitHub recebe somente dados públicos e os estados numéricos explicitamente autorizados, nunca texto das conversas.

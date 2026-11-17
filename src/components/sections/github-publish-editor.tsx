@@ -1,10 +1,11 @@
 import '../../styles/github-publish.css'
 import { useEffect,useState } from 'react'
-import { AlertTriangle,CheckCircle2,CloudUpload,Download,ExternalLink,Eye,EyeOff,GitBranch,RotateCcw,ShieldCheck,X,FolderOpen,Trash2,Image as ImageIcon,Music as MusicIcon } from 'lucide-react'
+import { AlertTriangle,CheckCircle2,CloudUpload,Download,ExternalLink,Eye,EyeOff,GitBranch,RotateCcw,ShieldCheck,X,FolderOpen,Trash2 } from 'lucide-react'
 import type { PortfolioStore } from '../../hooks/use-portfolio'
 import { currentPublishedRevision } from '../../hooks/use-portfolio'
 import { publishPortfolioToGitHub,type GitHubPublishResult } from '../../lib/github-publish'
 import {getRepositoryMedia,type RepositoryMedia} from '../../lib/github-media'
+import {PublishedMediaCard} from '../ui/published-media-card'
 import {alquimagoPublishTokenVault,githubTokenVault,type GitHubTokenStatus} from '../../lib/github-token-vault'
 
 type Props={
@@ -150,6 +151,7 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
      <div className="github-publish-icon"><CloudUpload size={25}/></div>
      <div><strong>{viaAlquimago?'Autorização independente do familiar':'Publicação protegida pelo Local Studio'}</strong><p>{viaAlquimago?'O comando “vai comprar pão” abriu esta área protegida. O Alquimago nunca recebe o token pelo chat nem publica sozinho.':'Seus projetos e mídias são gravados no repositório somente após sua confirmação.'} A publicação só ocorre depois de sua autorização explícita.</p></div>
     </div>
+    <p className="github-publish-privacy"><ShieldCheck size={15}/>As mensagens do Alquimago nunca integram a publicação. O token fica criptografado no cofre separado do personagem.</p>
     <div className="github-publish-stats">
      <span><b>{store.projects.length}</b><small>projetos</small></span>
      <span><b>{store.musicTracks.length}</b><small>músicas</small></span>
@@ -195,8 +197,9 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
       <div className="github-media-cleanup-head"><div><h3><FolderOpen size={17}/> Gerenciar arquivos publicados</h3><p>Confira imagens, capas, áudios e também vídeos ou modelos 3D existentes nas pastas públicas. Exclua somente arquivos sem referência conhecida.</p></div><button type="button" onClick={()=>void scanMedia()} disabled={busy||mediaLoading||!credential}><FolderOpen size={15}/>{mediaLoading?'Analisando...':media?'Atualizar lista':'Analisar arquivos do GitHub'}</button></div>
       {mediaError&&<p className="github-publish-error" role="alert">{mediaError}</p>}
       {media&&<><div className="github-media-summary"><span>{media.length} arquivo(s) encontrado(s)</span><span>{media.filter(item=>!item.used&&!item.protected).length} candidato(s) à remoção</span><span>{selectedPaths.length} selecionado(s)</span></div><div className="github-media-filters"><button type="button" aria-pressed={mediaFilter==='unused'} onClick={()=>setMediaFilter('unused')}>Sem uso identificado</button><button type="button" aria-pressed={mediaFilter==='all'} onClick={()=>setMediaFilter('all')}>Todos os arquivos</button></div>
-       <div className="github-media-list">{media.filter(item=>mediaFilter==='all'||(!item.used&&!item.protected)).map(item=><label className={'github-media-row'+(item.used||item.protected?' is-protected':'')} key={item.path}><input type="checkbox" disabled={item.used||item.protected||busy} checked={selectedPaths.includes(item.path)} onChange={e=>togglePath(item.path,e.target.checked)}/><span className="github-media-file-icon">{item.kind==='Imagem'?<ImageIcon size={19}/>:item.kind==='Áudio'?<MusicIcon size={19}/>:<FolderOpen size={19}/>}</span><span className="github-media-file-info"><strong title={item.path}>{item.path.replace(/^public\//,'')}</strong><small>{item.kind} · {(item.bytes/1048576).toFixed(2)} MB · {item.protected?'Protegido (arquivo padrão)':item.used?'Em uso pelo portfólio':'Sem referência identificada'}</small></span></label>)}
-       {media.length===0&&<p className="editor-help">Nenhuma mídia foi encontrada nas pastas públicas monitoradas.</p>}</div>
+       <p className="editor-help github-media-help">Abra a miniatura para reconhecer o arquivo. Se quiser excluí-lo, marque a caixa do cartão. Nomes técnicos ficam recolhidos.</p>
+       <div className="github-media-list">{media.filter(item=>mediaFilter==='all'||(!item.used&&!item.protected)).map(item=><PublishedMediaCard key={item.path} item={item} selected={selectedPaths.includes(item.path)} disabled={busy} onToggle={togglePath}/>)}
+        {media.length===0&&<p className="editor-help">Nenhuma mídia foi encontrada nas pastas públicas monitoradas.</p>}</div>
        <p className="editor-help">A análise verifica referências do rascunho atual e arquivos essenciais. Arquivos usados exclusivamente por CSS, URLs externas, versões antigas ou documentos podem não ser detectados. Faça backup e confira a lista antes de excluir.</p>
       </>}
       {selectedPaths.length>0&&<div className="github-media-queued">
