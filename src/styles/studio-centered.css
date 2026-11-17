@@ -198,7 +198,6 @@
 .studio-featured-tip{display:flex;align-items:center;gap:6px;line-height:1.45;color:#bba8cb;font-size:11px;margin:12px 0 0}
 .studio-featured-tip svg{flex:0 0 auto;color:#a5e1b4}
 .home-featured-heading-actions{display:flex;align-items:center;gap:12px}
-.home-panel-heading .home-featured-manage{display:inline-flex;align-items:center;gap:4px;padding:4px 6px;border-radius:8px;border:1px solid #8954b599;background:#3a2154b0;color:#ead6fc}
 @media(max-width:750px){
  .studio-featured-slots{gap:7px}
  .studio-featured-slot{padding:6px;gap:5px}
@@ -214,5 +213,4 @@
  .studio-featured-slot-info strong{font-size:10px}
  .studio-featured-empty{font-size:10px}
  .home-featured-heading-actions{gap:5px}
- .home-panel-heading .home-featured-manage{font-size:10px}
 }
