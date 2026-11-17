@@ -230,3 +230,13 @@ Com 1–3 perfis válidos, a página pública exibe uma lista compacta; com 4–
 A página Contato agora reutiliza apenas os gradientes globais fixados ao viewport. O campo atmosférico extra, que ficava dentro de uma área limitada e causava bordas verticais, está desativado. A composição de contato, seus cards e links não foram modificados.
 
 Uma camada CSS própria, `src/styles/studio-palette-coverage.css`, conecta as sete variáveis `--jf-primary`, `--jf-secondary`, `--jf-background`, `--jf-surface`, `--jf-text`, `--jf-muted` e `--jf-border` aos editores do Local Studio, menu e dock, Projetos em destaque, enquadramento, contatos, galeria e painel de cores. Mudar a paleta gera atualização imediata; Cancelar restaura a anterior e Salvar guarda apenas no rascunho. Os swatches, a roda cromática e as imagens de projetos preservam suas cores reais, e os avisos semânticos mantêm suas cores de status.
+
+### Símbolos globais de apresentação
+
+Em **Ferramentas → Identidade → Paleta de cores**, a seção **Símbolos dos títulos** oferece Brilho simples, Brilhos, Estrela, Diamante, Círculo ou **Sem símbolo**. A escolha é única para os títulos de apresentação da Home, Galeria, Sobre, Contato, páginas de projetos e páginas adicionais, sem mudar os ícones de ferramentas e filtros. Textos antigos começando em ✦ são limpos na renderização para evitar duplicidade. O ajuste é salvo junto da paleta em `headingSymbol`, incluído no manifesto público e recuperado ao importar backups; valores ausentes voltam ao brilho simples.
+
+### Ícones sociais e roda de volume
+
+Discord, TikTok, Pinterest, Reddit e ArtStation agora usam vetores locais do catálogo Simple Icons (CC0), preservando o suporte a imagens personalizadas como substituições. Não dependem de serviços externos.
+
+O controle vertical de volume também aceita `wheel` em passos de **2%** enquanto a cápsula está aberta e o ponteiro está sobre ela. Fora desse elemento, o scroll da página continua normal. Eventos muito pequenos de touchpad são acumulados para evitar saltos.
