@@ -67,6 +67,15 @@ test('multi-line gallery copy and dynamic labels translate offline in Portuguese
  assert.match(gallery,/translate="no"/)
  assert.match(app,/language=\{visitorLanguage\}/)
 })
+test('recent public controls use local translations without relying on the free API',async()=>{
+ const {localPhrase}=await moduleFrom('src/lib/public-page-translation.ts')
+ for(const phrase of ["New page","Home page","Specialties","Featured projects","The person behind the art","Testimonials","Previous testimonial","Next testimonial","Inspect comparison versions","✦ BEHIND THE ARTWORK","A visual look at the stages behind this project.","Creative process images","Process carousel controls","Previous process image","Next process image","Scroll or pinch to zoom · Drag to inspect · Tap outside to close · Esc to close","Zoom controls","Zoom out","Zoom level","Zoom in","Reset view","Close viewer","3D model not available — GLB or glTF link required.","INTERACTIVE 3D","Explore model","Loading interactive 3D model…","Open model source","Rotate · Zoom · Pan — 3D assets load only on request","VIDEO","16:9 CINEMATIC","Zoom","✦ ITEM DETAILS","Interactive gallery","Close details","Enlarge selected image","Loop on · Repeat this track","Loop off · Play next track"]){
+  assert.ok(localPhrase(phrase,'pt'),'Missing Portuguese translation: '+phrase)
+  assert.ok(localPhrase(phrase,'es'),'Missing Spanish translation: '+phrase)
+ }
+ assert.equal(localPhrase('Volume: 55%','pt'),'Volume: 55%')
+ assert.equal(localPhrase('Volume: 55%','es'),'Volumen: 55%')
+})
 test('gallery hero bleeds to the viewport on every breakpoint and fades at bottom',()=>{
  assert.match(hero,/--gallery-hero-bleed:max\(34px/)
  assert.match(hero,/right:calc\(-1 \* var\(--gallery-hero-bleed\)\)/)

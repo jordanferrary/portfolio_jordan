@@ -83,6 +83,8 @@ export function localPhrase(source:string,language:VisitorLanguage):string|null{
    return translated.join('\n')
  }
  // Keep user-authored artwork titles intact in generated accessibility labels.
+ const volumeMatch=/^Volume: (\d{1,3})%$/.exec(text)
+ if(volumeMatch)return language==='pt'?'Volume: '+volumeMatch[1]+'%':'Volumen: '+volumeMatch[1]+'%'
  const prefixes:{start:string;pt:string;es:string}[]=[
   {start:'View project ',pt:'Ver projeto ',es:'Ver proyecto '},
   {start:'View Project: ',pt:'Ver projeto: ',es:'Ver proyecto: '},
