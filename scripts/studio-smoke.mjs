@@ -57,6 +57,8 @@ try{
  const editorSource=await readFile(join(root,'src/components/sections/admin-editor.tsx'),'utf8')
  const awaitMain=await readFile(join(root,'src/main.tsx'),'utf8')
  const appSource=await readFile(join(root,'src/app.tsx'),'utf8')
+ const musicSource=await readFile(join(root,'src/components/layout/music-player.tsx'),'utf8')
+ const musicCss=await readFile(join(root,'src/styles/engagement.css'),'utf8')
  const element=(Component,props)=>renderToStaticMarkup(React.createElement(Component,props))
  check('Home and Gallery contextual editors mount and the duplicate background button is absent',()=>{
   const noop=()=>{}
@@ -325,6 +327,17 @@ try{
   assert.equal(app.classifyAudioSource('https://example.org/track.html'),'web-page')
   assert.equal(app.classifyAudioSource('javascript:alert(1)'),'invalid')
   assert.match(app.audioSourceError('video-page'),/MP3, WAV, OGG ou M4A/)
+ })
+ check('Music volume opens as a compact floating control beside the card',()=>{
+  assert.match(musicSource,/className="music-volume-popover"/)
+  assert.match(musicSource,/aria-controls="jf-music-volume-control"/)
+  assert.doesNotMatch(musicSource,/className="music-volume-inline"/)
+  assert.match(musicCss,/\.music-widget \.music-volume-popover\s*\{[\s\S]*?position:absolute;/)
+  assert.match(musicCss,/left:calc\(100% \+ 10px\)/)
+  assert.match(musicCss,/left:calc\(100% \+ 48px\)/)
+  assert.match(musicCss,/width:min\(124px,calc\(100vw - 194px\)\)/)
+  const html=element(app.MusicPlayer,{tracks:[]})
+  assert.match(html,/aria-controls="jf-music-volume-control"/)
  })
  check('Legacy YouTube links display a meaningful playback error, not Audio unavailable',()=>{
   const html=element(app.MusicPlayer,{tracks:[{id:'bad-video',title:'Video link',artist:'Test',src:'https://youtube.com/watch?v=dQw4w9WgXcQ'}]})

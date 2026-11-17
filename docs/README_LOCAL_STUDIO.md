@@ -28,6 +28,10 @@ Em **Projeto → Composição → Linha divisória**, a amostra agora mostra exa
 
 O fundo do portfólio mantém os gradientes de cor fixos em relação à área visível da tela, inclusive nas páginas extensas de projetos. As cores seguem a paleta global e não alteram as imagens das obras.
 
+### Volume lateral do player
+
+O botão de volume abre um pequeno controle flutuante **à direita do player**, sem aumentar sua altura. O painel mantém o atalho de silenciar, o slider e a porcentagem; clique novamente no botão ou fora do player para fechá-lo. No celular, o controle aparece ao lado da alça do player expansível, sem ocupar uma linha interna. O volume continua salvo neste navegador.
+
 ## 5. Miniaturas e desempenho
 A publicação prepara versões WebP menores para imagens novas e, quando viável, imagens já publicadas. O navegador usa automaticamente `srcset` para exibir a resolução apropriada. As imagens antigas que não possuam miniaturas continuam abrindo normalmente. Quando o zoom abre, carrega a imagem de maior resolução disponível.
 
