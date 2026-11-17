@@ -18,6 +18,10 @@ const entry=[
  "export {normalizeFraming,framingStyle} from './src/lib/image-framing.ts'",
  "export {normalizeHexColor,normalizeThemePalette,applyThemePalette,contrastRatio,DEFAULT_THEME} from './src/lib/theme-palette.ts'",
  "export {defaultContact,normalizeContactTags,defaultHome} from './src/data/studio.ts'",
+ "export {normalizeHeadingSymbol,DEFAULT_HEADING_SYMBOL,HEADING_SYMBOL_OPTIONS,cleanHeadingText} from './src/lib/heading-symbol.ts'",
+ "export {HeadingSymbol} from './src/components/ui/heading-symbol.tsx'",
+ "export {SocialMark} from './src/components/ui/social-mark.tsx'",
+ "export {AboutPage} from './src/components/sections/about-page.tsx'"",
  "export {normalizeCustomPages} from './src/data/custom-pages.ts'",
  "export {parseVideoEmbed} from './src/lib/video-embed.ts'",
  "export {classifyAudioSource,audioSourceError} from './src/lib/audio-source.ts'",
@@ -439,10 +443,39 @@ try{
   assert.doesNotMatch(html,/<figcaption>Unique Project Title<\/figcaption>/)
   assert.match(html,/project-artwork-frame/)
  })
+ check('Title symbols share one global setting and clean duplicated legacy stars',()=>{
+  assert.equal(app.normalizeHeadingSymbol(undefined),'sparkle')
+  assert.equal(app.normalizeHeadingSymbol('star'),'star')
+  assert.equal(app.cleanHeadingText('✦ ✦ Behind the art'),'Behind the art')
+  assert.equal(app.HEADING_SYMBOL_OPTIONS.length,6)
+  assert.doesNotMatch(element(app.HeadingSymbol,{symbol:'none'}),/svg/)
+  assert.match(element(app.HeadingSymbol,{symbol:'star'}),/lucide-star/)
+  const noop=()=>{}
+  const about=element(app.AboutPage,{about:{...app.defaultAbout,eyebrow:'✦ Behind the art'},editing:false,onEdit:noop,onContact:noop,headingSymbol:'none'})
+  assert.doesNotMatch(about,/lucide-sparkle|✦ Behind the art/)
+  assert.match(about,/Behind the art/)
+ })
+ check('Five social platform logos render as vectors and honor custom icons',()=>{
+  for(const icon of ['discord','tiktok','pinterest','reddit','artstation']){
+   const html=element(app.SocialMark,{social:{id:icon,label:icon,url:'',icon}})
+   assert.match(html,/<svg/)
+   assert.match(html,/<path d=/)
+   assert.doesNotMatch(html,/social-short-mark/)
+  }
+  const custom=element(app.SocialMark,{social:{id:'discord',label:'Discord',url:'',icon:'discord',iconImage:'https://example.com/icon.webp'}})
+  assert.match(custom,/social-custom-icon/)
+ })
+ check('Music wheel affects only the open popover in precise two-percent steps',()=>{
+  assert.ok(musicSource.includes("panel.addEventListener('wheel',onVolumeWheel,{passive:false})"))
+  assert.ok(musicSource.includes("panel.removeEventListener('wheel',onVolumeWheel)"))
+  assert.ok(musicSource.includes('if(!volumeOpen||!volumePanel.current)return'))
+  assert.ok(musicSource.includes('direction*steps*2'))
+ })
  check('Palette editor exposes real-time contrast checks and editable tokens',()=>{
   const html=element(app.ThemePaletteEditor,{value:app.DEFAULT_THEME,onSave:()=>{},onClose:()=>{}})
   assert.match(html,/Legibilidade real/);assert.match(html,/Cor principal/)
   assert.match(html,/Texto principal/);assert.match(html,/Texto secundário/);assert.match(html,/Bordas e divisórias/)
+   assert.match(html,/Símbolos dos títulos/);assert.match(html,/Sem símbolo/)
  })
  check('Like remains keyboard-accessible and does not fabricate shared counts',()=>{
   const html=element(app.ProjectLike,{projectId:'smoke-test',showCount:true})
