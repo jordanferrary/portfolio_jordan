@@ -1,10 +1,12 @@
 import { Dribbble,Facebook,Github,Globe,Instagram,Linkedin,Mail,Twitch,Twitter,Youtube,Link as LinkIcon } from 'lucide-react'
 import type { SocialIcon,SocialLink } from '../../data/studio'
 import { AssetImage } from './asset-image'
+import {BrandSocialIcon} from './brand-social-icon'
 const icons={github:Github,instagram:Instagram,youtube:Youtube,linkedin:Linkedin,twitter:Twitter,facebook:Facebook,twitch:Twitch,dribbble:Dribbble,globe:Globe,mail:Mail,custom:LinkIcon}
-const short:Partial<Record<SocialIcon,string>>={behance:'Bē',discord:'Di',tiktok:'♪',pinterest:'P',reddit:'r',artstation:'A'}
+const short:Partial<Record<SocialIcon,string>>={behance:'Bē'}
 export function SocialMark({social}:{social:SocialLink}){
  if(social.iconImage)return <AssetImage className="social-custom-icon" src={social.iconImage} alt=""/>
+ if(['discord','tiktok','pinterest','reddit','artstation'].includes(social.icon))return <BrandSocialIcon name={social.icon}/>
  const Icon=icons[social.icon as keyof typeof icons]
  if(Icon)return <Icon size={20} aria-hidden="true"/>
  return <span className="social-short-mark">{short[social.icon]??social.label.slice(0,2)}</span>

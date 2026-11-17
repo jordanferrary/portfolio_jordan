@@ -1,0 +1,8 @@
+/* Cohesive eyebrow ornament, inherited from the Studio's live palette. */
+.jf-heading-symbol{display:inline-flex;align-items:center;justify-content:center;vertical-align:-.17em;flex:0 0 auto;color:var(--jf-secondary);line-height:1}
+.site-shell :is(.eyebrow,.home-eyebrow,.home-panel-heading h2,.custom-page-eyebrow) .jf-heading-symbol{color:var(--jf-secondary)}
+.site-shell .project-hero-content .eyebrow .jf-heading-symbol,
+.site-shell .project-artwork-heading .jf-heading-symbol{margin-right:6px}
+.site-shell .home-eyebrow .jf-heading-symbol,
+.site-shell .about-eyebrow .jf-heading-symbol{margin-right:7px}
+.site-shell .custom-page-hero-watermark .jf-heading-symbol{color:var(--jf-primary);opacity:.55}

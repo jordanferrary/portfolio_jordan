@@ -1,12 +1,14 @@
-import {ArrowRight,ArrowUpRight,MessagesSquare,Pencil,Sparkles,Waypoints} from 'lucide-react'
+import {ArrowRight,ArrowUpRight,MessagesSquare,Pencil,Waypoints} from 'lucide-react'
 import type {SocialLink,ContactSettings} from '../../data/studio'
 import {safeSocialUrl,SocialMark} from '../ui/social-mark'
 import {protectArtistName} from '../ui/protected-name'
+import {HeadingSymbol} from '../ui/heading-symbol'
+import type {HeadingSymbolStyle} from '../../lib/heading-symbol'
 
-type Props={socials:SocialLink[];settings:ContactSettings;demoEnabled:boolean;onEdit:()=>void}
+type Props={socials:SocialLink[];settings:ContactSettings;demoEnabled:boolean;onEdit:()=>void;headingSymbol?:HeadingSymbolStyle}
 
 /** Contact is now social-first: no browser-only inbox and no form that might never be read. */
-export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
+export function ContactPage({socials,settings,demoEnabled,onEdit,headingSymbol}:Props){
  const channels=socials
   .map(s=>({social:s,url:safeSocialUrl(s.url)}))
   .filter((item):item is {social:SocialLink;url:string}=>
@@ -16,7 +18,7 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
   <div className="contact-social-atmosphere" aria-hidden="true"><i/><i/><i/></div>
   <div className="contact-social-layout">
    <section className="contact-social-intro">
-    <p className="eyebrow"><Sparkles size={17}/> CONNECT & COLLABORATE</p>
+    <p className="eyebrow"><HeadingSymbol symbol={headingSymbol}/> CONNECT & COLLABORATE</p>
     <h1>{settings.titleFirst}<br/><em>{settings.titleAccent}</em></h1>
     <p className="contact-social-description">{protectArtistName(settings.introduction)}</p>
     <div className="contact-social-divider" aria-hidden="true"><span/><span/></div>

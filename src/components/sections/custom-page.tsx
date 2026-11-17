@@ -7,6 +7,9 @@ import {AssetImage} from '../ui/asset-image'
 import {RichText} from '../ui/rich-text'
 import {StoryBlock} from './project-page'
 import {ArtistShowcase,PageSlideshow} from './page-media-blocks'
+import {HeadingSymbol} from '../ui/heading-symbol'
+import type {HeadingSymbolStyle} from '../../lib/heading-symbol'
+import {cleanHeadingText} from '../../lib/heading-symbol'
 
 function PageAction({block}: {block:PageBlock}){
  const [message,setMessage]=useState('')
@@ -37,22 +40,22 @@ function PageAction({block}: {block:PageBlock}){
   {message&&<span className="custom-page-action-feedback" role="status">{message}</span>}
  </section>
 }
-export function CustomPageView({page,editing,onEdit}:{page:CustomPage;editing:boolean;onEdit:()=>void}){
+export function CustomPageView({page,editing,onEdit}:{page:CustomPage;editing:boolean;onEdit:()=>void;headingSymbol?:HeadingSymbolStyle}){
  return <main className={'custom-page custom-page-'+page.layout}>
   <header className={'custom-page-hero'+(page.heroImage?' has-image':'')}>
    {page.heroImage&&<AssetImage src={page.heroImage} className="custom-page-hero-image" alt="" style={{objectPosition:page.heroPositionX+'% '+page.heroPositionY+'%'}}/>}
    <div className="custom-page-hero-content">
-    <span className="custom-page-eyebrow"><Sparkles size={15}/> {page.eyebrow||'CREATIVE SPACE'}</span>
+    <span className="custom-page-eyebrow"><HeadingSymbol symbol={headingSymbol} size={15}/> {cleanHeadingText(page.eyebrow||'CREATIVE SPACE')}</span>
     <h1>{page.title}</h1>
     {page.subtitle&&<RichText className="custom-page-subtitle" value={page.subtitle}/>}
     {editing&&<button className="custom-page-edit" type="button" onClick={onEdit}><Pencil size={16}/> Edit page</button>}
    </div>
-   <span className="custom-page-hero-watermark" aria-hidden="true">✦</span>
+   {headingSymbol!=='none'&&<span className="custom-page-hero-watermark" aria-hidden="true"><HeadingSymbol symbol={headingSymbol} size={45}/></span>}
   </header>
   <div className="custom-page-body">
    {page.blocks.length?<div className="story-blocks custom-page-story">{page.blocks.map(block=>block.type==='action'?<PageAction key={block.id} block={block}/>:block.type==='showcase'?<ArtistShowcase key={block.id} block={block}/>:block.type==='slideshow'?<PageSlideshow key={block.id} block={block}/>:<StoryBlock key={block.id} block={block as Block} projectTitle={page.title}/>)}</div>:
     <div className="custom-page-empty"><Sparkles size={27}/><p>{editing?'This page is ready for your content. Open the editor to add sections.':'More content is coming soon.'}</p>{editing&&<button type="button" onClick={onEdit}>Add content</button>}</div>}
   </div>
-  <footer className="custom-page-footer"><span>✦ JORDAN FERRARY</span><a href="#/portfolio">Explore the portfolio <ArrowUpRight size={15}/></a></footer>
+  <footer className="custom-page-footer"><span>JORDAN FERRARY</span><a href="#/portfolio">Explore the portfolio <ArrowUpRight size={15}/></a></footer>
  </main>
 }
