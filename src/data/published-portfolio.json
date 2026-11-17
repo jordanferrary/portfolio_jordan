@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-17T14:33:38.692Z-b12b6a8a-bf6d-4d93-aaac-66dfd2a9da1c",
+  "revision": "2026-11-17T14:39:11.753Z-3480a622-22dc-43fd-8bee-ad7952fbaace",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -107,6 +107,13 @@
         "medium": "site://images/studio/c12281f76ae4ee32e7acc196960c8a723dbb79bba4e371ebb5ca79c0d58f5421.webp",
         "mediumWidth": 960,
         "largeWidth": 2048
+      },
+      "site://images/studio/cca24d05f412fd14bca387e820a181462d646e787de96a5951d7980d830a662e.webp": {
+        "small": "site://images/studio/c8c361384eb9407e573114204c67fbe435999205675efd34a93a219ea6180162.webp",
+        "smallWidth": 360,
+        "medium": "site://images/studio/1a7ca13bdfc57a16c955d9cf0dc432d25ec702e9c9e687a89db9015dee0d5652.webp",
+        "mediumWidth": 720,
+        "largeWidth": 1536
       }
     },
     "customPages": [],
@@ -401,7 +408,7 @@
       "titleAccent": "A creative vision.",
       "name": "Jordan Ferrary",
       "bio": "I'm Jordan Ferrary, a 3D artist, illustrator, and motion designer passionate about creating characters, environments, and memorable visual experiences.\n\nMy work brings together digital sculpting, modeling, stylized art, and creative storytelling. From game-ready concepts to expressive illustrations, I aim to give every project its own personality and artistic direction.",
-      "portrait": "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg",
+      "portrait": "site://images/studio/cca24d05f412fd14bca387e820a181462d646e787de96a5951d7980d830a662e.webp",
       "secondaryImage": "site://images/studio/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5.png",
       "specialties": [
         "3D Modeling",

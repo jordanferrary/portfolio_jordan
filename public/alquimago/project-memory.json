@@ -1,16 +1,16 @@
 {
   "schema": 2,
-  "updatedAt": "2026-11-17T14:33:38.693Z",
+  "updatedAt": "2026-11-17T14:39:11.754Z",
   "brain": {
     "energy": 100,
-    "curiosity": 97.6000000000006,
+    "curiosity": 100,
     "focus": 0,
     "affinity": 57,
-    "xp": 90,
-    "interactions": 13,
+    "xp": 100,
+    "interactions": 14,
     "lastSeen": 1000000000000,
     "sleepUntil": 0,
-    "lastRewardAt": 1794926018693,
+    "lastRewardAt": 1794926351754,
     "lastAction": "publish",
     "lastRewardAction": "publish",
     "rewardedPages": {
@@ -22,7 +22,8 @@
       "pub-2026-11-16T19%3A52%3A21.217Z-a4ee0461-12de-41df-b6c1-932f26682236": 20773,
       "pub-2026-11-16T20%3A28%3A42.058Z-2350ae05-c176-4e37-86d4-25a1fafffa36": 20773,
       "pub-2026-11-17T11%3A07%3A08.179Z-7100ce42-8511-4f44-b6c5-4e90d5ae854f": 20774,
-      "pub-2026-11-17T14%3A33%3A38.692Z-b12b6a8a-bf6d-4d93-aaac-66dfd2a9da1c": 20774
+      "pub-2026-11-17T14%3A33%3A38.692Z-b12b6a8a-bf6d-4d93-aaac-66dfd2a9da1c": 20774,
+      "pub-2026-11-17T14%3A39%3A11.753Z-3480a622-22dc-43fd-8bee-ad7952fbaace": 20774
     }
   },
   "neural": {
@@ -2674,9 +2675,9 @@
   "behavior": {
     "schema": 1,
     "seed": 77,
-    "energy": 24.600000000000016,
-    "curiosity": 43.480000000000246,
-    "stimulation": 6,
+    "energy": 20.049999999999997,
+    "curiosity": 42.44000000000027,
+    "stimulation": 2.75,
     "trust": 45,
     "rewardBias": [
       0,
@@ -2699,7 +2700,7 @@
     "contextWeights": {},
     "adaptation": {
       "quieto": 0,
-      "observar": 0.009378174973804415,
+      "observar": 0.0031721965381809637,
       "dica": 0,
       "investigar": 0,
       "acenar": 0,
@@ -2712,19 +2713,19 @@
       "estudar": 0,
       "poção": 0,
       "alongar": 0,
-      "descansar": 0,
+      "descansar": 0.6063550013440001,
       "acolher": 0
     },
     "episodes": [],
     "synapses": {},
-    "lastAction": "observar",
+    "lastAction": "descansar",
     "lastActionAt": 0,
-    "lastDecisionAt": 1794222581345,
+    "lastDecisionAt": 1794926284760,
     "lastRewardAt": 0,
     "feedbackCount": 0,
-    "autonomousCount": 0,
+    "autonomousCount": 1,
     "lastActiveDay": 20774,
-    "lastCue": "project"
+    "lastCue": "about"
   },
   "description": "Memória numérica pública do familiar. Nenhuma mensagem ou token é incluído."
 }
