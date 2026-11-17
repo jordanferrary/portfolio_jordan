@@ -1,6 +1,5 @@
-import { lazy,Suspense,useEffect,useRef,useState } from 'react'
-import {flushSync} from 'react-dom'
-import { Home,Grid2X2,UserRound,Mail,Image as ImageIcon,Heart,Music,Share2,Layers,Palette,Plus,MessageSquare,Eye,EyeOff } from 'lucide-react'
+import { lazy,Suspense,useRef,useEffect,useState } from 'react'
+import { Home,Grid2X2,UserRound,Mail,Image as ImageIcon,Heart,Music,Share2,Layers,Palette,ScanLine,Plus,MessageSquare,Eye,EyeOff } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
 import {RouteGlitchFallback,RouteGlitchTransition} from './components/ui/route-glitch-transition'
 import { SocialBar } from './components/layout/social-bar'
@@ -23,7 +22,9 @@ import { usePortfolio,currentPublishedRevision } from './hooks/use-portfolio'
 const GitHubPublishEditor=lazy(()=>import('./components/sections/github-publish-editor').then(m=>({default:m.GitHubPublishEditor})))
 const SiteIdentityEditor=lazy(()=>import('./components/sections/site-identity-editor').then(m=>({default:m.SiteIdentityEditor})))
 const ThemePaletteEditor=lazy(()=>import('./components/sections/theme-palette-editor').then(m=>({default:m.ThemePaletteEditor})))
+const GlitchPaletteEditor=lazy(()=>import('./components/sections/glitch-palette-editor').then(m=>({default:m.GlitchPaletteEditor})))
 import { applyThemePalette } from './lib/theme-palette'
+import {applyGlitchPalette} from './lib/glitch-palette'
 import {detectCountryByIp,initialLanguage,languageFromCountry,saveLanguageChoice,savedLanguage,type VisitorLanguage} from './lib/visitor-language'
 import {observePublicTranslation} from './lib/public-page-translation'
 import {AppErrorBoundary} from './components/ui/app-error-boundary'
@@ -48,7 +49,6 @@ export function App(){
  const [page,setPage]=useState(route)
  const [routeIdentity,setRouteIdentity]=useState(()=>location.hash||'#/inicio')
  const routeRef=useRef(location.hash||'#/inicio')
- const routeTransitionSerial=useRef(0)
  const [editing,setEditing]=useState(false)
  // Keep an out-of-root Studio flag for safe recovery after a render crash.
  // Never automatically reload while an editor may contain unsaved form fields.
@@ -97,6 +97,7 @@ export function App(){
  const [logoEditorOpen,setLogoEditorOpen]=useState(false)
  const [siteIdentityOpen,setSiteIdentityOpen]=useState(false)
  const [themePaletteOpen,setThemePaletteOpen]=useState(false)
+ const [glitchPaletteOpen,setGlitchPaletteOpen]=useState(false)
  const [imageConverterOpen,setImageConverterOpen]=useState(false)
  const [mediaManagerOpen,setMediaManagerOpen]=useState(false)
  const [skin3DOpen,setSkin3DOpen]=useState(false)
@@ -125,39 +126,15 @@ export function App(){
  const [stagedMediaDeletions,setStagedMediaDeletions]=useState<string[]>([])
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'featured'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
- // Native View Transitions briefly capture both real page frames. Unlike
- // a static overlay, the cyberpunk tear now displaces visible artwork and text.
- // The React route is still committed immediately, without loading delays.
+ // This route switch is immediate. The independent neon corruption portal
+ // paints above it for one burst, without browser screenshot cross-fades.
  const switchRoute=(hash:string,next:Page|'project'|'custom',writeHash:boolean)=>{
   if(routeRef.current===hash)return
   routeRef.current=hash
-  const serial=++routeTransitionSerial.current
-  const commit=()=>{
-   if(serial!==routeTransitionSerial.current)return
-   flushSync(()=>{
-    if(writeHash&&location.hash!==hash)location.hash=hash
-    setRouteIdentity(hash)
-    setPage(next)
-   })
-   window.scrollTo(0,0)
-  }
-  type NativeViewTransition={finished:Promise<void>}
-  const start=(document as Document & {
-   startViewTransition?:(update:()=>void)=>NativeViewTransition
-  }).startViewTransition
-  if(start&&!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
-   document.documentElement.classList.add('jf-native-route-glitch')
-   try{
-    const transition=start.call(document,commit)
-    void transition.finished.catch(()=>{}).then(()=>{
-     if(serial===routeTransitionSerial.current)
-      document.documentElement.classList.remove('jf-native-route-glitch')
-    })
-   }catch{
-    document.documentElement.classList.remove('jf-native-route-glitch')
-    commit()
-   }
-  }else commit()
+  if(writeHash&&location.hash!==hash)location.hash=hash
+  setRouteIdentity(hash)
+  setPage(next)
+  window.scrollTo(0,0)
  }
  const navigate=(next:Page)=>switchRoute('#/'+next,next,true)
  const navigateCustomPage=(id:string)=>switchRoute('#/page/'+id,'custom',true)
@@ -209,6 +186,7 @@ export function App(){
   {id:'social',label:'Redes sociais',description:'Links, ícones e plataformas',section:'Conteúdo',icon:Share2,onClick:()=>openHomeTab('socials')},
   {id:'likes',label:'Curtidas',description:'Visibilidade e contagem',section:'Conteúdo',icon:Heart,onClick:()=>openHomeTab('likes')},
   {id:'palette',label:'Paleta de cores',description:'Círculo cromático, HEX, RGB e variáveis globais',section:'Identidade',icon:Palette,onClick:()=>setThemePaletteOpen(true)},
+  {id:'glitch-palette',label:'Paleta do glitch',description:'Cores neon, ruído, intensidade e prévia da transição',section:'Identidade',icon:ScanLine,onClick:()=>setGlitchPaletteOpen(true)},
   {id:'brand',label:'Logo lateral',description:'Imagem principal, hover e escala',section:'Identidade',icon:ImageIcon,onClick:()=>setLogoEditorOpen(true)},
   {id:'share',label:'Favicon e link',description:'Ícone da aba e prévia compartilhada',section:'Identidade',icon:ImageIcon,onClick:()=>setSiteIdentityOpen(true)}
  ]
@@ -221,6 +199,7 @@ export function App(){
   return ()=>window.removeEventListener('alquimago:request-skin-editor',openSkinEditor)
  },[editing])
  useEffect(()=>{applyThemePalette(portfolio.themePalette)},[portfolio.themePalette])
+ useEffect(()=>{applyGlitchPalette(portfolio.glitchPalette)},[portfolio.glitchPalette])
  useEffect(()=>{
   // Installed mascot is public; Gemini chat and creator tools are only shown
   // once Local Studio is unlocked. This is UI gating, not API authentication.
@@ -374,6 +353,7 @@ export function App(){
  {editing&&skin3DOpen&&<Alquimago3DEditor onClose={()=>setSkin3DOpen(false)} onPublish={()=>openPublishDialog('studio')}/>}
  {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>{setMediaManagerOpen(false);openPublishDialog('studio')}} onPreparePublished={paths=>{setStagedMediaDeletions(paths);setMediaManagerOpen(false);openPublishDialog('studio')}}/>}
  {editing&&themePaletteOpen&&<ThemePaletteEditor symbol={portfolio.headingSymbol} value={portfolio.themePalette} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}
+ {editing&&glitchPaletteOpen&&<GlitchPaletteEditor value={portfolio.glitchPalette} onSave={portfolio.setGlitchPalette} onClose={()=>setGlitchPaletteOpen(false)}/>}
  {editing&&siteIdentityOpen&&<SiteIdentityEditor value={{siteFavicon:portfolio.siteFavicon,seoTitle:portfolio.seoTitle,seoDescription:portfolio.seoDescription}} homeBanner={portfolio.home.background} onSave={portfolio.setSiteIdentity} onEditBanner={()=>openHomeTab('home')} onClose={()=>setSiteIdentityOpen(false)}/>}
  {editing&&logoEditorOpen&&<BrandLogoEditor value={{siteLogo:portfolio.siteLogo,siteLogoHover:portfolio.siteLogoHover,siteLogoSize:portfolio.siteLogoSize,siteLogoHoverScale:portfolio.siteLogoHoverScale}} onSave={portfolio.setBranding} onClose={()=>setLogoEditorOpen(false)}/>}
  {editing&&galleryBackgroundEditorOpen&&<GalleryBackgroundEditor value={portfolio.galleryBackground} focus={portfolio.galleryFocus} content={portfolio.galleryContent} headingSymbol={portfolio.headingSymbol} onSave={({background,content,focus})=>portfolio.setGalleryPage(background,content,focus)} onClose={()=>setGalleryBackgroundEditorOpen(false)}/>}
