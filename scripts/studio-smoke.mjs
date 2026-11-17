@@ -21,7 +21,7 @@ const entry=[
  "export {normalizeHeadingSymbol,DEFAULT_HEADING_SYMBOL,HEADING_SYMBOL_OPTIONS,cleanHeadingText} from './src/lib/heading-symbol.ts'",
  "export {HeadingSymbol} from './src/components/ui/heading-symbol.tsx'",
  "export {SocialMark} from './src/components/ui/social-mark.tsx'",
- "export {AboutPage} from './src/components/sections/about-page.tsx'"",
+ "export {AboutPage} from './src/components/sections/about-page.tsx'",
  "export {normalizeCustomPages} from './src/data/custom-pages.ts'",
  "export {parseVideoEmbed} from './src/lib/video-embed.ts'",
  "export {classifyAudioSource,audioSourceError} from './src/lib/audio-source.ts'",
