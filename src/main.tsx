@@ -84,3 +84,5 @@ import './styles/page-layout-consistency.css'
 
 // Banner framing is applied after legacy gallery object-fit rules.
 import './styles/banner-framing.css'
+// Brief, palette-driven navigation transition.
+import './styles/route-glitch.css'

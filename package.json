@@ -18,6 +18,7 @@
     "test:mobile-ui": "node --test scripts/mobile-music-visibility.test.mjs",
     "test:visitor-language": "node --test scripts/visitor-language.test.mjs",
     "test:page-layout": "node --test scripts/page-layout.test.mjs",
+    "test:route-glitch": "node --test scripts/route-glitch.test.mjs",
     "test:runtime-recovery": "node --test scripts/runtime-recovery.test.mjs",
     "test:studio-media": "node --test scripts/studio-media-pipeline.test.mjs"
   },

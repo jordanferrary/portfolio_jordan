@@ -1,6 +1,7 @@
 import { lazy,Suspense,useEffect,useState } from 'react'
 import { Home,Grid2X2,UserRound,Mail,Image as ImageIcon,Heart,Music,Share2,Layers,Palette,Plus,MessageSquare,Eye,EyeOff } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
+import {RouteGlitchTransition} from './components/ui/route-glitch-transition'
 import { SocialBar } from './components/layout/social-bar'
 const Gallery=lazy(()=>import('./components/sections/gallery').then(m=>({default:m.Gallery})))
 const GalleryBackgroundEditor=lazy(()=>import('./components/sections/gallery-background-editor').then(m=>({default:m.GalleryBackgroundEditor})))
@@ -44,6 +45,7 @@ export function App(){
   })
  },[])
  const [page,setPage]=useState(route)
+ const [routeIdentity,setRouteIdentity]=useState(()=>location.hash||'#/inicio')
  const [editing,setEditing]=useState(false)
  // Keep an out-of-root Studio flag for safe recovery after a render crash.
  // Never automatically reload while an editor may contain unsaved form fields.
@@ -120,14 +122,32 @@ export function App(){
  const [stagedMediaDeletions,setStagedMediaDeletions]=useState<string[]>([])
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'featured'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
- const navigate=(next:Page)=>{location.hash='/'+next;setPage(next);window.scrollTo(0,0)}
- const navigateCustomPage=(id:string)=>{location.hash='/page/'+id;setPage('custom');window.scrollTo(0,0)}
+ const navigate=(next:Page)=>{
+  const hash='#/'+next
+  if(location.hash!==hash)location.hash='/'+next
+  setRouteIdentity(hash)
+  setPage(next)
+  window.scrollTo(0,0)
+ }
+ const navigateCustomPage=(id:string)=>{
+  const hash='#/page/'+id
+  if(location.hash!==hash)location.hash='/page/'+id
+  setRouteIdentity(hash)
+  setPage('custom')
+  window.scrollTo(0,0)
+ }
  const openHomeTab=(tab:'home'|'featured'|'feedback'|'music'|'socials'|'likes')=>{setHomeEditorTab(tab);setHomeEditorOpen(true)}
  const projectId=location.hash.replace(/^#\/project\//,'')
  const project=portfolio.projects.find(p=>p.id===projectId)
  const customPageId=location.hash.replace(/^#\/page\//,'').split('/')[0]
  const customPage=page==='custom'?portfolio.customPages.find(item=>item.id===customPageId):undefined
- const openProject=(p:Project)=>{location.hash='/project/'+p.id;setPage('project');window.scrollTo(0,0)}
+ const openProject=(p:Project)=>{
+  const hash='#/project/'+p.id
+  if(location.hash!==hash)location.hash='/project/'+p.id
+  setRouteIdentity(hash)
+  setPage('project')
+  window.scrollTo(0,0)
+ }
  const pageLabels:Record<Page|'project'|'custom',string>={inicio:'Home',portfolio:'Galeria',sobre:'Sobre',contato:'Contato',project:'Projeto',custom:customPage?.navLabel??'Página'}
  const editCurrent=()=>{if(page==='inicio')openHomeTab('home');else if(page==='portfolio')setGalleryBackgroundEditorOpen(true);else if(page==='sobre')setAboutEditorOpen(true);else if(page==='contato')setContactEditorOpen(true);else if(page==='custom')setCustomPageEditorTarget(customPage?.id??'manage');else setEditor(project??null)}
  const editingLabel=page==='project'?'Editar projeto':page==='custom'?'Editar página':page==='portfolio'?'Editar galeria':'Editar página'
@@ -307,12 +327,20 @@ export function App(){
   return()=>window.removeEventListener('alquimago:request-context',announce)
  },[editing,page,portfolio.projects.length,portfolio.customPages.length])
 
- useEffect(()=>{const sync=()=>{setPage(route());window.scrollTo(0,0)};window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync)},[])
+ useEffect(()=>{
+  const sync=()=>{
+   setRouteIdentity(location.hash||'#/inicio')
+   setPage(route())
+   window.scrollTo(0,0)
+  }
+  window.addEventListener('hashchange',sync)
+  return()=>window.removeEventListener('hashchange',sync)
+ },[])
  useEffect(()=>{
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
- return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':page==='contato'?'site-shell contact-route':page==='sobre'?'site-shell about-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}} language={visitorLanguage} onLanguageChange={changeVisitorLanguage}/>
+ return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':page==='contato'?'site-shell contact-route':page==='sobre'?'site-shell about-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><RouteGlitchTransition routeKey={routeIdentity}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}} language={visitorLanguage} onLanguageChange={changeVisitorLanguage}/>
  {page==='portfolio'&&<AppErrorBoundary compact><Suspense fallback={<div className="simple-page" role="status">Loading portfolio…</div>}><Gallery headingSymbol={portfolio.headingSymbol} language={visitorLanguage} projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground} heroFocus={portfolio.galleryFocus} content={portfolio.galleryContent}/></Suspense></AppErrorBoundary>}
  {page==='project'&&project&&<AppErrorBoundary compact><Suspense fallback={<div className="simple-page" role="status">Loading project…</div>}><ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts} headingSymbol={portfolio.headingSymbol}/></Suspense></AppErrorBoundary>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
