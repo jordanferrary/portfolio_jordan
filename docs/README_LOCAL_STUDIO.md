@@ -30,7 +30,7 @@ O fundo do portfólio mantém os gradientes de cor fixos em relação à área v
 
 ### Volume lateral do player
 
-O botão de volume abre um controle **vertical** à direita do player, sem aumentar sua altura. O slider ajusta o volume de baixo para cima, com ícone de silenciar e porcentagem. Clique novamente no botão ou fora do player para fechá-lo. No celular, o controle se posiciona após a alça lateral do player expansível. O volume continua salvo neste navegador.
+O botão de volume abre uma **cápsula vertical compacta, totalmente arredondada** à direita do player, sem aumentar sua altura. O slider ajusta o volume de baixo para cima, com ícone de silenciar e porcentagem. Clique novamente no botão ou fora do player para fechá-lo. No celular, o controle se posiciona após a alça lateral do player expansível. O volume continua salvo neste navegador.
 
 ## 5. Miniaturas e desempenho
 A publicação prepara versões WebP menores para imagens novas e, quando viável, imagens já publicadas. O navegador usa automaticamente `srcset` para exibir a resolução apropriada. As imagens antigas que não possuam miniaturas continuam abrindo normalmente. Quando o zoom abre, carrega a imagem de maior resolução disponível.

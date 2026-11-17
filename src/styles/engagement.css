@@ -49,27 +49,26 @@
 .music-widget .music-seek{min-width:0;flex:1;width:auto!important}
 .music-widget .music-volume-toggle{border:1px solid #733a9d;border-radius:50%;background:#3c195c;color:#d19af4;display:grid;place-items:center;width:23px;height:23px;min-width:23px;flex:0 0 23px;padding:0;box-shadow:inset 0 1px #e7b4ff22}
 .music-widget .music-volume-toggle:hover,.music-widget .music-volume-toggle.is-open{border-color:#ba66f7;background:#6b2b93;color:#f3d3ff;box-shadow:0 0 10px #af45fa45}
-/* Vertical side-mounted volume slider. It never increases the player height. */
-.music-widget .music-card{overflow:visible}
+/* Compact vertical capsule: fully rounded and smaller than the player. */
 .music-widget .music-volume-popover{
  position:absolute;
  z-index:12;
- left:calc(100% + 10px);
+ left:calc(100% + 7px);
  right:auto;
- bottom:7px;
+ bottom:9px;
  display:flex;
  flex-direction:column-reverse;
  align-items:center;
  justify-content:center;
- gap:9px;
- width:48px;
- height:160px;
+ gap:6px;
+ width:38px;
+ height:124px;
  min-height:0;
- padding:10px 7px;
+ padding:7px 5px;
  border:1px solid color-mix(in srgb,var(--jf-border,#9953cb) 78%,var(--jf-secondary,#cf91f4) 22%);
- border-radius:18px;
- background:linear-gradient(160deg,color-mix(in srgb,var(--jf-surface,#2e1146) 92%,transparent),color-mix(in srgb,var(--jf-background,#0e0820) 94%,transparent));
- box-shadow:0 9px 26px #030008b0,inset 0 1px #e2adff20;
+ border-radius:999px;
+ background:linear-gradient(160deg,color-mix(in srgb,var(--jf-surface,#2e1146) 89%,transparent),color-mix(in srgb,var(--jf-background,#0e0820) 92%,transparent));
+ box-shadow:0 7px 18px #03000875,inset 0 1px #e2adff18;
  backdrop-filter:blur(15px);
 }
 .music-widget .music-volume-popover button{
@@ -78,10 +77,10 @@
  color:var(--jf-secondary,#cb91f1);
  display:grid;
  place-items:center;
- width:28px;
- height:26px;
+ width:23px;
+ height:21px;
  padding:0;
- flex:0 0 26px;
+ flex:0 0 21px;
 }
 .music-widget .music-volume-popover input{
  appearance:none;
@@ -89,10 +88,10 @@
  writing-mode:vertical-lr;
  direction:rtl;
  width:6px;
- height:82px;
+ height:58px;
  min-width:6px;
  min-height:0;
- flex:0 0 82px;
+ flex:0 0 58px;
  margin:0;
  padding:0;
  border:0;
@@ -120,7 +119,8 @@
  width:auto;
  flex:0 0 auto;
  text-align:center;
- font-size:10px;
+ font-size:9px;
+ line-height:1;
  color:var(--jf-muted,#dbc1ec);
  font-variant-numeric:tabular-nums;
 }
@@ -215,27 +215,27 @@
    Position the vertical pill beyond that handle, even on 601–750px screens. */
 @media(max-width:750px){
  .site-shell>.music-widget .music-volume-popover{
-  left:calc(100% + 52px);
+  left:calc(100% + 47px);
   right:auto;
-  bottom:7px;
-  width:44px;
-  height:144px;
-  padding:8px 6px;
-  gap:7px;
+  bottom:8px;
+  width:38px;
+  height:118px;
+  padding:6px 5px;
+  gap:5px;
  }
  .site-shell>.music-widget .music-volume-popover input{
-  height:73px;
-  flex-basis:73px;
+  height:54px;
+  flex-basis:54px;
  }
  .site-shell>.music-widget .music-volume-popover button{
-  width:26px;
-  height:24px;
-  flex-basis:24px;
+  width:23px;
+  height:20px;
+  flex-basis:20px;
  }
 }
 @media(max-width:270px){
  .site-shell>.music-widget .music-volume-popover{
-  left:calc(100% + 44px);
-  width:38px;
+  left:calc(100% + 45px);
+  width:34px;
  }
 }
