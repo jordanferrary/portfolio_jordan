@@ -550,7 +550,7 @@ export const VISITOR_PHRASES:Record<string,{pt:string;es:string}>={
  "Gallery":{
   pt:"Galeria",
   es:"Galería"
- }
+ },
  "New page":{pt:"Nova página",es:"Nueva página"},
  "Home page":{pt:"Página inicial",es:"Página de inicio"},
  "Specialties":{pt:"Especialidades",es:"Especialidades"},
