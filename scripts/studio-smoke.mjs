@@ -301,9 +301,9 @@ try{
   assert.match(icons,/contact-directory-icons/)
   assert.match(icons,/title="Platform 11"/)
   assert.match(icons,/aria-label="Visit Platform 11 profile/)
-  assert.match(contactCss,/contact-directory-grid \\.contact-social-cards/)
-  assert.match(contactCss,/contact-directory-icons \\.contact-social-cards/)
-  assert.doesNotMatch(awaitCss,/:has\\(\\.contact-social-card:nth-child\\(n\\+4\\)\\)/)
+  assert.ok(contactCss.includes('contact-directory-grid .contact-social-cards'))
+  assert.ok(contactCss.includes('contact-directory-icons .contact-social-cards'))
+  assert.ok(!awaitCss.includes(':has(.contact-social-card:nth-child(n+4))'))
  })
  check('Contact editor exposes specialties and save controls',()=>{
   const html=element(app.ContactEditor,{settings:app.defaultContact,links:[],onSave:()=>{},onClose:()=>{}})
