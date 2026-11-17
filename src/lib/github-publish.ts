@@ -112,6 +112,7 @@ function stageSnapshot(store:PortfolioStore){
   about:store.about,
   contact:store.contact,
   galleryBackground:store.galleryBackground,
+  galleryContent:store.galleryContent,
   siteLogo:store.siteLogo,
   siteLogoHover:store.siteLogoHover,
   siteLogoSize:store.siteLogoSize,

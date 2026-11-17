@@ -42,3 +42,25 @@
 @media(max-width:650px){
  .gallery-background-editor .gallery-background-actions{gap:7px}
 }
+
+/* Gallery content editor, with a responsive live preview and retained media controls. */
+.gallery-background-editor{width:min(1030px,100%)}
+.gallery-background-editor .gallery-custom-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:25px}
+.gallery-background-editor .gallery-custom-layout>section{min-width:0}
+.gallery-background-editor .gallery-art-editor{border-left:1px solid #54346e;padding-left:24px}
+.gallery-background-editor .gallery-edit-section-title{display:flex;flex-direction:column;gap:4px;margin:0 0 13px}
+.gallery-background-editor .gallery-edit-section-title:not(:first-child){margin-top:23px}
+.gallery-background-editor .gallery-edit-section-title>span{font-size:10px;font-weight:700;letter-spacing:.13em;color:var(--jf-secondary,#c789e9)}
+.gallery-background-editor .gallery-edit-section-title h3{font-size:16px;margin:0;color:#f7e9ff}
+.gallery-background-editor .gallery-copy-editor>label{display:flex;flex-direction:column;gap:7px;margin:0 0 13px;font-size:12px;color:#d6b8e8}
+.gallery-background-editor .gallery-copy-editor>label :is(input,textarea){width:100%;min-width:0;background:#1b1029;border:1px solid #60417b;color:white;border-radius:12px;padding:11px;font:inherit;line-height:1.5;resize:vertical}
+.gallery-background-editor .gallery-copy-editor>label :is(input,textarea):focus-visible{outline:2px solid var(--jf-primary,#b147ff);outline-offset:2px}
+.gallery-background-editor .gallery-copy-preview{border:1px solid #6c4188;border-radius:16px;padding:19px;margin:0 0 21px;background:radial-gradient(ellipse at top right,#431b6055,transparent 75%),#130b1e}
+.gallery-background-editor .gallery-copy-preview .eyebrow{display:flex;align-items:center;gap:6px;color:#cd90f0;font-size:11px;margin:0 0 14px}
+.gallery-background-editor .gallery-copy-preview h3{white-space:pre-line;overflow-wrap:anywhere;font-size:clamp(22px,2.4vw,31px);line-height:1.12;letter-spacing:-.04em;margin:0 0 12px}
+.gallery-background-editor .gallery-copy-preview h3 em{font-style:normal;color:var(--jf-primary,#ba54ff)}
+.gallery-background-editor .gallery-copy-preview-description{white-space:pre-line;font-size:12px;line-height:1.55;color:#c9b1d8;margin:0 0 15px}
+.gallery-background-editor .gallery-copy-preview-controls{display:flex;gap:9px;flex-wrap:wrap}
+.gallery-background-editor .gallery-copy-preview-controls>span{border:1px solid #6a3e8a;border-radius:999px;padding:7px 11px;font-size:10px;color:#d9c2e9}
+.gallery-page .gallery-heading .gallery-title-first,.gallery-page .gallery-heading .gallery-introduction{white-space:pre-line;overflow-wrap:anywhere}
+@media(max-width:790px){.gallery-background-editor .gallery-custom-layout{grid-template-columns:1fr}.gallery-background-editor .gallery-art-editor{padding-left:0;border-left:0;border-top:1px solid #54346e;padding-top:21px}}

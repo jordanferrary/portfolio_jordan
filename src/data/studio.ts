@@ -87,5 +87,35 @@ export function normalizeContactTags(input:unknown,fallback:string[]=defaultCont
  }).slice(0,18)
 }
 
+
+export interface GalleryContent{
+ eyebrow:string
+ titleFirst:string
+ titleAccent:string
+ introduction:string
+ allLabel:string
+ searchPlaceholder:string
+ emptyMessage:string
+}
+export const defaultGalleryContent:GalleryContent={
+ eyebrow:'Explore my portfolio',
+ titleFirst:'A world of art,\nin every',
+ titleAccent:'detail.',
+ introduction:'Dive into my 3D creations and discover the stories\nbehind each project.',
+ allLabel:'All',
+ searchPlaceholder:'Search for projects...',
+ emptyMessage:'No projects found. Try another filter or search term.'
+}
+export function normalizeGalleryContent(value:unknown):GalleryContent{
+ const input=value&&typeof value==='object'&&!Array.isArray(value)?value as Partial<Record<keyof GalleryContent,unknown>>:{}
+ const result={...defaultGalleryContent}
+ const limits:Record<keyof GalleryContent,number>={eyebrow:100,titleFirst:160,titleAccent:90,introduction:600,allLabel:28,searchPlaceholder:100,emptyMessage:240}
+ for(const key of Object.keys(limits) as Array<keyof GalleryContent>){
+  const item=input[key]
+  if(typeof item==='string')result[key]=item.slice(0,limits[key])
+ }
+ return result
+}
+
 /** The portfolio banner is configured independently from the Home wallpaper. */
 export const defaultGalleryBackground=bundledAsset('hero/hero-character.webp')
