@@ -5,22 +5,13 @@ import {protectArtistName} from '../ui/protected-name'
 
 type Props={socials:SocialLink[];settings:ContactSettings;demoEnabled:boolean;onEdit:()=>void}
 
-function channelDetails(link:SocialLink){
- switch(link.icon){
-  case 'instagram':return {tag:'DIRECT CONVERSATIONS',description:'Follow my creative process or send a direct message.'}
-  case 'behance':return {tag:'CURATED PORTFOLIO',description:'Explore more artwork, collections and finished projects.'}
-  case 'artstation':return {tag:'ART & PROJECTS',description:'Discover my artwork and creative portfolio.'}
-  case 'github':return {tag:'PROJECTS & CODE',description:'See projects and work shared on GitHub.'}
-  default:return {tag:'CONNECT',description:'Visit my profile and connect with me there.'}
- }
-}
-
 /** Contact is now social-first: no browser-only inbox and no form that might never be read. */
 export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
  const channels=socials
   .map(s=>({social:s,url:safeSocialUrl(s.url)}))
   .filter((item):item is {social:SocialLink;url:string}=>
    Boolean(item.url)&&item.social.icon!=='mail'&&!item.url?.startsWith('mailto:'))
+ const density=channels.length>=9?'icons':channels.length>=4?'grid':'list'
  return <main className="contact-page contact-social-page">
   <div className="contact-social-atmosphere" aria-hidden="true"><i/><i/><i/></div>
   <div className="contact-social-layout">
@@ -33,19 +24,18 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
     <a className="contact-social-portfolio-link" href="#/portfolio">Explore the portfolio <ArrowRight size={17}/></a>
     {demoEnabled&&<button type="button" lang="pt-BR" className="contact-dev-edit" onClick={onEdit}><Pencil size={15}/>Personalizar contato e redes</button>}
    </section>
-   <section className="contact-social-directory" aria-label="Social media contact channels">
+   <section className={'contact-social-directory contact-directory-'+density} aria-label="Social media contact channels">
     <header className="contact-social-directory-head">
      <div><span className="contact-social-section-index">DIRECT CONNECTIONS / 01</span><h2>Find me online<span>.</span></h2><p>{settings.greeting}</p></div>
      <span className="contact-social-head-ornament"><Waypoints size={21}/></span>
     </header>
-    {channels.length>0?<div className="contact-social-cards">
+    {channels.length>0?<div className={'contact-social-cards contact-cards-'+density}>
      {channels.map(({social,url},index)=>{
-      const meta=channelDetails(social)
-      return <a key={social.id} href={url} target="_blank" rel="noopener noreferrer"
+      return <a key={social.id} href={url} target="_blank" rel="noopener noreferrer" title={social.label}
        className={'contact-social-card'+(index===0?' contact-social-card-featured':'')}
        aria-label={'Visit '+social.label+' profile (opens in a new tab)'}>
        <span className="contact-social-card-icon"><SocialMark social={social}/></span>
-       <span className="contact-social-card-info"><span className="contact-social-card-tag">{meta.tag}</span><strong>{social.label}</strong><small>{meta.description}</small></span>
+       <span className="contact-social-card-info"><strong>{social.label}</strong></span>
        <span className="contact-social-card-arrow"><ArrowUpRight size={20}/></span>
       </a>
      })}

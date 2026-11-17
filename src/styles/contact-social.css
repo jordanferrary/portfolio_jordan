@@ -383,3 +383,61 @@
 .contact-footer-tags-preview{display:flex;align-items:center;gap:8px 13px;flex-wrap:wrap;margin-top:16px;padding:12px;border:1px dashed #6c478f;border-radius:12px;background:#170d26;color:#c2a3d2;font-size:10px;letter-spacing:.09em}
 .contact-footer-tags-preview>span{padding:5px 9px;border:1px solid #543778;background:#26153b;border-radius:999px}
 @media(max-width:530px){.contact-footer-tag-row{gap:4px;padding:5px}.contact-footer-tag-row button{width:29px;flex-basis:29px}}
+
+/* Adaptive contact cards: 1–3 list, 4–8 two columns, 9+ icon tiles. */
+.site-shell .contact-social-directory.contact-directory-list .contact-social-cards{display:grid;grid-template-columns:1fr;gap:9px}
+.site-shell .contact-social-directory.contact-directory-grid .contact-social-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.site-shell .contact-social-directory.contact-directory-icons .contact-social-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.site-shell .contact-social-directory .contact-social-card{
+ min-width:0;min-height:66px;padding:10px 12px;gap:10px;border-radius:15px;
+}
+.site-shell.contact-route .contact-social-directory .contact-social-card{
+ min-height:66px;padding:10px 12px;
+}
+.site-shell.contact-route .contact-social-directory .contact-social-card-icon{
+ width:43px;height:43px;flex:0 0 43px;border-radius:13px;
+}
+.site-shell.contact-route .contact-social-directory .contact-social-card-icon svg{width:22px;height:22px}
+.site-shell.contact-route .contact-social-directory .contact-social-card-icon .social-short-mark{font-size:19px}
+.site-shell.contact-route .contact-social-directory .contact-social-card-info strong{
+ display:block;font-size:clamp(11px,1vw,15px);line-height:1.3;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.site-shell.contact-route .contact-social-directory .contact-social-card-arrow{width:29px;height:29px;flex:0 0 29px}
+.site-shell.contact-route .contact-social-directory .contact-social-card-arrow svg{width:17px;height:17px}
+.site-shell.contact-route .contact-social-directory.contact-directory-icons .contact-social-card{
+ display:grid;place-items:center;min-height:62px;padding:8px;gap:0;
+}
+.site-shell.contact-route .contact-social-directory.contact-directory-icons .contact-social-card-arrow{display:none}
+.site-shell.contact-route .contact-social-directory.contact-directory-icons .contact-social-card-info{
+ position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+ clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+.site-shell.contact-route .contact-social-directory .contact-social-directory-head{
+ padding-bottom:clamp(10px,1.7vh,17px);margin-bottom:clamp(11px,1.8vh,18px);
+}
+.site-shell.contact-route .contact-social-directory .contact-social-directory-footer{
+ padding-top:10px;margin-top:12px;
+}
+.site-shell.contact-route .contact-social-bottomline{margin-top:clamp(10px,1.8vh,20px);padding-block:8px}
+@media(min-width:821px) and (min-height:720px){
+ .site-shell.contact-route .contact-social-page{
+  padding-top:clamp(58px,8vh,82px)!important;
+  padding-bottom:clamp(6px,1vh,12px)!important;
+ }
+ .site-shell.contact-route .contact-social-layout{gap:clamp(20px,3vw,48px)}
+ .site-shell.contact-route .contact-social-directory{padding:clamp(15px,2vw,26px)}
+}
+@media(max-width:500px){
+ .site-shell.contact-route .contact-social-directory.contact-directory-grid .contact-social-cards{gap:7px}
+ .site-shell.contact-route .contact-social-directory.contact-directory-grid .contact-social-card{
+  min-height:58px;padding:8px;gap:7px;border-radius:13px;
+ }
+ .site-shell.contact-route .contact-social-directory.contact-directory-grid .contact-social-card-icon{
+  width:34px;height:34px;flex-basis:34px;border-radius:10px;
+ }
+ .site-shell.contact-route .contact-social-directory.contact-directory-grid .contact-social-card-arrow{display:none}
+ .site-shell.contact-route .contact-social-directory.contact-directory-grid .contact-social-card-info strong{font-size:11px}
+ .site-shell.contact-route .contact-social-directory.contact-directory-icons .contact-social-cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .site-shell.contact-route .contact-social-directory.contact-directory-icons .contact-social-card{min-height:54px}
+}

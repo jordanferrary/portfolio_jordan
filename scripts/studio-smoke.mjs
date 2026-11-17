@@ -62,6 +62,7 @@ try{
  const musicSource=await readFile(join(root,'src/components/layout/music-player.tsx'),'utf8')
  const musicCss=await readFile(join(root,'src/styles/engagement.css'),'utf8')
  const studioCss=await readFile(join(root,'src/styles/studio-centered.css'),'utf8')
+ const contactCss=await readFile(join(root,'src/styles/contact-social.css'),'utf8')
  const element=(Component,props)=>renderToStaticMarkup(React.createElement(Component,props))
  check('Home and Gallery contextual editors mount and the duplicate background button is absent',()=>{
   const noop=()=>{}
@@ -287,6 +288,22 @@ try{
   assert.doesNotMatch(html,/>ENVIRONMENTS</)
   const hidden=element(app.ContactPage,{socials:[],settings:{...app.defaultContact,footerTags:[]},demoEnabled:false,onEdit:()=>{}})
   assert.doesNotMatch(hidden,/contact-social-bottomline/)
+ })
+ check('Contact cards use list, two-column and icon-only density without repeated descriptions',()=>{
+  const socials=Array.from({length:12},(_,i)=>({id:'social-'+i,label:'Platform '+i,icon:i%2?'behance':'instagram',url:'https://example.com/user/'+i}))
+  const render=n=>element(app.ContactPage,{socials:socials.slice(0,n),settings:app.defaultContact,demoEnabled:false,onEdit:()=>{}})
+  assert.match(render(3),/contact-directory-list/)
+  const grid=render(5)
+  assert.match(grid,/contact-directory-grid/)
+  assert.equal((grid.match(/class="contact-social-card(?: contact-social-card-featured)?"/g)||[]).length,5)
+  assert.doesNotMatch(grid,/contact-social-card-tag|Follow my creative process|Visit my profile and connect with me there/)
+  const icons=render(12)
+  assert.match(icons,/contact-directory-icons/)
+  assert.match(icons,/title="Platform 11"/)
+  assert.match(icons,/aria-label="Visit Platform 11 profile/)
+  assert.match(contactCss,/contact-directory-grid \\.contact-social-cards/)
+  assert.match(contactCss,/contact-directory-icons \\.contact-social-cards/)
+  assert.doesNotMatch(awaitCss,/:has\\(\\.contact-social-card:nth-child\\(n\\+4\\)\\)/)
  })
  check('Contact editor exposes specialties and save controls',()=>{
   const html=element(app.ContactEditor,{settings:app.defaultContact,links:[],onSave:()=>{},onClose:()=>{}})
