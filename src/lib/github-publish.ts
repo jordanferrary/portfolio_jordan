@@ -119,6 +119,7 @@ function stageSnapshot(store:PortfolioStore){
   siteLogoHoverScale:store.siteLogoHoverScale,
   siteFavicon:store.siteFavicon,
   themePalette:store.themePalette,
+  headingSymbol:store.headingSymbol,
   seoTitle:store.seoTitle,
   seoDescription:store.seoDescription
  }

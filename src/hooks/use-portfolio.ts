@@ -1,5 +1,6 @@
 import { useCallback,useState } from 'react'
 import { DEFAULT_THEME,normalizeThemePalette,type ThemePalette } from '../lib/theme-palette'
+import {DEFAULT_HEADING_SYMBOL,normalizeHeadingSymbol,type HeadingSymbolStyle} from '../lib/heading-symbol'
 import { isKnownDemoTestimonial } from '../lib/testimonial-safety'
 import { normalizeFraming } from '../lib/image-framing'
 import {applyFeaturedSelection} from '../lib/featured-projects'
@@ -14,7 +15,7 @@ const KEY='jordan-portfolio-local-v2'
 const PENDING_KEY='jordan-portfolio-publish-pending-v1'
 const bundled=publishedPackage as {schema:number;revision:string;store:unknown}
 export const currentPublishedRevision=bundled.revision||'initial'
-export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;galleryContent:GalleryContent;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
+export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;headingSymbol:HeadingSymbolStyle;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;galleryContent:GalleryContent;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
 export function clampBrandScale(value:unknown,fallback:number,min:number,max:number):number{
  const number=typeof value==='number'?value:Number(value)
  return Number.isFinite(number)?Math.max(min,Math.min(max,Math.round(number))):fallback
@@ -39,6 +40,7 @@ function parseStore(raw:unknown):PortfolioStore{
  const galleryBackground=normalizeBundledImage(obj.galleryBackground??obj.home?.background??defaultGalleryBackground)
  const galleryContent=normalizeGalleryContent(obj.galleryContent)
  const themePalette=normalizeThemePalette(obj.themePalette)
+ const headingSymbol=normalizeHeadingSymbol(obj.headingSymbol)
  const siteLogo=typeof obj.siteLogo==='string'?normalizeBundledImage(obj.siteLogo):''
  const siteFavicon=typeof obj.siteFavicon==='string'?normalizeBundledImage(obj.siteFavicon):''
  const seoTitle=typeof obj.seoTitle==='string'&&obj.seoTitle.trim()?obj.seoTitle:'Jordan Ferrary — Creative Portfolio'
@@ -60,13 +62,13 @@ function parseStore(raw:unknown):PortfolioStore{
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'&&!isKnownDemoTestimonial(t)):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
- return {customPages,imageVariants,themePalette,projects:projects.map(upgradeProcessTemplate),categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,galleryContent,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
+ return {customPages,imageVariants,themePalette,headingSymbol,projects:projects.map(upgradeProcessTemplate),categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,galleryContent,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
 }
 function publishedStore():PortfolioStore{
  if(bundled.schema===1&&bundled.store){
   try{return parseStore(bundled.store)}catch{/* preserve original defaults when a malformed content file is committed */}
  }
- return {customPages:[],imageVariants:{},themePalette:{...DEFAULT_THEME},projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,galleryContent:{...defaultGalleryContent},siteLogo:'',siteLogoHover:'',siteLogoSize:100,siteLogoHoverScale:110,siteFavicon:'',seoTitle:'Jordan Ferrary — Creative Portfolio',seoDescription:'Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'}
+ return {customPages:[],imageVariants:{},themePalette:{...DEFAULT_THEME},headingSymbol:DEFAULT_HEADING_SYMBOL,projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,galleryContent:{...defaultGalleryContent},siteLogo:'',siteLogoHover:'',siteLogoSize:100,siteLogoHoverScale:110,siteFavicon:'',seoTitle:'Jordan Ferrary — Creative Portfolio',seoDescription:'Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'}
 }
 function load():PortfolioStore{
  try{
@@ -154,7 +156,7 @@ export function usePortfolio(editing=false){
  const setGalleryPage=(galleryBackground:string,galleryContent:GalleryContent)=>save({...store,galleryBackground,galleryContent:normalizeGalleryContent(galleryContent)})
  const setBranding=(values:Pick<PortfolioStore,'siteLogo'|'siteLogoHover'|'siteLogoSize'|'siteLogoHoverScale'>)=>save({...store,...values,siteLogoSize:clampBrandScale(values.siteLogoSize,100,65,180),siteLogoHoverScale:clampBrandScale(values.siteLogoHoverScale,110,100,170)})
  const setSiteIdentity=(values:Pick<PortfolioStore,'siteFavicon'|'seoTitle'|'seoDescription'>)=>save({...store,...values,seoTitle:values.seoTitle.trim().slice(0,110),seoDescription:values.seoDescription.trim().slice(0,240)})
- const setThemePalette=(themePalette:ThemePalette)=>save({...store,themePalette:normalizeThemePalette(themePalette)})
+ const setThemePalette=(themePalette:ThemePalette,headingSymbol:HeadingSymbolStyle=store.headingSymbol)=>save({...store,themePalette:normalizeThemePalette(themePalette),headingSymbol:normalizeHeadingSymbol(headingSymbol)})
  const setAbout=(about:AboutContent)=>save({...store,about})
  const setContactPage=(contact:ContactSettings,socialLinks:SocialLink[])=>save({...store,contact,socialLinks})
  const setTestimonials=(testimonials:Testimonial[])=>save({...store,testimonials})

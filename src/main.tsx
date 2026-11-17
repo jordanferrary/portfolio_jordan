@@ -76,3 +76,4 @@ import './styles/mobile-nav-alignment.css'
 // Studio widgets share the seven live palette tokens with the visitor site.
 // Loaded last to override legacy violet hex colors without affecting artwork.
 import './styles/studio-palette-coverage.css'
+import './styles/heading-symbol.css'
