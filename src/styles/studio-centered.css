@@ -198,6 +198,39 @@
 .studio-featured-tip{display:flex;align-items:center;gap:6px;line-height:1.45;color:#bba8cb;font-size:11px;margin:12px 0 0}
 .studio-featured-tip svg{flex:0 0 auto;color:#a5e1b4}
 .home-featured-heading-actions{display:flex;align-items:center;gap:12px}
+/* Accessible circular pencil, matching the project's purple edit controls. */
+.site-shell .home-panel-heading .home-featured-manage{
+ display:inline-grid;
+ place-items:center;
+ flex:0 0 32px;
+ width:32px;
+ height:32px;
+ min-width:32px;
+ min-height:32px;
+ padding:0;
+ border:1px solid color-mix(in srgb,var(--jf-primary,#a43bf2) 64%,var(--jf-secondary,#dfb9ff) 36%);
+ border-radius:50%;
+ background:linear-gradient(150deg,color-mix(in srgb,var(--jf-primary,#a43bf2) 24%,var(--jf-surface,#281638) 76%),color-mix(in srgb,var(--jf-background,#0e091b) 32%,var(--jf-surface,#281638) 68%));
+ box-shadow:0 0 0 1px #12051c50,0 3px 11px #0006;
+ color:var(--jf-secondary,#e2baff)!important;
+ cursor:pointer;
+ transition:background-color .18s,border-color .18s,box-shadow .18s;
+}
+.site-shell .home-panel-heading .home-featured-manage svg{
+ width:16px;
+ height:16px;
+ stroke-width:2.1;
+ color:inherit;
+}
+.site-shell .home-panel-heading .home-featured-manage:hover{
+ border-color:var(--jf-secondary,#e2baff);
+ background:var(--jf-primary-soft,#4b225c);
+ box-shadow:0 0 11px var(--jf-primary-glow,#a43bf255);
+}
+.site-shell .home-panel-heading .home-featured-manage:focus-visible{
+ outline:2px solid var(--jf-secondary,#e2baff);
+ outline-offset:3px;
+}
 @media(max-width:750px){
  .studio-featured-slots{gap:7px}
  .studio-featured-slot{padding:6px;gap:5px}

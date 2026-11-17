@@ -61,6 +61,7 @@ try{
  const appSource=await readFile(join(root,'src/app.tsx'),'utf8')
  const musicSource=await readFile(join(root,'src/components/layout/music-player.tsx'),'utf8')
  const musicCss=await readFile(join(root,'src/styles/engagement.css'),'utf8')
+ const studioCss=await readFile(join(root,'src/styles/studio-centered.css'),'utf8')
  const element=(Component,props)=>renderToStaticMarkup(React.createElement(Component,props))
  check('Home and Gallery contextual editors mount and the duplicate background button is absent',()=>{
   const noop=()=>{}
@@ -100,6 +101,11 @@ try{
   const html=element(app.HomePage,{home:app.defaultHome,testimonials:[],projects:chosen,editing:true,onOpenProject:()=>{},onEditProject:()=>{},onEditHome:()=>{},onManageFeatured:()=>{},onNavigatePortfolio:()=>{}})
   assert.match(html,/aria-label="Gerenciar projetos em destaque"[^>]*><svg/)
   assert.doesNotMatch(html,/Gerenciar projetos em destaque[^<]*<\/button>/)
+  assert.match(studioCss,/\.site-shell \.home-panel-heading \.home-featured-manage\s*\{/)
+  assert.match(studioCss,/border-radius:50%/)
+  assert.match(studioCss,/place-items:center/)
+  assert.match(studioCss,/width:32px/)
+  assert.match(studioCss,/\.home-featured-manage:focus-visible/)
   assert.ok(html.indexOf('Art 3')<html.indexOf('Art 1'))
   assert.ok(html.indexOf('Art 1')<html.indexOf('Art 4'))
   assert.doesNotMatch(html,/data-alquimago-project="Art 0"/)
