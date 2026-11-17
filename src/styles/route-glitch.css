@@ -83,3 +83,48 @@
  .site-shell>.jf-route-glitch{display:none!important;animation:none!important}
  .site-shell>.jf-route-glitch~.site-main{animation:none!important}
 }
+
+/* Suspense route fallback stays active only until the destination chunk loads.
+   It intentionally contains no visible language, brand or loading text. */
+.jf-route-glitch-pending{
+ position:fixed;inset:0;z-index:245;pointer-events:none;
+ overflow:hidden;isolation:isolate;contain:paint;
+ background:var(--jf-background,#090611);
+}
+.jf-route-glitch-pending::before{
+ content:"";position:absolute;inset:0;
+ background:
+  repeating-linear-gradient(0deg,transparent 0 29px,
+   color-mix(in srgb,var(--jf-secondary,#cb89ff) 10%,transparent) 30px,
+   transparent 31px 59px),
+  linear-gradient(120deg,
+   color-mix(in srgb,var(--jf-primary,#a234fa) 19%,var(--jf-background,#090611)),
+   var(--jf-background,#090611) 44%,
+   color-mix(in srgb,var(--jf-secondary,#cb89ff) 15%,var(--jf-background,#090611)));
+ animation:jf-route-pending-pulse 760ms steps(1,end) infinite;
+}
+.jf-route-glitch-pending::after{
+ content:"";position:absolute;left:-20%;width:140%;height:2px;top:50%;
+ background:linear-gradient(90deg,transparent,
+  color-mix(in srgb,var(--jf-primary,#a234fa) 65%,var(--jf-text,#f8f3ff)),
+  transparent);
+ animation:jf-route-scan 760ms steps(2,end) infinite;
+}
+.jf-route-glitch-pending .jf-route-glitch-slice{
+ animation:jf-route-tear 760ms steps(2,end) infinite;
+}
+@keyframes jf-route-pending-pulse{
+ 0%,100%{opacity:.32}12%{opacity:.63}
+ 24%{opacity:.22}38%{opacity:.7}
+ 52%{opacity:.27}70%{opacity:.53}
+ 85%{opacity:.35}
+}
+@media(prefers-reduced-motion:reduce){
+ .jf-route-glitch-pending::before,
+ .jf-route-glitch-pending::after,
+ .jf-route-glitch-pending .jf-route-glitch-slice{
+  animation:none!important;
+ }
+ .jf-route-glitch-pending::after,
+ .jf-route-glitch-pending .jf-route-glitch-slice{display:none!important}
+}
