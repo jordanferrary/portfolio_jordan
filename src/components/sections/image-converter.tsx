@@ -13,7 +13,7 @@ export function ImageConverter({onClose}:{onClose:()=>void}){
  const convert=async()=>{
   if(!file)return
   setBusy(true);setError('')
-  try{setResult(await optimizeImage(file,{maxDimension:max,quality:quality/100}))}
+  try{setResult(await optimizeImage(file,{maxDimension:max===6144?2048:max,quality:quality/100,profile:max===6144?'auto':'fixed'}))}
   catch(e){setResult(null);setError(e instanceof Error?e.message:'Falha na conversão.')}
   finally{setBusy(false)}
  }
@@ -22,7 +22,7 @@ export function ImageConverter({onClose}:{onClose:()=>void}){
  <div className="editor-scroll">
  <p className="editor-help">A conversão acontece apenas neste navegador. Arquivos importados pelo Studio já são otimizados automaticamente; use esta ferramenta para gerar arquivos WebP para outros projetos.</p>
  <label className="media-upload-button"><Upload size={17}/> {file?file.name:'Escolher imagem PNG, JPG, WebP ou AVIF'}<input type="file" accept="image/png,image/jpeg,image/webp,image/avif" onChange={e=>{setFile(e.target.files?.[0]??null);setResult(null);setError('')}}/></label>
- <div className="converter-fields"><label>Lado máximo (pixels)<select value={max} onChange={e=>{setMax(Number(e.target.value));setResult(null)}}><option value={1024}>1024 px — compacto</option><option value={1600}>1600 px — equilíbrio</option><option value={2048}>2048 px — portfólio</option><option value={4096}>4096 px — alta resolução</option></select></label><label>Qualidade WebP: {quality}%<input type="range" min="55" max="95" step="1" value={quality} onChange={e=>{setQuality(Number(e.target.value));setResult(null)}}/></label></div>
+ <p className="editor-help">No perfil panorâmico, imagens com proporção de 2:1 ou mais preservam até 2048 px no lado menor e até 6144 px no maior (13 MP). Arquivos comuns usam o limite do maior lado.</p><div className="converter-fields"><label>Lado máximo (pixels)<select value={max} onChange={e=>{setMax(Number(e.target.value));setResult(null)}}><option value={1024}>1024 px — compacto</option><option value={1600}>1600 px — equilíbrio</option><option value={2048}>2048 px — portfólio</option><option value={4096}>4096 px — alta resolução</option><option value={6144}>Panorama / turnaround — até 6144 × 2048</option></select></label><label>Qualidade WebP: {quality}%<input type="range" min="55" max="95" step="1" value={quality} onChange={e=>{setQuality(Number(e.target.value));setResult(null)}}/></label></div>
  {result&&<div className="converter-result"><img src={preview} alt="Prévia convertida"/><p><strong>{result.name}</strong></p><p>{(file!.size/1048576).toFixed(2)} MB → {(result.size/1048576).toFixed(2)} MB · {Math.round((1-result.size/file!.size)*100)}% de diferença no tamanho</p></div>}
  {error&&<p className="editor-status" role="alert">{error}</p>}
  </div><footer><button type="button" className="subtle-action" onClick={onClose}>Fechar</button><button type="button" className="save-action" disabled={!file||busy} onClick={()=>void convert()}><ImageDown size={16}/>{busy?'Convertendo…':'Converter'}</button>{result&&<button type="button" className="save-action" onClick={download}><Download size={16}/>Baixar WebP</button>}</footer></section></div>

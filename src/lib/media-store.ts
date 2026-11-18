@@ -114,13 +114,13 @@ export async function listMediaAssets():Promise<LibraryAsset[]>{
 let pendingImageWrite:Promise<void>=Promise.resolve()
 export async function saveUploadedMedia(file:File,folder:string,slot:string):Promise<string>{
  if(!['image/png','image/jpeg','image/webp','image/avif'].includes(file.type))throw new Error('Use PNG, JPG, WEBP ou AVIF.')
- if(file.size>35_000_000)throw new Error('Imagem acima de 35 MB. Reduza antes de importar.')
+ if(file.size>50_000_000)throw new Error('Imagem acima de 50 MB. Converta para WebP antes de importar.')
  // Source PNG/JPG/AVIF files are NEVER stored, only the converted WebP.
  const {optimizeImage}=await import('./image-optimize')
  const optimized=await optimizeImage(file)
  if(optimized.type!=='image/webp'||!/\.webp$/i.test(optimized.name))
   throw new Error('Não foi possível garantir a conversão da imagem para WebP.')
- if(optimized.size>12_000_000)throw new Error('Imagem convertida acima de 12 MB. Reduza a resolução no conversor do Studio.')
+ if(optimized.size>16_000_000)throw new Error('Imagem convertida acima de 16 MB. Ajuste a qualidade no conversor do Studio.')
  const hash=await fingerprint(optimized)
  const clean=(value:string)=>value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9-]/g,'-').slice(0,70)
  const folderPath=folder.split('/').map(clean).filter(Boolean).join('/')||'uploads'
