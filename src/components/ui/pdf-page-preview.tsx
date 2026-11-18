@@ -2,7 +2,7 @@ import {useEffect,useRef,useState} from 'react'
 import {FileText} from 'lucide-react'
 import {pdfFetchHref,pdfPreviewHref} from '../../lib/showcase-pdf'
 
-type Mode='card'|'detail'|'editor'
+type Mode='card'|'detail'|'editor'|'zoom'
 type PreviewState='waiting'|'loading'|'ready'|'error'
 
 /**
@@ -52,7 +52,7 @@ export function PdfPagePreview({url,label,mode='detail'}:{url:string;label:strin
     const context=canvas.getContext('2d',{alpha:false})
     if(!context)throw new Error('Canvas unavailable')
     const original=page.getViewport({scale:1})
-    const maxWidth=mode==='card'?540:mode==='editor'?1200:1500
+    const maxWidth=mode==='card'?540:mode==='editor'?1200:mode==='zoom'?2400:1800
     const elementWidth=Math.max(160,outer.current?.clientWidth||400)
     const pixels=Math.min(maxWidth,elementWidth*Math.min(2,window.devicePixelRatio||1))
     const viewport=page.getViewport({scale:pixels/original.width})

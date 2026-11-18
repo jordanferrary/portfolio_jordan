@@ -23,7 +23,7 @@
     "test:studio-media": "node --test scripts/studio-media-pipeline.test.mjs",
     "test:art-resolution": "node --test scripts/art-resolution.test.mjs",
     "test:published-media": "node --test scripts/published-media.test.mjs",
-    "test:page-icons": "node --test scripts/custom-page-icons.test.mjs scripts/showcase-pdf.test.mjs"
+    "test:page-icons": "node --test scripts/custom-page-icons.test.mjs scripts/showcase-pdf.test.mjs scripts/showcase-layout.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.0.0",

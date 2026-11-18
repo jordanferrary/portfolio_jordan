@@ -24,6 +24,10 @@ export type PageBlock=Omit<Block,'type'> &{
  showcaseItems?:ShowcaseItem[]
  /** Cover for artwork thumbnails; contain for complete certificates. */
  showcaseFit?:'contain'|'cover'
+ /** Desired columns when details are closed (1–6). */
+ showcaseColumns?:number
+ /** Desired columns when details are open (1–3). */
+ showcaseExpandedColumns?:number
  slideItems?:SlideItem[]
  slideAutoplay?:boolean
  slideTransition?:SlideTransition
@@ -96,6 +100,8 @@ export function normalizeCustomPages(input:unknown):CustomPage[]{
     gallery:Array.isArray(block.gallery)?block.gallery.filter((a):a is string=>typeof a==='string').map(normalizeBundledImage):undefined,
     showcaseItems:Array.isArray(block.showcaseItems)?block.showcaseItems.slice(0,120).filter((entry):entry is ShowcaseItem=>Boolean(entry&&typeof entry==='object'&&typeof entry.image==='string')).map(entry=>({id:typeof entry.id==='string'?entry.id:'item-'+crypto.randomUUID(),image:isShowcasePdfLink(entry.image)?'':entry.image,documentUrl:typeof entry.documentUrl==='string'&&entry.documentUrl.trim()?entry.documentUrl.trim().slice(0,2048):isShowcasePdfLink(entry.image)?entry.image.trim().slice(0,2048):'',name:typeof entry.name==='string'?entry.name.slice(0,120):'',description:typeof entry.description==='string'?entry.description.slice(0,1800):'',portfolioUrl:typeof entry.portfolioUrl==='string'?entry.portfolioUrl:'',linkLabel:typeof entry.linkLabel==='string'?entry.linkLabel.slice(0,90):'View portfolio',showLink:entry.showLink!==false})):[],
     showcaseFit:block.showcaseFit==='contain'?'contain':'cover',
+    showcaseColumns:typeof block.showcaseColumns==='number'&&Number.isFinite(block.showcaseColumns)?Math.max(1,Math.min(6,Math.round(block.showcaseColumns))):3,
+    showcaseExpandedColumns:typeof block.showcaseExpandedColumns==='number'&&Number.isFinite(block.showcaseExpandedColumns)?Math.max(1,Math.min(3,Math.round(block.showcaseExpandedColumns))):2,
     slideItems:Array.isArray(block.slideItems)?block.slideItems.slice(0,80).filter((entry):entry is SlideItem=>Boolean(entry&&typeof entry==='object'&&typeof entry.image==='string')).map(entry=>({id:typeof entry.id==='string'?entry.id:'slide-'+crypto.randomUUID(),image:entry.image,caption:typeof entry.caption==='string'?entry.caption.slice(0,500):''})):[],
     slideAutoplay:block.slideAutoplay===true,
     slideTransition:['fade','slide','zoom','none'].includes(block.slideTransition??'')?block.slideTransition:'fade',

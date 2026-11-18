@@ -107,3 +107,11 @@ O painel de detalhes fica fechado até alguém clicar num item, e pode ser fecha
 - Para PDFs públicos do GitHub (`github.com/.../blob/main/...pdf`, URLs Raw ou GitHub Pages), um renderizador PDF.js local transforma a primeira página em prévia no canvas. O site não incorpora páginas do github.com em iframes nem depende de sua política de download. O renderizador é carregado sob demanda, inclusive para os cards.
 - Outros servidores precisam permitir acesso público a arquivos PDF por CORS para renderização local. Para links do Google Drive, permanece a visualização incorporada própria do Drive; ela pode exigir permissão pública. Se a prévia falhar, o documento continua disponível no botão de abrir ou pode receber uma imagem de capa.
 - Para compatibilidade, PDFs que já haviam sido colados no campo de imagem são reconhecidos e movidos para o campo de documento. A funcionalidade usa **links públicos**, não faz upload de arquivos PDF e não tenta converter PDF para WebP.
+
+
+## Controle de layout da Galeria Interativa
+
+- Em **Composição → Galeria Interativa**, selecione **Colunas com a galeria fechada** (1 a 6) e **Colunas com detalhes abertos** (1 a 3). O padrão para páginas antigas é 3/2. Telas móveis limitam a galeria a 2 colunas ou 1 se a configuração for 1.
+- Cartões com PDF usam fundo branco e proporção retrato; o painel de detalhes ajusta a altura da primeira página à largura do certificado, sem recorte ou faixas roxas laterais.
+- O botão **Zoom** do painel abre um visualizador em tela destacada com ampliação de 75% a 250% e rolagem, sem depender do servidor PDF externo. O link **View full PDF** continua disponível para documentos de múltiplas páginas.
+- A configuração é persistida em `PageBlock` e em backups/publicações existentes, sem afetar os blocos de galeria simples, os slides ou os demais elementos do portfólio.

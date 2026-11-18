@@ -107,6 +107,8 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
    gallery:type==='gallery'?['','']:undefined,
    showcaseItems:type==='showcase'?[]:undefined,
    showcaseFit:type==='showcase'?'contain':undefined,
+   showcaseColumns:type==='showcase'?3:undefined,
+   showcaseExpandedColumns:type==='showcase'?2:undefined,
    slideItems:type==='slideshow'?[]:undefined,
    slideAutoplay:false,slideTransition:'fade',slideInterval:5000,
    slideHeight:520,slideFit:'contain',slideShowPauseButton:false,
@@ -287,7 +289,12 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
      {block.type==='gallery'&&<><div className="custom-page-gallery-fields">{(block.gallery??[]).map((src,j)=><div key={j} className="custom-page-gallery-item"><PageMediaField value={src} onChange={value=>patchBlock(block.id,{gallery:(block.gallery??[]).map((item,k)=>k===j?value:item)})} folder={folder} slot={block.id+'-'+j} label={'Imagem '+(j+1)} onError={setError}/><button type="button" className="subtle-action" onClick={()=>patchBlock(block.id,{gallery:(block.gallery??[]).filter((_,k)=>k!==j)})}><X size={14}/> Remover imagem</button></div>)}</div><button type="button" className="custom-page-add-image" onClick={()=>patchBlock(block.id,{gallery:[...(block.gallery??[]),'']})}><Plus size={15}/> Adicionar imagem</button></>}
      {block.type==='showcase'&&<div className="custom-page-rich-gallery-editor">
       <p className="editor-help">Aceita imagens e certificados em PDF por link público. PDFs públicos do GitHub ou de outros servidores com CORS exibem a primeira página sem iframes externos. O botão abre o arquivo completo. Uma imagem de capa é opcional; links que exigem login podem impedir a prévia.</p>
-      <label>Enquadramento das miniaturas<select value={block.showcaseFit??'cover'} onChange={e=>patchBlock(block.id,{showcaseFit:e.target.value as 'cover'|'contain'})}><option value="contain">Mostrar imagem inteira (recomendado para certificados)</option><option value="cover">Preencher os cards (recomendado para artes)</option></select></label>
+      <div className="custom-page-showcase-layout-controls">
+       <label>Colunas com a galeria fechada<select value={block.showcaseColumns??3} onChange={e=>patchBlock(block.id,{showcaseColumns:Number(e.target.value)})}>{[1,2,3,4,5,6].map(count=><option key={count} value={count}>{count} {count===1?'coluna':'colunas'}</option>)}</select></label>
+       <label>Colunas com detalhes abertos<select value={block.showcaseExpandedColumns??2} onChange={e=>patchBlock(block.id,{showcaseExpandedColumns:Number(e.target.value)})}>{[1,2,3].map(count=><option key={count} value={count}>{count} {count===1?'coluna':'colunas'}</option>)}</select></label>
+       <label>Enquadramento das miniaturas<select value={block.showcaseFit??'cover'} onChange={e=>patchBlock(block.id,{showcaseFit:e.target.value as 'cover'|'contain'})}><option value="contain">Mostrar imagem inteira (recomendado para certificados)</option><option value="cover">Preencher os cards (recomendado para artes)</option></select></label>
+      </div>
+      <p className="editor-help">Configure a quantidade de certificados exibidos por linha. Em telas pequenas, a galeria se adapta para manter os cartões legíveis.</p>
       {(block.showcaseItems??[]).map((item,index)=><div className="custom-page-rich-gallery-entry" key={item.id}>
        <div className="custom-page-rich-gallery-head"><strong>{item.name.trim()||'Item sem título'}</strong><button type="button" onClick={()=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).filter(x=>x.id!==item.id)})}><Trash2 size={15}/> Remover</button></div>
        <label>Título do item<input value={item.name} onChange={e=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).map(x=>x.id===item.id?{...x,name:e.target.value}:x)})} placeholder="Ex.: Certificado de conclusão, obra ou participante"/></label>

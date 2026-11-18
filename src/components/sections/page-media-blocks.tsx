@@ -1,10 +1,11 @@
-import {lazy,Suspense,useEffect,useRef,useState} from 'react'
+import {lazy,Suspense,useEffect,useRef,useState,type CSSProperties} from 'react'
 import {ArrowLeft,ArrowRight,ArrowUpRight,FileText,Maximize2,Pause,Play,X} from 'lucide-react'
 import {AssetImage} from '../ui/asset-image'
 import {safePageHref,type PageBlock} from '../../data/custom-pages'
 import {safeShowcaseDocumentHref} from '../../lib/showcase-pdf'
 import {PdfPagePreview} from '../ui/pdf-page-preview'
 const ArtLightbox=lazy(()=>import('../ui/art-lightbox').then(module=>({default:module.ArtLightbox})))
+const PdfZoomViewer=lazy(()=>import('../ui/pdf-zoom-viewer').then(module=>({default:module.PdfZoomViewer})))
 
 /** Independent images can belong to artists, awards, certificates or any collection. */
 export function ArtistShowcase({block}:{block:PageBlock}){
@@ -16,7 +17,10 @@ export function ArtistShowcase({block}:{block:PageBlock}){
  const destination=current?safePageHref(current.portfolioUrl):null
  const documentUrl=current?safeShowcaseDocumentHref(current.documentUrl):null
  if(!items.length)return null
- return <section className={'artist-showcase'+(current?' is-open':'')} aria-label="Interactive gallery">
+ const columns=Math.max(1,Math.min(6,block.showcaseColumns??3))
+ const openColumns=Math.max(1,Math.min(3,block.showcaseExpandedColumns??2))
+ const style={'--showcase-columns':columns,'--showcase-open-columns':openColumns} as CSSProperties
+ return <section className={'artist-showcase'+(current?' is-open':'')} style={style} data-showcase-columns={columns} aria-label="Interactive gallery">
   <div className="artist-showcase-grid">{items.map(item=><button type="button" key={item.id} className={'artist-showcase-card'+(current?.id===item.id?' active':'')} onClick={()=>{setZoom(false);setSelectedId(previous=>previous===item.id?null:item.id)}} aria-label={'View details: '+(item.name||'Untitled item')} aria-pressed={current?.id===item.id}>
    {item.image?<AssetImage src={item.image} alt={item.name||'Gallery item'} loading="lazy" sizes="(max-width: 700px) 45vw, 240px" style={{objectFit:block.showcaseFit==='contain'?'contain':'cover'}}/>:<div className="artist-showcase-pdf-card">
     <PdfPagePreview url={item.documentUrl||''} label={item.name||'Certificate'} mode="card"/>
@@ -28,13 +32,14 @@ export function ArtistShowcase({block}:{block:PageBlock}){
    <button type="button" className="artist-showcase-close" onClick={()=>{setSelectedId(null);setZoom(false)}} aria-label="Close details"><X size={18}/></button>
    {documentUrl?<div className="artist-showcase-document-preview">
      <PdfPagePreview key={documentUrl} url={documentUrl} label={current.name||'Certificate'} mode="detail"/>
+     <button type="button" className="artist-showcase-pdf-zoom" onClick={()=>setZoom(true)} aria-label="Ampliar certificado" title="Ampliar certificado"><Maximize2 size={17}/> Zoom</button>
     </div>:<button type="button" className="artist-showcase-zoom" onClick={()=>setZoom(true)} aria-label="Enlarge selected image"><AssetImage src={current.image} alt={current.name||'Selected item'}/><span><Maximize2 size={16}/> Zoom</span></button>}
    <div className="artist-showcase-detail-copy"><span className="artist-showcase-kicker">✦ ITEM DETAILS</span>{current.name&&<h3>{current.name}</h3>}{current.description&&<p>{current.description}</p>}
     {documentUrl&&<a className="artist-showcase-portfolio" href={documentUrl} target="_blank" rel="noopener noreferrer"><FileText size={17}/> View full PDF <ArrowUpRight size={17}/></a>}
      {current.showLink!==false&&destination&&<a className="artist-showcase-portfolio" href={destination} target="_blank" rel="noopener noreferrer">{current.linkLabel?.trim()||'View portfolio'} <ArrowUpRight size={17}/></a>}
    </div>
   </aside>}
-  {zoom&&current&&!documentUrl&&<Suspense fallback={null}><ArtLightbox src={current.image} alt={current.name||'Gallery item'} onClose={()=>setZoom(false)}/></Suspense>}
+  {zoom&&current&&<Suspense fallback={null}>{documentUrl?<PdfZoomViewer url={documentUrl} title={current.name||'Certificate'} onClose={()=>setZoom(false)}/>:<ArtLightbox src={current.image} alt={current.name||'Gallery item'} onClose={()=>setZoom(false)}/>}</Suspense>}
  </section>
 }
 
