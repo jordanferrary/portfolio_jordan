@@ -96,3 +96,13 @@ URLs permitidas: `https://`, `http://`, `mailto:` e rotas internas válidas do p
 O bloco `showcase` pode ser usado para apresentar certificados **já obtidos**, participantes e portfólios, bem como obras ou premiações; isso **não** cria, emite ou valida certificados de cursos.
 No Studio, cada item possui título, imagem remota, descrição e link opcional. A opção **Mostrar botão no painel de detalhes** ativa/desativa o botão por item; **Texto do botão** é livre (ex.: `Ver certificado`, `Abrir portfólio`). Novos itens não têm botão por padrão. Os nomes não são numerados automaticamente.
 O painel de detalhes fica fechado até alguém clicar num item, e pode ser fechado pelo botão X ou selecionando novamente o card ativo. O enquadramento das miniaturas pode ser `contain` (certificados completos) ou `cover` (artes). O zoom abre o original com toda a imagem visível a 100%.
+
+
+## Galeria interativa: certificados em PDF
+
+- No bloco **Galeria interativa**, cole a URL pública do PDF em **Link público do certificado PDF**. O arquivo precisa ser acessível sem login.
+- No editor, há uma prévia incorporada e o comando **Abrir PDF em nova aba**. Para visitantes, a galeria exibe o documento como miniatura (quando o serviço externo permite incorporação) e como prévia no painel de detalhes, com **View full PDF** para acessar o arquivo completo.
+- A **imagem de capa é opcional**: pode-se importar JPG/PNG/WebP pelo fluxo normal e usar uma capa estática no card. O documento continua disponível no painel de detalhes. Se não houver capa, o navegador tenta renderizar o PDF diretamente no card.
+- Links diretos terminados em `.pdf` e compartilhamentos do Google Drive `/file/d/ID/view` são aceitos. Para Drive, a incorporação usa `/file/d/ID/preview`; defina as permissões de visualização pública no próprio Google Drive.
+- A prévia depende do navegador e das permissões do servidor que hospeda o PDF; políticas que bloqueiam iframe ou links privados podem impedir a incorporação. O botão para abrir o documento permanece disponível. Prefira uma imagem de capa se o provedor não oferecer prévia.
+- Para compatibilidade, PDFs que já haviam sido colados no campo de imagem são reconhecidos e movidos para o campo de documento. A funcionalidade usa **links públicos**, não faz upload de arquivos PDF e não tenta converter PDF para WebP.
