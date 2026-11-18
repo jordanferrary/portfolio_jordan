@@ -42,3 +42,22 @@ test('icon choices have responsive visual layout and use palette tokens',()=>{
  assert.match(css,/--jf-secondary/)
  assert.match(workflow,/npm run test:page-icons/)
 })
+
+test('custom page order uses stable ids and remains editable from the sidebar and manager',async()=>{
+ const [app,manager,store]=await Promise.all([
+  read('src/app.tsx'),
+  read('src/components/sections/custom-page-editor.tsx'),
+  read('src/hooks/use-portfolio.ts')
+ ])
+ assert.match(options,/export function reorderCustomPages\(/)
+ assert.match(options,/next\.splice\(to,0,moved\)/)
+ assert.match(sidebar,/draggable=\{sortable\}/)
+ assert.match(sidebar,/onReorderCustomPages\?\.\(from,item\.id\)/)
+ assert.match(app,/portfolio\.setCustomPages\(reorderCustomPages\(portfolio\.customPages,fromId,toId\)\)/)
+ assert.match(manager,/custom-pages-drag-handle/)
+ assert.match(manager,/onPointerMove=\{movePagePointer\}/)
+ assert.match(manager,/onDrop=\{event=>/)
+ assert.match(manager,/onClick=\{\(\)=>movePage\(index,-1\)\}/)
+ assert.match(store,/setCustomPages=\(customPages:CustomPage\[\]\)=>save/)
+ assert.match(css,/\.custom-pages-entry\.page-sort-target/)
+})
