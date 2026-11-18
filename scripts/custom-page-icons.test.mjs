@@ -61,3 +61,21 @@ test('custom page order uses stable ids and remains editable from the sidebar an
  assert.match(store,/setCustomPages=\(customPages:CustomPage\[\]\)=>save/)
  assert.match(css,/\.custom-pages-entry\.page-sort-target/)
 })
+
+test('PDF certificates keep image covers optional and render safe external previews',async()=>{
+ const [view,editor,helpers]=await Promise.all([
+  read('src/components/sections/page-media-blocks.tsx'),
+  read('src/components/sections/custom-page-editor.tsx'),
+  read('src/lib/showcase-pdf.ts')
+ ])
+ assert.match(options,/documentUrl\?:string/)
+ assert.match(options,/isShowcasePdfLink\(entry\.image\)/)
+ assert.match(view,/pdfPreviewHref\(item\.documentUrl!\)/)
+ assert.match(view,/artist-showcase-document-preview/)
+ assert.match(view,/View full PDF/)
+ assert.match(editor,/Link público do certificado PDF/)
+ assert.match(editor,/custom-page-pdf-editor-preview/)
+ assert.match(editor,/isShowcasePdfLink\(image\)/)
+ assert.match(helpers,/drive\.google\.com/)
+ assert.match(css,/\.artist-showcase-pdf-card/)
+})
