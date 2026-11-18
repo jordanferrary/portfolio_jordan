@@ -30,12 +30,10 @@ export function ArtistShowcase({block}:{block:PageBlock}){
   </button>)}</div>
   {current&&<aside className="artist-showcase-detail" aria-label={'Details: '+(current.name||'Selected item')}>
    <button type="button" className="artist-showcase-close" onClick={()=>{setSelectedId(null);setZoom(false)}} aria-label="Close details"><X size={18}/></button>
-   {documentUrl?<div className="artist-showcase-document-preview">
+   {documentUrl?<button type="button" className="artist-showcase-document-preview" onClick={()=>setZoom(true)} title="Click to inspect PDF" aria-label={'View certificate: '+(current.name||'Selected item')}>
      <PdfPagePreview key={documentUrl} url={documentUrl} label={current.name||'Certificate'} mode="detail"/>
-     <button type="button" className="artist-showcase-pdf-zoom" onClick={()=>setZoom(true)} aria-label="Ampliar certificado" title="Ampliar certificado"><Maximize2 size={17}/> Zoom</button>
-    </div>:<button type="button" className="artist-showcase-zoom" onClick={()=>setZoom(true)} aria-label="Enlarge selected image"><AssetImage src={current.image} alt={current.name||'Selected item'}/><span><Maximize2 size={16}/> Zoom</span></button>}
+    </button>:<button type="button" className="artist-showcase-zoom" onClick={()=>setZoom(true)} aria-label="Enlarge selected image"><AssetImage src={current.image} alt={current.name||'Selected item'}/><span><Maximize2 size={16}/> Zoom</span></button>}
    <div className="artist-showcase-detail-copy"><span className="artist-showcase-kicker">✦ ITEM DETAILS</span>{current.name&&<h3>{current.name}</h3>}{current.description&&<p>{current.description}</p>}
-    {documentUrl&&<a className="artist-showcase-portfolio" href={documentUrl} target="_blank" rel="noopener noreferrer"><FileText size={17}/> View full PDF <ArrowUpRight size={17}/></a>}
      {current.showLink!==false&&destination&&<a className="artist-showcase-portfolio" href={destination} target="_blank" rel="noopener noreferrer">{current.linkLabel?.trim()||'View portfolio'} <ArrowUpRight size={17}/></a>}
    </div>
   </aside>}

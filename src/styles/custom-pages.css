@@ -374,17 +374,35 @@
  .custom-page-showcase-layout-controls{grid-template-columns:1fr}
  .custom-page-showcase-layout-controls label:last-child{grid-column:auto}
 }
-/* PDF first-page zoom overlay and scrollable enlargement. */
-.pdf-zoom-overlay{position:fixed;z-index:155;inset:0;display:flex;align-items:center;justify-content:center;padding:clamp(8px,2vw,26px);background:#05010bea;backdrop-filter:blur(12px)}
-.pdf-zoom-dialog{display:flex;flex-direction:column;width:min(1040px,100%);max-height:96dvh;min-height:0;overflow:hidden;border:1px solid var(--jf-panel-edge,#774a9e);border-radius:22px;background:var(--jf-background,#0f0818);box-shadow:0 24px 75px #000b}
-.pdf-zoom-header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--jf-panel-edge,#774a9e)}
-.pdf-zoom-header h2{font-size:14px;margin:0;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pdf-zoom-controls{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
-.pdf-zoom-controls button,.pdf-zoom-controls a{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:36px;padding:7px 10px;border:1px solid var(--jf-panel-edge,#774a9e);border-radius:10px;background:var(--jf-surface,#24132e);color:var(--jf-text,#fff);font-size:12px}
-.pdf-zoom-controls button:disabled{opacity:.4;cursor:default}
-.pdf-zoom-scroll{min-height:0;overflow:auto;padding:14px;background:#150e1e;scrollbar-width:thin}
-.pdf-zoom-sheet{margin:0 auto;min-width:0;background:#fff}
-.pdf-zoom-sheet .pdf-page-preview-zoom{height:auto;min-height:0;background:#fff}
-.pdf-zoom-sheet .pdf-page-preview-zoom canvas{width:100%;height:auto;object-fit:contain}
-.pdf-zoom-sheet .pdf-page-preview-fallback{min-height:400px}
-@media(max-width:600px){.pdf-zoom-header{padding:10px}.pdf-zoom-header h2{flex-basis:100%}.pdf-zoom-scroll{padding:7px}}
+/* Compact gallery details instead of an oversized lateral certificate. */
+.artist-showcase.is-open{grid-template-columns:minmax(0,1fr) minmax(265px,340px);gap:18px}
+.artist-showcase-detail{max-height:min(690px,calc(100dvh - 45px));border-radius:18px}
+.artist-showcase-detail-copy{padding:15px 17px 19px}
+.artist-showcase-detail h3{font-size:clamp(17px,1.8vw,24px);margin:8px 0 9px;line-height:1.2}
+.artist-showcase-detail p{font-size:12px;line-height:1.55}
+.artist-showcase-document-preview{display:block;width:100%;height:auto;max-height:350px;padding:0;border:0;background:#fff;cursor:zoom-in;overflow:hidden;text-align:left}
+.artist-showcase-document-preview:hover,.artist-showcase-document-preview:focus-visible{outline:2px solid var(--jf-primary,#ad54ed);outline-offset:-2px}
+.artist-showcase-document-preview .pdf-page-preview-detail{max-height:350px}
+.artist-showcase-document-preview .pdf-page-preview-detail canvas{max-height:350px;width:100%;height:auto;object-fit:contain}
+.pdf-lightbox-stage{position:relative}
+.pdf-lightbox-stage canvas{display:block;flex:0 0 auto;min-width:0;min-height:0;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center;pointer-events:none;transform-origin:center center;will-change:transform}
+.pdf-lightbox-count{min-width:42px!important}
+.pdf-lightbox-embedded{width:min(90%,950px);height:100%;border:0;background:#fff;touch-action:auto}
+.pdf-lightbox-feedback{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:18px;text-align:center;max-width:360px;color:#e6d0f5;font-size:13px}
+@media(max-width:900px){
+ .artist-showcase.is-open{grid-template-columns:1fr}
+ .artist-showcase-detail{max-width:420px;margin:0 auto;max-height:none}
+ .artist-showcase-detail:has(.artist-showcase-document-preview){display:block}
+}
+@media(max-width:600px){
+ .artist-showcase-detail{max-width:100%}
+ .artist-showcase-document-preview{max-height:310px}
+ .artist-showcase-document-preview .pdf-page-preview-detail,.artist-showcase-document-preview .pdf-page-preview-detail canvas{max-height:310px}
+ .pdf-lightbox .art-lightbox-toolbar{flex-wrap:wrap;gap:7px}
+ .pdf-lightbox .art-lightbox-title{max-width:100%;flex-basis:100%;font-size:11px}
+ .pdf-lightbox .art-lightbox-controls{width:100%;justify-content:center;flex-wrap:nowrap}
+ .pdf-lightbox .art-lightbox-controls button{width:29px;min-width:29px}
+ .pdf-lightbox .art-lightbox-controls output{min-width:34px}
+ .pdf-lightbox .art-lightbox-controls .pdf-lightbox-count{min-width:31px!important}
+}
+@media(prefers-reduced-motion:reduce){.pdf-lightbox-stage canvas{will-change:auto}}

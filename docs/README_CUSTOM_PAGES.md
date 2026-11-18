@@ -115,3 +115,11 @@ O painel de detalhes fica fechado até alguém clicar num item, e pode ser fecha
 - Cartões com PDF usam fundo branco e proporção retrato; o painel de detalhes ajusta a altura da primeira página à largura do certificado, sem recorte ou faixas roxas laterais.
 - O botão **Zoom** do painel abre um visualizador em tela destacada com ampliação de 75% a 250% e rolagem, sem depender do servidor PDF externo. O link **View full PDF** continua disponível para documentos de múltiplas páginas.
 - A configuração é persistida em `PageBlock` e em backups/publicações existentes, sem afetar os blocos de galeria simples, os slides ou os demais elementos do portfólio.
+
+
+## Certificados: painel compacto e zoom igual ao das artes
+
+- O painel lateral mantém uma largura máxima compacta (340px), tipografia menor e prévia da primeira página com altura limitada. A miniatura é clicável diretamente, sem botão de ampliação sobreposto.
+- O visualizador de PDF usa a interface centralizada do zoom de obras: roda do mouse, toque com dois dedos, arrastar, zoom de 100% a 500%, clique duplo e Escape. O zoom da roda é ancorado na posição do cursor.
+- PDFs multipágina são lidos no próprio site, com setas de página no topo e atalhos de teclado. O visualizador carrega apenas a página atual e a renderiza em boa resolução; não é preciso baixar o arquivo para ler suas páginas.
+- Removido o botão permanente `View full PDF` do painel. Links opcionais de itens não PDF continuam funcionando.
