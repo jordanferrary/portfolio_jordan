@@ -1,5 +1,6 @@
 import type {Block,BlockType} from './projects'
 import {normalizeBundledImage} from '../lib/default-assets'
+import {isShowcasePdfLink} from '../lib/showcase-pdf'
 
 export type CustomPageIcon='book'|'graduation'|'sparkles'|'layers'|'code'|'download'|'file'|'gem'|'folder'|'video'|'star'|'link'
 export const customPageIconOptions:{value:CustomPageIcon;label:string}[]=[
@@ -9,7 +10,7 @@ export const customPageIconOptions:{value:CustomPageIcon;label:string}[]=[
  {value:'video',label:'Vídeo'},{value:'star',label:'Estrela'},{value:'link',label:'Links'}
 ]
 export type PageButtonAction='copy'|'url-current'|'url-new'
-export type ShowcaseItem={id:string;image:string;name:string;description:string;portfolioUrl:string;linkLabel?:string;showLink?:boolean}
+export type ShowcaseItem={id:string;image:string;name:string;description:string;portfolioUrl:string;documentUrl?:string;linkLabel?:string;showLink?:boolean}
 export type SlideTransition='fade'|'slide'|'zoom'|'none'
 export type SlideItem={id:string;image:string;caption:string}
 export type PageBlock=Omit<Block,'type'> &{
@@ -93,7 +94,7 @@ export function normalizeCustomPages(input:unknown):CustomPage[]{
     media:typeof block.media==='string'?normalizeBundledImage(block.media):undefined,
     after:typeof block.after==='string'?normalizeBundledImage(block.after):undefined,
     gallery:Array.isArray(block.gallery)?block.gallery.filter((a):a is string=>typeof a==='string').map(normalizeBundledImage):undefined,
-    showcaseItems:Array.isArray(block.showcaseItems)?block.showcaseItems.slice(0,120).filter((entry):entry is ShowcaseItem=>Boolean(entry&&typeof entry==='object'&&typeof entry.image==='string')).map(entry=>({id:typeof entry.id==='string'?entry.id:'item-'+crypto.randomUUID(),image:entry.image,name:typeof entry.name==='string'?entry.name.slice(0,120):'',description:typeof entry.description==='string'?entry.description.slice(0,1800):'',portfolioUrl:typeof entry.portfolioUrl==='string'?entry.portfolioUrl:'',linkLabel:typeof entry.linkLabel==='string'?entry.linkLabel.slice(0,90):'View portfolio',showLink:entry.showLink!==false})):[],
+    showcaseItems:Array.isArray(block.showcaseItems)?block.showcaseItems.slice(0,120).filter((entry):entry is ShowcaseItem=>Boolean(entry&&typeof entry==='object'&&typeof entry.image==='string')).map(entry=>({id:typeof entry.id==='string'?entry.id:'item-'+crypto.randomUUID(),image:isShowcasePdfLink(entry.image)?'':entry.image,documentUrl:typeof entry.documentUrl==='string'&&entry.documentUrl.trim()?entry.documentUrl.trim().slice(0,2048):isShowcasePdfLink(entry.image)?entry.image.trim().slice(0,2048):'',name:typeof entry.name==='string'?entry.name.slice(0,120):'',description:typeof entry.description==='string'?entry.description.slice(0,1800):'',portfolioUrl:typeof entry.portfolioUrl==='string'?entry.portfolioUrl:'',linkLabel:typeof entry.linkLabel==='string'?entry.linkLabel.slice(0,90):'View portfolio',showLink:entry.showLink!==false})):[],
     showcaseFit:block.showcaseFit==='contain'?'contain':'cover',
     slideItems:Array.isArray(block.slideItems)?block.slideItems.slice(0,80).filter((entry):entry is SlideItem=>Boolean(entry&&typeof entry==='object'&&typeof entry.image==='string')).map(entry=>({id:typeof entry.id==='string'?entry.id:'slide-'+crypto.randomUUID(),image:entry.image,caption:typeof entry.caption==='string'?entry.caption.slice(0,500):''})):[],
     slideAutoplay:block.slideAutoplay===true,
