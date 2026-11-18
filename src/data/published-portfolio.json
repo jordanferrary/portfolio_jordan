@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-18T08:16:24.979Z-a1774286-091e-49b3-91c2-a7a65788c158",
+  "revision": "2026-11-18T08:30:41.759Z-191639c2-b1e7-4c36-8b49-17a8aff32eb0",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -286,7 +286,9 @@
             "buttonStyle": "primary",
             "buttonAlign": "left",
             "buttonWidth": "auto",
-            "buttonNote": ""
+            "buttonNote": "",
+            "showcaseColumns": 4,
+            "showcaseExpandedColumns": 3
           }
         ]
       }
