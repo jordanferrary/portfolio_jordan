@@ -1,16 +1,16 @@
 {
   "schema": 2,
-  "updatedAt": "2026-11-18T08:30:41.759Z",
+  "updatedAt": "2026-11-18T14:21:48.811Z",
   "brain": {
     "energy": 100,
     "curiosity": 100,
     "focus": 0,
     "affinity": 57,
-    "xp": 180,
-    "interactions": 22,
+    "xp": 190,
+    "interactions": 23,
     "lastSeen": 1000000000000,
     "sleepUntil": 0,
-    "lastRewardAt": 1794990641759,
+    "lastRewardAt": 1795011708811,
     "lastAction": "publish",
     "lastRewardAction": "publish",
     "rewardedPages": {
@@ -31,7 +31,8 @@
       "pub-2026-11-18T06%3A12%3A28.674Z-cd23af8c-d208-4e1e-b156-5c04c91c8c5c": 20775,
       "pub-2026-11-18T06%3A40%3A54.787Z-a260d937-8417-47cd-afe7-4f6fb645292e": 20775,
       "pub-2026-11-18T08%3A16%3A24.979Z-a1774286-091e-49b3-91c2-a7a65788c158": 20775,
-      "pub-2026-11-18T08%3A30%3A41.759Z-191639c2-b1e7-4c36-8b49-17a8aff32eb0": 20775
+      "pub-2026-11-18T08%3A30%3A41.759Z-191639c2-b1e7-4c36-8b49-17a8aff32eb0": 20775,
+      "pub-2026-11-18T14%3A21%3A48.810Z-07bcc614-d457-48a0-a32e-3387947ec386": 20775
     }
   },
   "neural": {
@@ -2684,7 +2685,7 @@
     "schema": 1,
     "seed": 77,
     "energy": 0,
-    "curiosity": 35.40000000000042,
+    "curiosity": 34.84000000000043,
     "stimulation": 0,
     "trust": 45,
     "rewardBias": [
@@ -2708,30 +2709,30 @@
     "contextWeights": {},
     "adaptation": {
       "quieto": 0,
-      "observar": 0.0000020639011510374997,
+      "observar": 0.0000011513402423943287,
       "dica": 0,
       "investigar": 0,
       "acenar": 0,
       "brilhar": 0,
       "brincar": 0,
-      "meditar": 0.24232212280502166,
+      "meditar": 0.13517857261119032,
       "celebrar": 0,
       "curiosidade": 0,
       "pensar": 0,
       "estudar": 0,
       "poção": 0,
       "alongar": 0,
-      "descansar": 0.011080074401942832,
+      "descansar": 0.8464,
       "acolher": 0
     },
     "episodes": [],
     "synapses": {},
-    "lastAction": "meditar",
+    "lastAction": "descansar",
     "lastActionAt": 0,
-    "lastDecisionAt": 1794982285117,
+    "lastDecisionAt": 1795011684496,
     "lastRewardAt": 0,
     "feedbackCount": 0,
-    "autonomousCount": 2,
+    "autonomousCount": 3,
     "lastActiveDay": 20775,
     "lastCue": "project"
   },

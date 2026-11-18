@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-18T08:30:41.759Z-191639c2-b1e7-4c36-8b49-17a8aff32eb0",
+  "revision": "2026-11-18T14:21:48.810Z-07bcc614-d457-48a0-a32e-3387947ec386",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -181,6 +181,14 @@
         "displayWidth": 2560,
         "generation": 2,
         "largeWidth": 6144
+      },
+      "site://images/studio/146bfff4306ab2d66153d738c078aab9c1f409ab844a935630dc6867b5e0f6ae.webp": {
+        "small": "site://images/studio/c504c1bfc0094eead2be9c1dddedb3b30564dedb7680e023e97a618f76f14660.webp",
+        "smallWidth": 640,
+        "medium": "site://images/studio/11e22411a00bdf47e562f2d7a0a1d66554be292161ad10a96d9c3ee567b71df8.webp",
+        "mediumWidth": 1280,
+        "generation": 2,
+        "largeWidth": 2048
       }
     },
     "customPages": [
@@ -395,7 +403,7 @@
         "title": "The Haunted Catch",
         "category": "Stylized",
         "year": "2026",
-        "image": "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp",
+        "image": "site://images/studio/146bfff4306ab2d66153d738c078aab9c1f409ab844a935630dc6867b5e0f6ae.webp",
         "description": "A spooky little hammerhead shark based on a concept by Oscar Ibanez. I had a lot of fun bringing this character into 3D and playing around with its shapes, expressions, and Halloween-inspired details.",
         "tools": [
           "Zbrush",
@@ -406,7 +414,7 @@
           {
             "id": "b-hz1kx7c54am",
             "type": "image",
-            "content": "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp",
+            "content": "site://images/studio/146bfff4306ab2d66153d738c078aab9c1f409ab844a935630dc6867b5e0f6ae.webp",
             "slideAutoplay": false,
             "slideEffect": "fade",
             "slideInterval": 5000,
