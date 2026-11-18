@@ -30,6 +30,7 @@ export function AssetImage({src,alt='',sizes,srcSet,loading='lazy',decoding='asy
  const candidates=item&&resolved&&item.smallWidth>0&&item.mediumWidth>0&&item.largeWidth>0?[
   {url:resolvePublishedAsset(item.small),width:item.smallWidth},
   {url:resolvePublishedAsset(item.medium),width:item.mediumWidth},
+  ...(item.display&&item.displayWidth&&item.displayWidth>0?[{url:resolvePublishedAsset(item.display),width:item.displayWidth}]:[]),
   {url:resolved,width:item.largeWidth}
  ].sort((a,b)=>a.width-b.width).filter((part,index,arr)=>index===0||part.width!==arr[index-1].width):[]
  const autoSet=candidates.length>0?candidates.map(part=>part.url+' '+part.width+'w').join(', '):undefined

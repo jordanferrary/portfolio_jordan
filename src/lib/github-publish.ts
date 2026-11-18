@@ -172,24 +172,33 @@ export async function publishPortfolioToGitHub(
   return 'site://'+relative
  }
  async function createVariants(reference:string,blob:Blob):Promise<void>{
-  if(snapshot.imageVariants[reference]||!blob.type.startsWith('image/'))return
+  // Legacy 480/960 previews are refreshed at the next authorized publication.
+  // The high-resolution image is always retained as the original source.
+  if(snapshot.imageVariants[reference]?.generation===2||!blob.type.startsWith('image/'))return
   if(typeof createImageBitmap!=='function')return
   let bitmap:ImageBitmap
   try{bitmap=await createImageBitmap(blob)}catch{return}
   const width=bitmap.width,height=bitmap.height
   bitmap.close()
   if(Math.max(width,height)<=1100)return
-  onProgress('Gerando miniaturas WebP para a galeria e páginas dos projetos...')
-  const {optimizeImage}=await import('./image-optimize')
+  onProgress('Gerando capas mais nítidas e prévias para obras panorâmicas...')
+  const {optimizeImage,calculateImageDimensions}=await import('./image-optimize')
   const original=new File([blob],'artwork.webp',{type:blob.type})
-  const small=await optimizeImage(original,{maxDimension:480,quality:.76})
-  const medium=await optimizeImage(original,{maxDimension:960,quality:.80})
-  const [smallRef,mediumRef]=await Promise.all([stageBlob(small,'image'),stageBlob(medium,'image')])
+  // Fixed preview sizes are independent of the upload's panorama profile.
+  const fixed=(maxDimension:number,quality:number)=>({maxDimension,quality,profile:'fixed' as const})
+  const small=await optimizeImage(original,fixed(640,.81))
+  const medium=await optimizeImage(original,fixed(1280,.85))
+  const display=Math.max(width,height)>2560?await optimizeImage(original,fixed(2560,.88)):null
+  const smallRef=await stageBlob(small,'image')
+  const mediumRef=await stageBlob(medium,'image')
+  const displayRef=display?await stageBlob(display,'image'):''
   snapshot.imageVariants[reference]={
    small:smallRef,
-   smallWidth:Math.max(1,Math.round(width*Math.min(1,480/Math.max(width,height)))),
+   smallWidth:calculateImageDimensions(width,height,fixed(640,.81)).width,
    medium:mediumRef,
-   mediumWidth:Math.max(1,Math.round(width*Math.min(1,960/Math.max(width,height)))),
+   mediumWidth:calculateImageDimensions(width,height,fixed(1280,.85)).width,
+   ...(displayRef?{display:displayRef,displayWidth:calculateImageDimensions(width,height,fixed(2560,.88)).width}:{}),
+   generation:2,
    largeWidth:width
   }
  }
@@ -217,7 +226,7 @@ export async function publishPortfolioToGitHub(
   // Older already-published artwork can receive responsive versions at the next publication.
   // Fetch only assets hosted by this site, never arbitrary external image URLs.
   const ownSite=value.startsWith('site://images/studio/')||value.startsWith(import.meta.env.BASE_URL+'images/')
-  if(kind==='image'&&ownSite&&!snapshot.imageVariants[value]&&!refCache.has(value)){
+  if(kind==='image'&&ownSite&&snapshot.imageVariants[value]?.generation!==2&&!refCache.has(value)){
    refCache.set(value,value)
    try{
     const response=await fetch(resolvePublishedAsset(value),{credentials:'omit'})
