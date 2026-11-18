@@ -16,6 +16,7 @@ type Props={
  navigate:(page:Page)=>void
  onOpenCustomPage:(id:string)=>void
  onManagePages?:()=>void
+ onReorderCustomPages?:(fromId:string,toId:string)=>void
  tracks:MusicTrack[]
  siteLogo?:string
  siteLogoHover?:string
@@ -24,8 +25,10 @@ type Props={
  editing?:boolean
  onEditLogo?:()=>void
 }
-export function Sidebar({page,customPageId,customPages,navigate,onOpenCustomPage,onManagePages,tracks,siteLogo='',siteLogoHover='',siteLogoSize=100,siteLogoHoverScale=110,editing=false,onEditLogo}:Props){
+export function Sidebar({page,customPageId,customPages,navigate,onOpenCustomPage,onManagePages,onReorderCustomPages,tracks,siteLogo='',siteLogoHover='',siteLogoSize=100,siteLogoHoverScale=110,editing=false,onEditLogo}:Props){
  const [mobilePortal,setMobilePortal]=useState<HTMLElement|null>(null)
+ const [draggingPage,setDraggingPage]=useState('')
+ const [dropTarget,setDropTarget]=useState('')
  useEffect(()=>{
   const query=window.matchMedia('(max-width:750px)')
   const update=()=>setMobilePortal(query.matches?document.querySelector<HTMLElement>('.site-shell'):null)
@@ -46,7 +49,13 @@ export function Sidebar({page,customPageId,customPages,navigate,onOpenCustomPage
    {customPages.filter(item=>item.showInNav).map(item=>{
     const Icon=customPageIcons[item.icon]??Sparkles
     const selected=page==='custom'&&customPageId===item.id
-    return <button type="button" key={item.id} className={selected?'side-link current':'side-link'} onClick={()=>onOpenCustomPage(item.id)} aria-current={selected?'page':undefined} title={item.navLabel}><span className="side-icon"><Icon/></span><span className="side-link-label">{item.navLabel}</span></button>
+    const sortable=editing&&!!onReorderCustomPages
+    return <button type="button" key={item.id} className={(selected?'side-link current':'side-link')+(sortable?' side-page-sortable':'')+(dropTarget===item.id&&draggingPage!==item.id?' side-page-drop-target':'')} draggable={sortable}
+     onDragStart={event=>{if(!sortable)return;event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('application/x-jf-custom-page',item.id);setDraggingPage(item.id)}}
+     onDragOver={event=>{if(!sortable||!draggingPage||draggingPage===item.id)return;event.preventDefault();event.dataTransfer.dropEffect='move';setDropTarget(item.id)}}
+     onDrop={event=>{const from=event.dataTransfer.getData('application/x-jf-custom-page');if(sortable&&from&&from!==item.id&&customPages.some(candidate=>candidate.id===from&&candidate.showInNav)){event.preventDefault();onReorderCustomPages?.(from,item.id)}setDraggingPage('');setDropTarget('')}}
+     onDragEnd={()=>{setDraggingPage('');setDropTarget('')}}
+     onClick={()=>onOpenCustomPage(item.id)} aria-current={selected?'page':undefined} title={sortable?item.navLabel+' · Arraste para reorganizar':item.navLabel}><span className="side-icon"><Icon/></span><span className="side-link-label">{item.navLabel}</span></button>
    })}
    {staticEnd.map(builtin)}
    {editing&&onManagePages&&<button type="button" className="side-link side-add-page" title="Criar ou organizar páginas" onClick={onManagePages}><span className="side-icon"><Plus/></span><span className="side-link-label">New page</span></button>}
