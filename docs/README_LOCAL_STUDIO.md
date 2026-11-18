@@ -288,3 +288,8 @@ O Studio utiliza agora um dimensionamento **adaptativo** ao importar imagens. Ar
 Na publicação, são criadas versões responsivas de até **640 px, 1280 px e 2560 px** no lado maior, além do original convertido para alta definição. A galeria e os banners usam `srcSet` e `sizes` para selecionar uma apresentação adequada, inclusive em dispositivos de alta densidade de pixels; o **zoom/lightbox carrega sempre a imagem de maior definição**, não uma miniatura. Versões antigas de 480/960 são atualizadas ao **próximo publicar autorizado**, quando o original publicado estiver acessível. Nada recupera pixels de uma imagem que já foi diminuída no passado: reimporte o arquivo original para restaurar a resolução de um turnaround antigo.
 
 Não publique imagens gigantes indiscriminadamente; o limite de 80 MB de novos arquivos por publicação continua valendo, e a geração das variantes ocorre apenas quando o proprietário publica no Studio. A exportação WebP não substitui nem modifica o arquivo original no computador.
+
+
+### Seletor visual de ícones em páginas adicionais
+
+No **Local Studio → Nova página → Identidade**, o campo **Ícone da navegação** usa uma seleção visual em vez da lista nativa de texto. O botão mostra o ícone atual e seu nome; ao abrir, aparece uma galeria de todos os **12 ícones** existentes (SVGs Lucide), com pesquisa por nome, destaque da seleção atual, suporte a teclado e layout responsivo. A escolha modifica apenas o valor já existente de `CustomPage.icon`. Não há migração, novos campos ou alteração dos ícones de páginas publicadas. Tanto o editor quanto a barra lateral usam o mesmo registro centralizado de SVGs, evitando divergências entre prévia e resultado.

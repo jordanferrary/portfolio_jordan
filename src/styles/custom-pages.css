@@ -246,3 +246,70 @@
 .site-shell .page-slideshow-image:hover{border-color:var(--jf-primary)}
 .site-shell .page-slideshow-arrow,.site-shell .page-slideshow-floating-play{border-color:var(--jf-panel-edge);background:color-mix(in srgb,var(--jf-surface) 81%,transparent);color:var(--jf-secondary)}
 .site-shell .page-slideshow-arrow:hover,.site-shell .page-slideshow-floating-play:hover{border-color:var(--jf-primary);background:var(--jf-primary-soft)}
+
+/* Visual navigation icon picker: same SVG as the actual sidebar, not native <option> text. */
+.custom-page-settings .custom-page-icon-field{display:flex;flex-direction:column;gap:8px;min-width:0;font-size:12px;color:var(--jf-copy-soft,#d8c0e8)}
+.custom-page-settings .custom-page-icon-current{
+ width:100%;min-height:46px;display:flex;gap:12px;align-items:center;
+ padding:7px 12px;border:1px solid var(--jf-border,#754395);border-radius:12px;
+ background:var(--jf-background,#100916);color:var(--jf-text,#f6eaff);
+ text-align:left;cursor:pointer;
+}
+.custom-page-settings .custom-page-icon-current:hover,.custom-page-settings .custom-page-icon-current:focus-visible{
+ border-color:var(--jf-secondary,#bb79f0);outline:2px solid transparent;
+ box-shadow:0 0 0 2px color-mix(in srgb,var(--jf-primary,#9d43e3) 20%,transparent);
+}
+.custom-page-settings .custom-page-icon-current>strong{font-size:12px;font-weight:500;flex:1}
+.custom-page-settings .custom-page-icon-current-preview{
+ width:33px;height:33px;flex:0 0 33px;display:grid;place-items:center;
+ border-radius:9px;border:1px solid var(--jf-border,#754395);
+ background:color-mix(in srgb,var(--jf-primary,#9d43e3) 22%,var(--jf-background,#100916));
+ color:var(--jf-secondary,#bb79f0);
+}
+.custom-page-settings .custom-page-icon-current>svg{transition:transform .18s ease}
+.custom-page-settings .custom-page-icon-current>svg.turned{transform:rotate(180deg)}
+.custom-page-settings .custom-page-icon-chooser{
+ margin:3px 0 15px;padding:14px;border:1px solid var(--jf-secondary,#bb79f0);
+ border-radius:15px;background:var(--jf-surface,#251432);
+ box-shadow:0 12px 30px #0003;min-width:0;
+}
+.custom-page-settings .custom-page-icon-chooser-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:0 0 11px}
+.custom-page-settings .custom-page-icon-chooser-heading>div{display:grid;gap:4px}
+.custom-page-settings .custom-page-icon-chooser-heading strong{font-size:13px;color:var(--jf-text,#f6eaff)}
+.custom-page-settings .custom-page-icon-chooser-heading span{font-size:11px;color:var(--jf-muted,#ad93bf);line-height:1.5}
+.custom-page-settings .custom-page-icon-chooser-close{
+ flex:0 0 32px;width:32px;height:32px;display:grid;place-items:center;
+ border:1px solid var(--jf-border,#754395);border-radius:9px;
+ background:var(--jf-background,#100916);color:var(--jf-text,#f6eaff);cursor:pointer;
+}
+.custom-page-settings .custom-page-icon-search{
+ display:flex!important;align-items:center!important;flex-direction:row!important;
+ gap:10px!important;padding:0 12px!important;margin:0 0 12px!important;
+ border:1px solid var(--jf-border,#754395);border-radius:10px;
+ background:var(--jf-background,#100916);color:var(--jf-secondary,#bb79f0);
+}
+.custom-page-settings .custom-page-icon-search input{
+ flex:1;min-width:0;border:0!important;box-shadow:none!important;
+ background:transparent!important;color:var(--jf-text,#f6eaff)!important;
+ padding:11px 0!important;font-size:12px!important;outline:0!important;
+}
+.custom-page-settings .custom-page-icon-grid{
+ display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+ gap:9px;max-height:270px;overflow-y:auto;padding:2px;
+}
+.custom-page-settings .custom-page-icon-choice{
+ min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:8px;min-height:89px;padding:12px 5px 10px;
+ border:1px solid var(--jf-border,#754395);border-radius:12px;
+ background:var(--jf-background,#100916);color:var(--jf-copy-soft,#d8c0e8);
+ cursor:pointer;font-size:11px;text-align:center;
+}
+.custom-page-settings .custom-page-icon-choice:hover,
+.custom-page-settings .custom-page-icon-choice:focus-visible{border-color:var(--jf-secondary,#bb79f0);color:var(--jf-text,#f6eaff);background:color-mix(in srgb,var(--jf-primary,#9d43e3) 13%,var(--jf-background,#100916))}
+.custom-page-settings .custom-page-icon-choice.selected{border-color:var(--jf-primary,#a24ef0);color:var(--jf-text,#f6eaff);background:color-mix(in srgb,var(--jf-primary,#9d43e3) 28%,var(--jf-background,#100916))}
+.custom-page-settings .custom-page-icon-choice-image{position:relative;display:grid;place-items:center;color:var(--jf-secondary,#bb79f0);width:36px;height:32px}
+.custom-page-settings .custom-page-icon-choice-check{position:absolute;top:-7px;right:-6px;padding:2px;box-sizing:content-box;background:var(--jf-primary,#a24ef0);color:#fff;border-radius:50%}
+.custom-page-settings .custom-page-icon-empty{padding:16px;text-align:center;color:var(--jf-muted,#ad93bf);font-size:12px}
+@media(max-width:750px){.custom-page-settings .custom-page-icon-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:440px){.custom-page-settings .custom-page-icon-chooser{padding:10px}.custom-page-settings .custom-page-icon-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.custom-page-settings .custom-page-icon-choice{font-size:10px;min-height:78px}}
+@media(prefers-reduced-motion:reduce){.custom-page-settings .custom-page-icon-current>svg{transition:none}}

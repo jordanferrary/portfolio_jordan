@@ -1,5 +1,5 @@
-import {useEffect,useState,type DragEvent} from 'react'
-import {ArrowDown,ArrowUp,BookOpen,Copy,ExternalLink,FileText,ImagePlus,Layers,Link2,Plus,Save,Sparkles,Trash2,Upload,X,GripVertical,Clapperboard,Box as BoxIcon,GalleryHorizontal,Heading2,AlignLeft,Columns2,Minus} from 'lucide-react'
+import {useEffect,useRef,useState,type DragEvent} from 'react'
+import {ArrowDown,ArrowUp,BookOpen,Check,ChevronDown,Search,Copy,ExternalLink,FileText,ImagePlus,Layers,Link2,Plus,Save,Sparkles,Trash2,Upload,X,GripVertical,Clapperboard,Box as BoxIcon,GalleryHorizontal,Heading2,AlignLeft,Columns2,Minus} from 'lucide-react'
 import type {LucideIcon} from 'lucide-react'
 import {AssetImage} from '../ui/asset-image'
 import {AssetClipButton} from '../ui/asset-picker'
@@ -11,6 +11,7 @@ import {parseVideoEmbed} from '../../lib/video-embed'
 import {parseModelUrl} from '../../lib/model-embed'
 import {isLocalMedia,saveUploadedMedia} from '../../lib/media-store'
 import {customPageIconOptions,newCustomPage,normalizeCustomPages,safePageHref,type CustomPage,type CustomPageIcon,type PageBlock,type PageButtonAction,type ShowcaseItem,type SlideItem,type SlideTransition} from '../../data/custom-pages'
+import {customPageIcons} from '../../lib/custom-page-icons'
 
 type Props={
  pages:CustomPage[]
@@ -70,6 +71,9 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
  const [error,setError]=useState('')
  const [dragged,setDragged]=useState('')
  const [insertAt,setInsertAt]=useState<number|null>(null)
+ const [iconPickerOpen,setIconPickerOpen]=useState(false)
+ const [iconSearch,setIconSearch]=useState('')
+ const iconTriggerRef=useRef<HTMLButtonElement>(null)
  const folder='pages/'+(draft?.id??'new')
  useEffect(()=>{if(insertAt===null)return;const onEscape=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.stopPropagation();setInsertAt(null)}};document.addEventListener('keydown',onEscape);return()=>document.removeEventListener('keydown',onEscape)},[insertAt])
  useEffect(()=>{const before=document.body.style.overflow;document.body.style.overflow='hidden';return()=>{document.body.style.overflow=before}},[])
@@ -78,6 +82,18 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
  const open=(page:CustomPage)=>{if(dirty()&&!window.confirm('Descartar mudanças não salvas antes de abrir outra página?'))return;setDraft(clone(page));setError('');setTab('identity')}
  const create=()=>{if(dirty()&&!window.confirm('Descartar mudanças não salvas antes de criar outra página?'))return;setDraft(newCustomPage());setError('');setTab('identity')}
  const patch=(change:Partial<CustomPage>)=>setDraft(value=>value?{...value,...change}:value)
+ const chooseIcon=(icon:CustomPageIcon)=>{
+  patch({icon})
+  setIconPickerOpen(false)
+  setIconSearch('')
+  iconTriggerRef.current?.focus()
+ }
+ const CurrentPageIcon=customPageIcons[draft?.icon??'sparkles']??Sparkles
+ const selectedIconLabel=customPageIconOptions.find(option=>option.value===draft?.icon)?.label??'Criação'
+ const normalizedSearch=iconSearch.trim().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase()
+ const visibleIcons=customPageIconOptions.filter(option=>
+  (option.label+' '+option.value).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().includes(normalizedSearch)
+ )
  const patchBlock=(id:string,change:Partial<PageBlock>)=>setDraft(value=>value?{...value,blocks:value.blocks.map(block=>block.id===id?{...block,...change}:block)}:value)
  const addBlock=(type:Kind,index?:number)=>{
   if(!draft)return
@@ -177,7 +193,35 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
    {draft&&tab==='identity'&&<div className="custom-page-settings">
     <p className="local-warning">O endereço da página permanece estável mesmo quando o título muda. Suas alterações são locais até clicar em Publicar no GitHub.</p>
     <div className="editor-two"><label>Título principal<input maxLength={160} value={draft.title} onChange={e=>patch({title:e.target.value})} placeholder="Creative resources"/></label><label>Nome na barra lateral<input maxLength={35} value={draft.navLabel} onChange={e=>patch({navLabel:e.target.value})} placeholder="Resources"/></label></div>
-    <div className="editor-two"><label>Ícone da navegação<select value={draft.icon} onChange={e=>patch({icon:e.target.value as CustomPageIcon})}>{customPageIconOptions.map(option=><option key={option.value} value={option.value}>{option.label}</option>)}</select></label><label>Área de conteúdo<select value={draft.layout} onChange={e=>patch({layout:e.target.value as CustomPage['layout']})}><option value="standard">Editorial · Leitura</option><option value="wide">Expandida · Galerias</option></select></label></div>
+    <div className="editor-two">
+      <div className="custom-page-icon-field">
+       <span id="custom-page-icon-label">Ícone da navegação</span>
+       <button ref={iconTriggerRef} type="button" className="custom-page-icon-current" aria-expanded={iconPickerOpen} aria-controls="custom-page-icon-choices" aria-labelledby="custom-page-icon-label custom-page-icon-current-name" onClick={()=>{setIconPickerOpen(open=>!open);setIconSearch('')}}>
+        <span className="custom-page-icon-current-preview"><CurrentPageIcon size={22}/></span>
+        <strong id="custom-page-icon-current-name">{selectedIconLabel}</strong>
+        <ChevronDown size={17} className={iconPickerOpen?'turned':''}/>
+       </button>
+      </div>
+      <label>Área de conteúdo<select value={draft.layout} onChange={e=>patch({layout:e.target.value as CustomPage['layout']})}><option value="standard">Editorial · Leitura</option><option value="wide">Expandida · Galerias</option></select></label>
+     </div>
+     {iconPickerOpen&&<div id="custom-page-icon-choices" className="custom-page-icon-chooser" onKeyDown={e=>{if(e.key==='Escape'){e.stopPropagation();setIconPickerOpen(false);iconTriggerRef.current?.focus()}}}>
+      <div className="custom-page-icon-chooser-heading">
+       <div><strong>Escolha pelo visual</strong><span>O ícone mostrado aqui será o mesmo da barra lateral.</span></div>
+       <button type="button" className="custom-page-icon-chooser-close" onClick={()=>{setIconPickerOpen(false);iconTriggerRef.current?.focus()}} aria-label="Fechar seleção de ícones"><X size={16}/></button>
+      </div>
+      <label className="custom-page-icon-search"><Search size={17}/><input type="search" autoFocus value={iconSearch} onChange={e=>setIconSearch(e.target.value)} placeholder="Pesquisar ícones..." aria-label="Pesquisar ícones"/></label>
+      <div className="custom-page-icon-grid" role="group" aria-label="Escolher ícone da navegação">
+       {visibleIcons.map(option=>{
+        const Icon=customPageIcons[option.value]
+        const selected=draft.icon===option.value
+        return <button type="button" key={option.value} className={'custom-page-icon-choice'+(selected?' selected':'')} aria-pressed={selected} title={option.label} onClick={()=>chooseIcon(option.value)}>
+         <span className="custom-page-icon-choice-image"><Icon size={24}/>{selected&&<Check size={12} className="custom-page-icon-choice-check"/>}</span>
+         <span>{option.label}</span>
+        </button>
+       })}
+      </div>
+      {!visibleIcons.length&&<p className="custom-page-icon-empty">Nenhum ícone corresponde à pesquisa.</p>}
+     </div>}
     <label className="custom-page-visibility"><input type="checkbox" checked={draft.showInNav} onChange={e=>patch({showInNav:e.target.checked})}/> Mostrar esta página na barra de navegação</label>
     <label>Texto pequeno acima do título<input maxLength={120} value={draft.eyebrow} onChange={e=>patch({eyebrow:e.target.value})} placeholder="✦ PREMIUM RESOURCES"/></label>
     <TextComposer label="Apresentação abaixo do título" rows={4} value={draft.subtitle} onChange={subtitle=>patch({subtitle})}/>

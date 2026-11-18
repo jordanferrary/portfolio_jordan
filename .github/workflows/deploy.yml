@@ -29,6 +29,8 @@ jobs:
         run: npm run test:art-resolution
       - name: Verify published media cards and chat privacy
         run: npm run test:published-media
+      - name: Verify visual icons in the custom page builder
+        run: npm run test:page-icons
       - name: Verify page margins, headline hierarchy and gallery bleed
         run: npm run test:page-layout
       - name: Verify palette-based, text-free route transitions

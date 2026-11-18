@@ -1,17 +1,14 @@
-import {BookOpen,Code2,Download,FileText,FolderOpen,Gem,GraduationCap,Grid2X2,House,Layers,Link2,Mail,Pencil,Plus,Sparkles,Star,UserRound,Video} from 'lucide-react'
+import {Grid2X2,House,Mail,Pencil,Plus,Sparkles,UserRound} from 'lucide-react'
 import type {LucideIcon} from 'lucide-react'
 import {useEffect,useState,type CSSProperties} from 'react'
 import {createPortal} from 'react-dom'
 import {AssetImage} from '../ui/asset-image'
 import {MusicPlayer} from './music-player'
 import type {MusicTrack} from '../../data/studio'
-import type {CustomPage,CustomPageIcon} from '../../data/custom-pages'
+import type {CustomPage} from '../../data/custom-pages'
+import {customPageIcons} from '../../lib/custom-page-icons'
 
 export type Page='inicio'|'portfolio'|'sobre'|'contato'
-const icons:Record<CustomPageIcon,LucideIcon>={
- book:BookOpen,graduation:GraduationCap,sparkles:Sparkles,layers:Layers,code:Code2,
- download:Download,file:FileText,gem:Gem,folder:FolderOpen,video:Video,star:Star,link:Link2
-}
 type Props={
  page:Page|'custom'
  customPageId?:string
@@ -47,7 +44,7 @@ export function Sidebar({page,customPageId,customPages,navigate,onOpenCustomPage
   <nav className="side-nav" aria-label="Navegação principal">
    {staticStart.map(builtin)}
    {customPages.filter(item=>item.showInNav).map(item=>{
-    const Icon=icons[item.icon]??Sparkles
+    const Icon=customPageIcons[item.icon]??Sparkles
     const selected=page==='custom'&&customPageId===item.id
     return <button type="button" key={item.id} className={selected?'side-link current':'side-link'} onClick={()=>onOpenCustomPage(item.id)} aria-current={selected?'page':undefined} title={item.navLabel}><span className="side-icon"><Icon/></span><span className="side-link-label">{item.navLabel}</span></button>
    })}
