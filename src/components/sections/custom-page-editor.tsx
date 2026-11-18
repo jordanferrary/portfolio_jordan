@@ -12,7 +12,8 @@ import {parseModelUrl} from '../../lib/model-embed'
 import {isLocalMedia,saveUploadedMedia} from '../../lib/media-store'
 import {customPageIconOptions,newCustomPage,normalizeCustomPages,reorderCustomPages,safePageHref,type CustomPage,type CustomPageIcon,type PageBlock,type PageButtonAction,type ShowcaseItem,type SlideItem,type SlideTransition} from '../../data/custom-pages'
 import {customPageIcons} from '../../lib/custom-page-icons'
-import {isShowcasePdfLink,pdfPreviewHref,safeShowcaseDocumentHref} from '../../lib/showcase-pdf'
+import {isShowcasePdfLink,safeShowcaseDocumentHref} from '../../lib/showcase-pdf'
+import {PdfPagePreview} from '../ui/pdf-page-preview'
 
 type Props={
  pages:CustomPage[]
@@ -285,16 +286,16 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
      {(block.type==='image-left'||block.type==='image-right')&&<><PageMediaField value={block.media??''} onChange={media=>patchBlock(block.id,{media})} folder={folder} slot={block.id} label="Imagem lateral" onError={setError}/><TextComposer value={block.content} rows={4} onChange={content=>patchBlock(block.id,{content})} label="Texto ao lado da imagem"/></>}
      {block.type==='gallery'&&<><div className="custom-page-gallery-fields">{(block.gallery??[]).map((src,j)=><div key={j} className="custom-page-gallery-item"><PageMediaField value={src} onChange={value=>patchBlock(block.id,{gallery:(block.gallery??[]).map((item,k)=>k===j?value:item)})} folder={folder} slot={block.id+'-'+j} label={'Imagem '+(j+1)} onError={setError}/><button type="button" className="subtle-action" onClick={()=>patchBlock(block.id,{gallery:(block.gallery??[]).filter((_,k)=>k!==j)})}><X size={14}/> Remover imagem</button></div>)}</div><button type="button" className="custom-page-add-image" onClick={()=>patchBlock(block.id,{gallery:[...(block.gallery??[]),'']})}><Plus size={15}/> Adicionar imagem</button></>}
      {block.type==='showcase'&&<div className="custom-page-rich-gallery-editor">
-      <p className="editor-help">Aceita imagens e certificados em PDF por link público. PDFs apresentam uma prévia e botão para abrir o documento completo. A capa em imagem é opcional. A prévia depende das permissões de incorporação do serviço que hospeda o arquivo.</p>
+      <p className="editor-help">Aceita imagens e certificados em PDF por link público. PDFs públicos do GitHub ou de outros servidores com CORS exibem a primeira página sem iframes externos. O botão abre o arquivo completo. Uma imagem de capa é opcional; links que exigem login podem impedir a prévia.</p>
       <label>Enquadramento das miniaturas<select value={block.showcaseFit??'cover'} onChange={e=>patchBlock(block.id,{showcaseFit:e.target.value as 'cover'|'contain'})}><option value="contain">Mostrar imagem inteira (recomendado para certificados)</option><option value="cover">Preencher os cards (recomendado para artes)</option></select></label>
       {(block.showcaseItems??[]).map((item,index)=><div className="custom-page-rich-gallery-entry" key={item.id}>
        <div className="custom-page-rich-gallery-head"><strong>{item.name.trim()||'Item sem título'}</strong><button type="button" onClick={()=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).filter(x=>x.id!==item.id)})}><Trash2 size={15}/> Remover</button></div>
        <label>Título do item<input value={item.name} onChange={e=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).map(x=>x.id===item.id?{...x,name:e.target.value}:x)})} placeholder="Ex.: Certificado de conclusão, obra ou participante"/></label>
        <label>Link público do certificado PDF (opcional)<input type="url" value={item.documentUrl??''} onChange={e=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).map(x=>x.id===item.id?{...x,documentUrl:e.target.value}:x)})} placeholder="https://exemplo.com/certificado.pdf ou link do Google Drive"/></label>
        {item.documentUrl?.trim()&&(!safeShowcaseDocumentHref(item.documentUrl)?<p className="custom-page-pdf-warning">Use uma URL pública http:// ou https://. Arquivos locais e links privados não podem ser exibidos aos visitantes.</p>:<div className="custom-page-pdf-editor-preview">
-        <iframe src={pdfPreviewHref(item.documentUrl)} title={'Prévia do PDF: '+(item.name||'Certificado')} loading="lazy" referrerPolicy="no-referrer"/>
+        <PdfPagePreview url={item.documentUrl} label={item.name||'Certificado'} mode="editor"/>
         <a href={safeShowcaseDocumentHref(item.documentUrl)!} target="_blank" rel="noopener noreferrer"><ExternalLink size={14}/> Abrir PDF em nova aba</a>
-        <small>Se a prévia estiver vazia, confira as permissões de compartilhamento ou use um link direto para PDF.</small>
+        <small>A primeira página é renderizada no navegador para PDFs públicos com acesso permitido. Se a prévia falhar, utilize o link de abertura ou uma imagem de capa.</small>
        </div>)}
        <PageMediaField value={item.image} onChange={image=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).map(x=>x.id===item.id?isShowcasePdfLink(image)?{...x,image:'',documentUrl:image}:{...x,image}:x)})} folder={folder} slot={block.id+'-showcase-'+item.id} label={'Imagem de capa (opcional) · '+(item.name||'item')} onError={setError}/>
        <label>Descrição do item<textarea rows={3} value={item.description} onChange={e=>patchBlock(block.id,{showcaseItems:(block.showcaseItems??[]).map(x=>x.id===item.id?{...x,description:e.target.value}:x)})} placeholder="Descreva a conquista, o trabalho ou a coleção..."/></label>
