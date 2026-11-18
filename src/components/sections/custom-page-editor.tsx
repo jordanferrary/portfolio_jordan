@@ -1,4 +1,4 @@
-import {useEffect,useRef,useState,type DragEvent} from 'react'
+import {useEffect,useRef,useState,type DragEvent,type PointerEvent} from 'react'
 import {ArrowDown,ArrowUp,BookOpen,Check,ChevronDown,Search,Copy,ExternalLink,FileText,ImagePlus,Layers,Link2,Plus,Save,Sparkles,Trash2,Upload,X,GripVertical,Clapperboard,Box as BoxIcon,GalleryHorizontal,Heading2,AlignLeft,Columns2,Minus} from 'lucide-react'
 import type {LucideIcon} from 'lucide-react'
 import {AssetImage} from '../ui/asset-image'
@@ -10,7 +10,7 @@ import {ProjectModel} from '../ui/project-model'
 import {parseVideoEmbed} from '../../lib/video-embed'
 import {parseModelUrl} from '../../lib/model-embed'
 import {isLocalMedia,saveUploadedMedia} from '../../lib/media-store'
-import {customPageIconOptions,newCustomPage,normalizeCustomPages,safePageHref,type CustomPage,type CustomPageIcon,type PageBlock,type PageButtonAction,type ShowcaseItem,type SlideItem,type SlideTransition} from '../../data/custom-pages'
+import {customPageIconOptions,newCustomPage,normalizeCustomPages,reorderCustomPages,safePageHref,type CustomPage,type CustomPageIcon,type PageBlock,type PageButtonAction,type ShowcaseItem,type SlideItem,type SlideTransition} from '../../data/custom-pages'
 import {customPageIcons} from '../../lib/custom-page-icons'
 
 type Props={
@@ -70,6 +70,9 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
  const [tab,setTab]=useState<Tab>(()=>original||initialPageId==='new'?'identity':'manage')
  const [error,setError]=useState('')
  const [dragged,setDragged]=useState('')
+ const [draggedPage,setDraggedPage]=useState('')
+ const [pageDropTarget,setPageDropTarget]=useState('')
+ const pointerPage=useRef<{id:string;pointerId:number;startX:number;startY:number;moved:boolean}|null>(null)
  const [insertAt,setInsertAt]=useState<number|null>(null)
  const [iconPickerOpen,setIconPickerOpen]=useState(false)
  const [iconSearch,setIconSearch]=useState('')
@@ -130,7 +133,34 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
   setDragged('')
  }
  const setPages=(next:CustomPage[])=>onSavePages(normalizeCustomPages(next))
- const movePage=(index:number,direction:number)=>{const to=index+direction;if(to<0||to>=pages.length)return;const next=[...pages];[next[index],next[to]]=[next[to],next[index]];setPages(next)}
+ const movePage=(index:number,direction:number)=>{const to=index+direction;if(to<0||to>=pages.length)return;setPages(reorderCustomPages(pages,pages[index].id,pages[to].id))}
+ const clearPageDrag=()=>{pointerPage.current=null;setDraggedPage('');setPageDropTarget('')}
+ const pageAtPointer=(x:number,y:number)=>document.elementFromPoint(x,y)?.closest<HTMLElement>('[data-page-sort-id]')?.dataset.pageSortId??''
+ const startPagePointer=(event:PointerEvent<HTMLSpanElement>,id:string)=>{
+  if(event.pointerType==='mouse')return
+  pointerPage.current={id,pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,moved:false}
+  event.currentTarget.setPointerCapture(event.pointerId)
+ }
+ const movePagePointer=(event:PointerEvent<HTMLSpanElement>)=>{
+  const active=pointerPage.current
+  if(!active||active.pointerId!==event.pointerId)return
+  if(!active.moved&&Math.hypot(event.clientX-active.startX,event.clientY-active.startY)>8){active.moved=true;setDraggedPage(active.id)}
+  if(!active.moved)return
+  setPageDropTarget(pageAtPointer(event.clientX,event.clientY))
+  const scroller=event.currentTarget.closest<HTMLElement>('.editor-scroll')
+  if(scroller){
+   const bounds=scroller.getBoundingClientRect()
+   if(event.clientY<bounds.top+55)scroller.scrollBy(0,-20)
+   else if(event.clientY>bounds.bottom-55)scroller.scrollBy(0,20)
+  }
+ }
+ const stopPagePointer=(event:PointerEvent<HTMLSpanElement>)=>{
+  const active=pointerPage.current
+  if(!active||active.pointerId!==event.pointerId)return
+  const target=active.moved?pageAtPointer(event.clientX,event.clientY):''
+  if(target&&target!==active.id)setPages(reorderCustomPages(pages,active.id,target))
+  clearPageDrag()
+ }
  const toggleVisibility=(id:string)=>setPages(pages.map(p=>p.id===id?{...p,showInNav:!p.showInNav}:p))
  const duplicate=(page:CustomPage)=>{
   if(dirty()&&!window.confirm('Descartar mudanças não salvas antes de duplicar?'))return
@@ -177,8 +207,15 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
    {tab==='manage'&&<div className="custom-pages-manager">
     <div className="custom-pages-intro"><span className="custom-page-symbol"><BookOpen size={24}/></span><div><h3>Seu site pode crescer com seus projetos.</h3><p>Crie cursos, recursos, downloads, guias ou qualquer página nova. Reorganize o menu e publique tudo quando estiver pronto.</p></div></div>
     <button type="button" className="custom-pages-create" onClick={create}><Plus size={18}/> Criar nova página</button>
+    <p className="custom-pages-drag-tip">Arraste a alça <GripVertical size={15}/> para escolher a ordem do menu. No celular, toque e arraste; as setas também funcionam.</p>
     <div className="custom-pages-list">
-     {pages.map((page,index)=><article className="custom-pages-entry" key={page.id}><span className="custom-pages-entry-mark"><FileText size={19}/></span><div className="custom-pages-entry-info"><strong>{page.navLabel}</strong><small>{page.title} · {page.blocks.length} blocos · {page.showInNav?'Visível no menu':'Oculta do menu'}</small><span>#/page/{page.id}</span></div><div className="custom-pages-entry-actions">
+     {pages.map((page,index)=><article data-page-sort-id={page.id} className={'custom-pages-entry'+(draggedPage===page.id?' page-sort-dragging':'')+(pageDropTarget===page.id&&draggedPage!==page.id?' page-sort-target':'')} key={page.id}
+      onDragOver={event=>{if(!event.dataTransfer.types.includes('application/x-jf-custom-page'))return;event.preventDefault();event.dataTransfer.dropEffect='move';setPageDropTarget(page.id)}}
+      onDrop={event=>{const from=event.dataTransfer.getData('application/x-jf-custom-page');if(from&&from!==page.id){event.preventDefault();setPages(reorderCustomPages(pages,from,page.id))}clearPageDrag()}}>
+      <span className="custom-pages-drag-handle" draggable title={'Arraste '+page.navLabel+' para mudar a posição'} aria-hidden="true"
+       onDragStart={event=>{event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('application/x-jf-custom-page',page.id);setDraggedPage(page.id)}}
+       onDragEnd={clearPageDrag} onPointerDown={event=>startPagePointer(event,page.id)} onPointerMove={movePagePointer} onPointerUp={stopPagePointer} onPointerCancel={clearPageDrag}><GripVertical size={19}/></span>
+      <span className="custom-pages-entry-mark"><FileText size={19}/></span><div className="custom-pages-entry-info"><strong>{page.navLabel}</strong><small>{page.title} · {page.blocks.length} blocos · {page.showInNav?'Visível no menu':'Oculta do menu'}</small><span>#/page/{page.id}</span></div><div className="custom-pages-entry-actions">
       <button type="button" onClick={()=>movePage(index,-1)} disabled={index===0} title="Mover para cima" aria-label={'Subir '+page.navLabel}><ArrowUp size={15}/></button>
       <button type="button" onClick={()=>movePage(index,1)} disabled={index===pages.length-1} title="Mover para baixo" aria-label={'Descer '+page.navLabel}><ArrowDown size={15}/></button>
       <button type="button" onClick={()=>toggleVisibility(page.id)} title={page.showInNav?'Ocultar do menu':'Mostrar no menu'}>{page.showInNav?'Visível':'Oculta'}</button>
@@ -188,7 +225,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
      </div></article>)}
      {!pages.length&&<p className="custom-pages-empty"><Sparkles size={22}/> Nenhuma página adicional criada. Comece com uma página de curso, recursos ou materiais.</p>}
     </div>
-    <p className="editor-help">Páginas ocultas apenas saem do menu — continuam acessíveis com o link direto. A ordem acima se aplica às páginas adicionais, entre Portfolio e About.</p>
+    <p className="editor-help">Páginas ocultas apenas saem do menu — continuam acessíveis com o link direto. A ordem acima se aplica às páginas adicionais, entre Portfolio e About. A nova ordem é salva no rascunho; publique para atualizar o site dos visitantes.</p>
    </div>}
    {draft&&tab==='identity'&&<div className="custom-page-settings">
     <p className="local-warning">O endereço da página permanece estável mesmo quando o título muda. Suas alterações são locais até clicar em Publicar no GitHub.</p>
