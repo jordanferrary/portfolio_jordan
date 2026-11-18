@@ -85,10 +85,20 @@ export function localPhrase(source:string,language:VisitorLanguage):string|null{
  // Keep user-authored artwork titles intact in generated accessibility labels.
  const volumeMatch=/^Volume: (\d{1,3})%$/.exec(text)
  if(volumeMatch)return language==='pt'?'Volume: '+volumeMatch[1]+'%':'Volumen: '+volumeMatch[1]+'%'
+ // Keep page numbers and certificate titles untouched; only translate fixed UI.
+ const pdfPage=/^Page (\d+) of (\d+)$/.exec(text)
+ if(pdfPage)return language==='pt'?'Página '+pdfPage[1]+' de '+pdfPage[2]:'Página '+pdfPage[1]+' de '+pdfPage[2]
  const prefixes:{start:string;pt:string;es:string}[]=[
   {start:'View project ',pt:'Ver projeto ',es:'Ver proyecto '},
   {start:'View Project: ',pt:'Ver projeto: ',es:'Ver proyecto: '},
-  {start:'Open full project: ',pt:'Abrir projeto completo: ',es:'Abrir proyecto completo: '}
+  {start:'Open full project: ',pt:'Abrir projeto completo: ',es:'Abrir proyecto completo: '},
+  {start:'PDF viewer: ',pt:'Visualizador de PDF: ',es:'Visor de PDF: '},
+  {start:'View certificate: ',pt:'Visualizar certificado: ',es:'Ver certificado: '},
+  {start:'View details: ',pt:'Ver detalhes: ',es:'Ver detalles: '},
+  {start:'Details: ',pt:'Detalhes: ',es:'Detalles: '},
+  {start:'First page of PDF: ',pt:'Primeira página do PDF: ',es:'Primera página del PDF: '},
+  {start:'PDF preview: ',pt:'Prévia do PDF: ',es:'Vista previa del PDF: '},
+  {start:'PDF: ',pt:'PDF: ',es:'PDF: '}
  ]
  for(const prefix of prefixes)if(text.startsWith(prefix.start)&&text.length>prefix.start.length)
   return prefix[language]+text.slice(prefix.start.length)
@@ -256,5 +266,30 @@ export function observePublicTranslation(root:HTMLElement,language:VisitorLangua
   live=false
   observer.disconnect()
   if(scheduled!==null)clearTimeout(scheduled)
+ }
+}
+
+/**
+ * Public zoom viewers are mounted via createPortal(document.body), outside
+ * .site-shell. Observe ONLY known public lightboxes; do not scan the rest of
+ * document.body, which may contain private Studio, auth, or assistant portals.
+ */
+export function observePublicOverlayTranslation(language:VisitorLanguage):()=>void{
+ const active=new Map<HTMLElement,()=>void>()
+ const refresh=()=>{
+  for(const root of document.body.querySelectorAll<HTMLElement>('.art-lightbox')){
+   if(!active.has(root))active.set(root,observePublicTranslation(root,language))
+  }
+  for(const [root,stop] of active)if(!root.isConnected){stop();active.delete(root)}
+ }
+ const observer=new MutationObserver(records=>{
+  if(records.some(record=>record.type==='childList'))refresh()
+ })
+ observer.observe(document.body,{childList:true})
+ refresh()
+ return ()=>{
+  observer.disconnect()
+  for(const stop of active.values())stop()
+  active.clear()
  }
 }

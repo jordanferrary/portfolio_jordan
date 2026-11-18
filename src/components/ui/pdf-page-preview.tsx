@@ -71,13 +71,13 @@ export function PdfPagePreview({url,label,mode='detail'}:{url:string;label:strin
   return ()=>{cancelled=true;cancelRender?.();if(closeDocument)void closeDocument().catch(()=>{})}
  },[direct,visible,mode])
 
- return <div ref={outer} className={'pdf-page-preview pdf-page-preview-'+mode} role="img" aria-label={'Primeira página do PDF: '+label}>
+ return <div ref={outer} className={'pdf-page-preview pdf-page-preview-'+mode} role="img" aria-label={(mode==='editor'?'Primeira página do PDF: ':'First page of PDF: ')+label}>
   {direct&&<canvas ref={canvasRef} aria-hidden="true" style={{visibility:state==='ready'?'visible':'hidden'}}/>}
   {framed&&visible&&<iframe title={'PDF: '+label} src={framed} loading="lazy" referrerPolicy="no-referrer" tabIndex={mode==='card'?-1:0}/>}
   {(!direct&&!framed||direct&&state!=='ready')&&<div className="pdf-page-preview-fallback" aria-hidden="true">
    <FileText size={mode==='card'?36:46}/>
-   <small>{direct&&state==='loading'?'Carregando PDF…':direct&&state==='error'?'Prévia indisponível':'PDF'}</small>
-   {direct&&state==='error'&&<small>Abra o documento pelo botão abaixo</small>}
+   <small>{direct&&state==='loading'?(mode==='editor'?'Carregando PDF…':'Loading PDF…'):direct&&state==='error'?(mode==='editor'?'Prévia indisponível':'Preview unavailable'):'PDF'}</small>
+   {direct&&state==='error'&&<small>{mode==='editor'?'Abra o documento pelo botão abaixo':'Open this document from the details panel'}</small>}
   </div>}
  </div>
 }

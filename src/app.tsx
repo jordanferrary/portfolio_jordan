@@ -27,7 +27,7 @@ const GlitchPaletteEditor=lazy(()=>import('./components/sections/glitch-palette-
 import { applyThemePalette } from './lib/theme-palette'
 import {applyGlitchPalette} from './lib/glitch-palette'
 import {detectCountryByIp,initialLanguage,languageFromCountry,saveLanguageChoice,savedLanguage,type VisitorLanguage} from './lib/visitor-language'
-import {observePublicTranslation} from './lib/public-page-translation'
+import {observePublicOverlayTranslation,observePublicTranslation} from './lib/public-page-translation'
 import {AppErrorBoundary} from './components/ui/app-error-boundary'
 import {readAlquimagoVisibilityDraft,writeAlquimagoVisibilityDraft} from './lib/alquimago-visibility'
 import {alquimagoPublishTokenVault,retireStudioSavedTokens} from './lib/github-token-vault'
@@ -72,8 +72,10 @@ export function App(){
  useEffect(()=>{
   document.documentElement.lang=visitorLanguage==='pt'?'pt-BR':visitorLanguage
   const root=document.querySelector<HTMLElement>('.site-shell')
-  if(!root)return
-  return observePublicTranslation(root,visitorLanguage)
+  const stopPage=root?observePublicTranslation(root,visitorLanguage):()=>{}
+  // Art and PDF lightboxes are public React portals outside the page shell.
+  const stopLightboxes=observePublicOverlayTranslation(visitorLanguage)
+  return ()=>{stopLightboxes();stopPage()}
  },[visitorLanguage])
 
  const [gateOpen,setGateOpen]=useState(false)

@@ -136,3 +136,32 @@ test('manual language dropdown is easy to dismiss on desktop and mobile',()=>{
  assert.match(style,/prefers-reduced-transparency:reduce/)
  assert.doesNotMatch(style,/\.language-switcher select/)
 })
+
+test('PDF viewer and other public React portals are translated without scanning private Studio UI',async()=>{
+ const {localPhrase}=await moduleFrom('src/lib/public-page-translation.ts')
+ const pdf=await text('src/components/ui/pdf-zoom-viewer.tsx')
+ const preview=await text('src/components/ui/pdf-page-preview.tsx')
+ for(const phrase of [
+  'PDF viewing controls','Previous PDF page','Next PDF page','PDF page number','Close PDF',
+  'Loading certificate…','Unable to display this PDF. Check that the document is publicly accessible.',
+  'Mouse wheel or pinch to zoom · Drag to inspect · Arrow keys to change PDF pages · Esc to close',
+  'Click to inspect PDF','Loading PDF…','Preview unavailable','Open this document from the details panel'
+ ]){
+  assert.ok(localPhrase(phrase,'pt'),'Missing Portuguese translation: '+phrase)
+  assert.ok(localPhrase(phrase,'es'),'Missing Spanish translation: '+phrase)
+ }
+ assert.equal(localPhrase('PDF viewer: ZBrush — Character','pt'),'Visualizador de PDF: ZBrush — Character')
+ assert.equal(localPhrase('View certificate: Character design','es'),'Ver certificado: Character design')
+ assert.equal(localPhrase('First page of PDF: ZBrush','pt'),'Primeira página do PDF: ZBrush')
+ assert.equal(localPhrase('Page 2 of 12','pt'),'Página 2 de 12')
+ assert.equal(localPhrase('Page 2 of 12','es'),'Página 2 de 12')
+ assert.match(translator,/export function observePublicOverlayTranslation\(/)
+ assert.match(translator,/\.art-lightbox/)
+ assert.match(translator,/observer\.observe\(document\.body,\{childList:true\}\)/)
+ assert.match(translator,/observePublicTranslation\(root,language\)/)
+ assert.doesNotMatch(translator,/observePublicTranslation\(document\.body,language\)/)
+ assert.match(app,/observePublicOverlayTranslation\(visitorLanguage\)/)
+ assert.match(pdf,/PDF viewing controls/)
+ assert.match(pdf,/Mouse wheel or pinch to zoom/)
+ assert.match(preview,/First page of PDF/)
+})
