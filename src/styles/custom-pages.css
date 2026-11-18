@@ -11,7 +11,6 @@
 .custom-page-subtitle{max-width:760px;color:#e4d2ee;font-size:clamp(14px,1.5vw,19px);line-height:1.7}
 .custom-page-subtitle p{margin:0 0 12px}
 .custom-page-edit{display:inline-flex;align-items:center;gap:8px;margin-top:24px;padding:10px 14px;border:1px solid #bd80eb;border-radius:12px;background:#4e2372cc;color:#f7e8ff;font-size:12px;cursor:pointer}
-.custom-page-hero-watermark{position:absolute;z-index:-1;right:5%;top:3%;font-size:200px;line-height:1;color:#b15bfc13;pointer-events:none}
 .custom-page-body{max-width:1050px;margin:0 auto;padding:54px 8px 0}
 .custom-page-wide .custom-page-body{max-width:1360px}
 .custom-page-story{display:flex;flex-direction:column;gap:0}
