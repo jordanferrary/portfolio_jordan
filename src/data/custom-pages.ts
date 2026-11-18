@@ -54,6 +54,16 @@ const buttonActions=new Set<string>(['copy','url-current','url-new'])
 export function newCustomPage():CustomPage{
  return {id:'page-'+crypto.randomUUID(),navLabel:'New page',icon:'sparkles',showInNav:true,eyebrow:'✦ CREATIVE SPACE',title:'New page',subtitle:'',heroImage:'',heroPositionX:50,heroPositionY:50,layout:'standard',blocks:[]}
 }
+/** Reorder existing pages by stable IDs without changing their content or permanent routes. */
+export function reorderCustomPages(pages:CustomPage[],fromId:string,toId:string):CustomPage[]{
+ const from=pages.findIndex(page=>page.id===fromId)
+ const to=pages.findIndex(page=>page.id===toId)
+ if(from<0||to<0||from===to)return pages
+ const next=[...pages]
+ const [moved]=next.splice(from,1)
+ next.splice(to,0,moved)
+ return next
+}
 /** Accept only simple http(s), mailto, or an internal hash route. No executable URLs. */
 export function safePageHref(value:string):string|null{
  const input=value.trim()
