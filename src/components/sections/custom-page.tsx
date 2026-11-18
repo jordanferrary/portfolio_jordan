@@ -50,7 +50,6 @@ export function CustomPageView({page,editing,onEdit,headingSymbol}:{page:CustomP
     {page.subtitle&&<RichText className="custom-page-subtitle" value={page.subtitle}/>}
     {editing&&<button className="custom-page-edit" type="button" onClick={onEdit}><Pencil size={16}/> Edit page</button>}
    </div>
-   {headingSymbol!=='none'&&<span className="custom-page-hero-watermark" aria-hidden="true"><HeadingSymbol symbol={headingSymbol} size={45}/></span>}
   </header>
   <div className="custom-page-body">
    {page.blocks.length?<div className="story-blocks custom-page-story">{page.blocks.map(block=>block.type==='action'?<PageAction key={block.id} block={block}/>:block.type==='showcase'?<ArtistShowcase key={block.id} block={block}/>:block.type==='slideshow'?<PageSlideshow key={block.id} block={block}/>:<StoryBlock key={block.id} block={block as Block} projectTitle={page.title}/>)}</div>:
