@@ -21,6 +21,7 @@
     "test:route-glitch": "node --test scripts/route-glitch.test.mjs",
     "test:runtime-recovery": "node --test scripts/runtime-recovery.test.mjs",
     "test:studio-media": "node --test scripts/studio-media-pipeline.test.mjs",
+    "test:art-resolution": "node --test scripts/art-resolution.test.mjs",
     "test:published-media": "node --test scripts/published-media.test.mjs"
   },
   "dependencies": {
