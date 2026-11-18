@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-18T06:40:54.787Z-a260d937-8417-47cd-afe7-4f6fb645292e",
+  "revision": "2026-11-18T08:16:24.979Z-a1774286-091e-49b3-91c2-a7a65788c158",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -183,7 +183,114 @@
         "largeWidth": 6144
       }
     },
-    "customPages": [],
+    "customPages": [
+      {
+        "id": "page-f324938a-c82d-4c0d-a205-d5f34cf69388",
+        "navLabel": "Certifications",
+        "icon": "graduation",
+        "showInNav": true,
+        "eyebrow": "✦ CONTINUOUS LEARNING & CREATIVE GROWTH",
+        "title": "The Learning Behind the Art.",
+        "subtitle": "Every skill begins with curiosity, and every new challenge is an opportunity to grow.\n\nMy journey as a digital artist is shaped by exploration, dedication, and continuous learning. Here, I share the courses, certifications, and educational milestones that contribute to my creative development.",
+        "heroImage": "site://images/studio/3c009cdf95175f7569b1e3c04a968ccdb495e396a49b6e77bd8bab8fdf9c71cd.webp",
+        "heroPositionX": 50,
+        "heroPositionY": 50,
+        "layout": "wide",
+        "blocks": [
+          {
+            "id": "block-55ddb327-13be-4420-92dd-75d3cfac973a",
+            "type": "showcase",
+            "content": "",
+            "showcaseItems": [
+              {
+                "id": "item-f0e1502d-e067-49db-b5cf-001728413569",
+                "image": "",
+                "documentUrl": "https://github.com/jordanferrary/Imagens_do_site/blob/main/Certificados/Zbrush%20-%20Fundamentos.pdf",
+                "name": "Zbrush: Fundamentos",
+                "description": "",
+                "portfolioUrl": "https://portfolio-jordan.pages.dev",
+                "linkLabel": "View details",
+                "showLink": false
+              },
+              {
+                "id": "item-f0f728b7-6a0c-4b93-b070-35f505ec9888",
+                "image": "",
+                "documentUrl": "https://github.com/jordanferrary/Imagens_do_site/blob/main/Certificados/3D1%20-%20CEN%C3%81RIOS.pdf",
+                "name": "3D - Cenários",
+                "description": "",
+                "portfolioUrl": "",
+                "linkLabel": "View details",
+                "showLink": false
+              },
+              {
+                "id": "item-96868b69-ec4e-47ff-abba-339848efc56e",
+                "image": "",
+                "documentUrl": "https://github.com/jordanferrary/Imagens_do_site/blob/main/Certificados/3D2%20-%20PERSONAGEM.pdf",
+                "name": "3D - Personagem",
+                "description": "",
+                "portfolioUrl": "",
+                "linkLabel": "View details",
+                "showLink": false
+              },
+              {
+                "id": "item-5e6d08d1-24d3-41b8-9bcd-aaddec30dc11",
+                "image": "",
+                "documentUrl": "https://github.com/jordanferrary/Imagens_do_site/blob/main/Certificados/3D3%20-%20ANIMA%C3%87%C3%83O.pdf",
+                "name": "3D - Animação",
+                "description": "",
+                "portfolioUrl": "",
+                "linkLabel": "View details",
+                "showLink": false
+              },
+              {
+                "id": "item-034164a6-b54d-4672-b3fd-89f803c30626",
+                "image": "",
+                "documentUrl": "https://github.com/jordanferrary/Imagens_do_site/blob/main/Certificados/Desenvolvimento%20Personagem%203D.pdf",
+                "name": "Desenvolvimento Personagem 3D",
+                "description": "",
+                "portfolioUrl": "",
+                "linkLabel": "View details",
+                "showLink": false
+              },
+              {
+                "id": "item-ba994c3f-f31e-4bf3-b01b-74bfb0b7cb3a",
+                "image": "",
+                "documentUrl": "https://github.com/jordanferrary/Imagens_do_site/blob/main/Certificados/Zbrush%20-%20Fundamentos.pdf",
+                "name": "Zbrush - Fundamentos",
+                "description": "",
+                "portfolioUrl": "",
+                "linkLabel": "View details",
+                "showLink": false
+              },
+              {
+                "id": "item-60d7bbab-de63-453e-97fe-38297cbde98b",
+                "image": "",
+                "documentUrl": "https://github.com/jordanferrary/Imagens_do_site/blob/main/Certificados/Zbrush%20-%20Personagem%20Completo.pdf",
+                "name": "Zbrush - Personagem Completo",
+                "description": "",
+                "portfolioUrl": "",
+                "linkLabel": "View details",
+                "showLink": false
+              }
+            ],
+            "showcaseFit": "cover",
+            "slideItems": [],
+            "slideAutoplay": false,
+            "slideTransition": "fade",
+            "slideInterval": 5000,
+            "slideHeight": 520,
+            "slideFit": "contain",
+            "slideShowPauseButton": false,
+            "buttonLabel": "Copy",
+            "buttonAction": "copy",
+            "buttonStyle": "primary",
+            "buttonAlign": "left",
+            "buttonWidth": "auto",
+            "buttonNote": ""
+          }
+        ]
+      }
+    ],
     "projects": [
       {
         "id": "project-mw4oyna3",

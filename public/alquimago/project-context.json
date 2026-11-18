@@ -1,14 +1,14 @@
 {
   "schema": 1,
-  "revision": "2026-11-18T06:40:54.787Z-a260d937-8417-47cd-afe7-4f6fb645292e",
-  "updatedAt": "2026-11-18T06:40:54.787Z",
+  "revision": "2026-11-18T08:16:24.979Z-a1774286-091e-49b3-91c2-a7a65788c158",
+  "updatedAt": "2026-11-18T08:16:24.979Z",
   "site": {
     "type": "react-portfolio",
     "editor": "Local Studio"
   },
   "counts": {
     "projects": 2,
-    "pages": 0,
+    "pages": 1,
     "categories": 4
   },
   "description": "Resumo público do projeto gerado automaticamente durante a publicação."
