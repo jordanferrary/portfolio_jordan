@@ -1,31 +1,41 @@
 import {lazy,Suspense,useEffect,useRef,useState} from 'react'
-import {ArrowLeft,ArrowRight,ArrowUpRight,Maximize2,Pause,Play,X} from 'lucide-react'
+import {ArrowLeft,ArrowRight,ArrowUpRight,FileText,Maximize2,Pause,Play,X} from 'lucide-react'
 import {AssetImage} from '../ui/asset-image'
 import {safePageHref,type PageBlock} from '../../data/custom-pages'
+import {pdfPreviewHref,safeShowcaseDocumentHref} from '../../lib/showcase-pdf'
 const ArtLightbox=lazy(()=>import('../ui/art-lightbox').then(module=>({default:module.ArtLightbox})))
 
 /** Independent images can belong to artists, awards, certificates or any collection. */
 export function ArtistShowcase({block}:{block:PageBlock}){
- const items=(block.showcaseItems??[]).filter(item=>item.image.trim())
+ const items=(block.showcaseItems??[]).filter(item=>item.image.trim()||safeShowcaseDocumentHref(item.documentUrl))
  const [selectedId,setSelectedId]=useState<string|null>(null)
  const [zoom,setZoom]=useState(false)
  useEffect(()=>{setSelectedId(null);setZoom(false)},[block.id])
  const current=items.find(item=>item.id===selectedId)??null
  const destination=current?safePageHref(current.portfolioUrl):null
+ const documentUrl=current?safeShowcaseDocumentHref(current.documentUrl):null
+ const documentPreview=documentUrl?pdfPreviewHref(documentUrl):null
  if(!items.length)return null
  return <section className={'artist-showcase'+(current?' is-open':'')} aria-label="Interactive gallery">
   <div className="artist-showcase-grid">{items.map(item=><button type="button" key={item.id} className={'artist-showcase-card'+(current?.id===item.id?' active':'')} onClick={()=>{setZoom(false);setSelectedId(previous=>previous===item.id?null:item.id)}} aria-label={'View details: '+(item.name||'Untitled item')} aria-pressed={current?.id===item.id}>
-   <AssetImage src={item.image} alt={item.name||'Gallery item'} loading="lazy" sizes="(max-width: 700px) 45vw, 240px" style={{objectFit:block.showcaseFit==='contain'?'contain':'cover'}}/>
+   {item.image?<AssetImage src={item.image} alt={item.name||'Gallery item'} loading="lazy" sizes="(max-width: 700px) 45vw, 240px" style={{objectFit:block.showcaseFit==='contain'?'contain':'cover'}}/>:<div className="artist-showcase-pdf-card">
+    <div className="artist-showcase-pdf-fallback"><FileText size={45}/><small>PDF</small></div>
+    {safeShowcaseDocumentHref(item.documentUrl)&&<iframe title={'PDF preview: '+(item.name||'Certificate')} src={pdfPreviewHref(item.documentUrl!)} loading="lazy" referrerPolicy="no-referrer" tabIndex={-1}/>}
+   </div>}
+   {safeShowcaseDocumentHref(item.documentUrl)&&<div className="artist-showcase-pdf-tag"><FileText size={13}/> PDF</div>}
    {item.name&&<span>{item.name}</span>}
   </button>)}</div>
   {current&&<aside className="artist-showcase-detail" aria-label={'Details: '+(current.name||'Selected item')}>
    <button type="button" className="artist-showcase-close" onClick={()=>{setSelectedId(null);setZoom(false)}} aria-label="Close details"><X size={18}/></button>
-   <button type="button" className="artist-showcase-zoom" onClick={()=>setZoom(true)} aria-label="Enlarge selected image"><AssetImage src={current.image} alt={current.name||'Selected item'}/><span><Maximize2 size={16}/> Zoom</span></button>
+   {documentUrl?<div className="artist-showcase-document-preview">
+     {documentPreview?<iframe key={documentPreview} title={'PDF document: '+(current.name||'Certificate')} src={documentPreview} loading="lazy" referrerPolicy="no-referrer"/>:<div className="artist-showcase-pdf-fallback"><FileText size={48}/><small>PDF document</small></div>}
+    </div>:<button type="button" className="artist-showcase-zoom" onClick={()=>setZoom(true)} aria-label="Enlarge selected image"><AssetImage src={current.image} alt={current.name||'Selected item'}/><span><Maximize2 size={16}/> Zoom</span></button>}
    <div className="artist-showcase-detail-copy"><span className="artist-showcase-kicker">✦ ITEM DETAILS</span>{current.name&&<h3>{current.name}</h3>}{current.description&&<p>{current.description}</p>}
-    {current.showLink!==false&&destination&&<a className="artist-showcase-portfolio" href={destination} target="_blank" rel="noopener noreferrer">{current.linkLabel?.trim()||'View portfolio'} <ArrowUpRight size={17}/></a>}
+    {documentUrl&&<a className="artist-showcase-portfolio" href={documentUrl} target="_blank" rel="noopener noreferrer"><FileText size={17}/> View full PDF <ArrowUpRight size={17}/></a>}
+     {current.showLink!==false&&destination&&<a className="artist-showcase-portfolio" href={destination} target="_blank" rel="noopener noreferrer">{current.linkLabel?.trim()||'View portfolio'} <ArrowUpRight size={17}/></a>}
    </div>
   </aside>}
-  {zoom&&current&&<Suspense fallback={null}><ArtLightbox src={current.image} alt={current.name||'Gallery item'} onClose={()=>setZoom(false)}/></Suspense>}
+  {zoom&&current&&!documentUrl&&<Suspense fallback={null}><ArtLightbox src={current.image} alt={current.name||'Gallery item'} onClose={()=>setZoom(false)}/></Suspense>}
  </section>
 }
 
