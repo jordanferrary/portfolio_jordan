@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-18T14:21:48.810Z-07bcc614-d457-48a0-a32e-3387947ec386",
+  "revision": "2026-11-18T14:23:33.202Z-c13af8b8-f611-483b-aaac-8201a379e610",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -512,19 +512,19 @@
         ],
         "processSteps": [],
         "coverFocus": {
-          "x": 3,
+          "x": 31.89788673803317,
           "y": 0,
-          "zoom": 1.32
+          "zoom": 1.21
         },
         "heroFocus": {
-          "x": 19,
-          "y": 5,
+          "x": 41.831336636768484,
+          "y": 9.906367824262825,
           "zoom": 1.07
         },
         "processTemplateMigrated": true,
         "homeFocus": {
-          "x": 3,
-          "y": 9,
+          "x": 18.838926174496645,
+          "y": 8.583875162548765,
           "zoom": 1
         }
       }
