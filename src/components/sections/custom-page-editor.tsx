@@ -90,9 +90,9 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
  }
  const CurrentPageIcon=customPageIcons[draft?.icon??'sparkles']??Sparkles
  const selectedIconLabel=customPageIconOptions.find(option=>option.value===draft?.icon)?.label??'Criação'
- const normalizedSearch=iconSearch.trim().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase()
+ const normalizedSearch=iconSearch.trim().normalize('NFD').replace(/\p{M}/gu,'').toLowerCase()
  const visibleIcons=customPageIconOptions.filter(option=>
-  (option.label+' '+option.value).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().includes(normalizedSearch)
+  (option.label+' '+option.value).normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().includes(normalizedSearch)
  )
  const patchBlock=(id:string,change:Partial<PageBlock>)=>setDraft(value=>value?{...value,blocks:value.blocks.map(block=>block.id===id?{...block,...change}:block)}:value)
  const addBlock=(type:Kind,index?:number)=>{
