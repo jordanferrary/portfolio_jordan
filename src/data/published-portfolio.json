@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-17T16:22:39.748Z-bfb0af6d-d527-48d2-a343-e23579583ded",
+  "revision": "2026-11-18T06:12:28.674Z-cd23af8c-d208-4e1e-b156-5c04c91c8c5c",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -114,6 +114,41 @@
         "medium": "site://images/studio/1a7ca13bdfc57a16c955d9cf0dc432d25ec702e9c9e687a89db9015dee0d5652.webp",
         "mediumWidth": 720,
         "largeWidth": 1536
+      },
+      "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp": {
+        "small": "site://images/studio/d9b09999190324a3e33fd188eae23f844b89882768e42710afd919553c70840a.webp",
+        "smallWidth": 474,
+        "medium": "site://images/studio/be9e4388acf098e4c82c9cda7f6547fd00c1f50fa3004d81a7eef7f1fab8a728.webp",
+        "mediumWidth": 948,
+        "largeWidth": 2023
+      },
+      "site://images/studio/81174a8a9539cebabff7dea8200563e3b128b86e9d0eca9ceae8ddfd3af23022.webp": {
+        "small": "site://images/studio/d86526e48ea980793c3d782de175b88a4a8862eecc0bf24e36ec56890f528d3d.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/122f7cbda21e4f7eefb6073f48814821e717914c8e5d677be7d0cf7a0a219060.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2048
+      },
+      "site://images/studio/ba6277d84adedcb2719944fcba234e4bbb5361e2018e9fd6a18f6574fd262156.webp": {
+        "small": "site://images/studio/2b05d07ad5ddb49d26e8734282dea6ba2a284adb85ad3123bf1b3d0d35d90900.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/33e45e03b8b3ed5bebd3dd59f0d0d1ffd5fb21fe3da7311e4824831ff6667f9e.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2048
+      },
+      "site://images/studio/cd5e678ac85eab03bda0a11d7c014b680dc93b22decd8e7011756e542fe9c81a.webp": {
+        "small": "site://images/studio/c30c901b4301b9d9f35e9dc2381f1822cbeb6e7e8517dacd8c6c988bb962e920.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/0124b10c028dd0182b7fbf41f7da4d412bb576499da33eed3311c3da486bdb85.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2048
+      },
+      "site://images/studio/ac60a4a0c8053476327ed6e2a4c8c2a26fcd2cc405f1ee02a60aeaa565979d4a.webp": {
+        "small": "site://images/studio/5f40541d5d5bcca54f032984ef44d978f395f457b2bd72624b98eca807d553a2.webp",
+        "smallWidth": 480,
+        "medium": "site://images/studio/1214cb864f403c7ed1c1b033bd99db34915f5b00518bf54d0d2f27e2307514d2.webp",
+        "mediumWidth": 960,
+        "largeWidth": 2048
       }
     },
     "customPages": [],
@@ -219,7 +254,7 @@
         "title": "The Haunted Catch",
         "category": "Stylized",
         "year": "2026",
-        "image": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
+        "image": "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp",
         "description": "A spooky little hammerhead shark based on a concept by Oscar Ibanez. I had a lot of fun bringing this character into 3D and playing around with its shapes, expressions, and Halloween-inspired details.",
         "tools": [
           "Zbrush",
@@ -230,7 +265,7 @@
           {
             "id": "b-hz1kx7c54am",
             "type": "image",
-            "content": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
+            "content": "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp",
             "slideAutoplay": false,
             "slideEffect": "fade",
             "slideInterval": 5000,
@@ -252,7 +287,17 @@
           {
             "id": "b-976w9arfy7d",
             "type": "image",
-            "content": "site://images/studio/f7eecbb7701d31b7685fab59434689e3b261696ebc814996dd13b3f9dff339b7.webp",
+            "content": "site://images/studio/81174a8a9539cebabff7dea8200563e3b128b86e9d0eca9ceae8ddfd3af23022.webp",
+            "slideAutoplay": false,
+            "slideEffect": "fade",
+            "slideInterval": 5000,
+            "slideHeight": 420,
+            "slideShowPauseButton": false
+          },
+          {
+            "id": "b-1088dphmdvkq",
+            "type": "image",
+            "content": "site://images/studio/ba6277d84adedcb2719944fcba234e4bbb5361e2018e9fd6a18f6574fd262156.webp",
             "slideAutoplay": false,
             "slideEffect": "fade",
             "slideInterval": 5000,
@@ -280,8 +325,8 @@
             "slideInterval": 5000,
             "slideHeight": 420,
             "slideShowPauseButton": false,
-            "media": "site://images/studio/16dab4152e1208daab2ca9d9dca1e98530385b2a8ea6c7a0313cb2f7ad43797e.webp",
-            "after": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
+            "media": "site://images/studio/cd5e678ac85eab03bda0a11d7c014b680dc93b22decd8e7011756e542fe9c81a.webp",
+            "after": "site://images/studio/ac60a4a0c8053476327ed6e2a4c8c2a26fcd2cc405f1ee02a60aeaa565979d4a.webp",
             "beforeLabel": "Untextured",
             "afterLabel": "Textured"
           },
@@ -303,14 +348,14 @@
           "zoom": 1.32
         },
         "heroFocus": {
-          "x": 4,
+          "x": 19,
           "y": 5,
-          "zoom": 1.11
+          "zoom": 1.07
         },
         "processTemplateMigrated": true,
         "homeFocus": {
-          "x": 10,
-          "y": 1,
+          "x": 3,
+          "y": 9,
           "zoom": 1
         }
       }
@@ -343,11 +388,11 @@
       "titleSecond": "worlds.",
       "introduction": "I'm Jordan Ferrary, a 3D artist focused on bringing ideas to life through art, modeling and creativity.",
       "avatar": "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg",
-      "background": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
+      "background": "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp",
       "backgroundFocus": {
         "x": 50,
-        "y": 8,
-        "zoom": 1
+        "y": 6,
+        "zoom": 1.06
       },
       "available": true,
       "aboutTagline": "Turning imagination into reality.",
@@ -430,10 +475,10 @@
         "CREATIVE DIRECTION"
       ]
     },
-    "galleryBackground": "site://images/studio/4efd090dc0cf827e912a07a28743d1455ba725987d821e2e19701e86cebe94a4.webp",
+    "galleryBackground": "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp",
     "galleryFocus": {
       "x": 90,
-      "y": 12,
+      "y": 15,
       "zoom": 1
     },
     "galleryContent": {
