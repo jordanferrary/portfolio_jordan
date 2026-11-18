@@ -18,12 +18,13 @@ A criação de páginas não precisa de novo código ou de deploy manual para ca
 
 Em **Ferramentas → Páginas → Minhas páginas**, você pode:
 - Abrir e editar uma página.
-- Mudar sua posição entre as páginas adicionais (setas).
+- **Arrastar e soltar:** segure a alça à esquerda de uma página e solte na posição desejada. No celular, arraste pelo toque; use as setas caso prefira.
+- Mudar sua posição entre as páginas adicionais com as setas (acessível mesmo sem arrastar).
 - Ocultar ou exibir a página na barra lateral. **Ocultar não torna privada:** o link direto continua acessível.
 - Duplicar uma página (a cópia começa oculta para evitar links repetidos).
 - Excluir uma página, após confirmação. Links existentes para uma página excluída deixam de funcionar depois de publicar.
 
-Os quatro links nativos não são removidos. As páginas extras aparecem entre **Portfolio** e **About**, na ordem escolhida. Em celular, a navegação horizontal pode ser rolada para não amontoar os itens.
+No modo de edição, também é possível arrastar diretamente os ícones das páginas extras na barra lateral do desktop. Os quatro links nativos não são removidos ou reordenados. As páginas extras aparecem entre **Portfolio** e **About**, na ordem escolhida. A ordem fica no rascunho até a próxima publicação no GitHub. Em celular, a navegação horizontal pode ser rolada para não amontoar os itens.
 
 ### Endereços permanentes
 Cada página nova recebe um identificador único e link de hash:
