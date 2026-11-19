@@ -86,3 +86,5 @@ import './styles/page-layout-consistency.css'
 import './styles/banner-framing.css'
 // Brief, palette-driven navigation transition.
 import './styles/route-glitch.css'
+// Intrinsic media geometry wins over legacy fixed-height project block rules.
+import './styles/artwork-aspect-ratio.css'

@@ -1,0 +1,76 @@
+/* Artwork displays follow the actual source aspect ratio, not a fixed 16:9
+   container. Only full-size case-study media is affected: cover thumbnails,
+   framing controls, 3D stages and certificate cards keep their own layouts. */
+.site-shell .story-block.block-image{
+ display:flex;
+ justify-content:center;
+ align-items:flex-start;
+ min-width:0;
+}
+.site-shell .story-block.block-image > img.zoomable-art{
+ display:block;
+ width:auto;
+ max-width:100%;
+ height:auto;
+ max-height:min(690px,85dvh);
+ margin-inline:auto;
+ object-fit:contain;
+ object-position:center;
+ background:transparent;
+}
+.site-shell .story-block.story-split > img.zoomable-art{
+ display:block;
+ width:auto;
+ max-width:100%;
+ height:auto;
+ max-height:min(520px,75dvh);
+ margin-inline:auto;
+ object-fit:contain;
+ background:transparent;
+}
+.site-shell .story-block.story-multi-images{
+ justify-items:center;
+ align-items:start;
+ min-width:0;
+}
+.site-shell .story-block.story-multi-images > img.zoomable-art,
+.site-shell .story-block.story-multi-images > img.zoomable-art:first-child:nth-last-child(odd){
+ display:block;
+ width:auto;
+ max-width:100%;
+ height:auto;
+ max-height:min(680px,80dvh);
+ margin-inline:auto;
+ object-fit:contain;
+ background:transparent;
+}
+/* Fallback project art has a padded frame; let the frame hug the displayed
+   artwork instead of stretching across empty columns on wide screens. */
+.site-shell .project-artwork-showcase > .project-artwork-frame{
+ width:fit-content;
+ max-width:100%;
+ margin-inline:auto;
+}
+.site-shell .project-artwork-frame > img.zoomable-art{
+ display:block;
+ width:auto;
+ max-width:100%;
+ height:auto;
+ max-height:80dvh;
+ margin-inline:auto;
+ object-fit:contain;
+}
+.site-shell img.zoomable-art{
+ -webkit-user-drag:none;
+ user-select:none;
+}
+/* Maintain the same intrinsic sizing on mobile without accidental overflow. */
+@media(max-width:750px){
+ .site-shell .story-block.block-image > img.zoomable-art{
+  max-height:85dvh;
+ }
+ .site-shell .story-block.story-split > img.zoomable-art,
+ .site-shell .story-block.story-multi-images > img.zoomable-art{
+  max-height:80dvh;
+ }
+}

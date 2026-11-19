@@ -84,3 +84,25 @@ test('published images get crisp card/hero versions with original intact for zoo
  assert.doesNotMatch(lightbox,/srcSet=/)
  assert.match(workflow,/npm run test:art-resolution/)
 })
+
+test('case-study artwork containers respect intrinsic ratios; drag ghosts are disabled',async()=>{
+ const css=await read('src/styles/artwork-aspect-ratio.css')
+ const entry=await read('src/main.tsx')
+ const page=await read('src/components/sections/project-page.tsx')
+ assert.match(entry,/styles\/artwork-aspect-ratio\.css/)
+ for(const selector of [
+  /\.story-block\.block-image > img\.zoomable-art/,
+  /\.story-block\.story-split > img\.zoomable-art/,
+  /\.story-block\.story-multi-images > img\.zoomable-art/,
+  /\.project-artwork-frame > img\.zoomable-art/
+ ])assert.match(css,selector)
+ assert.match(css,/width:auto;/)
+ assert.match(css,/max-width:100%/)
+ assert.match(css,/height:auto;/)
+ assert.match(css,/max-height:min\(690px,85dvh\)/)
+ assert.match(css,/-webkit-user-drag:none;/)
+ assert.match(zoomable,/draggable=\{false\}/)
+ assert.match(zoomable,/onDragStart=\{event=>event\.preventDefault\(\)\}/)
+ assert.match(page,/alt=\{title\+' before'\} draggable=\{false\}/)
+ assert.match(page,/alt=\{title\+' after'\} draggable=\{false\}/)
+})
