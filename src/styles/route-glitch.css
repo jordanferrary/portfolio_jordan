@@ -13,8 +13,11 @@
  pointer-events:none;overflow:hidden;isolation:isolate;
  background:var(--jf-glitch-dark);
 }
-.jf-route-glitch{
- animation:jf-glitch-entrance 560ms steps(1,end) both;
+.jf-route-glitch[data-phase="cover"]{
+ animation:jf-glitch-cover 230ms steps(1,end) both;
+}
+.jf-route-glitch[data-phase="reveal"]{
+ animation:jf-glitch-reveal 350ms steps(1,end) both;
 }
 .jf-route-glitch-pending{animation:jf-glitch-pending-fade 850ms steps(1,end) infinite}
 .jf-glitch-scene{position:absolute;inset:0;isolation:isolate;overflow:hidden;background:var(--jf-glitch-dark)}
@@ -85,15 +88,22 @@
  clip-path:polygon(0 6%,100% 6%,100% 20%,0 20%,0 43%,100% 43%,100% 55%,0 55%,0 71%,100% 71%,100% 89%,0 89%);
  animation:jf-glitch-chroma-jitter 710ms steps(1,end) infinite;
 }
-@keyframes jf-glitch-entrance{
- 0%,100%{opacity:0}
- 7%{opacity:.3}
- 13%{opacity:1}
- 28%{opacity:.9}
- 43%{opacity:1}
- 65%{opacity:.95}
- 76%{opacity:.62}
- 89%{opacity:.12}
+/* Both phases use the same full-viewport signal on phones and desktops.
+   Swap content while the outgoing page is completely covered (opacity:1). */
+@keyframes jf-glitch-cover{
+ 0%{opacity:0}
+ 15%{opacity:.27}
+ 31%{opacity:.7}
+ 49%{opacity:.93}
+ 70%,100%{opacity:1}
+}
+@keyframes jf-glitch-reveal{
+ 0%,12%{opacity:1}
+ 30%{opacity:.93}
+ 48%{opacity:.79}
+ 65%{opacity:.49}
+ 82%{opacity:.18}
+ 100%{opacity:0}
 }
 @keyframes jf-glitch-pending-fade{
  /* No full-screen brightness pulse on long waits; texture supplies motion. */

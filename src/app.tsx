@@ -48,8 +48,11 @@ export function App(){
   })
  },[])
  const [page,setPage]=useState(route)
+ // Displayed content stays on the outgoing route until the glitch covers it.
+ const [visibleRouteHash,setVisibleRouteHash]=useState(()=>location.hash||'#/inicio')
  const [routeIdentity,setRouteIdentity]=useState(()=>location.hash||'#/inicio')
  const routeRef=useRef(location.hash||'#/inicio')
+ const pendingPage=useRef<Page|'project'|'custom'|null>(null)
  const [editing,setEditing]=useState(false)
  // Keep an out-of-root Studio flag for safe recovery after a render crash.
  // Never automatically reload while an editor may contain unsaved form fields.
@@ -129,22 +132,31 @@ export function App(){
  const [stagedMediaDeletions,setStagedMediaDeletions]=useState<string[]>([])
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'featured'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
- // This route switch is immediate. The independent neon corruption portal
- // paints above it for one burst, without browser screenshot cross-fades.
+ // Navigation starts a signal corruption burst even when all route chunks are cached.
+ // Only swap the content after the cover phase has concealed the outgoing page.
  const switchRoute=(hash:string,next:Page|'project'|'custom',writeHash:boolean)=>{
   if(routeRef.current===hash)return
   routeRef.current=hash
+  pendingPage.current=next
   if(writeHash&&location.hash!==hash)location.hash=hash
   setRouteIdentity(hash)
+ }
+ const commitRoute=(hash:string)=>{
+  // Ignore obsolete animation events when visitors navigate several times rapidly.
+  if(routeRef.current!==hash)return
+  const next=pendingPage.current
+  if(next===null)return
+  pendingPage.current=null
+  setVisibleRouteHash(hash)
   setPage(next)
   window.scrollTo(0,0)
  }
  const navigate=(next:Page)=>switchRoute('#/'+next,next,true)
  const navigateCustomPage=(id:string)=>switchRoute('#/page/'+id,'custom',true)
  const openHomeTab=(tab:'home'|'featured'|'feedback'|'music'|'socials'|'likes')=>{setHomeEditorTab(tab);setHomeEditorOpen(true)}
- const projectId=location.hash.replace(/^#\/project\//,'')
+ const projectId=visibleRouteHash.replace(/^#\/project\//,'')
  const project=portfolio.projects.find(p=>p.id===projectId)
- const customPageId=location.hash.replace(/^#\/page\//,'').split('/')[0]
+ const customPageId=visibleRouteHash.replace(/^#\/page\//,'').split('/')[0]
  const customPage=page==='custom'?portfolio.customPages.find(item=>item.id===customPageId):undefined
  const openProject=(p:Project)=>switchRoute('#/project/'+p.id,'project',true)
  const pageLabels:Record<Page|'project'|'custom',string>={inicio:'Home',portfolio:'Galeria',sobre:'Sobre',contato:'Contato',project:'Projeto',custom:customPage?.navLabel??'Página'}
@@ -337,7 +349,7 @@ export function App(){
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){setEditing(false);setEditor(undefined)}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen])
- return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':page==='contato'?'site-shell contact-route':page==='sobre'?'site-shell about-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} onReorderCustomPages={(fromId,toId)=>portfolio.setCustomPages(reorderCustomPages(portfolio.customPages,fromId,toId))} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><RouteGlitchTransition routeKey={routeIdentity}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}} language={visitorLanguage} onLanguageChange={changeVisitorLanguage}/>
+ return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':page==='contato'?'site-shell contact-route':page==='sobre'?'site-shell about-route':'site-shell'}><Sidebar page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} onReorderCustomPages={(fromId,toId)=>portfolio.setCustomPages(reorderCustomPages(portfolio.customPages,fromId,toId))} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><RouteGlitchTransition routeKey={routeIdentity} onCovered={commitRoute}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}} language={visitorLanguage} onLanguageChange={changeVisitorLanguage}/>
  {page==='portfolio'&&<AppErrorBoundary compact><Suspense fallback={<RouteGlitchFallback/>}><Gallery headingSymbol={portfolio.headingSymbol} language={visitorLanguage} projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground} heroFocus={portfolio.galleryFocus} content={portfolio.galleryContent}/></Suspense></AppErrorBoundary>}
  {page==='project'&&project&&<AppErrorBoundary compact><Suspense fallback={<RouteGlitchFallback/>}><ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts} headingSymbol={portfolio.headingSymbol}/></Suspense></AppErrorBoundary>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}

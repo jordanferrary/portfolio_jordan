@@ -32,25 +32,33 @@ export function GlitchSignalArt(){
  </div>
 }
 
-/** One 560ms burst whenever the route key changes. No overlay on first load. */
-export function RouteGlitchTransition({routeKey}:{routeKey:string}){
+/** Two-stage route transition: cover the outgoing page, then reveal the incoming page.
+ * No first-load overlay and no dependency on network/chunk loading. */
+export function RouteGlitchTransition({routeKey,onCovered}:{routeKey:string;onCovered:(key:string)=>void}){
  const previous=useRef(routeKey)
  const counter=useRef(0)
- const [active,setActive]=useState<number|null>(null)
+ const [active,setActive]=useState<{id:number;key:string;phase:'cover'|'reveal'}|null>(null)
  useLayoutEffect(()=>{
   if(previous.current===routeKey)return
   previous.current=routeKey
-  if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
-   setActive(null);return
+  if(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches){
+   setActive(null)
+   onCovered(routeKey)
+   return
   }
-  setActive(++counter.current)
- },[routeKey])
+  setActive({id:++counter.current,key:routeKey,phase:'cover'})
+ },[routeKey,onCovered])
  const finish=(event:AnimationEvent<HTMLDivElement>)=>{
-  if(event.currentTarget!==event.target||event.animationName!=='jf-glitch-entrance')return
-  setActive(current=>current===active?null:current)
+  if(event.currentTarget!==event.target||!active)return
+  if(active.phase==='cover'&&event.animationName==='jf-glitch-cover'){
+   onCovered(active.key)
+   setActive(current=>current?.id===active.id&&current.phase==='cover'?{...current,phase:'reveal'}:current)
+  }else if(active.phase==='reveal'&&event.animationName==='jf-glitch-reveal'){
+   setActive(current=>current?.id===active.id?null:current)
+  }
  }
  if(active===null)return null
- return createPortal(<div className="jf-route-glitch" key={active} aria-hidden="true" onAnimationEnd={finish}>
+ return createPortal(<div className="jf-route-glitch" data-phase={active.phase} key={active.id+'-'+active.phase} aria-hidden="true" onAnimationEnd={finish}>
   <GlitchSignalArt/>
  </div>,document.body)
 }
