@@ -5,11 +5,11 @@ import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
 import {KTX2Loader} from 'three/examples/jsm/loaders/KTX2Loader.js'
 import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js'
-import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,type InspectorOptions,type ModelMode,type ModelPresentation} from './model-presentation'
+import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,type InspectorOptions,type ModelMode,type ModelPresentation,type ModelCamera} from './model-presentation'
 import {createChecker,createMatcap,debugMaterial} from './model-debug-materials'
 import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model-solid-wireframe'
 export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[]}
-export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean)=>void;resetCamera:()=>void;dispose:()=>void}
+export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean)=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;dispose:()=>void}
 const rad=THREE.MathUtils.degToRad
 function disposeObject(root:THREE.Object3D){
  const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>(),skeletons=new Set<THREE.Skeleton>()
@@ -45,6 +45,12 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const environment=pmrem.fromScene(room,.04);room.dispose();pmrem.dispose();scene.environment=environment.texture
  const key=new THREE.DirectionalLight(0xffffff,2),fill=new THREE.DirectionalLight(0xffffff,.5),rim=new THREE.DirectionalLight(0xffffff,1),ambient=new THREE.HemisphereLight(0xffffff,0x454454,.35)
  fill.position.set(-3,1,3);rim.position.set(0,2,-4);scene.add(key,fill,rim,ambient)
+ type CustomLight=THREE.DirectionalLight|THREE.PointLight|THREE.SpotLight
+ const customLights=new Map<string,CustomLight>()
+ function removeCustomLight(light:CustomLight){
+  scene.remove(light);if(light instanceof THREE.DirectionalLight||light instanceof THREE.SpotLight)scene.remove(light.target)
+  light.dispose()
+ }
  const original=new Map<THREE.Mesh,THREE.Material|THREE.Material[]>()
  const variants=new Map<ModelMode,Map<THREE.Material,THREE.Material>>()
  const originalGeometry=new Map<THREE.Mesh,THREE.BufferGeometry>()
@@ -67,13 +73,22 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const end=()=>{interacting=false;idleUntil=performance.now()+900}
  canvas.addEventListener('pointerenter',enter);canvas.addEventListener('pointerleave',exit)
  controls.addEventListener('start',start);controls.addEventListener('end',end)
+ const calculateFitDistance=()=>{
+  const vertical=rad(camera.fov/2),horizontal=Math.atan(Math.tan(vertical)*camera.aspect)
+  return radius/Math.sin(Math.min(vertical,horizontal))*1.12
+ }
+ const captureCamera=():ModelCamera|null=>{
+  if(!model)return null
+  const offset=new THREE.Vector3().subVectors(controls.target,vertexCenter).divideScalar(radius)
+  return {azimuth:THREE.MathUtils.radToDeg(controls.getAzimuthalAngle()),elevation:90-THREE.MathUtils.radToDeg(controls.getPolarAngle()),zoom:calculateFitDistance()/Math.max(controls.getDistance(),.00001),fov:camera.fov,targetX:offset.x,targetY:offset.y,targetZ:offset.z}
+ }
  const resetCamera=()=>{
   if(!model)return
-  const vertical=rad(camera.fov/2),horizontal=Math.atan(Math.tan(vertical)*camera.aspect)
-  fitDistance=radius/Math.sin(Math.min(vertical,horizontal))*1.12
+  camera.fov=presentation.fov
+  fitDistance=calculateFitDistance()
   const phi=rad(90-presentation.elevation),theta=rad(presentation.azimuth)
-  controls.target.copy(vertexCenter)
-  camera.position.copy(vertexCenter).add(new THREE.Vector3().setFromSphericalCoords(fitDistance/presentation.zoom,phi,theta))
+  controls.target.copy(vertexCenter).addScaledVector(new THREE.Vector3(presentation.targetX,presentation.targetY,presentation.targetZ),radius)
+  camera.position.copy(controls.target).add(new THREE.Vector3().setFromSphericalCoords(fitDistance/presentation.zoom,phi,theta))
   controls.minDistance=radius*.12;controls.maxDistance=fitDistance*8
   camera.near=Math.max(radius*.001,.00001);camera.far=Math.max(radius*100,100);camera.updateProjectionMatrix()
   controls.update()
@@ -81,6 +96,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  function applyLighting(){
   renderer.toneMappingExposure=presentation.exposure
   scene.environmentIntensity=presentation.environment
+  key.visible=fill.visible=rim.visible=ambient.visible=presentation.usePresetRig
   key.intensity=presentation.keyLight
   key.color.set(presentation.lightColor)
   const angle=rad(presentation.lightAngle)
@@ -89,6 +105,26 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   rim.intensity=presentation.lighting==='soft'?.3:presentation.lighting==='contrast'?2:1
   ambient.intensity=presentation.lighting==='contrast'?.1:.35
   controls.autoRotateSpeed=presentation.rotationSpeed
+  const ids=new Set(presentation.lights.map(light=>light.id))
+  for(const [id,light] of customLights)if(!ids.has(id)){removeCustomLight(light);customLights.delete(id)}
+  for(const settings of presentation.lights){
+   let light=customLights.get(settings.id)
+   const matches=light&&(settings.type==='directional'?light instanceof THREE.DirectionalLight:settings.type==='point'?light instanceof THREE.PointLight:light instanceof THREE.SpotLight)
+   if(!matches){
+    if(light)removeCustomLight(light)
+    light=settings.type==='directional'?new THREE.DirectionalLight():settings.type==='point'?new THREE.PointLight():new THREE.SpotLight()
+    customLights.set(settings.id,light);scene.add(light)
+    if(light instanceof THREE.DirectionalLight||light instanceof THREE.SpotLight)scene.add(light.target)
+   }
+   if(!light)continue
+   light.visible=settings.enabled
+   light.color.set(settings.color)
+   // Distances are expressed in bounding radii, so small and large assets behave alike.
+   light.position.copy(vertexCenter).add(new THREE.Vector3().setFromSphericalCoords(settings.distance*radius,rad(90-settings.elevation),rad(settings.azimuth)))
+   light.intensity=settings.intensity*(light instanceof THREE.DirectionalLight?1:radius*radius)
+   if(light instanceof THREE.DirectionalLight||light instanceof THREE.SpotLight)light.target.position.copy(vertexCenter).addScaledVector(new THREE.Vector3(settings.targetX,settings.targetY,settings.targetZ),radius)
+   if(light instanceof THREE.SpotLight){light.angle=rad(settings.angle);light.penumbra=settings.softness}
+  }
  }
  function variant(mat:THREE.Material):THREE.Material{
   let cache=variants.get(mode);if(!cache){cache=new Map();variants.set(mode,cache)}
@@ -152,7 +188,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
    const position=obj.geometry.getAttribute('position');const count=obj instanceof THREE.InstancedMesh?obj.count:1
    stats.vertices+=(position?.count??0)*count;stats.triangles+=Math.floor((obj.geometry.index?.count??position?.count??0)/3)*count
   }})
-  stats.available=[...available];resetCamera();setMode(mode);callbacks.onLoad(stats)
+  stats.available=[...available];applyLighting();resetCamera();setMode(mode);callbacks.onLoad(stats)
  }).catch(error=>{if(!disposed)callbacks.onError(error)})
  applyLighting()
  let last=0
@@ -165,14 +201,15 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   controls.update(delta);renderer.render(scene,camera)
  })
  return {
-  setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom;presentation=next;applyLighting();if(reframe)resetCamera()},
-  setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,resetCamera,
+  setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;presentation=next;applyLighting();if(reframe)resetCamera()},
+  setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,resetCamera,captureCamera,
   dispose(){if(disposed)return;disposed=true;renderer.setAnimationLoop(null);observer.disconnect();intersection.disconnect();controls.dispose();canvas.removeEventListener('pointerenter',enter);canvas.removeEventListener('pointerleave',exit)
    mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model)
    for(const helper of skeletonHelpers){scene.remove(helper);helper.dispose()}
    releaseWireGeometries();checker?.dispose();matcap?.dispose()
    if(model){for(const [mesh,material] of original)mesh.material=material;disposeObject(model);scene.remove(model)}
    for(const cache of variants.values())for(const material of cache.values())material.dispose()
+   for(const light of customLights.values())removeCustomLight(light);customLights.clear()
    environment.dispose();draco.dispose();ktx2.dispose();renderer.dispose();canvas.remove()
   }
  }

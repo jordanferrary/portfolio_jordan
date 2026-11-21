@@ -1,21 +1,42 @@
 export type ModelMode='material'|'neutral'|'clay'|'wireframe'|'shaded-wire'|'clay-wire'|'flat'|'flat-wire'|'normals'|'unlit'|'metalness'|'roughness'|'normal-map'|'ao'|'opacity'|'emission'|'specular'|'scattering'|'matcap'|'matcap-surface'|'uv'|'bones'|'weights'
-export type ModelPresentation={
+export const MAX_MODEL_LIGHTS=8
+export type ModelLight={id:string;name:string;type:'directional'|'point'|'spot';enabled:boolean;color:string;intensity:number;azimuth:number;elevation:number;distance:number;angle:number;softness:number;targetX:number;targetY:number;targetZ:number}
+export type ModelCamera={azimuth:number;elevation:number;zoom:number;fov:number;targetX:number;targetY:number;targetZ:number}
+export type ModelPresentation=ModelCamera&{
  lighting:'studio'|'soft'|'contrast';exposure:number;environment:number;keyLight:number;lightAngle:number;lightColor:string;background:string;
- autoRotate:boolean;rotationSpeed:number;azimuth:number;elevation:number;zoom:number
+ autoRotate:boolean;rotationSpeed:number;usePresetRig:boolean;lights:ModelLight[]
 }
 export const DEFAULT_MODEL_PRESENTATION:ModelPresentation={
  lighting:'studio',exposure:1,environment:1,keyLight:2,lightAngle:45,lightColor:'#ffffff',background:'#15101e',
- autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1
+ autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,lights:[]
 }
 const numeric=(v:unknown,fallback:number,min:number,max:number)=>typeof v==='number'&&Number.isFinite(v)?Math.min(max,Math.max(min,v)):fallback
 const color=(v:unknown,fallback:string)=>typeof v==='string'&&/^#[a-f0-9]{6}$/i.test(v)?v:fallback
+export function createModelLight(id:string):ModelLight{return {id,name:'Nova luz',type:'directional',enabled:true,color:'#ffffff',intensity:1,azimuth:-45,elevation:35,distance:3,angle:45,softness:.5,targetX:0,targetY:0,targetZ:0}}
+function normalizeLights(value:unknown):ModelLight[]{
+ if(!Array.isArray(value))return []
+ const ids=new Set<string>()
+ return value.slice(0,MAX_MODEL_LIGHTS).flatMap((item:unknown,index)=>{
+  if(!item||typeof item!=='object')return []
+  const v=item as Partial<ModelLight>
+  let id=typeof v.id==='string'&&v.id.trim()?v.id.slice(0,80):'light-'+index
+  while(ids.has(id))id+='-copy'
+  ids.add(id);const d=createModelLight(id)
+  return [{id,name:typeof v.name==='string'&&v.name.trim()?v.name.slice(0,50):d.name,type:v.type==='point'||v.type==='spot'?v.type:'directional' as const,
+   enabled:v.enabled!==false,color:color(v.color,d.color),intensity:numeric(v.intensity,d.intensity,0,10),azimuth:numeric(v.azimuth,d.azimuth,-180,180),
+   elevation:numeric(v.elevation,d.elevation,-90,90),distance:numeric(v.distance,d.distance,.25,12),angle:numeric(v.angle,d.angle,5,89),softness:numeric(v.softness,d.softness,0,1),
+   targetX:numeric(v.targetX,0,-3,3),targetY:numeric(v.targetY,0,-3,3),targetZ:numeric(v.targetZ,0,-3,3)}]
+ })
+}
 export function normalizeModelPresentation(value?:Partial<ModelPresentation>|null):ModelPresentation{
  const d=DEFAULT_MODEL_PRESENTATION,v=value??{}
  return {lighting:v.lighting==='soft'||v.lighting==='contrast'?v.lighting:'studio',
  exposure:numeric(v.exposure,d.exposure,.2,3),environment:numeric(v.environment,d.environment,0,2),keyLight:numeric(v.keyLight,d.keyLight,0,5),
  lightAngle:numeric(v.lightAngle,d.lightAngle,-180,180),lightColor:color(v.lightColor,d.lightColor),background:color(v.background,d.background),
  autoRotate:typeof v.autoRotate==='boolean'?v.autoRotate:d.autoRotate,rotationSpeed:numeric(v.rotationSpeed,d.rotationSpeed,.2,4),
- azimuth:numeric(v.azimuth,d.azimuth,-180,180),elevation:numeric(v.elevation,d.elevation,-80,80),zoom:numeric(v.zoom,d.zoom,.5,2)}
+ azimuth:numeric(v.azimuth,d.azimuth,-180,180),elevation:numeric(v.elevation,d.elevation,-89,89),zoom:numeric(v.zoom,d.zoom,.2,8),
+ fov:numeric(v.fov,d.fov,15,80),targetX:numeric(v.targetX,0,-5,5),targetY:numeric(v.targetY,0,-5,5),targetZ:numeric(v.targetZ,0,-5,5),
+ usePresetRig:v.usePresetRig!==false,lights:normalizeLights(v.lights)}
 }
 export type InspectorGroup={label:string;items:readonly {id:ModelMode;label:string;hint?:string}[]}
 export const INSPECTOR_GROUPS:readonly InspectorGroup[]=[

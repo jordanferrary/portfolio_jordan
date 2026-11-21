@@ -49,3 +49,12 @@ test('solid topology expands indexed triangles without changing original geometr
  assert.equal(mat.depthWrite,true);assert.equal(mat.depthTest,true)
  expanded.dispose();source.dispose();mat.dispose()
 })
+
+test('dedicated 3D editor saves independent light rigs and camera settings',async()=>{
+ const p=normalizeModelPresentation({fov:200,targetX:9,usePresetRig:false,lights:Array.from({length:12},(_,i)=>({id:'same',name:'Light '+i,type:'spot',intensity:50,angle:110,distance:2}))})
+ assert.equal(p.fov,80);assert.equal(p.targetX,5);assert.equal(p.usePresetRig,false);assert.equal(p.lights.length,8);assert.equal(new Set(p.lights.map(l=>l.id)).size,8);assert.equal(p.lights[0].intensity,10);assert.equal(p.lights[0].angle,89)
+ const [editor,runtime,view]=await Promise.all(['src/components/sections/model-presentation-editor.tsx','src/lib/model-inspector-stage.ts','src/components/ui/project-model.tsx'].map(path=>readFile(path,'utf8')))
+ assert.match(editor,/showModal\(\)/);assert.match(editor,/startActive/);assert.match(editor,/onChange\(normalizeModelPresentation\(draft\)\)/)
+ assert.match(runtime,/new THREE\.PointLight/);assert.match(runtime,/new THREE\.SpotLight/);assert.match(runtime,/captureCamera/);assert.match(runtime,/customLights\.clear\(\)/)
+ assert.match(view,/stage\.current\?\.captureCamera\(\)/)
+})

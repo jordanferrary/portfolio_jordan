@@ -1,20 +1,20 @@
 import '../../styles/project-model.css'
 import {useEffect,useRef,useState} from 'react'
-import {Box,ExternalLink,Move3d,Play,Pause,RotateCcw,Expand,SlidersHorizontal} from 'lucide-react'
+import {Box,ExternalLink,Move3d,Play,Pause,RotateCcw,Expand,SlidersHorizontal,Camera} from 'lucide-react'
 import {AssetImage} from './asset-image'
 import {MODEL_MIME,parseModelUrl} from '../../lib/model-embed'
 import {isLocalMedia,readMedia} from '../../lib/media-store'
 import {resolvePublishedAsset} from '../../lib/published-assets'
-import {DEFAULT_INSPECTOR_OPTIONS,normalizeModelPresentation,type ModelMode,type ModelPresentation,type InspectorOptions} from '../../lib/model-presentation'
+import {DEFAULT_INSPECTOR_OPTIONS,normalizeModelPresentation,type ModelMode,type ModelPresentation,type InspectorOptions,type ModelCamera} from '../../lib/model-presentation'
 import {ModelInspectorPanel} from './model-inspector-panel'
 import type {ModelStage,ModelStats} from '../../lib/model-inspector-stage'
-type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>}
+type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;onCaptureCamera?:(camera:ModelCamera)=>void}
 export function ProjectModel(props:Props){return <ModelViewer key={props.url} {...props}/>}
-function ModelViewer({url,poster,title='3D artwork',presentation}:Props){
+function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,onCaptureCamera}:Props){
  const parsed=parseModelUrl(url)
  const settings=normalizeModelPresentation(presentation)
  const configuration=useRef(settings);configuration.current=settings
- const [activated,setActivated]=useState(false)
+ const [activated,setActivated]=useState(startActive)
  const [error,setError]=useState('')
  const [ready,setReady]=useState(false)
  const [resolvedSource,setResolvedSource]=useState('')
@@ -67,7 +67,7 @@ function ModelViewer({url,poster,title='3D artwork',presentation}:Props){
     <span className="project-model-launch"><Move3d size={17}/><Play size={15} fill="currentColor"/> Explore model</span>
     <span className="project-model-format">{parsed.format.toUpperCase()} MODEL</span>
    </button>:<><div className="project-model-stage" ref={canvas}/>{!ready&&!error&&<p className="project-model-loading" role="status">Loading interactive 3D model…</p>}
-   {ready&&<><div className="model-inspector-toolbar"><button type="button" className={panelOpen?'primary-action':'secondary-action'} aria-expanded={panelOpen} onClick={()=>setPanelOpen(v=>!v)}><SlidersHorizontal size={16}/> Model inspector</button><div className="model-inspector-actions"><button className="secondary-action" type="button" aria-label={rotate?'Pause rotation':'Resume rotation'} title={rotate?'Pause rotation':'Resume rotation'} onClick={()=>setRotate(v=>!v)}>{rotate?<Pause size={16}/>:<Play size={16}/>}</button><button className="secondary-action" type="button" aria-label="Reset camera" title="Reset camera" onClick={()=>stage.current?.resetCamera()}><RotateCcw size={16}/></button>{typeof document!=='undefined'&&document.fullscreenEnabled&&<button className="secondary-action" type="button" aria-label="Fullscreen" title="Fullscreen" onClick={fullscreen}><Expand size={16}/></button>}</div></div>{panelOpen&&stats&&<ModelInspectorPanel mode={mode} onMode={setMode} options={options} onOptions={setOptions} stats={stats} onClose={()=>setPanelOpen(false)} animation={animation} playing={playing} onAnimation={index=>{setAnimation(index);setPlaying(index>=0)}} onPlaying={setPlaying}/>}</>}
+   {ready&&<><div className="model-inspector-toolbar"><button type="button" className={panelOpen?'primary-action':'secondary-action'} aria-expanded={panelOpen} onClick={()=>setPanelOpen(v=>!v)}><SlidersHorizontal size={16}/> Model inspector</button><div className="model-inspector-actions">{onCaptureCamera&&<button className="secondary-action" type="button" title="Salvar o enquadramento atual" onClick={()=>{const captured=stage.current?.captureCamera();if(captured){setRotate(false);onCaptureCamera(captured)}}}><Camera size={16}/> Capturar câmera</button>}<button className="secondary-action" type="button" aria-label={rotate?'Pause rotation':'Resume rotation'} title={rotate?'Pause rotation':'Resume rotation'} onClick={()=>setRotate(v=>!v)}>{rotate?<Pause size={16}/>:<Play size={16}/>}</button><button className="secondary-action" type="button" aria-label="Reset camera" title="Reset camera" onClick={()=>stage.current?.resetCamera()}><RotateCcw size={16}/></button>{typeof document!=='undefined'&&document.fullscreenEnabled&&<button className="secondary-action" type="button" aria-label="Fullscreen" title="Fullscreen" onClick={fullscreen}><Expand size={16}/></button>}</div></div>{panelOpen&&stats&&<ModelInspectorPanel mode={mode} onMode={setMode} options={options} onOptions={setOptions} stats={stats} onClose={()=>setPanelOpen(false)} animation={animation} playing={playing} onAnimation={index=>{setAnimation(index);setPlaying(index>=0)}} onPlaying={setPlaying}/>}</>}
    {error&&<div className="project-model-error" role="alert"><p>{error}</p>{resolvedSource&&!isLocalMedia(parsed.url)&&<a href={resolvedSource} target="_blank" rel="noopener noreferrer">Open model source <ExternalLink size={14}/></a>}</div>}</>}
   </div>
   <div className="model-inspector-meta"><p className="project-model-hint"><Move3d size={15}/> Rotate · Zoom · Pan — 3D assets load only on request</p>{stats&&<span translate="no">{stats.triangles.toLocaleString()} tris · {stats.vertices.toLocaleString()} verts</span>}</div>
