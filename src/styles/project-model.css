@@ -24,3 +24,23 @@
 .model-file-drop small{font-size:11px}
 .model-file-drop.is-dragging{border-color:var(--jf-secondary);background:var(--jf-surface-tint,var(--jf-surface))}
 .model-file-field .editor-help{margin:0}
+
+/* Compact model inspection bar uses existing glass action classes. */
+.project-model-stage canvas{display:block;width:100%;height:100%;touch-action:none;outline-offset:-3px;cursor:grab}
+.project-model-stage canvas:active{cursor:grabbing}
+.model-inspector-toolbar{position:absolute;z-index:3;left:10px;right:10px;bottom:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:7px;border:1px solid var(--jf-panel-edge,var(--jf-border));border-radius:15px;background:color-mix(in srgb,var(--jf-surface) 88%,transparent);backdrop-filter:blur(8px)}
+.model-inspector-modes,.model-inspector-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.site-shell .model-inspector-toolbar button{display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;min-height:34px;min-width:34px;margin:0;border-radius:10px;font-size:11px;line-height:1.2;white-space:nowrap}
+.model-inspector-actions{margin-left:auto}
+.model-inspector-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.model-inspector-meta>span{font-size:11px;color:var(--jf-muted)}
+.project-model-frame:fullscreen{width:100%;height:100%;max-width:none;aspect-ratio:auto;border-radius:0}
+.model-presentation-editor{border:1px solid var(--jf-border);border-radius:14px;padding:14px;background:var(--jf-surface-deep,var(--jf-surface));margin:12px 0}
+.model-presentation-editor summary{display:flex;align-items:center;gap:8px;font-weight:650;cursor:pointer;color:var(--jf-text);margin-bottom:12px}
+.model-presentation-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;margin:12px 0}
+.model-presentation-grid label{min-width:0;margin:0}
+.model-presentation-grid label>span{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.model-presentation-grid output{color:var(--jf-secondary);font-variant-numeric:tabular-nums}
+.model-presentation-grid input[type=range]{width:100%;accent-color:var(--jf-primary);padding:0}
+.model-presentation-grid input[type=color]{width:100%;height:38px;padding:3px}
+@media(max-width:600px){.model-inspector-toolbar{left:5px;right:5px;bottom:5px;padding:5px;gap:5px}.site-shell .model-inspector-toolbar button{padding:6px 8px;min-height:32px;font-size:10px}.model-presentation-grid{grid-template-columns:1fr}.model-inspector-meta{justify-content:center}}

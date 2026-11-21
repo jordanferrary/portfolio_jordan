@@ -3,7 +3,7 @@ import type {VisitorLanguage} from './visitor-language'
 
 /** Sensitivity is independent of artistic categories, including legacy warning labels. */
 type ClassifiedProject=Pick<Project,'category'|'sensitiveTheme'>
-export function isSensitiveCategory(category:string):boolean{return category.trim().toUpperCase()==='NSFW'}
+export function isSensitiveCategory(category:string):boolean{return typeof category==='string'&&category.trim().toUpperCase()==='NSFW'}
 export function isSensitiveTheme(project:ClassifiedProject):boolean{return project.sensitiveTheme===true||isSensitiveCategory(project.category)}
 export function projectMatchesVisibility(project:ClassifiedProject,filter:string):boolean{
  if(filter==='All')return true

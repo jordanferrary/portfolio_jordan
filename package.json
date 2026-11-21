@@ -20,7 +20,7 @@
     "test:page-layout": "node --test scripts/page-layout.test.mjs",
     "test:route-glitch": "node --test scripts/route-glitch.test.mjs",
     "test:runtime-recovery": "node --test scripts/runtime-recovery.test.mjs",
-    "test:studio-media": "node --test scripts/studio-media-pipeline.test.mjs scripts/model-upload.test.mjs",
+    "test:studio-media": "node --test scripts/studio-media-pipeline.test.mjs scripts/model-upload.test.mjs scripts/model-inspector.test.mjs scripts/sensitive-themes.test.mjs",
     "test:art-resolution": "node --test scripts/art-resolution.test.mjs",
     "test:published-media": "node --test scripts/published-media.test.mjs",
     "test:page-icons": "node --test scripts/custom-page-icons.test.mjs scripts/showcase-pdf.test.mjs scripts/showcase-layout.test.mjs"
