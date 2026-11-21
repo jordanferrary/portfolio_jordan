@@ -1,0 +1,8 @@
+/* Keep artwork geometry, existing framing and the site palette intact. */
+.gallery-card .card-preview{overflow:hidden}
+.gallery-card .card-preview .sensitive-preview-image{filter:blur(28px) brightness(.63)!important}
+.sensitive-preview-notice{position:absolute;z-index:3;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;gap:.45rem;max-width:90%;padding:.55rem .75rem;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(12,10,19,.82);color:#fff;font-size:.75rem;line-height:1.2;text-align:center;pointer-events:none}
+.sensitive-preview-notice svg{flex-shrink:0}
+.sensitive-project-warning{max-width:48rem;margin:3rem auto;padding:clamp(1.2rem,4vw,3rem);text-align:center}
+.sensitive-project-warning p{margin:1rem auto 1.5rem;max-width:34rem}
+.sensitive-warning-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem}
