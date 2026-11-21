@@ -3,7 +3,7 @@ import {TransformControls} from 'three/examples/jsm/controls/TransformControls.j
 import type {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js'
 import type {LightEditState,LightEditCallbacks,LightEditPatch} from './model-presentation'
 export type EditableLight=THREE.DirectionalLight|THREE.PointLight|THREE.SpotLight
-type Marker={group:THREE.Group;dot:THREE.Mesh<THREE.SphereGeometry,THREE.MeshBasicMaterial>;lines:THREE.LineSegments<THREE.BufferGeometry,THREE.LineBasicMaterial>}
+type Marker={group:THREE.Group;dot:THREE.Mesh<THREE.SphereGeometry,THREE.MeshBasicMaterial>;lines:THREE.LineSegments<THREE.BufferGeometry,THREE.LineBasicMaterial>;shapeKey:string}
 const toDeg=THREE.MathUtils.radToDeg
 /** All helper objects are isolated from the asset and created only in Studio. */
 export function createLightGizmos(scene:THREE.Scene,camera:THREE.PerspectiveCamera,canvas:HTMLCanvasElement,orbit:OrbitControls,lights:Map<string,EditableLight>,center:THREE.Vector3,getRadius:()=>number,callbacks:LightEditCallbacks){
@@ -18,6 +18,7 @@ export function createLightGizmos(scene:THREE.Scene,camera:THREE.PerspectiveCame
  function removeMarker(marker:Marker){marker.group.removeFromParent();marker.dot.material.dispose();marker.lines.material.dispose();marker.lines.geometry.dispose()}
  function sync(){
   root.visible=state.helpers
+  transform.enabled=state.helpers
   for(const [id,marker] of markers)if(!lights.has(id)){removeMarker(marker);markers.delete(id)}
   for(const [id,light] of lights){
    let marker=markers.get(id)
@@ -25,7 +26,7 @@ export function createLightGizmos(scene:THREE.Scene,camera:THREE.PerspectiveCame
     const group=new THREE.Group(),dot=new THREE.Mesh(sphere,new THREE.MeshBasicMaterial({depthTest:false,depthWrite:false,toneMapped:false}))
     const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.BufferAttribute(new Float32Array(24*2*3),3));geometry.setDrawRange(0,0)
     const lines=new THREE.LineSegments(geometry,new THREE.LineBasicMaterial({depthTest:false,depthWrite:false,toneMapped:false,transparent:true}))
-    dot.renderOrder=110;dot.userData.lightId=id;lines.renderOrder=109;lines.frustumCulled=false;group.add(dot,lines);root.add(group);marker={group,dot,lines};markers.set(id,marker)
+    dot.renderOrder=110;dot.userData.lightId=id;lines.renderOrder=109;lines.frustumCulled=false;group.add(dot,lines);root.add(group);marker={group,dot,lines,shapeKey:''};markers.set(id,marker)
    }
    marker.group.position.copy(light.position)
    const selected=id===state.selected
@@ -33,6 +34,9 @@ export function createLightGizmos(scene:THREE.Scene,camera:THREE.PerspectiveCame
    marker.dot.scale.setScalar(Math.max(getRadius()*.035,viewDistance*.014)*(selected?1.35:1))
    marker.dot.material.color.copy(light.color);marker.dot.material.color.lerp(new THREE.Color(0xffffff),selected?.32:.12)
    marker.lines.material.color.copy(marker.dot.material.color);marker.lines.material.opacity=selected?.95:light.visible?.55:.2
+   const shapeKey=[light.type,light.position.x,light.position.y,light.position.z,getRadius(),...(light instanceof THREE.PointLight?[]:[light.target.position.x,light.target.position.y,light.target.position.z]),...(light instanceof THREE.SpotLight?[light.angle]:[])].join('|')
+   if(marker.shapeKey===shapeKey)continue
+   marker.shapeKey=shapeKey
    const data=marker.lines.geometry.getAttribute('position') as THREE.BufferAttribute
    let n=0
    function line(a:THREE.Vector3,b:THREE.Vector3){data.setXYZ(n++,a.x,a.y,a.z);data.setXYZ(n++,b.x,b.y,b.z)}

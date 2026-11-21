@@ -10,7 +10,7 @@ import {createChecker,createMatcap,debugMaterial} from './model-debug-materials'
 import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model-solid-wireframe'
 import {createLightGizmos} from './model-light-gizmos'
 export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[];unlitMaterials:number}
-export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean)=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;setLightEditing:(state:LightEditState)=>void;dispose:()=>void}
+export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean)=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;setLightEditing:(state:LightEditState)=>void;frameLights:()=>void;dispose:()=>void}
 const rad=THREE.MathUtils.degToRad
 function disposeObject(root:THREE.Object3D){
  const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>(),skeletons=new Set<THREE.Skeleton>()
@@ -85,6 +85,18 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   if(!model)return null
   const offset=new THREE.Vector3().subVectors(controls.target,vertexCenter).divideScalar(radius)
   return {azimuth:THREE.MathUtils.radToDeg(controls.getAzimuthalAngle()),elevation:90-THREE.MathUtils.radToDeg(controls.getPolarAngle()),zoom:calculateFitDistance()/Math.max(controls.getDistance(),.00001),fov:camera.fov,targetX:offset.x,targetY:offset.y,targetZ:offset.z}
+ }
+ const frameLights=()=>{
+  if(!model||!gizmos)return
+  const bounds=new THREE.Box3().setFromCenterAndSize(vertexCenter,new THREE.Vector3(radius*2,radius*2,radius*2))
+  for(const light of customLights.values()){bounds.expandByPoint(light.position);if(light instanceof THREE.DirectionalLight||light instanceof THREE.SpotLight)bounds.expandByPoint(light.target.position)}
+  const sphere=bounds.getBoundingSphere(new THREE.Sphere())
+  const direction=new THREE.Vector3().subVectors(camera.position,controls.target).normalize()
+  const vertical=rad(camera.fov/2),horizontal=Math.atan(Math.tan(vertical)*camera.aspect)
+  const distance=sphere.radius/Math.sin(Math.min(vertical,horizontal))*1.15
+  controls.maxDistance=Math.max(controls.maxDistance,distance*2)
+  controls.target.copy(sphere.center);camera.position.copy(sphere.center).addScaledVector(direction,distance)
+  camera.far=Math.max(camera.far,distance*4);camera.updateProjectionMatrix();controls.update()
  }
  const resetCamera=()=>{
   if(!model)return
@@ -211,7 +223,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  })
  return {
   setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;presentation=next;applyLighting();if(relight){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();setMode(mode)}if(reframe)resetCamera()},
-  setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,resetCamera,captureCamera,setLightEditing(state){editState=state;gizmos?.setState(state);applyLighting()},
+  setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,resetCamera,captureCamera,frameLights,setLightEditing(state){editState=state;gizmos?.setState(state);applyLighting()},
   dispose(){if(disposed)return;disposed=true;renderer.setAnimationLoop(null);observer.disconnect();intersection.disconnect();controls.dispose();canvas.removeEventListener('pointerenter',enter);canvas.removeEventListener('pointerleave',exit)
    mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model)
    for(const helper of skeletonHelpers){scene.remove(helper);helper.dispose()}
