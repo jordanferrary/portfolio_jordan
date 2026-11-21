@@ -68,7 +68,7 @@ test('isolates route, Studio and root failures rather than blanking the whole si
  assert.match(main,/vite:preloadError/)
  assert.match(main,/<AppErrorBoundary><App \/><\/AppErrorBoundary>/)
  assert.match(app,/page==='portfolio'&&<AppErrorBoundary compact>/)
- assert.match(app,/page==='project'&&project&&<AppErrorBoundary compact>/)
+ assert.match(app,/page==='project'&&project&&!shouldCoverProject\(project,revealedProjects\)&&<AppErrorBoundary compact>/)
  assert.match(app,/editing&&<AppErrorBoundary compact>/)
  assert.match(app,/dataset\.jfStudioActive=/)
  assert.match(boundary,/window\.location\.reload\(\)/)
