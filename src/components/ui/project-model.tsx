@@ -5,12 +5,12 @@ import {AssetImage} from './asset-image'
 import {MODEL_MIME,parseModelUrl} from '../../lib/model-embed'
 import {isLocalMedia,readMedia} from '../../lib/media-store'
 import {resolvePublishedAsset} from '../../lib/published-assets'
-import {DEFAULT_INSPECTOR_OPTIONS,normalizeModelPresentation,type ModelMode,type ModelPresentation,type InspectorOptions,type ModelCamera} from '../../lib/model-presentation'
+import {DEFAULT_INSPECTOR_OPTIONS,normalizeModelPresentation,type ModelMode,type ModelPresentation,type InspectorOptions,type ModelCamera,type LightEditState,type LightEditCallbacks} from '../../lib/model-presentation'
 import {ModelInspectorPanel} from './model-inspector-panel'
 import type {ModelStage,ModelStats} from '../../lib/model-inspector-stage'
-type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;resetCameraToken?:number;onCaptureCamera?:(camera:ModelCamera)=>void}
+type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;resetCameraToken?:number;onCaptureCamera?:(camera:ModelCamera)=>void;lightEditing?:LightEditState;lightCallbacks?:LightEditCallbacks}
 export function ProjectModel(props:Props){return <ModelViewer key={props.url} {...props}/>}
-function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,resetCameraToken,onCaptureCamera}:Props){
+function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,resetCameraToken,onCaptureCamera,lightEditing,lightCallbacks}:Props){
  const parsed=parseModelUrl(url)
  const settings=normalizeModelPresentation(presentation)
  const configuration=useRef(settings);configuration.current=settings
@@ -27,11 +27,14 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
  const canvas=useRef<HTMLDivElement>(null),frame=useRef<HTMLDivElement>(null),stage=useRef<ModelStage|null>(null)
  const modeRef=useRef(mode);modeRef.current=mode
  const rotationRef=useRef(rotate);rotationRef.current=rotate
+ const lightStateRef=useRef(lightEditing);lightStateRef.current=lightEditing
+ const lightCallbacksRef=useRef(lightCallbacks);lightCallbacksRef.current=lightCallbacks
  useEffect(()=>{setRotate(settings.autoRotate)},[settings.autoRotate])
  useEffect(()=>{stage.current?.setPresentation(configuration.current)})
  useEffect(()=>{stage.current?.resetCamera()},[resetCameraToken])
  useEffect(()=>{stage.current?.setMode(mode)},[mode])
  useEffect(()=>{stage.current?.setRotation(rotate)},[rotate])
+ useEffect(()=>{if(lightEditing)stage.current?.setLightEditing(lightEditing)},[lightEditing])
  useEffect(()=>{stage.current?.setOptions(options)},[options])
  useEffect(()=>{stage.current?.setAnimation(animation,playing)},[animation,playing])
  useEffect(()=>{
@@ -51,9 +54,9 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
    setResolvedSource(source)
    const {createModelStage}=await import('../../lib/model-inspector-stage')
    if(!live||!canvas.current)return
-   instance=createModelStage(canvas.current,source,configuration.current,{onLoad:value=>{if(live){setStats(value);setReady(true);setError('')}},onError:()=>{if(live)setError('Could not load the 3D model. Check its format, textures and connection.')}})
+   instance=createModelStage(canvas.current,source,configuration.current,{onLoad:value=>{if(live){setStats(value);setReady(true);setError('')}},onError:()=>{if(live)setError('Could not load the 3D model. Check its format, textures and connection.')}},lightCallbacksRef.current?{onSelect:id=>lightCallbacksRef.current?.onSelect(id),onChange:(id,patch)=>lightCallbacksRef.current?.onChange(id,patch)}:undefined)
    stage.current=instance
-   instance.setMode(modeRef.current);instance.setRotation(rotationRef.current)
+   instance.setMode(modeRef.current);instance.setRotation(rotationRef.current);if(lightStateRef.current)instance.setLightEditing(lightStateRef.current)
   }
   void prepare().catch(()=>{if(live)setError('Could not initialize the 3D viewer. Check WebGL support and the model file.')})
   return ()=>{live=false;instance?.dispose();if(stage.current===instance)stage.current=null;if(objectUrl)URL.revokeObjectURL(objectUrl)}
@@ -71,6 +74,6 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
    {ready&&<><div className="model-inspector-toolbar"><button type="button" className={panelOpen?'primary-action':'secondary-action'} aria-expanded={panelOpen} onClick={()=>setPanelOpen(v=>!v)}><SlidersHorizontal size={16}/> Model inspector</button><div className="model-inspector-actions">{onCaptureCamera&&<button className="secondary-action" type="button" title="Salvar o enquadramento atual" onClick={()=>{const captured=stage.current?.captureCamera();if(captured){setRotate(false);onCaptureCamera(captured)}}}><Camera size={16}/> Capturar câmera</button>}<button className="secondary-action" type="button" aria-label={rotate?'Pause rotation':'Resume rotation'} title={rotate?'Pause rotation':'Resume rotation'} onClick={()=>setRotate(v=>!v)}>{rotate?<Pause size={16}/>:<Play size={16}/>}</button><button className="secondary-action" type="button" aria-label="Reset camera" title="Reset camera" onClick={()=>stage.current?.resetCamera()}><RotateCcw size={16}/></button>{typeof document!=='undefined'&&document.fullscreenEnabled&&<button className="secondary-action" type="button" aria-label="Fullscreen" title="Fullscreen" onClick={fullscreen}><Expand size={16}/></button>}</div></div>{panelOpen&&stats&&<ModelInspectorPanel mode={mode} onMode={setMode} options={options} onOptions={setOptions} stats={stats} onClose={()=>setPanelOpen(false)} animation={animation} playing={playing} onAnimation={index=>{setAnimation(index);setPlaying(index>=0)}} onPlaying={setPlaying}/>}</>}
    {error&&<div className="project-model-error" role="alert"><p>{error}</p>{resolvedSource&&!isLocalMedia(parsed.url)&&<a href={resolvedSource} target="_blank" rel="noopener noreferrer">Open model source <ExternalLink size={14}/></a>}</div>}</>}
   </div>
-  <div className="model-inspector-meta"><p className="project-model-hint"><Move3d size={15}/> Rotate · Zoom · Pan — 3D assets load only on request</p>{stats&&<span translate="no">{stats.triangles.toLocaleString()} tris · {stats.vertices.toLocaleString()} verts</span>}</div>
+  {lightEditing&&stats&&<div className="model-light-preview-notice">{stats.unlitMaterials>0&&!settings.relightUnlit&&<span>Este modelo contém materiais Unlit, que não recebem iluminação. Ative “Iluminar materiais Unlit” na aba Luzes.</span>}{!['material','neutral','clay','flat','shaded-wire','clay-wire','flat-wire','bones'].includes(mode)&&<span>O modo de inspeção atual não mostra a iluminação. Volte ao Render final ou Clay.</span>}</div>}<div className="model-inspector-meta"><p className="project-model-hint"><Move3d size={15}/> Rotate · Zoom · Pan — 3D assets load only on request</p>{stats&&<span translate="no">{stats.triangles.toLocaleString()} tris · {stats.vertices.toLocaleString()} verts</span>}</div>
  </section>
 }

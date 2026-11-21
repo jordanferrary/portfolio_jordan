@@ -58,3 +58,17 @@ test('dedicated 3D editor saves independent light rigs and camera settings',asyn
  assert.match(runtime,/new THREE\.PointLight/);assert.match(runtime,/new THREE\.SpotLight/);assert.match(runtime,/captureCamera/);assert.match(runtime,/customLights\.clear\(\)/)
  assert.match(view,/stage\.current\?\.captureCamera\(\)/)
 })
+
+test('light authoring helpers are Studio-only and solo isolates the light',async()=>{
+ const [stage,gizmos,view,editor,page]=await Promise.all(['src/lib/model-inspector-stage.ts','src/lib/model-light-gizmos.ts','src/components/ui/project-model.tsx','src/components/sections/model-presentation-editor.tsx','src/components/sections/project-page.tsx'].map(p=>readFile(p,'utf8')))
+ assert.match(stage,/lightEditing\?createLightGizmos/)
+ assert.match(stage,/scene\.environmentIntensity=solo\?0/)
+ assert.match(stage,/presentation\.relightUnlit/)
+ assert.match(gizmos,/new TransformControls/);assert.match(gizmos,/orbit\.enabled=!dragging/)
+ assert.match(gizmos,/callbacks\.onChange\(id,patch\)/);assert.match(gizmos,/transform\.dispose\(\)/)
+ assert.match(editor,/lightCallbacks=\{\{onSelect:selectLight,onChange:changeLight\}\}/)
+ assert.match(view,/lightCallbacksRef\.current\?/)
+ assert.doesNotMatch(page,/lightEditing=|lightCallbacks=/)
+ const p=normalizeModelPresentation({relightUnlit:true,useEmbeddedLights:false})
+ assert.equal(p.relightUnlit,true);assert.equal(p.useEmbeddedLights,false)
+})

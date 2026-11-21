@@ -5,11 +5,12 @@ import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
 import {KTX2Loader} from 'three/examples/jsm/loaders/KTX2Loader.js'
 import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js'
-import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,type InspectorOptions,type ModelMode,type ModelPresentation,type ModelCamera} from './model-presentation'
+import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,type InspectorOptions,type ModelMode,type ModelPresentation,type ModelCamera,type LightEditState,type LightEditCallbacks} from './model-presentation'
 import {createChecker,createMatcap,debugMaterial} from './model-debug-materials'
 import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model-solid-wireframe'
-export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[]}
-export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean)=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;dispose:()=>void}
+import {createLightGizmos} from './model-light-gizmos'
+export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[];unlitMaterials:number}
+export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean)=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;setLightEditing:(state:LightEditState)=>void;dispose:()=>void}
 const rad=THREE.MathUtils.degToRad
 function disposeObject(root:THREE.Object3D){
  const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>(),skeletons=new Set<THREE.Skeleton>()
@@ -26,7 +27,7 @@ function disposeObject(root:THREE.Object3D){
  for(const g of geometries)g.dispose()
  for(const s of skeletons)s.dispose()
 }
-export function createModelStage(host:HTMLElement,source:string,initial:ModelPresentation,callbacks:{onLoad:(stats:ModelStats)=>void;onError:(error:unknown)=>void}):ModelStage{
+export function createModelStage(host:HTMLElement,source:string,initial:ModelPresentation,callbacks:{onLoad:(stats:ModelStats)=>void;onError:(error:unknown)=>void},lightEditing?:LightEditCallbacks):ModelStage{
  let disposed=false,model:THREE.Object3D|undefined,presentation=initial,mode:ModelMode='material',rotate=initial.autoRotate,hovered=false,interacting=false,visible=true,idleUntil=0
  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'})
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5))
@@ -60,6 +61,9 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const wireUniforms=createWireUniforms(options.wireColor,options.wireOpacity)
  const vertexCenter=new THREE.Vector3(),size=new THREE.Vector3()
  let radius=1,fitDistance=3
+ let editState:LightEditState={selected:null,helpers:false,target:false,solo:false}
+ const embeddedLights=new Map<THREE.Light,boolean>()
+ const gizmos=lightEditing?createLightGizmos(scene,camera,canvas,controls,customLights,vertexCenter,()=>radius,lightEditing):null
  const resize=()=>{
   const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight)
   camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)
@@ -95,8 +99,10 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  }
  function applyLighting(){
   renderer.toneMappingExposure=presentation.exposure
-  scene.environmentIntensity=presentation.environment
-  key.visible=fill.visible=rim.visible=ambient.visible=presentation.usePresetRig
+  const solo=editState.solo&&presentation.lights.some(light=>light.id===editState.selected)
+  scene.environmentIntensity=solo?0:presentation.environment
+  key.visible=fill.visible=rim.visible=ambient.visible=presentation.usePresetRig&&!solo
+  for(const [light,wasVisible] of embeddedLights)light.visible=wasVisible&&presentation.useEmbeddedLights&&!solo
   key.intensity=presentation.keyLight
   key.color.set(presentation.lightColor)
   const angle=rad(presentation.lightAngle)
@@ -119,19 +125,20 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
     if(light instanceof THREE.DirectionalLight||light instanceof THREE.SpotLight)scene.add(light.target)
    }
    if(!light)continue
-   light.visible=settings.enabled
+   light.visible=settings.enabled&&(!solo||settings.id===editState.selected)
    light.color.set(settings.color)
    // Distances are expressed in bounding radii, so small and large assets behave alike.
-   light.position.copy(vertexCenter).add(new THREE.Vector3().setFromSphericalCoords(settings.distance*radius,rad(90-settings.elevation),rad(settings.azimuth)))
+   if(!gizmos?.isDragging(settings.id))light.position.copy(vertexCenter).add(new THREE.Vector3().setFromSphericalCoords(settings.distance*radius,rad(90-settings.elevation),rad(settings.azimuth)))
    light.intensity=settings.intensity*(light instanceof THREE.DirectionalLight?1:radius*radius)
-   if(light instanceof THREE.DirectionalLight||light instanceof THREE.SpotLight)light.target.position.copy(vertexCenter).addScaledVector(new THREE.Vector3(settings.targetX,settings.targetY,settings.targetZ),radius)
+   if(!gizmos?.isDragging(settings.id)&&(light instanceof THREE.DirectionalLight||light instanceof THREE.SpotLight))light.target.position.copy(vertexCenter).addScaledVector(new THREE.Vector3(settings.targetX,settings.targetY,settings.targetZ),radius)
    if(light instanceof THREE.SpotLight){light.angle=rad(settings.angle);light.penumbra=settings.softness}
   }
+  gizmos?.sync()
  }
  function variant(mat:THREE.Material):THREE.Material{
   let cache=variants.get(mode);if(!cache){cache=new Map();variants.set(mode,cache)}
   const previous=cache.get(mat);if(previous)return previous
-  const next=debugMaterial(mode,mat,{checker:()=>checker??(checker=createChecker()),matcap:()=>matcap??(matcap=createMatcap())})
+  const next=presentation.relightUnlit&&mat instanceof THREE.MeshBasicMaterial&&['material','neutral','shaded-wire','bones'].includes(mode)?new THREE.MeshStandardMaterial({color:mat.color.clone(),map:mat.map,alphaMap:mat.alphaMap,alphaTest:mat.alphaTest,transparent:mode==='shaded-wire'?false:mat.transparent,opacity:mode==='shaded-wire'?1:mat.opacity,side:mat.side,vertexColors:mat.vertexColors,roughness:.85,metalness:0,toneMapped:mode!=='neutral'}):debugMaterial(mode,mat,{checker:()=>checker??(checker=createChecker()),matcap:()=>matcap??(matcap=createMatcap())})
   if(isWireOverlay(mode))attachSolidWireShader(next,wireUniforms)
   cache.set(mat,next);return next
  }
@@ -182,11 +189,11 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   if(!bounds.isEmpty()){bounds.getCenter(vertexCenter);bounds.getSize(size);radius=Math.max(size.length()/2,.0001)}
   clips=gltf.animations;mixer=new THREE.AnimationMixer(model)
   const available=new Set<ModelMode>(['material','neutral','clay','wireframe','shaded-wire','clay-wire','flat','flat-wire','normals','unlit','matcap','metalness','roughness','opacity','emission','specular'])
-  const stats:ModelStats={triangles:0,vertices:0,meshes:0,available:[],animations:clips.map((clip,i)=>clip.name||'Animation '+(i+1))}
-  model.traverse(obj=>{if(obj instanceof THREE.Mesh){original.set(obj,obj.material);originalGeometry.set(obj,obj.geometry);stats.meshes++
+  const stats:ModelStats={triangles:0,vertices:0,meshes:0,available:[],animations:clips.map((clip,i)=>clip.name||'Animation '+(i+1)),unlitMaterials:0}
+  model.traverse(obj=>{if(obj instanceof THREE.Light)embeddedLights.set(obj,obj.visible);if(obj instanceof THREE.Mesh){original.set(obj,obj.material);originalGeometry.set(obj,obj.geometry);stats.meshes++
    if(obj.geometry.hasAttribute('uv'))available.add('uv')
    if(obj instanceof THREE.SkinnedMesh){available.add('bones');if(obj.geometry.hasAttribute('skinWeight'))available.add('weights')}
-   for(const material of Array.isArray(obj.material)?obj.material:[obj.material]){const pbr=material as THREE.MeshStandardMaterial;if(pbr.normalMap){available.add('normal-map');available.add('matcap-surface')}if(pbr.aoMap)available.add('ao')}
+   for(const material of Array.isArray(obj.material)?obj.material:[obj.material]){if(material instanceof THREE.MeshBasicMaterial)stats.unlitMaterials++;const pbr=material as THREE.MeshStandardMaterial;if(pbr.normalMap){available.add('normal-map');available.add('matcap-surface')}if(pbr.aoMap)available.add('ao')}
    const position=obj.geometry.getAttribute('position');const count=obj instanceof THREE.InstancedMesh?obj.count:1
    stats.vertices+=(position?.count??0)*count;stats.triangles+=Math.floor((obj.geometry.index?.count??position?.count??0)/3)*count
   }})
@@ -200,18 +207,18 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   if(!visible||document.hidden||!model)return
   controls.autoRotate=rotate&&!hovered&&!interacting&&time>idleUntil&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if(animationPlaying)mixer?.update(delta)
-  controls.update(delta);renderer.render(scene,camera)
+  controls.update(delta);gizmos?.sync();renderer.render(scene,camera)
  })
  return {
-  setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;presentation=next;applyLighting();if(reframe)resetCamera()},
-  setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,resetCamera,captureCamera,
+  setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;presentation=next;applyLighting();if(relight){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();setMode(mode)}if(reframe)resetCamera()},
+  setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,resetCamera,captureCamera,setLightEditing(state){editState=state;gizmos?.setState(state);applyLighting()},
   dispose(){if(disposed)return;disposed=true;renderer.setAnimationLoop(null);observer.disconnect();intersection.disconnect();controls.dispose();canvas.removeEventListener('pointerenter',enter);canvas.removeEventListener('pointerleave',exit)
    mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model)
    for(const helper of skeletonHelpers){scene.remove(helper);helper.dispose()}
    releaseWireGeometries();checker?.dispose();matcap?.dispose()
    if(model){for(const [mesh,material] of original)mesh.material=material;disposeObject(model);scene.remove(model)}
    for(const cache of variants.values())for(const material of cache.values())material.dispose()
-   for(const light of customLights.values())removeCustomLight(light);customLights.clear()
+   gizmos?.dispose();for(const light of customLights.values())removeCustomLight(light);customLights.clear()
    environment.dispose();draco.dispose();ktx2.dispose();renderer.dispose();canvas.remove()
   }
  }

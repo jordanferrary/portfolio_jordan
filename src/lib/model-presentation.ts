@@ -4,11 +4,11 @@ export type ModelLight={id:string;name:string;type:'directional'|'point'|'spot';
 export type ModelCamera={azimuth:number;elevation:number;zoom:number;fov:number;targetX:number;targetY:number;targetZ:number}
 export type ModelPresentation=ModelCamera&{
  lighting:'studio'|'soft'|'contrast';exposure:number;environment:number;keyLight:number;lightAngle:number;lightColor:string;background:string;
- autoRotate:boolean;rotationSpeed:number;usePresetRig:boolean;lights:ModelLight[]
+ autoRotate:boolean;rotationSpeed:number;usePresetRig:boolean;useEmbeddedLights:boolean;relightUnlit:boolean;lights:ModelLight[]
 }
 export const DEFAULT_MODEL_PRESENTATION:ModelPresentation={
  lighting:'studio',exposure:1,environment:1,keyLight:2,lightAngle:45,lightColor:'#ffffff',background:'#15101e',
- autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,lights:[]
+ autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,useEmbeddedLights:true,relightUnlit:false,lights:[]
 }
 const numeric=(v:unknown,fallback:number,min:number,max:number)=>typeof v==='number'&&Number.isFinite(v)?Math.min(max,Math.max(min,v)):fallback
 const color=(v:unknown,fallback:string)=>typeof v==='string'&&/^#[a-f0-9]{6}$/i.test(v)?v:fallback
@@ -36,7 +36,7 @@ export function normalizeModelPresentation(value?:Partial<ModelPresentation>|nul
  autoRotate:typeof v.autoRotate==='boolean'?v.autoRotate:d.autoRotate,rotationSpeed:numeric(v.rotationSpeed,d.rotationSpeed,.2,4),
  azimuth:numeric(v.azimuth,d.azimuth,-180,180),elevation:numeric(v.elevation,d.elevation,-89,89),zoom:numeric(v.zoom,d.zoom,.2,8),
  fov:numeric(v.fov,d.fov,15,80),targetX:numeric(v.targetX,0,-5,5),targetY:numeric(v.targetY,0,-5,5),targetZ:numeric(v.targetZ,0,-5,5),
- usePresetRig:v.usePresetRig!==false,lights:normalizeLights(v.lights)}
+ usePresetRig:v.usePresetRig!==false,useEmbeddedLights:v.useEmbeddedLights!==false,relightUnlit:v.relightUnlit===true,lights:normalizeLights(v.lights)}
 }
 export type InspectorGroup={label:string;items:readonly {id:ModelMode;label:string;hint?:string}[]}
 export const INSPECTOR_GROUPS:readonly InspectorGroup[]=[
@@ -51,3 +51,14 @@ export const WIRE_MODES:readonly ModelMode[]=['wireframe','shaded-wire','clay-wi
 export const isWireOverlay=(mode:ModelMode)=>mode==='shaded-wire'||mode==='clay-wire'||mode==='flat-wire'
 export type InspectorOptions={wireColor:string;singleSided:boolean;wireOpacity:number}
 export const DEFAULT_INSPECTOR_OPTIONS:InspectorOptions={wireColor:'#25212e',singleSided:false,wireOpacity:1}
+
+/** Editor-only state: never serialized with ModelPresentation. */
+export type LightEditState={selected:string|null;helpers:boolean;target:boolean;solo:boolean}
+export type LightEditPatch=Partial<Pick<ModelLight,'azimuth'|'elevation'|'distance'|'targetX'|'targetY'|'targetZ'>>
+export type LightEditCallbacks={onSelect:(id:string)=>void;onChange:(id:string,patch:LightEditPatch)=>void}
+export function presetDirectionalLights(p:ModelPresentation):ModelLight[]{
+ const degrees=(v:number)=>v*180/Math.PI
+ const make=(id:string,name:string,x:number,y:number,z:number,intensity:number,color:string):ModelLight=>({...createModelLight(id),name,intensity,color,distance:Math.hypot(x,y,z),azimuth:degrees(Math.atan2(x,z)),elevation:degrees(Math.atan2(y,Math.hypot(x,z)))})
+ const angle=p.lightAngle*Math.PI/180
+ return [make('preset-key','Key Light',3*Math.sin(angle),3,3*Math.cos(angle),p.keyLight,p.lightColor),make('preset-fill','Fill Light',-3,1,3,p.lighting==='soft'?1.4:p.lighting==='contrast'?.12:.65,'#ffffff'),make('preset-rim','Rim Light',0,2,-4,p.lighting==='soft'?.3:p.lighting==='contrast'?2:1,'#ffffff')]
+}
