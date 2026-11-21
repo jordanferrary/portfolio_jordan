@@ -4,6 +4,7 @@ import type { HomeContent,Testimonial } from '../../data/studio'
 import type { Project } from '../../data/projects'
 import { AssetImage } from '../ui/asset-image'
 import { framingStyle } from '../../lib/image-framing'
+import {isSensitiveTheme} from '../../lib/sensitive-themes'
 import {getFeaturedProjects} from '../../lib/featured-projects'
 import { protectArtistName } from '../ui/protected-name'
 import {HeadingSymbol} from '../ui/heading-symbol'
@@ -12,7 +13,7 @@ type Props={home:HomeContent;testimonials:Testimonial[];projects:Project[];editi
 export function HomePage({home,testimonials,projects,editing,onOpenProject,onEditProject,onEditHome,onManageFeatured,onNavigatePortfolio,headingSymbol}:Props){
  const [slide,setSlide]=useState(0)
  const current=testimonials[slide%Math.max(1,testimonials.length)]
- const featured=getFeaturedProjects(editing?projects:projects.filter(p=>p.sensitiveTheme!==true))
+ const featured=getFeaturedProjects(projects.filter(p=>!isSensitiveTheme(p)))
  const focusIcons=[Shapes,Gamepad2,Palette]
  return <main className="home-dashboard">
   <div className="home-wallpaper" aria-hidden="true"><AssetImage src={home.background} alt="" style={framingStyle(home.backgroundFocus)} loading="eager" fetchPriority="high"/></div>
