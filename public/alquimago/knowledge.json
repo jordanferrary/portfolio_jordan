@@ -1,7 +1,16 @@
 {
   "schema": 1,
-  "revision": "2026-11-18T14:23:33.202Z-c13af8b8-f611-483b-aaac-8201a379e610",
+  "revision": "2026-11-21T22:31:51.005Z-dc1d5b6c-129b-4bf2-bbd0-9b5556d11f6a",
   "projects": [
+    {
+      "id": "project-mwqz9gcn",
+      "title": "nsfw text",
+      "category": "NSFW",
+      "year": "2026",
+      "tools": [],
+      "description": "isso é só um texte",
+      "featured": false
+    },
     {
       "id": "project-mw4oyna3",
       "title": "Room of the Palhacito",

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-18T14:23:33.202Z-c13af8b8-f611-483b-aaac-8201a379e610",
+  "revision": "2026-11-21T22:31:51.005Z-dc1d5b6c-129b-4bf2-bbd0-9b5556d11f6a",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -303,6 +303,18 @@
     ],
     "projects": [
       {
+        "id": "project-mwqz9gcn",
+        "title": "nsfw text",
+        "category": "NSFW",
+        "year": "2026",
+        "image": "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp",
+        "description": "isso é só um texte",
+        "tools": [],
+        "featured": false,
+        "blocks": [],
+        "processTemplateMigrated": true
+      },
+      {
         "id": "project-mw4oyna3",
         "title": "Room of the Palhacito",
         "category": "Environments",
@@ -549,6 +561,12 @@
         "id": "enviroment-lgi",
         "label": "Environments",
         "icon": "mountain"
+      },
+      {
+        "id": "nsfw-vvo",
+        "label": "NSFW",
+        "icon": "grid",
+        "image": "site://images/studio/61b0749f49454b95ae4fd5728e4be2e348c05680906c23b2649f45e54484b77e.webp"
       }
     ],
     "home": {
