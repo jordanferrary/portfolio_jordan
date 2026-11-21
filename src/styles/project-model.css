@@ -16,3 +16,11 @@
 .project-model-invalid{margin:20px auto;padding:30px;border:1px solid #664580;border-radius:16px;text-align:center;color:#c4a6db;font-size:13px}
 @media(max-width:600px){.project-model-frame{aspect-ratio:4/5}.project-model-launch{padding:10px 12px}}
 @media(prefers-reduced-motion:reduce){.project-model-launch{transition:none}}
+
+.model-file-field{display:grid;gap:10px;min-width:0}
+.model-file-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:118px;padding:18px;text-align:center;overflow-wrap:anywhere;border:1px dashed var(--jf-border);border-radius:15px;background:var(--jf-surface-deep,var(--jf-surface));color:var(--jf-muted)}
+.model-file-drop svg{color:var(--jf-secondary)}
+.model-file-drop strong{font-size:13px;color:var(--jf-text)}
+.model-file-drop small{font-size:11px}
+.model-file-drop.is-dragging{border-color:var(--jf-secondary);background:var(--jf-surface-tint,var(--jf-surface))}
+.model-file-field .editor-help{margin:0}

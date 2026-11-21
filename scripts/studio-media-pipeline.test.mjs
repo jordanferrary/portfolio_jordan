@@ -74,7 +74,7 @@ test('new media is converted, never stores original JPG/PNG and avoids concurren
  assert.match(optimize,/canvas\.toBlob\(/)
  assert.match(optimize,/'image\/webp'/)
  assert.match(publish,/if\(kind==='image'&&blob\.type!=='image\/webp'\)/)
- assert.match(publish,/const relative=\(kind==='audio'\?'audio':'images'\)\+'\/studio\/\'\+sha/)
+ assert.match(publish,/const relative=\(kind==='model'\?'models':kind==='audio'\?'audio':'images'\)\+'\/studio\/'\+sha/)
 })
 
 test('every persistent image upload input routes through WebP path',async()=>{

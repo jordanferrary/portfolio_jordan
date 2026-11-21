@@ -1,3 +1,5 @@
+import {MODEL_MIME,validateGlb} from './model-embed'
+
 const DB='jf-portfolio-media'
 const STORE='assets'
 const LIBRARY='library'
@@ -101,7 +103,7 @@ export async function listMediaAssets():Promise<LibraryAsset[]>{
  const known=new Set(catalog.map(a=>a.ref))
  for(const key of keys){
   const ref=PREFIX+String(key)
-  if(known.has(ref)||!/\.(png|jpg|jpeg|webp|avif|mp3|wav|ogg|m4a)$/i.test(ref))continue
+  if(known.has(ref)||!/\.(png|jpg|jpeg|webp|avif|mp3|wav|ogg|m4a|glb)$/i.test(ref))continue
   const blob=await readMedia(ref)
   if(!blob)continue
   const item:LibraryAsset={ref,name:filename(ref),folders:[folderFromRef(ref)],hash:await fingerprint(blob),size:blob.size,mime:blob.type,createdAt:Date.now()}
@@ -141,7 +143,7 @@ export async function saveUploadedMedia(file:File,folder:string,slot:string):Pro
 }
 export function mediaRefs(projects:{image:string;blocks:{media?:string;after?:string;gallery?:string[];content:string;type:string}[];processSteps?:{image:string}[]}[],categories:{image?:string}[]){
  const all=new Set<string>()
- for(const project of projects){all.add(project.image);for(const step of project.processSteps??[])all.add(step.image);for(const b of project.blocks){if(b.media)all.add(b.media);if(b.after)all.add(b.after);for(const a of b.gallery??[])all.add(a);if(b.type==='image')all.add(b.content)}}
+ for(const project of projects){all.add(project.image);for(const step of project.processSteps??[])all.add(step.image);for(const b of project.blocks){if(b.media)all.add(b.media);if(b.after)all.add(b.after);for(const a of b.gallery??[])all.add(a);if(b.type==='image'||b.type==='model')all.add(b.content)}}
  for(const c of categories)if(c.image)all.add(c.image)
  return [...all].filter(isLocalMedia)
 }
@@ -167,4 +169,17 @@ export async function deleteStoredMedia(ref:string):Promise<void>{
   tx.oncomplete=()=>resolve()
   tx.onerror=()=>reject(tx.error)
  })
+}
+
+/** Keep binary models byte-for-byte; content hashes deduplicate repeated imports. */
+export async function saveUploadedModel(file:File):Promise<string>{
+ if(!/\.glb$/i.test(file.name))throw new Error('Importe um arquivo .glb. Converta FBX, OBJ ou glTF no Blender.')
+ await validateGlb(file)
+ const blob=new Blob([file],{type:MODEL_MIME})
+ const hash=await fingerprint(blob)
+ const ref=PREFIX+'models/'+hash+'.glb'
+ const existing=(await getCatalog()).find(item=>item.ref===ref)
+ if(!await readMedia(ref))await saveMediaBlob(ref,blob)
+ if(!existing)await updateCatalog({ref,name:file.name,folders:['models'],hash,size:blob.size,mime:MODEL_MIME,createdAt:Date.now()})
+ return ref
 }

@@ -2,7 +2,9 @@ import '../../styles/project-model.css'
 import {useEffect,useRef,useState} from 'react'
 import {Box,ExternalLink,Move3d,Play} from 'lucide-react'
 import {AssetImage} from './asset-image'
-import {parseModelUrl} from '../../lib/model-embed'
+import {MODEL_MIME,parseModelUrl} from '../../lib/model-embed'
+import {isLocalMedia,readMedia} from '../../lib/media-store'
+import {resolvePublishedAsset} from '../../lib/published-assets'
 let viewerReady:Promise<void>|null=null
 /** Model-viewer is fetched only after a deliberate click and never added to Vite's initial JS bundle. */
 function loadViewer():Promise<void>{
@@ -19,21 +21,35 @@ function loadViewer():Promise<void>{
  return viewerReady
 }
 type Props={url:string;poster?:string;title?:string}
-export function ProjectModel({url,poster,title='3D artwork'}:Props){
+export function ProjectModel(props:Props){return <ModelViewer key={props.url} {...props}/>}
+function ModelViewer({url,poster,title='3D artwork'}:Props){
  const parsed=parseModelUrl(url)
  const [activated,setActivated]=useState(false)
  const [error,setError]=useState('')
  const [ready,setReady]=useState(false)
+ const [resolvedSource,setResolvedSource]=useState('')
  const canvas=useRef<HTMLDivElement>(null)
  useEffect(()=>{
   if(!activated||!parsed)return
   let live=true
   let viewer:HTMLElement|null=null
-  setReady(false)
-  void loadViewer().then(()=>{
+  let objectUrl=''
+  setReady(false);setError('');setResolvedSource('')
+  const prepare=async()=>{
+   let source=resolvePublishedAsset(parsed.url)
+   if(isLocalMedia(parsed.url)){
+    const blob=await readMedia(parsed.url)
+    if(!live)return
+    if(!blob)throw new Error('Modelo local não encontrado. Importe o arquivo novamente.')
+    objectUrl=URL.createObjectURL(new Blob([blob],{type:MODEL_MIME}))
+    source=objectUrl
+   }
+   if(!live)return
+   setResolvedSource(source)
+   await loadViewer()
    if(!live||!canvas.current)return
    viewer=document.createElement('model-viewer')
-   viewer.setAttribute('src',parsed.url)
+   viewer.setAttribute('src',source)
    viewer.setAttribute('alt',title)
    viewer.setAttribute('camera-controls','')
    viewer.setAttribute('auto-rotate','')
@@ -46,8 +62,9 @@ export function ProjectModel({url,poster,title='3D artwork'}:Props){
    viewer.addEventListener('load',()=>{if(live){setReady(true);setError('')}})
    viewer.addEventListener('error',()=>{if(live)setError('Não foi possível abrir o modelo. Verifique o link direto, CORS e as texturas externas.')})
    canvas.current.appendChild(viewer)
-  }).catch(e=>{if(live)setError(e instanceof Error?e.message:'Erro ao carregar visualizador 3D.')})
-  return ()=>{live=false;viewer?.remove()}
+  }
+  void prepare().catch(e=>{if(live)setError(e instanceof Error?e.message:'Erro ao carregar visualizador 3D.')})
+  return ()=>{live=false;viewer?.remove();if(objectUrl)URL.revokeObjectURL(objectUrl)}
  },[activated,parsed?.url,title])
  if(!parsed)return <div className="project-model-invalid" role="status">3D model not available — GLB or glTF link required.</div>
  return <section className="project-model-block" aria-label={'Interactive model: '+title}>
@@ -57,7 +74,7 @@ export function ProjectModel({url,poster,title='3D artwork'}:Props){
     <span className="project-model-corner"><Box size={16}/> INTERACTIVE 3D</span>
     <span className="project-model-launch"><Move3d size={17}/><Play size={15} fill="currentColor"/> Explore model</span>
     <span className="project-model-format">{parsed.format.toUpperCase()} MODEL</span>
-   </button>:<><div className="project-model-stage" ref={canvas}/>{!ready&&!error&&<p className="project-model-loading" role="status">Loading interactive 3D model…</p>}{error&&<div className="project-model-error" role="alert"><p>{error}</p><a href={parsed.url} target="_blank" rel="noopener noreferrer">Open model source <ExternalLink size={14}/></a></div>}</>}
+   </button>:<><div className="project-model-stage" ref={canvas}/>{!ready&&!error&&<p className="project-model-loading" role="status">Loading interactive 3D model…</p>}{error&&<div className="project-model-error" role="alert"><p>{error}</p>{resolvedSource&&!isLocalMedia(parsed.url)&&<a href={resolvedSource} target="_blank" rel="noopener noreferrer">Open model source <ExternalLink size={14}/></a>}</div>}</>}
   </div>
   <p className="project-model-hint"><Move3d size={15}/> Rotate · Zoom · Pan — 3D assets load only on request</p>
  </section>

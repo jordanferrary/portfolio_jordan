@@ -25,7 +25,7 @@ const ALQUIMAGO_MEMORY_PATH='public/alquimago/project-memory.json'
 const ALQUIMAGO_CONTEXT_PATH='public/alquimago/project-context.json'
 const ALQUIMAGO_KNOWLEDGE_PATH='public/alquimago/knowledge.json'
 const MAX_NEW_MEDIA_BYTES=80*1024*1024
-type Kind='image'|'audio'
+type Kind='image'|'audio'|'model'
 type TreeEntry={path:string;mode:'100644';type:'blob';sha?:string|null;content?:string}
 export type GitHubPublishResult={revision:string;commitSha:string;commitUrl:string;newFiles:number;deletedFiles:number}
 export type GitHubPublishProgress=(status:string)=>void
@@ -80,6 +80,10 @@ async function fingerprint(blob:Blob):Promise<string>{
 }
 function extension(ref:string,blob:Blob,kind:Kind):string{
  const mime=blob.type.toLowerCase()
+ if(kind==='model'){
+  if(/\.glb$/i.test(ref))return 'glb'
+  throw new Error('O modelo local precisa estar no formato GLB.')
+ }
  if(kind==='image'){
   if(mime==='image/jpeg')return 'jpg'
   if(mime==='image/png')return 'png'
@@ -162,7 +166,7 @@ export async function publishPortfolioToGitHub(
  async function stageBlob(blob:Blob,kind:Kind,sourceRef=''):Promise<string>{
   const ext=extension(sourceRef,blob,kind)
   const sha=await fingerprint(blob)
-  const relative=(kind==='audio'?'audio':'images')+'/studio/'+sha+'.'+ext
+  const relative=(kind==='model'?'models':kind==='audio'?'audio':'images')+'/studio/'+sha+'.'+ext
   const filePath='public/'+relative
   if(!existing.has(filePath)&&!pending.has(filePath)){
    totalBytes+=blob.size
@@ -252,6 +256,7 @@ export async function publishPortfolioToGitHub(
   project.image=await stage(project.image,'image')
   for(const step of project.processSteps??[])step.image=await stage(step.image,'image')
   for(const block of project.blocks){
+   if(block.type==='model')block.content=await stage(block.content,'model')
    if(block.type==='image')block.content=await stage(block.content,'image')
    if(block.media)block.media=await stage(block.media,'image')
    if(block.after)block.after=await stage(block.after,'image')
