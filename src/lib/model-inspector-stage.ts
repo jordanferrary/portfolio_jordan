@@ -44,7 +44,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const room=new RoomEnvironment(),pmrem=new THREE.PMREMGenerator(renderer)
  const environment=pmrem.fromScene(room,.04);room.dispose();pmrem.dispose();scene.environment=environment.texture
  const key=new THREE.DirectionalLight(0xffffff,2),fill=new THREE.DirectionalLight(0xffffff,.5),rim=new THREE.DirectionalLight(0xffffff,1),ambient=new THREE.HemisphereLight(0xffffff,0x454454,.35)
- fill.position.set(-3,1,3);rim.position.set(0,2,-4);scene.add(key,fill,rim,ambient)
+ scene.add(key,fill,rim,ambient,key.target,fill.target,rim.target)
  type CustomLight=THREE.DirectionalLight|THREE.PointLight|THREE.SpotLight
  const customLights=new Map<string,CustomLight>()
  function removeCustomLight(light:CustomLight){
@@ -100,7 +100,9 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   key.intensity=presentation.keyLight
   key.color.set(presentation.lightColor)
   const angle=rad(presentation.lightAngle)
-  key.position.set(Math.sin(angle)*3,3,Math.cos(angle)*3)
+  key.position.copy(vertexCenter).addScaledVector(new THREE.Vector3(Math.sin(angle)*3,3,Math.cos(angle)*3),radius)
+  fill.position.copy(vertexCenter).addScaledVector(new THREE.Vector3(-3,1,3),radius);rim.position.copy(vertexCenter).addScaledVector(new THREE.Vector3(0,2,-4),radius)
+  for(const light of [key,fill,rim])light.target.position.copy(vertexCenter)
   fill.intensity=presentation.lighting==='soft'?1.4:presentation.lighting==='contrast'?.12:.65
   rim.intensity=presentation.lighting==='soft'?.3:presentation.lighting==='contrast'?2:1
   ambient.intensity=presentation.lighting==='contrast'?.1:.35

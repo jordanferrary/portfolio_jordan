@@ -8,9 +8,9 @@ import {resolvePublishedAsset} from '../../lib/published-assets'
 import {DEFAULT_INSPECTOR_OPTIONS,normalizeModelPresentation,type ModelMode,type ModelPresentation,type InspectorOptions,type ModelCamera} from '../../lib/model-presentation'
 import {ModelInspectorPanel} from './model-inspector-panel'
 import type {ModelStage,ModelStats} from '../../lib/model-inspector-stage'
-type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;onCaptureCamera?:(camera:ModelCamera)=>void}
+type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;resetCameraToken?:number;onCaptureCamera?:(camera:ModelCamera)=>void}
 export function ProjectModel(props:Props){return <ModelViewer key={props.url} {...props}/>}
-function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,onCaptureCamera}:Props){
+function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,resetCameraToken,onCaptureCamera}:Props){
  const parsed=parseModelUrl(url)
  const settings=normalizeModelPresentation(presentation)
  const configuration=useRef(settings);configuration.current=settings
@@ -29,6 +29,7 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
  const rotationRef=useRef(rotate);rotationRef.current=rotate
  useEffect(()=>{setRotate(settings.autoRotate)},[settings.autoRotate])
  useEffect(()=>{stage.current?.setPresentation(configuration.current)})
+ useEffect(()=>{stage.current?.resetCamera()},[resetCameraToken])
  useEffect(()=>{stage.current?.setMode(mode)},[mode])
  useEffect(()=>{stage.current?.setRotation(rotate)},[rotate])
  useEffect(()=>{stage.current?.setOptions(options)},[options])

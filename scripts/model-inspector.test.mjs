@@ -7,7 +7,7 @@ const {normalizeModelPresentation,MODEL_MODES,DEFAULT_MODEL_PRESENTATION}=await 
 test('old blocks get defaults and invalid settings are clamped',()=>{
  assert.deepEqual(normalizeModelPresentation(),DEFAULT_MODEL_PRESENTATION)
  const p=normalizeModelPresentation({exposure:99,zoom:0,background:'bad',rotationSpeed:NaN,autoRotate:false})
- assert.equal(p.exposure,3);assert.equal(p.zoom,.5);assert.equal(p.background,DEFAULT_MODEL_PRESENTATION.background);assert.equal(p.rotationSpeed,1);assert.equal(p.autoRotate,false)
+ assert.equal(p.exposure,3);assert.equal(p.zoom,.2);assert.equal(p.background,DEFAULT_MODEL_PRESENTATION.background);assert.equal(p.rotationSpeed,1);assert.equal(p.autoRotate,false)
  for(const id of ['material','clay','wireframe','shaded-wire','clay-wire','flat-wire','normals','uv','bones','metalness','roughness'])assert.ok(MODEL_MODES.some(m=>m.id===id))
 })
 test('real material inspection loads only on request and persists per block',async()=>{
