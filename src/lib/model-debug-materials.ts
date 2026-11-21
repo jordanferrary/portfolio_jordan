@@ -53,7 +53,7 @@ export function debugMaterial(mode:ModelMode,source:THREE.Material,textures:{che
  const color=src.color?.clone()??new THREE.Color(0xffffff)
  if(mode==='material'||mode==='neutral'||mode==='bones'||mode==='shaded-wire'){
   const clone=source.clone();if(mode==='neutral')clone.toneMapped=false
-  if(mode==='shaded-wire'){clone.transparent=false;clone.opacity=1;clone.depthWrite=true;if('transmission' in clone)(clone as PBR).transmission=0}
+  if(mode==='shaded-wire'){clone.transparent=false;clone.opacity=1;clone.depthTest=true;clone.depthWrite=true;if('wireframe' in clone)(clone as PBR).wireframe=false;clone.polygonOffset=false;if('transmission' in clone)(clone as PBR).transmission=0}
   return clone
  }
  if(mode==='wireframe')return basic(source,{wireframe:true,color:0xcfb9ff,side:THREE.DoubleSide})

@@ -7,6 +7,7 @@ import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js'
 import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,type InspectorOptions,type ModelMode,type ModelPresentation} from './model-presentation'
 import {createChecker,createMatcap,debugMaterial} from './model-debug-materials'
+import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model-solid-wireframe'
 export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[]}
 export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean)=>void;resetCamera:()=>void;dispose:()=>void}
 const rad=THREE.MathUtils.degToRad
@@ -46,13 +47,11 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  fill.position.set(-3,1,3);rim.position.set(0,2,-4);scene.add(key,fill,rim,ambient)
  const original=new Map<THREE.Mesh,THREE.Material|THREE.Material[]>()
  const variants=new Map<ModelMode,Map<THREE.Material,THREE.Material>>()
- const overlays=new Map<THREE.Mesh,THREE.Mesh>()
+ const originalGeometry=new Map<THREE.Mesh,THREE.BufferGeometry>()
+ const wireGeometries=new Map<THREE.BufferGeometry,THREE.BufferGeometry>()
  let options={...DEFAULT_INSPECTOR_OPTIONS},checker:THREE.Texture|undefined,matcap:THREE.Texture|undefined,mixer:THREE.AnimationMixer|undefined,clips:THREE.AnimationClip[]=[],action:THREE.AnimationAction|undefined,animationIndex=-1,animationPlaying=false
  const skeletonHelpers:THREE.SkeletonHelper[]=[]
- const overlayMaterial=new THREE.MeshBasicMaterial({color:options.wireColor,wireframe:true,depthTest:true,depthWrite:false,toneMapped:false,transparent:true,side:THREE.FrontSide})
- // A small clip-depth bias works on GL lines, unlike polygonOffset on line primitives.
- overlayMaterial.onBeforeCompile=shader=>{shader.vertexShader=shader.vertexShader.replace('#include <project_vertex>','#include <project_vertex>\ngl_Position.z -= 0.000035 * gl_Position.w;')}
- overlayMaterial.customProgramCacheKey=()=> 'jf-wire-overlay'
+ const wireUniforms=createWireUniforms(options.wireColor,options.wireOpacity)
  const vertexCenter=new THREE.Vector3(),size=new THREE.Vector3()
  let radius=1,fitDistance=3
  const resize=()=>{
@@ -95,22 +94,21 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   let cache=variants.get(mode);if(!cache){cache=new Map();variants.set(mode,cache)}
   const previous=cache.get(mat);if(previous)return previous
   const next=debugMaterial(mode,mat,{checker:()=>checker??(checker=createChecker()),matcap:()=>matcap??(matcap=createMatcap())})
+  if(isWireOverlay(mode))attachSolidWireShader(next,wireUniforms)
   cache.set(mat,next);return next
  }
- function makeOverlay(mesh:THREE.Mesh){
-  const existing=overlays.get(mesh);if(existing)return existing
-  // Preserve skinning, instancing, morph targets and geometry groups without copying vertex buffers.
-  const overlay=mesh.clone(false)
-  overlay.position.set(0,0,0);overlay.quaternion.identity();overlay.scale.set(1,1,1);overlay.matrix.identity();overlay.matrixAutoUpdate=true
-  overlay.material=Array.isArray(mesh.material)?mesh.material.map(()=>overlayMaterial):overlayMaterial
-  overlay.renderOrder=mesh.renderOrder+1;overlay.castShadow=false;overlay.receiveShadow=false
-  overlay.raycast=()=>{}
-  if(mesh.morphTargetInfluences)overlay.morphTargetInfluences=mesh.morphTargetInfluences
-  if(mesh instanceof THREE.InstancedMesh&&overlay instanceof THREE.InstancedMesh){overlay.instanceMatrix=mesh.instanceMatrix;overlay.count=mesh.count;overlay.instanceColor=null}
-  mesh.add(overlay);overlays.set(mesh,overlay);return overlay
+ function wireGeometry(source:THREE.BufferGeometry){
+  let geometry=wireGeometries.get(source)
+  if(!geometry){geometry=makeWireGeometry(source);wireGeometries.set(source,geometry)}
+  return geometry
+ }
+ function releaseWireGeometries(){
+  for(const [mesh,geometry] of originalGeometry)mesh.geometry=geometry
+  for(const geometry of wireGeometries.values())geometry.dispose()
+  wireGeometries.clear()
  }
  function applyOptions(){
-  overlayMaterial.color.set(options.wireColor);overlayMaterial.opacity=options.wireOpacity
+  wireUniforms.color.value.set(options.wireColor).convertLinearToSRGB();wireUniforms.opacity.value=options.wireOpacity
   for(const [mesh,source] of original){
    const list=Array.isArray(mesh.material)?mesh.material:[mesh.material],base=Array.isArray(source)?source:[source]
    list.forEach((mat,i)=>{const next=options.singleSided?THREE.FrontSide:mode==='wireframe'?THREE.DoubleSide:base[i]?.side??THREE.FrontSide;if(mat.side!==next){mat.side=next;mat.needsUpdate=true}if(mode==='wireframe'&&mat instanceof THREE.MeshBasicMaterial){mat.color.set(options.wireColor);mat.opacity=options.wireOpacity;mat.transparent=options.wireOpacity<1}})
@@ -118,10 +116,12 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  }
  function setMode(next:ModelMode){
   mode=next
+  const solidWire=isWireOverlay(mode)
+  if(!solidWire&&wireGeometries.size)releaseWireGeometries()
   for(const [mesh,mat] of original){
+   const geometry=originalGeometry.get(mesh)
+   if(solidWire&&geometry)mesh.geometry=wireGeometry(geometry)
    mesh.material=Array.isArray(mat)?mat.map(variant):variant(mat)
-   if(isWireOverlay(mode))makeOverlay(mesh).visible=true
-   else {const overlay=overlays.get(mesh);if(overlay)overlay.visible=false}
   }
   for(const helper of skeletonHelpers)helper.visible=mode==='bones'
   if(mode==='bones'&&model&&!skeletonHelpers.length){
@@ -145,7 +145,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   clips=gltf.animations;mixer=new THREE.AnimationMixer(model)
   const available=new Set<ModelMode>(['material','neutral','clay','wireframe','shaded-wire','clay-wire','flat','flat-wire','normals','unlit','matcap','metalness','roughness','opacity','emission','specular'])
   const stats:ModelStats={triangles:0,vertices:0,meshes:0,available:[],animations:clips.map((clip,i)=>clip.name||'Animation '+(i+1))}
-  model.traverse(obj=>{if(obj instanceof THREE.Mesh){original.set(obj,obj.material);stats.meshes++
+  model.traverse(obj=>{if(obj instanceof THREE.Mesh){original.set(obj,obj.material);originalGeometry.set(obj,obj.geometry);stats.meshes++
    if(obj.geometry.hasAttribute('uv'))available.add('uv')
    if(obj instanceof THREE.SkinnedMesh){available.add('bones');if(obj.geometry.hasAttribute('skinWeight'))available.add('weights')}
    for(const material of Array.isArray(obj.material)?obj.material:[obj.material]){const pbr=material as THREE.MeshStandardMaterial;if(pbr.normalMap){available.add('normal-map');available.add('matcap-surface')}if(pbr.aoMap)available.add('ao')}
@@ -170,8 +170,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   dispose(){if(disposed)return;disposed=true;renderer.setAnimationLoop(null);observer.disconnect();intersection.disconnect();controls.dispose();canvas.removeEventListener('pointerenter',enter);canvas.removeEventListener('pointerleave',exit)
    mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model)
    for(const helper of skeletonHelpers){scene.remove(helper);helper.dispose()}
-   for(const overlay of overlays.values())overlay.removeFromParent()
-   overlayMaterial.dispose();checker?.dispose();matcap?.dispose()
+   releaseWireGeometries();checker?.dispose();matcap?.dispose()
    if(model){for(const [mesh,material] of original)mesh.material=material;disposeObject(model);scene.remove(model)}
    for(const cache of variants.values())for(const material of cache.values())material.dispose()
    environment.dispose();draco.dispose();ktx2.dispose();renderer.dispose();canvas.remove()
