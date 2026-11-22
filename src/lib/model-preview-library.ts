@@ -15,6 +15,6 @@ export function filterShaders(group:string,search:string,allowFlat=true){
  return ART_SHADER_PRESETS.filter(p=>(allowFlat||p.id!=='flat')&&(group==='all'||groups[group]?.includes(p.id)||p.id==='original')&&(p.name+' '+p.description).toLowerCase().includes(term))
 }
 export const PREVIEW_STYLES:readonly {id:string;style:ArtShader;camera:boolean}[]=[
- ...ART_SHADER_PRESETS.map(p=>({id:p.id,style:{...DEFAULT_ART_SHADER,preset:p.id,tint:p.tint,strength:1,bloom:0},camera:false})),
+ ...ART_SHADER_PRESETS.map(p=>({id:p.id,style:{...DEFAULT_ART_SHADER,preset:p.id,tint:p.tint,strength:1,bloom:0,patternAngle:p.id==='hologram'?0:DEFAULT_ART_SHADER.patternAngle},camera:false})),
  ...CAMERA_EFFECTS.map(p=>({id:'fx-'+p.id,style:{...DEFAULT_ART_SHADER,bloom:0,[p.id]:p.demo},camera:true}))
 ]
