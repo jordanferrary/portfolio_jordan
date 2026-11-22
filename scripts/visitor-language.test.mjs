@@ -184,3 +184,9 @@ test('comparison inspection lives in the before and after labels above the slide
  assert.match(view,/aria-label="Compare before and after"/)
  assert.match(css,/button\.compare-label\{\s*z-index:5;\s*pointer-events:auto;/)
 })
+
+test('concise contact copy and plain about eyebrow translate locally',async()=>{
+ const t=await moduleFrom('src/lib/public-page-translation.ts')
+ assert.equal(t.localPhrase('For commissions or collaborations, send me a message.','pt'),'Para encomendas ou colaborações, envie uma mensagem.')
+ assert.equal(t.localPhrase('Behind the art','es'),'Detrás del arte')
+})
