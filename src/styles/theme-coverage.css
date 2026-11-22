@@ -529,3 +529,18 @@
 /* Contact card density now handles additional channels without forcing desktop scroll. */
 
 /* Editor overlay styles intentionally remain in Studio-only stylesheets. */
+
+/* Public media chrome follows the palette independently of the uploaded art. */
+.site-shell :is(.project-video-placeholder,.project-video-badge,.project-video-kind,.project-video-source,.project-artwork-frame figcaption,.page-slideshow-arrow,.page-slideshow-floating-play,.artist-showcase-close,.artist-showcase-zoom span,.filter-details){
+ color:var(--jf-text);
+}
+.site-shell :is(.project-video-badge,.artist-showcase-close,.artist-showcase-zoom span){
+ background:var(--jf-surface-deep);border-color:var(--jf-border);
+}
+.site-shell :is(.project-video-kind,.project-artwork-frame figcaption){color:var(--jf-muted)!important}
+.site-shell .home-panel-heading .focus-heading-icon{color:var(--jf-text);background:var(--jf-primary)}
+.site-shell :is(.rich-text h2,.rich-text h3,.rich-text strong){color:var(--jf-text)}
+.site-shell .rich-text h4{color:var(--jf-secondary)}
+.site-shell .media-caption .rich-text{color:var(--jf-muted)}
+.site-shell .home-availability i{background:#87f572;box-shadow:0 0 7px #88ff6a}
+body{color:var(--jf-text);scrollbar-color:var(--jf-border) var(--jf-background)}

@@ -213,3 +213,21 @@
 
 /* The seven live swatches and chromatic picker canvas are intentionally
    excluded: overriding them would falsify the colors being edited. */
+
+/* Additional Studio controls missed by the initial seven-color coverage. */
+.studio-dock-anchor :is(.studio-dock-actions button:not(.studio-dock-publish),.studio-hub-header button,.studio-hub-search,.studio-hub-search-clear,.studio-hub-draft-indicator,.studio-hub-nav-item,.studio-hub-category-grid>button){
+ color:var(--jf-text)!important;border-color:var(--jf-studio-line)!important;
+}
+.studio-dock-anchor :is(.studio-dock-actions button:not(.studio-dock-publish),.studio-hub-header button,.studio-hub-search-clear,.studio-hub-draft-indicator){
+ background:var(--jf-studio-raised)!important;
+}
+.studio-dock-anchor :is(.studio-dock-context>span,.studio-hub-nav-caption,.studio-hub-footer,.studio-hub-count,.studio-hub-item-arrow){color:var(--jf-muted)!important}
+.studio-dock-anchor .studio-hub-search input::placeholder{color:var(--jf-muted)}
+.editor-overlay :is(.music-library-item,.music-track-form,.music-track-cover-preview,.music-library-editor .music-youtube-reference,.music-library-actions button,.music-cover-actions>button,.converter-fields select,.converter-result,.custom-page-edit-block,.custom-page-template-grid button,.custom-pages-entry,.custom-page-showcase-layout-controls select,.review-edit-card,.text-composer,.composer-toolbar,.process-edit-card,.quick-insert-popover,.quick-insert-grid button){
+ background:var(--jf-studio-deep)!important;border-color:var(--jf-studio-line)!important;color:var(--jf-text)!important;
+}
+.editor-overlay :is(.music-library-meta small,.music-no-cover,.music-audio-file,.converter-fields label,.custom-page-field-warning:not([role=alert]),.text-composer>small){color:var(--jf-muted)}
+.editor-overlay :is(.music-create-button,.quick-insert-grid button:hover,.composer-toolbar button.active,.custom-page-template-grid button:hover){
+ background:var(--jf-studio-raised)!important;border-color:var(--jf-secondary)!important;color:var(--jf-text)!important;
+}
+.editor-overlay :is(.music-track-cover-preview,.asset-pick-card img){background:var(--jf-background)}

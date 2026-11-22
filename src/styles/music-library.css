@@ -1,37 +1,37 @@
 
 /* Studio image cabinet */
-.asset-clip-button{display:inline-flex!important;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:8px 12px!important;border:1px solid #8150ad!important;border-radius:13px!important;background:#28143e!important;color:#e5d2f3!important;font-size:12px!important;white-space:nowrap;cursor:pointer}
-.asset-clip-button:hover{border-color:#bf65fa!important;background:#392057!important}
-.asset-modal-backdrop{position:fixed;inset:0;z-index:140;background:#030106db;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px}
-.asset-modal{width:min(790px,100%);height:min(660px,88dvh);min-height:340px;display:flex;flex-direction:column;overflow:hidden;border:1px solid #9951cb;background:linear-gradient(155deg,#20112f,#0f0a19 84%);border-radius:28px;box-shadow:0 25px 90px #000c,0 0 25px #67209f40}
+.asset-clip-button{display:inline-flex!important;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:8px 12px!important;border:1px solid var(--jf-border)!important;border-radius:13px!important;background:var(--jf-surface-tint)!important;color:var(--jf-text)!important;font-size:12px!important;white-space:nowrap;cursor:pointer}
+.asset-clip-button:hover{border-color:var(--jf-secondary)!important;background:var(--jf-studio-raised)!important}
+.asset-modal-backdrop{position:fixed;inset:0;z-index:140;background:var(--jf-studio-layer);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px}
+.asset-modal{width:min(790px,100%);height:min(660px,88dvh);min-height:340px;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--jf-border);background:linear-gradient(155deg,var(--jf-studio-panel),var(--jf-studio-deep) 84%);border-radius:28px;box-shadow:0 25px 90px #000c,0 0 25px var(--jf-primary-soft)}
 .asset-modal-head{padding:22px 25px 12px;display:flex;justify-content:space-between;gap:12px;align-items:start}
-.asset-modal-head .eyebrow{font-size:11px;color:#bb69f3;gap:8px;margin:0 0 5px}
+.asset-modal-head .eyebrow{font-size:11px;color:var(--jf-secondary);gap:8px;margin:0 0 5px}
 .asset-modal-head h2{font-size:22px;font-weight:800;letter-spacing:-.04em;margin:0 0 5px}
-.asset-modal-head p{font-size:12px;color:#bdaac9;line-height:1.45;margin:0}
-.asset-modal-head>button,.asset-search button{background:#2b1a3c;border:1px solid #5b3474;border-radius:50%;display:grid;place-items:center;width:33px;height:33px}
-.asset-modal-tools{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 24px 16px;flex-wrap:wrap;border-bottom:1px solid #46305b}
+.asset-modal-head p{font-size:12px;color:var(--jf-muted);line-height:1.45;margin:0}
+.asset-modal-head>button,.asset-search button{background:var(--jf-studio-raised);border:1px solid var(--jf-border);border-radius:50%;display:grid;place-items:center;width:33px;height:33px}
+.asset-modal-tools{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 24px 16px;flex-wrap:wrap;border-bottom:1px solid var(--jf-panel-edge)}
 .asset-filter-switch{display:flex;gap:6px;flex-wrap:wrap}
-.asset-filter-switch button{padding:9px 13px;border-radius:999px;border:1px solid #56316f;background:#1d112b;font-size:12px;color:#bca8ce;display:flex;gap:8px}
-.asset-filter-switch button.active{border-color:#b453f3;background:linear-gradient(115deg,#8428cf,#431469);color:white}
+.asset-filter-switch button{padding:9px 13px;border-radius:999px;border:1px solid var(--jf-border);background:var(--jf-studio-deep);font-size:12px;color:var(--jf-muted);display:flex;gap:8px}
+.asset-filter-switch button.active{border-color:var(--jf-secondary);background:linear-gradient(115deg,var(--jf-primary),var(--jf-studio-raised));color:white}
 .asset-filter-switch button span{font-variant-numeric:tabular-nums;opacity:.73}
-.asset-search{display:flex;align-items:center;gap:7px;padding:3px 7px 3px 11px;min-width:190px;flex:1;max-width:260px;height:39px;border-radius:14px;border:1px solid #563471;background:#180d25;color:#bd91dc}
+.asset-search{display:flex;align-items:center;gap:7px;padding:3px 7px 3px 11px;min-width:190px;flex:1;max-width:260px;height:39px;border-radius:14px;border:1px solid var(--jf-border);background:var(--jf-studio-deep);color:var(--jf-secondary)}
 .asset-search input{background:none!important;border:0!important;outline:none!important;color:white!important;flex:1;width:100%;min-width:0;padding:5px 0!important;font-size:12px!important}
 .asset-search button{height:23px;width:23px;flex-shrink:0}
 .asset-modal-scroll{padding:17px 23px;overflow:auto;min-height:0;flex:1;scrollbar-width:thin}
 .asset-pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(122px,1fr));gap:12px}
-.asset-pick-card{display:flex;flex-direction:column;min-width:0;background:#1a1026;border:1px solid #583371;border-radius:15px;padding:5px;overflow:hidden;text-align:left;position:relative;transition:background .15s,border-color .15s}
-.asset-pick-card:hover{background:#321b44;border-color:#a955ee}
-.asset-pick-card img{display:block;width:100%;aspect-ratio:1.09;object-fit:cover;border-radius:10px;background:radial-gradient(#362246,#130a1c)}
-.asset-pick-name{display:block;min-width:0;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#d4c4e0;padding:8px 3px 5px}
-.asset-in-project{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#7829ba;color:white;box-shadow:0 0 12px #3b1853}
-.asset-empty{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:9px;color:#bea5d0;font-size:13px}
-.asset-empty button{border:1px solid #9459bb;padding:10px 15px;border-radius:15px;background:#3a1857;color:#eddafa}
+.asset-pick-card{display:flex;flex-direction:column;min-width:0;background:var(--jf-studio-deep);border:1px solid var(--jf-border);border-radius:15px;padding:5px;overflow:hidden;text-align:left;position:relative;transition:background .15s,border-color .15s}
+.asset-pick-card:hover{background:var(--jf-studio-raised);border-color:var(--jf-primary)}
+.asset-pick-card img{display:block;width:100%;aspect-ratio:1.09;object-fit:cover;border-radius:10px;background:radial-gradient(var(--jf-surface-tint),var(--jf-background))}
+.asset-pick-name{display:block;min-width:0;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--jf-text);padding:8px 3px 5px}
+.asset-in-project{position:absolute;top:10px;right:10px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--jf-primary);color:white;box-shadow:0 0 12px var(--jf-primary-soft)}
+.asset-empty{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:9px;color:var(--jf-muted);font-size:13px}
+.asset-empty button{border:1px solid var(--jf-border);padding:10px 15px;border-radius:15px;background:var(--jf-studio-raised);color:var(--jf-text)}
 .asset-error{color:#f9a6c0;font-size:12px}
-.asset-modal-foot{border-top:1px solid #48305d;padding:12px 23px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.asset-modal-foot>span{font-size:11px;color:#b8a2c9}
-.asset-import{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:14px;border:1px solid #b04cf4;color:white;cursor:pointer;background:linear-gradient(135deg,#882cd2,#3b1261);font-size:12px}
+.asset-modal-foot{border-top:1px solid var(--jf-panel-edge);padding:12px 23px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.asset-modal-foot>span{font-size:11px;color:var(--jf-muted)}
+.asset-import{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:14px;border:1px solid var(--jf-secondary);color:white;cursor:pointer;background:linear-gradient(135deg,var(--jf-primary),var(--jf-studio-raised));font-size:12px}
 .asset-import input{display:none}
-.asset-import:focus-within{outline:2px solid #c879ff;outline-offset:2px}
+.asset-import:focus-within{outline:2px solid var(--jf-secondary);outline-offset:2px}
 
 /* Compact music widget, based on the supplied Figma screenshot */
 .sidebar{overflow:visible}

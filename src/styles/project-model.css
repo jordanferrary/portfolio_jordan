@@ -1,18 +1,18 @@
 .project-model-block{width:100%;max-width:1050px;margin:0 auto}
-.project-model-frame{width:100%;aspect-ratio:16/10;position:relative;overflow:hidden;background:radial-gradient(ellipse at 55% 44%,#321c47 0%,#0a0812 84%);border:1px solid #754793;border-radius:20px}
+.project-model-frame{width:100%;aspect-ratio:16/10;position:relative;overflow:hidden;background:radial-gradient(ellipse at 55% 44%,var(--jf-surface-tint) 0%,var(--jf-background) 84%);border:1px solid var(--jf-border);border-radius:20px}
 .project-model-poster{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
 .project-model-poster>img{position:absolute;width:100%;height:100%;object-fit:cover;opacity:.73;filter:saturate(.85)}
 .project-model-fallback{display:grid;place-items:center;width:150px;height:150px;border:1px solid #9b67c555;border-radius:28px;background:linear-gradient(155deg,#65338d65,#100c17);box-shadow:inset 0 1px #dcc3fc2b,0 18px 60px #0a051555;color:#c591f1;transform:rotate(-5deg)}
 .project-model-corner,.project-model-format{position:absolute;z-index:1;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.12em}
-.project-model-corner{left:19px;top:17px;color:#eacbff}
-.project-model-format{right:19px;bottom:19px;color:#c29dd8}
+.project-model-corner{left:19px;top:17px;color:var(--jf-secondary)}
+.project-model-format{right:19px;bottom:19px;color:var(--jf-muted)}
 .project-model-launch{position:absolute;z-index:1;bottom:16px;left:17px;display:flex;align-items:center;gap:9px;padding:12px 16px;background:#7e2bb5;border:1px solid #d5a5ff;border-radius:13px;font-size:12px;font-weight:750;box-shadow:0 10px 30px #09031499;transition:transform .2s}
 .project-model-poster:hover .project-model-launch{transform:translateY(-3px)}
 .project-model-stage,.project-model-canvas{width:100%;height:100%;display:block}
-.project-model-loading{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 14px;border-radius:12px;background:#190c25d9;color:#ead4fa;font-size:12px;pointer-events:none}
-.project-model-error{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;background:#160b23ee;color:#e9d5fa;text-align:center;font-size:13px}
-.project-model-error a{display:flex;align-items:center;gap:6px;color:#d6a8ff}
-.project-model-invalid{margin:20px auto;padding:30px;border:1px solid #664580;border-radius:16px;text-align:center;color:#c4a6db;font-size:13px}
+.project-model-loading{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:10px 14px;border-radius:12px;background:color-mix(in srgb,var(--jf-surface-deep) 85%,transparent);color:var(--jf-text);font-size:12px;pointer-events:none}
+.project-model-error{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;background:color-mix(in srgb,var(--jf-background) 93%,transparent);color:var(--jf-text);text-align:center;font-size:13px}
+.project-model-error a{display:flex;align-items:center;gap:6px;color:var(--jf-secondary)}
+.project-model-invalid{margin:20px auto;padding:30px;border:1px solid var(--jf-border);border-radius:16px;text-align:center;color:var(--jf-muted);font-size:13px}
 @media(max-width:600px){.project-model-frame{aspect-ratio:4/5}.project-model-launch{padding:10px 12px}}
 @media(prefers-reduced-motion:reduce){.project-model-launch{transition:none}}
 
@@ -85,7 +85,7 @@
 .model-studio-summary{display:flex;align-items:center;gap:6px;margin:0 0 12px}
 .model-studio-dialog{position:fixed;inset:0;margin:auto;width:min(1400px,96vw);height:min(900px,94dvh);max-width:none;max-height:none;padding:0;border:1px solid var(--jf-panel-edge,var(--jf-border));border-radius:22px;background:var(--jf-background);color:var(--jf-text);box-shadow:0 24px 100px #0009;overflow:hidden;text-align:left}
 .model-studio-dialog[open]{display:flex;flex-direction:column}
-.model-studio-dialog::backdrop{background:#07050ce0;backdrop-filter:blur(8px)}
+.model-studio-dialog::backdrop{background:color-mix(in srgb,var(--jf-background) 88%,transparent);backdrop-filter:blur(8px)}
 .model-studio-header,.model-studio-footer{display:flex;align-items:center;gap:12px;padding:14px 20px;flex-shrink:0;background:var(--jf-surface);border-bottom:1px solid var(--jf-panel-edge,var(--jf-border))}
 .model-studio-header{justify-content:space-between}
 .model-studio-heading{display:flex;align-items:center;gap:12px;min-width:0}.model-studio-heading>div{min-width:0}
@@ -168,7 +168,7 @@
 @media(max-width:900px) and (min-width:741px){.model-studio-body{grid-template-columns:minmax(0,1fr) 310px}.model-art-shader-grid{grid-template-columns:1fr}}
 @media(max-width:740px){.model-studio-dialog{width:100vw;height:100dvh;border-radius:0}.model-studio-body{grid-template-columns:1fr;grid-template-rows:minmax(180px,44%) minmax(0,1fr)}.model-studio-controls{padding:10px}.model-studio-tabs button{min-height:39px}.model-art-shader-grid{max-height:240px}.model-art-shader-option{grid-template-columns:40px minmax(0,1fr)}.model-art-shader-swatch{height:40px}}
 
-.project-model-error{overflow:hidden}.project-model-error-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:.4;pointer-events:none}.project-model-error-content{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;background:#160b23da;padding:14px;border-radius:12px;max-width:90%}.project-model-error-content p{margin:0}.project-model-error-content button{display:flex;align-items:center;gap:6px}
+.project-model-error{overflow:hidden}.project-model-error-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:.4;pointer-events:none}.project-model-error-content{position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;background:color-mix(in srgb,var(--jf-surface-deep) 86%,transparent);padding:14px;border-radius:12px;max-width:90%}.project-model-error-content p{margin:0}.project-model-error-content button{display:flex;align-items:center;gap:6px}
 
 /* Game-inspired workspace: navigation rail, generous viewport and focused property panel. */
 .model-studio-dialog{background:var(--jf-background);border-radius:22px}
