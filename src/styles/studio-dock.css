@@ -362,3 +362,7 @@
  .studio-dock-anchor .studio-dock-actions .studio-dock-new{display:inline-flex}
  .studio-dock-anchor .studio-hub-header{padding:9px 11px}
 }
+
+.studio-dock-anchor .studio-hub .studio-hub-item:disabled{opacity:.5;cursor:default}
+.studio-dock-anchor .studio-hub-management .studio-backup-notice{grid-column:1/-1;margin:5px 0;padding:9px 12px;border:1px solid var(--jf-border);border-radius:8px;color:var(--jf-text);background:var(--jf-studio-wash)}
+.studio-dock-anchor .studio-hub-management .studio-backup-import{cursor:pointer}

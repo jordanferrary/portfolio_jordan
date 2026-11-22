@@ -12,9 +12,9 @@ export function AboutEditor({value,onSave,onClose}:Props){
  const [skillsText,setSkillsText]=useState(value.specialties.join('\n'))
  const [error,setError]=useState('')
  const [tab,setTab]=useState<'copy'|'media'>('copy')
+ const [busy,setBusy]=useState(false)
  const dirty=JSON.stringify(draft)!==JSON.stringify(value)||skillsText!==value.specialties.join('\n')
  const close=()=>{if(!busy&&(!dirty||window.confirm('Descartar as alterações ainda não salvas?')))onClose()}
- const [busy,setBusy]=useState(false)
  const patch=(delta:Partial<AboutContent>)=>setDraft(current=>({...current,...delta}))
  const upload=async(file:File,field:'portrait'|'secondaryImage')=>{
   setBusy(true)
@@ -22,7 +22,7 @@ export function AboutEditor({value,onSave,onClose}:Props){
   catch(e){setError(e instanceof Error?e.message:'Não foi possível importar a imagem.')}
   finally{setBusy(false)}
  }
- const save=()=>{if(!draft.titleFirst.trim()||!draft.name.trim()){setError('Informe o título e o nome do artista.');return}onSave({...draft,specialties:skillsText.split(/\r?\n|,/).map(s=>s.trim()).filter(Boolean).slice(0,30)});onClose()}
+ const save=()=>{if(!draft.titleFirst.trim()||!draft.name.trim()){setTab('copy');setError('Informe o título e o nome do artista.');return}onSave({...draft,specialties:skillsText.split(/\r?\n|,/).map(s=>s.trim()).filter(Boolean).slice(0,30)});onClose()}
  return <div className="editor-overlay" lang="pt-BR"><section className="editor-panel about-editor" role="dialog" aria-modal="true" aria-label="Editar página Sobre"><header><div><span className="eyebrow">✦ LOCAL STUDIO</span><h2>Personalizar Sobre</h2></div><button type="button" disabled={busy} onClick={close} aria-label="Fechar editor"><X/></button></header>
   <div className="editor-tabs studio-page-tabs"><button type="button" aria-pressed={tab==='copy'} onClick={()=>setTab('copy')}>Apresentação</button><button type="button" aria-pressed={tab==='media'} onClick={()=>setTab('media')}>Imagens</button></div>
   <div className="editor-scroll"><div className="studio-about-copy" hidden={tab!=='copy'}>

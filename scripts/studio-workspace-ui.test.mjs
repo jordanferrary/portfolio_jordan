@@ -29,3 +29,15 @@ test('page editors keep unsaved draft controls while switching sections',async()
  assert.match(contact,/<SocialLinksEditor links=\{draftLinks\}/)
  assert.match(css,/\[hidden\]\{display:none!important\}/)
 })
+
+test('operational tools are gathered under management without excluding search',async()=>{
+ const [dock,app]=await Promise.all(['src/components/sections/studio-dock.tsx','src/app.tsx'].map(read))
+ for(const id of ['studio-cloud','studio-checkpoints','studio-history','studio-health']){
+  const line=app.split('\n').find(s=>s.includes("id:'"+id+"'"))
+  assert.ok(line?.includes("section:'Sistema'"))
+ }
+ assert.match(dock,/section==='system'\?'Sistema':section/)
+ assert.match(dock,/\{visible.map\(tile\)\}/)
+ assert.match(dock,/const matching=actions.filter/)
+ assert.match(dock,/if\(backupBusy\)return;setOpen\(false\);callback\(\)/)
+})

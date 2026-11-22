@@ -8,7 +8,7 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import {readWorkflow,saveWorkflow,matchesTool,visitTool,toggleFavorite} from '../../lib/studio-workflow'
 
-export type StudioSection='Páginas'|'Projetos'|'Familiar'|'Conteúdo'|'Identidade'
+export type StudioSection='Páginas'|'Projetos'|'Familiar'|'Conteúdo'|'Identidade'|'Sistema'
 export type StudioAction={
  id:string;label:string;description:string;section:StudioSection;icon:LucideIcon;onClick:()=>void
 }
@@ -79,14 +79,14 @@ export function StudioDock({
    document.removeEventListener('keydown',escape)
   }
  },[open,backupBusy,query])
- const invoke=(callback:()=>void)=>{setOpen(false);callback()}
- const choose=(next:Workspace)=>{setSection(next);setQuery('');setActiveResult(0);scrollRef.current?.scrollTo({top:0})}
+ const invoke=(callback:()=>void)=>{if(backupBusy)return;setOpen(false);callback()}
+ const choose=(next:Workspace)=>{if(backupBusy)return;setSection(next);setQuery('');setActiveResult(0);scrollRef.current?.scrollTo({top:0})}
  const normalized=query.trim()
  useEffect(()=>{setActiveResult(0);scrollRef.current?.scrollTo({top:0})},[query])
  const matching=actions.filter(action=>matchesTool(query,[action.label,action.description,action.section]))
- const launch=(action:StudioAction)=>{setWorkflow(value=>visitTool(value,action.id));invoke(action.onClick)}
+ const launch=(action:StudioAction)=>{if(backupBusy)return;setWorkflow(value=>visitTool(value,action.id));invoke(action.onClick)}
  const favorites=workflow.favorites.flatMap(id=>actions.filter(a=>a.id===id))
- const recent=workflow.recent.flatMap(id=>actions.filter(a=>a.id===id&&!workflow.favorites.includes(id)))
+ const recent=workflow.recent.flatMap(id=>actions.filter(a=>a.id===id))
  const buildCode=String(import.meta.env.VITE_BUILD_SHA||'local').slice(0,7)
  const categoriesWithCount=CATEGORIES.map(category=>({
   ...category,count:actions.filter(action=>action.section===category.id).length
@@ -94,7 +94,7 @@ export function StudioDock({
  const featuredIds=['visual-inspector','global-layout','palette','draft-preview','studio-health','new-project','custom-pages']
  const featured=featuredIds.map(id=>actions.find(action=>action.id===id))
   .filter((action):action is StudioAction=>Boolean(action))
- const visible=normalized?matching:actions.filter(action=>action.section===section)
+ const visible=normalized?matching:actions.filter(action=>action.section===(section==='system'?'Sistema':section))
  const inspector=actions.find(a=>a.id==='visual-inspector')
  const preview=actions.find(a=>a.id==='draft-preview')
  const overviewTools=[...favorites.slice(0,4),...featured.filter(a=>!favorites.some(f=>f.id===a.id)).slice(0,Math.max(0,6-Math.min(favorites.length,4)))]
@@ -103,7 +103,7 @@ export function StudioDock({
  useEffect(()=>{if(normalized&&open)document.getElementById('studio-result-'+activeResult)?.scrollIntoView({block:'nearest'})},[activeResult,normalized,open])
  const tile=(action:StudioAction,index:number)=>{
   const Icon=action.icon
-  return <div className="studio-tool-tile" key={action.id} data-keyboard-active={normalized&&index===activeResult?true:undefined} id={normalized?'studio-result-'+index:undefined}><button type="button" className="studio-hub-item"
+  return <div className="studio-tool-tile" key={action.id} data-keyboard-active={normalized&&index===activeResult?true:undefined} id={normalized?'studio-result-'+index:undefined}><button type="button" className="studio-hub-item" disabled={backupBusy}
    onClick={()=>launch(action)}>
     <span className="studio-hub-icon"><Icon size={20} aria-hidden="true"/></span>
     <span className="studio-hub-item-copy">
@@ -123,7 +123,7 @@ export function StudioDock({
     <div className="studio-hub-header-actions">
      <span className="studio-hub-draft-indicator"><span/> Rascunho local</span>
      <button type="button" className="studio-hub-close" onClick={close}
-      aria-label="Fechar central de ferramentas"><X size={18}/></button>
+      aria-label="Fechar central de ferramentas" disabled={backupBusy}><X size={18}/></button>
     </div>
    </header>
    <div className="studio-hub-body">
@@ -153,7 +153,7 @@ export function StudioDock({
     <section className="studio-hub-workspace" aria-label="Ferramentas selecionadas">
      <div className="studio-hub-search">
       <Search size={17} aria-hidden="true"/>
-      <input ref={searchRef} type="search" value={query}
+      <input ref={searchRef} type="search" disabled={backupBusy} value={query}
        onChange={event=>setQuery(event.target.value)} onKeyDown={e=>{if(!normalized||!matching.length)return;if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();setActiveResult(i=>(i+(e.key==='ArrowDown'?1:-1)+matching.length)%matching.length)}else if(e.key==='Enter'){e.preventDefault();if(matching[activeResult])launch(matching[activeResult])}}}
        placeholder="Pesquisar ferramentas, páginas ou ações..."
        aria-label="Pesquisar ferramentas do Local Studio"/>
@@ -197,11 +197,12 @@ export function StudioDock({
           <small>Voltar à visualização pública do portfólio.</small></span>
          <ArrowRight size={15} className="studio-hub-item-arrow"/>
         </button>
+        {visible.map(tile)}
        </div>:<div className="studio-hub-grid">
         {presented.map(tile)}
        </div>}
       {!normalized&&section!=='system'&&presented.length===0&&<p className="studio-workspace-empty">{section==='favorites'?'Marque a estrela de uma ferramenta para fixá-la aqui.':section==='recent'?'As ferramentas abertas aparecem aqui.':'Nenhuma ferramenta disponível nesta área.'}</p>}
-      {section==='overview'&&!normalized&&recent.length>0&&<><div className="studio-hub-section-heading"><h3>Recentes</h3><button type="button" className="studio-text-action" onClick={()=>choose('recent')}>Ver todos <ChevronRight size={13}/></button></div><div className="studio-hub-grid">{recent.filter(a=>!overviewTools.some(b=>b.id===a.id)).slice(0,3).map(tile)}</div></>}
+      {section==='overview'&&!normalized&&recent.some(a=>!overviewTools.some(b=>b.id===a.id))&&<><div className="studio-hub-section-heading"><h3>Recentes</h3><button type="button" className="studio-text-action" onClick={()=>choose('recent')}>Ver todos <ChevronRight size={13}/></button></div><div className="studio-hub-grid">{recent.filter(a=>!overviewTools.some(b=>b.id===a.id)).slice(0,3).map(tile)}</div></>}
      </div>
     </section>
    </div>
@@ -225,7 +226,7 @@ export function StudioDock({
     <button type="button" className="studio-dock-new" onClick={()=>invoke(onNewProject)}
      title="Criar projeto" aria-label="Criar projeto"><Plus size={18}/><span>Novo projeto</span></button>
     <button ref={menuRef} type="button" className={'studio-menu-button'+(open?' active':'')} aria-label="Ferramentas"
-     aria-expanded={open} aria-controls="studio-hub" onClick={()=>setOpen(v=>!v)}>
+     aria-expanded={open} aria-controls="studio-hub" disabled={backupBusy} onClick={()=>setOpen(v=>!v)}>
      <LayoutGrid size={17}/><span>Ferramentas</span><ChevronDown size={14}/>
     </button>
     <button type="button" className="studio-dock-publish" aria-label="Publicar" onClick={()=>invoke(onPublish)}>

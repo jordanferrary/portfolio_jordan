@@ -22,7 +22,7 @@ export function ContactEditor({settings,links,onSave,onClose}:Props){
  const moveTag=(index:number,offset:number)=>{const next=[...draft.footerTags];const target=index+offset;if(target<0||target>=next.length)return;[next[index],next[target]]=[next[target],next[index]];updateTags(next)}
  const save=()=>{
   if(!draft.titleFirst.trim()){
-   setError('Preencha a primeira linha do título.');return
+   setTab('copy');setError('Preencha a primeira linha do título.');return
   }
   onSave({...draft,titleFirst:draft.titleFirst.trim(),titleAccent:draft.titleAccent.trim(),introduction:draft.introduction.trim(),greeting:draft.greeting.trim(),footerTags:normalizeContactTags(draft.footerTags)},draftLinks)
   onClose()
