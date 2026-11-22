@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import type {ModelMode,ModelPresentation} from './model-presentation'
+import type {ModelMode,ModelPresentation,MaterialLook} from './model-presentation'
 type PBR=THREE.MeshPhysicalMaterial
 const basic=(src:THREE.Material,params:THREE.MeshBasicMaterialParameters={})=>new THREE.MeshBasicMaterial({side:src.side,toneMapped:false,...params})
 export function createChecker():THREE.CanvasTexture{
@@ -62,9 +62,23 @@ export function createPresentationMaterial(mode:ModelMode,source:THREE.Material,
  if(mode==='shaded-wire'){clone.transparent=false;clone.opacity=1;clone.depthTest=true;clone.depthWrite=true;if('wireframe' in clone)(clone as PBR).wireframe=false;clone.polygonOffset=false;if('transmission' in clone)(clone as PBR).transmission=0}
  return clone
 }
-export function applyPresentationEmission(material:THREE.Material,source:THREE.Material,scale:number){
+export function applyPresentationEmission(material:THREE.Material,source:THREE.Material,scale:number,look?:Pick<MaterialLook,'emissionMode'|'emissionColor'>){
  const next=material as PBR,original=source as PBR
- if(next.isMeshStandardMaterial&&original.isMeshStandardMaterial)next.emissiveIntensity=original.emissiveIntensity*scale
+ if(!next.isMeshStandardMaterial)return
+ const mode=look?.emissionMode??'original'
+ const tint=new THREE.Color(look?.emissionColor??'#ffffff')
+ let map:THREE.Texture|null=null
+ if(mode==='base'){
+  next.emissive.copy(original.color??new THREE.Color(1,1,1)).multiply(tint)
+  map=original.map??null;next.emissiveIntensity=scale
+ }else if(mode==='color'){
+  next.emissive.copy(tint);next.emissiveIntensity=scale
+ }else{
+  next.emissive.copy(original.isMeshStandardMaterial?original.emissive:new THREE.Color(0)).multiply(tint)
+  map=original.isMeshStandardMaterial?original.emissiveMap:null
+  next.emissiveIntensity=original.isMeshStandardMaterial?original.emissiveIntensity*scale:0
+ }
+ if(next.emissiveMap!==map){next.emissiveMap=map;next.needsUpdate=true}
 }
 export function debugMaterial(mode:ModelMode,source:THREE.Material,textures:{checker:()=>THREE.Texture;matcap:()=>THREE.Texture}):THREE.Material{
  const src=source as PBR

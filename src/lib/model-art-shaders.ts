@@ -132,7 +132,8 @@ export function attachArtShader(material:THREE.Material,uniforms:ArtUniforms){
   shader.fragmentShader=shader.fragmentShader.replace(/void\s+main\s*\(\s*\)\s*\{/,match=>functionCode+'\n'+match)
   const light=standard?'dot(max(outgoingLight-totalEmissiveRadiance,vec3(0.0)),vec3(0.2126,0.7152,0.0722))/max(dot(diffuseColor.rgb,vec3(0.2126,0.7152,0.0722)),0.05)':'1.0'
   const code=[
-   'vec3 originalArt=max(gl_FragColor.rgb,vec3(0.0));',
+   'vec3 emissionArt='+(standard?'totalEmissiveRadiance':'vec3(0.0)')+';',
+   'vec3 originalArt=max(gl_FragColor.rgb-emissionArt,vec3(0.0));',
    'float facingArt='+facing+';',
    'float lightArt=max(0.0,'+light+');',
    'vec3 colorArt=jfStyle(jfArtMode,originalArt,jfArtTint,facingArt,lightArt,vec4(jfPatternScale,jfArtBands,jfArtRimPower,jfArtScanSpacing));',
@@ -141,12 +142,12 @@ export function attachArtShader(material:THREE.Material,uniforms:ArtUniforms){
    'if(jfLightMode!=0) resultArt=mix(resultArt,jfStyle(jfLightMode,resultArt,jfLightTint,facingArt,lightArt,jfLightParams),maskArt*jfLightStrength);',
    'if(jfShadowMode!=0) resultArt=mix(resultArt,jfStyle(jfShadowMode,resultArt,jfShadowTint,facingArt,lightArt,jfShadowParams),(1.0-maskArt)*jfShadowStrength);',
    'resultArt+=jfRimTint*pow(1.0-facingArt,jfRimPower)*jfRimStrength;',
-   'gl_FragColor.rgb=mix(resultArt,resultArt+vec3(0.22,0.12,0.36),jfSelected*0.65);',
+   'gl_FragColor.rgb=mix(resultArt,resultArt+vec3(0.22,0.12,0.36),jfSelected*0.65)+emissionArt;',
    '#include <tonemapping_fragment>'
   ].join('\n')
   shader.fragmentShader=shader.fragmentShader.replace('#include <tonemapping_fragment>',code)
  }
- material.customProgramCacheKey=()=>priorKey+'|jf-art-v3-'+(standard?'pbr':'basic')
+ material.customProgramCacheKey=()=>priorKey+'|jf-art-v4-'+(standard?'pbr':'basic')
  material.needsUpdate=true
  return material
 }

@@ -79,7 +79,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   material.depthWrite=source.depthWrite&&(!look||look.opacity>=1)
   if(lit.isMeshStandardMaterial){lit.roughness=THREE.MathUtils.clamp((base.isMeshStandardMaterial?base.roughness:.85)*(look?.roughness??1),0,1);lit.metalness=THREE.MathUtils.clamp((base.isMeshStandardMaterial?base.metalness:0)*(look?.metalness??1),0,1)}
   if(lit.isMeshStandardMaterial&&lit.flatShading!==flat){lit.flatShading=flat;lit.needsUpdate=true}
-  applyPresentationEmission(material,source,presentation.emissionScale*(look?.emission??1))
+  applyPresentationEmission(material,source,presentation.emissionScale*(look?.emission??1),look)
   material.visible=source.visible&&(!materialEdit.active||!materialEdit.isolate||!materialEdit.selected||id===materialEdit.selected)
  }
  function updateMaterialLooks(){
@@ -271,7 +271,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   if(animationPlaying)mixer?.update(delta)
   const artTime=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:time/1000;for(const uniforms of artUniforms.values())uniforms.jfTime.value=artTime
   controls.update(delta);gizmos?.sync()
-  if(mode==='material'&&(presentation.artShader.chromaticAberration>0||presentation.artShader.crt>0||presentation.artShader.vhs>0||presentation.artShader.pixelSize>0)&&!editState.helpers){chromaticPass??=createChromaticPass(renderer);chromaticPass.render(scene,camera,presentation.artShader,artTime)}else{if(chromaticPass){chromaticPass.dispose();chromaticPass=null}renderer.render(scene,camera)}
+  if(mode==='material'&&(presentation.artShader.chromaticAberration>0||presentation.artShader.crt>0||presentation.artShader.vhs>0||presentation.artShader.pixelSize>0||presentation.artShader.bloom>0)&&!editState.helpers){chromaticPass??=createChromaticPass(renderer);chromaticPass.render(scene,camera,presentation.artShader,artTime)}else{if(chromaticPass){chromaticPass.dispose();chromaticPass=null}renderer.render(scene,camera)}
  })
  return {
   setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;const emissionChanged=next.emissionScale!==presentation.emissionScale;presentation=next;applyLighting();if(relight){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();artUniforms.clear();setMode(mode)}else{if(emissionChanged)updateEmission();updateMaterialLooks()}if(reframe)resetCamera()},

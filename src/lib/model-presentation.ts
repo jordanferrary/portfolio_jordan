@@ -1,6 +1,6 @@
 export type ModelMode='material'|'neutral'|'clay'|'wireframe'|'shaded-wire'|'clay-wire'|'flat'|'flat-wire'|'normals'|'unlit'|'metalness'|'roughness'|'normal-map'|'ao'|'opacity'|'emission'|'specular'|'scattering'|'matcap'|'matcap-surface'|'uv'|'bones'|'weights'
 export type ArtShaderPreset='original'|'toon'|'noir'|'rim'|'iridescent'|'hologram'|'blueprint'|'flat'|'hatch'|'crosshatch'|'stipple'|'halftone'|'pixel'|'outline'|'dither'|'watercolor'|'pencil'
-export type ArtShader={preset:ArtShaderPreset;strength:number;tint:string;bands:number;rimPower:number;scanSpacing:number;patternScale:number;inkColor:string;paperColor:string;patternAngle:number;chromaticAberration:number;chromaticAngle:number;crt:number;vhs:number;pixelSize:number}
+export type ArtShader={preset:ArtShaderPreset;strength:number;tint:string;bands:number;rimPower:number;scanSpacing:number;patternScale:number;inkColor:string;paperColor:string;patternAngle:number;chromaticAberration:number;chromaticAngle:number;crt:number;vhs:number;pixelSize:number;bloom:number;bloomThreshold:number;bloomRadius:number}
 export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;description:string;tint:string;swatch:string}[]=[
  {id:'original',name:'Original PBR',description:'Materiais e iluminação naturais.',tint:'#ffffff',swatch:'radial-gradient(circle at 30% 25%,#f5ebd7,#786853 45%,#25212b 80%)'},
  {id:'toon',name:'Cel / Toon',description:'Faixas de luz sobre as cores originais.',tint:'#ffffff',swatch:'radial-gradient(circle at 30% 30%,#ecb891 0 32%,#b35f7d 33% 57%,#43365f 58%)'},
@@ -20,7 +20,7 @@ export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;descrip
  {id:'watercolor',name:'Watercolor',description:'Lavagem de cor e granulação procedural.',tint:'#ffffff',swatch:'radial-gradient(ellipse at 30% 30%,#f9e3d7,#bf8fae 48%,#575a8d 86%)'},
  {id:'pencil',name:'Pencil Sketch',description:'Grafite irregular e traços de desenho.',tint:'#ffffff',swatch:'repeating-linear-gradient(37deg,#e9e4d9 0 3px,#7b7470 4px,#e9e4d9 6px)'}
 ]
-export const DEFAULT_ART_SHADER:ArtShader={preset:'original',strength:.75,tint:'#ffffff',bands:4,rimPower:3,scanSpacing:7,patternScale:7,inkColor:'#211c29',paperColor:'#f5eedc',patternAngle:45,chromaticAberration:0,chromaticAngle:0,crt:0,vhs:0,pixelSize:0}
+export const DEFAULT_ART_SHADER:ArtShader={preset:'original',strength:.75,tint:'#ffffff',bands:4,rimPower:3,scanSpacing:7,patternScale:7,inkColor:'#211c29',paperColor:'#f5eedc',patternAngle:45,chromaticAberration:0,chromaticAngle:0,crt:0,vhs:0,pixelSize:0,bloom:.35,bloomThreshold:1,bloomRadius:3}
 export const MAX_MODEL_LIGHTS=8
 export type ModelLight={id:string;name:string;type:'directional'|'point'|'spot';enabled:boolean;color:string;intensity:number;azimuth:number;elevation:number;distance:number;angle:number;softness:number;targetX:number;targetY:number;targetZ:number}
 export type ModelCamera={azimuth:number;elevation:number;zoom:number;fov:number;targetX:number;targetY:number;targetZ:number}
@@ -53,14 +53,14 @@ function normalizeLights(value:unknown):ModelLight[]{
 export function normalizeArtShader(value?:Partial<ArtShader>|null):ArtShader{
  const v=value??{},d=DEFAULT_ART_SHADER
  const preset=ART_SHADER_PRESETS.find(item=>item.id===v.preset)??ART_SHADER_PRESETS[0]
- return {preset:preset.id,strength:numeric(v.strength,d.strength,0,1),tint:color(v.tint,preset.tint),bands:Math.round(numeric(v.bands,d.bands,2,8)),rimPower:numeric(v.rimPower,d.rimPower,.5,8),scanSpacing:numeric(v.scanSpacing,d.scanSpacing,3,24),patternScale:numeric(v.patternScale,d.patternScale,3,24),inkColor:color(v.inkColor,d.inkColor),paperColor:color(v.paperColor,d.paperColor),patternAngle:numeric(v.patternAngle,d.patternAngle,0,180),chromaticAberration:numeric(v.chromaticAberration,0,0,12),chromaticAngle:numeric(v.chromaticAngle,0,0,360),crt:numeric(v.crt,0,0,1),vhs:numeric(v.vhs,0,0,1),pixelSize:numeric(v.pixelSize,0,0,12)}
+ return {preset:preset.id,strength:numeric(v.strength,d.strength,0,1),tint:color(v.tint,preset.tint),bands:Math.round(numeric(v.bands,d.bands,2,8)),rimPower:numeric(v.rimPower,d.rimPower,.5,8),scanSpacing:numeric(v.scanSpacing,d.scanSpacing,3,24),patternScale:numeric(v.patternScale,d.patternScale,3,24),inkColor:color(v.inkColor,d.inkColor),paperColor:color(v.paperColor,d.paperColor),patternAngle:numeric(v.patternAngle,d.patternAngle,0,180),chromaticAberration:numeric(v.chromaticAberration,0,0,12),chromaticAngle:numeric(v.chromaticAngle,0,0,360),crt:numeric(v.crt,0,0,1),vhs:numeric(v.vhs,0,0,1),pixelSize:numeric(v.pixelSize,0,0,12),bloom:numeric(v.bloom,d.bloom,0,2),bloomThreshold:numeric(v.bloomThreshold,d.bloomThreshold,.1,4),bloomRadius:numeric(v.bloomRadius,d.bloomRadius,1,8)}
 }
 export type MaterialLayer={preset:ArtShaderPreset;strength:number;tint:string;patternScale:number;bands:number;rimPower:number;scanSpacing:number}
-export type MaterialLook={surface:ArtShader;light:MaterialLayer;shadow:MaterialLayer;shadowThreshold:number;shadowSoftness:number;rimStrength:number;rimTint:string;rimPower:number;baseTint:string;opacity:number;emission:number;roughness:number;metalness:number}
+export type MaterialLook={surface:ArtShader;light:MaterialLayer;shadow:MaterialLayer;shadowThreshold:number;shadowSoftness:number;rimStrength:number;rimTint:string;rimPower:number;baseTint:string;opacity:number;emission:number;emissionMode:'original'|'base'|'color';emissionColor:string;roughness:number;metalness:number}
 export type MaterialInfo={id:string;name:string;meshes:number;color:string}
 export type MaterialEditState={active:boolean;selected:string|null;isolate:boolean;highlight:boolean}
 export function newMaterialLook(surface:ArtShader=DEFAULT_ART_SHADER):MaterialLook{
- return {surface:{...surface,chromaticAberration:0,crt:0,vhs:0,pixelSize:0},light:{preset:'original',strength:1,tint:'#ffffff',patternScale:7,bands:4,rimPower:3,scanSpacing:7},shadow:{preset:'original',strength:1,tint:'#ffffff',patternScale:7,bands:4,rimPower:3,scanSpacing:7},shadowThreshold:.45,shadowSoftness:.18,rimStrength:0,rimTint:'#a35bff',rimPower:3,baseTint:'#ffffff',opacity:1,emission:1,roughness:1,metalness:1}
+ return {surface:{...surface,chromaticAberration:0,crt:0,vhs:0,pixelSize:0,bloom:0},light:{preset:'original',strength:1,tint:'#ffffff',patternScale:7,bands:4,rimPower:3,scanSpacing:7},shadow:{preset:'original',strength:1,tint:'#ffffff',patternScale:7,bands:4,rimPower:3,scanSpacing:7},shadowThreshold:.45,shadowSoftness:.18,rimStrength:0,rimTint:'#a35bff',rimPower:3,baseTint:'#ffffff',opacity:1,emission:1,emissionMode:'original',emissionColor:'#ffffff',roughness:1,metalness:1}
 }
 function normalizeLayer(value:unknown):MaterialLayer{
  const v=(value&&typeof value==='object'?value:{}) as Partial<MaterialLayer>
@@ -68,7 +68,7 @@ function normalizeLayer(value:unknown):MaterialLayer{
 }
 export function normalizeMaterialLook(value:unknown):MaterialLook{
  const v=(value&&typeof value==='object'?value:{}) as Partial<MaterialLook>,d=newMaterialLook()
- return {surface:normalizeArtShader(v.surface),light:normalizeLayer(v.light),shadow:normalizeLayer(v.shadow),shadowThreshold:numeric(v.shadowThreshold,d.shadowThreshold,.05,.95),shadowSoftness:numeric(v.shadowSoftness,d.shadowSoftness,.01,.5),rimStrength:numeric(v.rimStrength,0,0,1),rimTint:color(v.rimTint,d.rimTint),rimPower:numeric(v.rimPower,3,.5,8),baseTint:color(v.baseTint,'#ffffff'),opacity:numeric(v.opacity,1,0,1),emission:numeric(v.emission,1,0,3),roughness:numeric(v.roughness,1,0,2),metalness:numeric(v.metalness,1,0,2)}
+ return {surface:normalizeArtShader(v.surface),light:normalizeLayer(v.light),shadow:normalizeLayer(v.shadow),shadowThreshold:numeric(v.shadowThreshold,d.shadowThreshold,.05,.95),shadowSoftness:numeric(v.shadowSoftness,d.shadowSoftness,.01,.5),rimStrength:numeric(v.rimStrength,0,0,1),rimTint:color(v.rimTint,d.rimTint),rimPower:numeric(v.rimPower,3,.5,8),baseTint:color(v.baseTint,'#ffffff'),opacity:numeric(v.opacity,1,0,1),emission:numeric(v.emission,1,0,10),emissionMode:v.emissionMode==='base'||v.emissionMode==='color'?v.emissionMode:'original',emissionColor:color(v.emissionColor,'#ffffff'),roughness:numeric(v.roughness,1,0,2),metalness:numeric(v.metalness,1,0,2)}
 }
 function normalizeMaterialLooks(value:unknown):Record<string,MaterialLook>{
  if(!value||typeof value!=='object'||Array.isArray(value))return {}
