@@ -9,9 +9,9 @@ type Props={
 }
 
 /** Shared divider: changes made in Local Studio are reflected immediately in its preview. */
-export function ProjectDivider({icon='sparkles',variant='glow',preview=false}:Props){
+export function ProjectDivider({icon='diamond',variant='glow',preview=false}:Props){
  const icons={sparkles:Sparkles,star:Star,diamond:Diamond,circle:Circle}
- const Icon=icon==='none'?null:(icons[icon as keyof typeof icons]??Sparkles)
+ const Icon=icon==='none'?null:(icons[icon as keyof typeof icons]??Diamond)
  const style=variant==='solid'||variant==='dashed'?variant:'glow'
  return <section className={'story-block art-divider art-divider-'+style+(preview?' art-divider-preview':'')} role={preview?'img':'separator'} aria-label={preview?'Prévia da linha divisória':'Section divider'}>
   <span className="art-divider-line"/>

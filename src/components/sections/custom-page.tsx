@@ -1,5 +1,5 @@
 import {useEffect,useRef,useState} from 'react'
-import {ArrowUpRight,Check,Copy,Pencil,Sparkles} from 'lucide-react'
+import {ArrowUpRight,Check,Copy,Pencil,FolderOpen} from 'lucide-react'
 import type {Block} from '../../data/projects'
 import type {CustomPage,PageBlock} from '../../data/custom-pages'
 import {safePageHref} from '../../data/custom-pages'
@@ -53,7 +53,7 @@ export function CustomPageView({page,editing,onEdit,headingSymbol}:{page:CustomP
   </header>
   <div className="custom-page-body">
    {page.blocks.length?<div className="story-blocks custom-page-story">{page.blocks.map(block=>block.type==='action'?<PageAction key={block.id} block={block}/>:block.type==='showcase'?<ArtistShowcase key={block.id} block={block}/>:block.type==='slideshow'?<PageSlideshow key={block.id} block={block}/>:<StoryBlock key={block.id} block={block as Block} projectTitle={page.title}/>)}</div>:
-    <div className="custom-page-empty"><Sparkles size={27}/><p>{editing?'This page is ready for your content. Open the editor to add sections.':'More content is coming soon.'}</p>{editing&&<button type="button" onClick={onEdit}>Add content</button>}</div>}
+    <div className="custom-page-empty"><FolderOpen size={27}/><p>{editing?'This page is ready for your content. Open the editor to add sections.':'More content is coming soon.'}</p>{editing&&<button type="button" onClick={onEdit}>Add content</button>}</div>}
   </div>
   <footer className="custom-page-footer"><span>JORDAN FERRARY</span><a href="#/portfolio">Explore the portfolio <ArrowUpRight size={15}/></a></footer>
  </main>

@@ -1,4 +1,4 @@
-import {Grid2X2,House,Mail,Pencil,Plus,Sparkles,UserRound} from 'lucide-react'
+import {Grid2X2,House,Mail,Pencil,Plus,Layers,UserRound} from 'lucide-react'
 import type {LucideIcon} from 'lucide-react'
 import {useEffect,useState,type CSSProperties} from 'react'
 import {createPortal} from 'react-dom'
@@ -47,7 +47,7 @@ export function Sidebar({page,customPageId,customPages,navigate,onOpenCustomPage
   <nav className="side-nav" aria-label="Navegação principal">
    {staticStart.map(builtin)}
    {customPages.filter(item=>item.showInNav).map(item=>{
-    const Icon=customPageIcons[item.icon]??Sparkles
+    const Icon=customPageIcons[item.icon]??Layers
     const selected=page==='custom'&&customPageId===item.id
     const sortable=editing&&!!onReorderCustomPages
     return <button type="button" key={item.id} className={(selected?'side-link current':'side-link')+(sortable?' side-page-sortable':'')+(dropTarget===item.id&&draggingPage!==item.id?' side-page-drop-target':'')} draggable={sortable}

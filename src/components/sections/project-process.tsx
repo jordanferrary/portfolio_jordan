@@ -50,14 +50,14 @@ export function ProjectProcess({steps,heading,projectTitle}:{steps:ProcessStep[]
  if(!images.length)return null
  return <section className="story-block project-artwork-process project-process-section" aria-labelledby={titleId}>
   <header className="project-artwork-process-heading">
-   <span className="project-process-eyebrow">✦ BEHIND THE ARTWORK</span>
+   <span className="project-process-eyebrow">BEHIND THE ARTWORK</span>
    <h2 id={titleId}>{heading.trim()||'Creative process'}</h2>
    <p>A visual look at the stages behind this project.</p>
   </header>
   <div className={'project-artwork-process-grid process-count-'+Math.min(images.length,4)} ref={scroller} onScroll={syncPosition} aria-roledescription="carousel" aria-label="Creative process images">
    {images.map((step,index)=><figure className="project-process-step" key={step.id} aria-roledescription="slide">
     <div className="project-process-image">
-     <ZoomableArt src={step.image} alt={projectTitle+' — '+(step.label.trim()||'Step '+(index+1))} loading="lazy" sizes="(max-width: 680px) 100vw, (max-width: 1200px) 25vw, 300px"/>
+     <ZoomableArt src={step.image} alt={projectTitle+', '+(step.label.trim()||'Step '+(index+1))} loading="lazy" sizes="(max-width: 680px) 100vw, (max-width: 1200px) 25vw, 300px"/>
     </div>
     <figcaption><span className="project-process-index" aria-hidden="true">{String(index+1).padStart(2,'0')}</span><span>{step.label.trim()||'Step '+(index+1)}</span></figcaption>
    </figure>)}
