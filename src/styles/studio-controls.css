@@ -1,0 +1,18 @@
+/* Relative design controls; 100% retains the layout's established geometry. */
+.studio-controls-editor{width:min(880px,96vw)}
+.studio-controls-editor .editor-scroll{display:grid;gap:16px}
+.studio-controls-editor .editor-tabs{flex-wrap:wrap}
+.studio-control-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:16px}
+.studio-controls-editor label{display:grid;gap:7px}
+.studio-controls-editor .checkbox-line{display:flex;align-items:center;gap:10px}
+.studio-controls-editor input[type=range]{width:100%;accent-color:var(--jf-primary)}
+.studio-control-grid output{color:var(--jf-secondary)}
+.studio-nav-row{padding:14px;border:1px solid var(--jf-border);border-radius:12px;background:var(--jf-studio-deep);display:grid;gap:10px}
+.studio-nav-row>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.studio-nav-actions{display:flex;gap:8px}
+.studio-nav-actions button{border:1px solid var(--jf-border);border-radius:8px;background:var(--jf-surface);color:var(--jf-text);padding:8px}
+:root{--jf-control-gap:var(--jf-desktop-gap,1);--jf-control-radius:var(--jf-desktop-radius,1);--jf-control-blur:var(--jf-desktop-glassBlur,1);--jf-control-glow:var(--jf-desktop-glassGlow,1)}
+@media(max-width:1099px){:root{--jf-control-gap:var(--jf-mobile-gap,1);--jf-control-radius:var(--jf-mobile-radius,1);--jf-control-blur:var(--jf-mobile-glassBlur,1);--jf-control-glow:var(--jf-mobile-glassGlow,1)}}
+:root[data-jf-motion="fade"] .jf-route-glitch .jf-glitch-scene{display:none}
+:root[data-jf-footer="false"] .site-shell .custom-page-footer{display:none}
+.site-shell .home-bottom-panels:empty{display:none}

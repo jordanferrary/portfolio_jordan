@@ -37,7 +37,8 @@ test('Page switching and Suspense fallback are textless and do not block navigat
  assert.match(component,/event\.animationName==='jf-glitch-reveal'/)
  assert.match(component,/role="status"/)
  assert.doesNotMatch(app,/Loading (?:project|portfolio|page)…/)
- assert.doesNotMatch(component,/setTimeout|setInterval|fetch\(/)
+ assert.doesNotMatch(component,/setInterval|fetch\(/)
+ assert.match(component,/window.setTimeout/)
  assert.match(css,/pointer-events:none/)
 })
 test('Independent glitch palette has five configurable hex channels and intensity',()=>{
@@ -93,7 +94,7 @@ test('Desktop and mobile route changes use a two-phase transition rather than re
  assert.match(app,/setVisibleRouteHash\(hash\)/)
  assert.match(app,/const projectId=visibleRouteHash\./)
  assert.match(app,/const customPageId=visibleRouteHash\./)
- assert.match(app,/<RouteGlitchTransition routeKey=\{routeIdentity\} onCovered=\{commitRoute\}\/>/)
+ assert.match(app,/<RouteGlitchTransition routeKey=\{routeIdentity\} onCovered=\{commitRoute\} motion=\{controls.motion\}\/>/)
  assert.match(component,/onCovered:\(key:string\)=>void/)
  assert.match(component,/onCovered\(active\.key\)/)
  assert.match(component,/data-phase=\{active\.phase\}/)

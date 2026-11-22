@@ -8,7 +8,7 @@
  --jf-liquid-edge:color-mix(in srgb,var(--jf-border) 62%,var(--jf-text) 38%);
  --jf-liquid-edge-hot:color-mix(in srgb,var(--jf-secondary) 58%,var(--jf-text) 42%);
  --jf-liquid-sheen:color-mix(in srgb,var(--jf-text) 32%,transparent);
- --jf-liquid-glow:color-mix(in srgb,var(--jf-primary) 26%,transparent);
+ --jf-liquid-glow:color-mix(in srgb,var(--jf-primary) calc(26% * var(--jf-control-glow,1)),transparent);
  --jf-liquid-dark:color-mix(in srgb,var(--jf-background) 68%,transparent);
  --jf-liquid-clear:
   radial-gradient(ellipse 130% 80% at 24% -25%,color-mix(in srgb,var(--jf-text) 19%,transparent),transparent 67%),
@@ -49,8 +49,8 @@
  background:var(--jf-liquid-clear)!important;
  box-shadow:var(--jf-liquid-border-shadow)!important;
  color:var(--jf-text)!important;
- -webkit-backdrop-filter:blur(9px) saturate(135%);
- backdrop-filter:blur(9px) saturate(135%);
+ -webkit-backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(135%);
+ backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(135%);
  transition:background-color .2s ease,border-color .2s ease,
   box-shadow .2s ease,filter .2s ease,transform .2s ease;
 }
@@ -60,8 +60,8 @@
  border-color:var(--jf-liquid-edge)!important;
  background:var(--jf-liquid-clear)!important;
  box-shadow:var(--jf-liquid-border-shadow)!important;
- -webkit-backdrop-filter:blur(9px) saturate(130%);
- backdrop-filter:blur(9px) saturate(130%);
+ -webkit-backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(130%);
+ backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(130%);
  transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease;
 }
 .site-shell .side-link:not(.current) .side-icon,
@@ -147,8 +147,8 @@
  background:var(--jf-liquid-clear)!important;
  box-shadow:var(--jf-liquid-border-shadow)!important;
  color:var(--jf-text)!important;
- -webkit-backdrop-filter:blur(8px) saturate(125%);
- backdrop-filter:blur(8px) saturate(125%);
+ -webkit-backdrop-filter:blur(calc(8px * var(--jf-control-blur,1))) saturate(125%);
+ backdrop-filter:blur(calc(8px * var(--jf-control-blur,1))) saturate(125%);
  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,filter .18s ease;
 }
 .studio-dock .studio-dock-actions .studio-dock-publish,

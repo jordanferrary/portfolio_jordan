@@ -89,3 +89,5 @@ import './styles/route-glitch.css'
 // Intrinsic media geometry wins over legacy fixed-height project block rules.
 import './styles/artwork-aspect-ratio.css'
 import './styles/sensitive-themes.css'
+
+import './styles/studio-controls.css'

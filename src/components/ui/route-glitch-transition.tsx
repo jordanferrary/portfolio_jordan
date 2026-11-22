@@ -1,5 +1,6 @@
-import {useLayoutEffect,useRef,useState,type CSSProperties,type AnimationEvent} from 'react'
+import {useEffect,useLayoutEffect,useRef,useState,type CSSProperties,type AnimationEvent} from 'react'
 import {createPortal} from 'react-dom'
+import type {StudioControls} from '../../lib/studio-controls'
 
 /** Fixed deterministic coordinates avoid layout recalculation, assets, or randomness. */
 const fragments=Array.from({length:12},(_,i)=>({
@@ -34,20 +35,31 @@ export function GlitchSignalArt(){
 
 /** Two-stage route transition: cover the outgoing page, then reveal the incoming page.
  * No first-load overlay and no dependency on network/chunk loading. */
-export function RouteGlitchTransition({routeKey,onCovered}:{routeKey:string;onCovered:(key:string)=>void}){
+export function RouteGlitchTransition({routeKey,onCovered,motion}:{routeKey:string;onCovered:(key:string)=>void;motion?:StudioControls['motion']}){
  const previous=useRef(routeKey)
  const counter=useRef(0)
- const [active,setActive]=useState<{id:number;key:string;phase:'cover'|'reveal'}|null>(null)
+ const [active,setActive]=useState<{id:number;key:string;phase:'cover'|'reveal';duration:number;mode:'glitch'|'fade'}|null>(null)
  useLayoutEffect(()=>{
   if(previous.current===routeKey)return
   previous.current=routeKey
-  if(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches){
+  if(motion?.mode==='none'||window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches){
    setActive(null)
    onCovered(routeKey)
    return
   }
-  setActive({id:++counter.current,key:routeKey,phase:'cover'})
- },[routeKey,onCovered])
+  setActive({id:++counter.current,key:routeKey,phase:'cover',duration:motion?.duration??260,mode:motion?.mode==='fade'?'fade':'glitch'})
+ },[routeKey,onCovered,motion])
+ const coveredRef=useRef(onCovered)
+ coveredRef.current=onCovered
+ // Recover navigation if CSS animation events are interrupted by the browser.
+ useEffect(()=>{
+  if(!active)return
+  const timer=window.setTimeout(()=>{
+   if(active.phase==='cover'){coveredRef.current(active.key);setActive(current=>current?.id===active.id&&current.phase==='cover'?{...current,phase:'reveal'}:current)}
+   else setActive(current=>current?.id===active.id?null:current)
+  },active.duration+100)
+  return()=>window.clearTimeout(timer)
+ },[active])
  const finish=(event:AnimationEvent<HTMLDivElement>)=>{
   if(event.currentTarget!==event.target||!active)return
   if(active.phase==='cover'&&event.animationName==='jf-glitch-cover'){
@@ -58,8 +70,8 @@ export function RouteGlitchTransition({routeKey,onCovered}:{routeKey:string;onCo
   }
  }
  if(active===null)return null
- return createPortal(<div className="jf-route-glitch" data-phase={active.phase} key={active.id+'-'+active.phase} aria-hidden="true" onAnimationEnd={finish}>
-  <GlitchSignalArt/>
+ return createPortal(<div className="jf-route-glitch" data-phase={active.phase} key={active.id+'-'+active.phase} aria-hidden="true" style={{animationDuration:Math.round(active.duration*(active.phase==='cover'?100/260:160/260))+'ms'}} onAnimationEnd={finish}>
+  {active.mode==='glitch'&&<GlitchSignalArt/>}
  </div>,document.body)
 }
 
