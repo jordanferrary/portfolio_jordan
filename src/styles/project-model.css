@@ -221,3 +221,5 @@
 .model-published-preview .model-inspector-meta,.model-published-preview .model-light-preview-notice{width:100%;max-width:100%;font-size:10px}
 .model-published-preview .model-light-preview-notice{max-height:40px;overflow:auto}
 @media(max-width:740px){.model-studio-viewport-head{flex-wrap:wrap}.model-preview-formats button{font-size:10px;padding:3px 5px}.model-published-preview .project-model-frame{width:min(100cqw,calc(max(88px,100cqh - 16px) * 1.6))}.model-published-preview.format-mobile .project-model-frame{width:min(100cqw,calc(max(88px,100cqh - 16px) * .8))}.model-published-preview .model-light-preview-notice{display:none}}
+
+.model-shader-parameters{display:grid;gap:11px;margin:10px 0}.model-shader-parameters>p{margin:0}

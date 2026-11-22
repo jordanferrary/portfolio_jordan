@@ -5,7 +5,7 @@ import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
 import {KTX2Loader} from 'three/examples/jsm/loaders/KTX2Loader.js'
 import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js'
-import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,type InspectorOptions,type ModelMode,type ModelPresentation,type MaterialInfo,type MaterialEditState,type ModelCamera,type LightEditState,type LightEditCallbacks} from './model-presentation'
+import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,resolvePbrFactor,type InspectorOptions,type ModelMode,type ModelPresentation,type MaterialInfo,type MaterialEditState,type ModelCamera,type LightEditState,type LightEditCallbacks} from './model-presentation'
 import {createChecker,createMatcap,debugMaterial,isPresentationMaterial,createPresentationMaterial,applyPresentationEmission} from './model-debug-materials'
 import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model-solid-wireframe'
 import {createLightGizmos} from './model-light-gizmos'
@@ -84,7 +84,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   const flat=style.preset==='flat'||Boolean(base.flatShading)
   if(material.transparent!==transparent){material.transparent=transparent;material.needsUpdate=true}
   material.depthWrite=source.depthWrite&&(!look||look.opacity>=1)
-  if(lit.isMeshStandardMaterial){lit.roughness=THREE.MathUtils.clamp((base.isMeshStandardMaterial?base.roughness:.85)*(look?.roughness??1),0,1);lit.metalness=THREE.MathUtils.clamp((base.isMeshStandardMaterial?base.metalness:0)*(look?.metalness??1),0,1)}
+  if(lit.isMeshStandardMaterial){lit.roughness=resolvePbrFactor(base.isMeshStandardMaterial?base.roughness:.85,look?.roughness??1,look?.roughnessOverride);lit.metalness=resolvePbrFactor(base.isMeshStandardMaterial?base.metalness:0,look?.metalness??1,look?.metalnessOverride)}
   if(lit.isMeshStandardMaterial&&lit.flatShading!==flat){lit.flatShading=flat;lit.needsUpdate=true}
   applyPresentationEmission(material,source,presentation.emissionScale*(look?.emission??1),look)
   material.visible=source.visible&&(!materialEdit.active||!materialEdit.isolate||!materialEdit.selected||id===materialEdit.selected)
@@ -269,7 +269,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   model.traverse(obj=>{if(obj instanceof THREE.Light)embeddedLights.set(obj,obj.visible);if(obj instanceof THREE.Mesh){if(!obj.geometry.hasAttribute('normal')&&obj.geometry.hasAttribute('position'))obj.geometry.computeVertexNormals();original.set(obj,obj.material);originalGeometry.set(obj,obj.geometry);stats.meshes++
    if(obj.geometry.hasAttribute('uv'))available.add('uv')
    if(obj instanceof THREE.SkinnedMesh){available.add('bones');if(obj.geometry.hasAttribute('skinWeight'))available.add('weights')}
-   for(const material of new Set(Array.isArray(obj.material)?obj.material:[obj.material])){if(!materialIds.has(material)){const association=gltf.parser.associations.get(material)?.materials;const id=typeof association==='number'?'mat-glb-'+association:'mat-local-'+materialIds.size;materialIds.set(material,id);if(!materialInfo.has(id))materialInfo.set(id,{id,name:material.name||'Material '+(materialInfo.size+1),meshes:0,color:'#ffffff',texturePreview:texturePreview(material)})}const info=materialInfo.get(materialIds.get(material)!)!;info.meshes++;const sourceColor=(material as THREE.MeshStandardMaterial).color;if(sourceColor)info.color='#'+sourceColor.getHexString();if(material instanceof THREE.MeshBasicMaterial)stats.unlitMaterials++;const pbr=material as THREE.MeshStandardMaterial;if(pbr.normalMap){available.add('normal-map');available.add('matcap-surface')}if(pbr.aoMap)available.add('ao')}
+   for(const material of new Set(Array.isArray(obj.material)?obj.material:[obj.material])){if(!materialIds.has(material)){const association=gltf.parser.associations.get(material)?.materials;const id=typeof association==='number'?'mat-glb-'+association:'mat-local-'+materialIds.size;materialIds.set(material,id);if(!materialInfo.has(id))materialInfo.set(id,{id,name:material.name||'Material '+(materialInfo.size+1),meshes:0,color:'#ffffff',roughness:(material as THREE.MeshStandardMaterial).roughness??.85,metalness:(material as THREE.MeshStandardMaterial).metalness??0,texturePreview:texturePreview(material)})}const info=materialInfo.get(materialIds.get(material)!)!;info.meshes++;const sourceColor=(material as THREE.MeshStandardMaterial).color;if(sourceColor)info.color='#'+sourceColor.getHexString();if(material instanceof THREE.MeshBasicMaterial)stats.unlitMaterials++;const pbr=material as THREE.MeshStandardMaterial;if(pbr.normalMap){available.add('normal-map');available.add('matcap-surface')}if(pbr.aoMap)available.add('ao')}
    const position=obj.geometry.getAttribute('position');const count=obj instanceof THREE.InstancedMesh?obj.count:1
    stats.vertices+=(position?.count??0)*count;stats.triangles+=Math.floor((obj.geometry.index?.count??position?.count??0)/3)*count
   }})
