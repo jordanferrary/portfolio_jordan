@@ -5,12 +5,12 @@ import {AssetImage} from './asset-image'
 import {MODEL_MIME,parseModelUrl} from '../../lib/model-embed'
 import {isLocalMedia,readMedia} from '../../lib/media-store'
 import {resolvePublishedAsset} from '../../lib/published-assets'
-import {DEFAULT_INSPECTOR_OPTIONS,normalizeModelPresentation,ART_SHADER_PRESETS,type ModelMode,type ModelPresentation,type InspectorOptions,type ModelCamera,type LightEditState,type LightEditCallbacks} from '../../lib/model-presentation'
+import {DEFAULT_INSPECTOR_OPTIONS,normalizeModelPresentation,ART_SHADER_PRESETS,type ModelMode,type ModelPresentation,type InspectorOptions,type ModelCamera,type LightEditState,type LightEditCallbacks,type MaterialInfo,type MaterialEditState} from '../../lib/model-presentation'
 import {ModelInspectorPanel} from './model-inspector-panel'
 import type {ModelStage,ModelStats} from '../../lib/model-inspector-stage'
-type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;resetCameraToken?:number;previewArtShader?:boolean;onCaptureCamera?:(camera:ModelCamera)=>void;lightEditing?:LightEditState;lightCallbacks?:LightEditCallbacks}
+type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;resetCameraToken?:number;previewArtShader?:boolean;onCaptureCamera?:(camera:ModelCamera)=>void;lightEditing?:LightEditState;lightCallbacks?:LightEditCallbacks;materialEditing?:MaterialEditState;onMaterials?:(materials:MaterialInfo[])=>void;onMaterialSelect?:(id:string)=>void}
 export function ProjectModel(props:Props){return <ModelViewer key={props.url} {...props}/>}
-function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,resetCameraToken,previewArtShader,onCaptureCamera,lightEditing,lightCallbacks}:Props){
+function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,resetCameraToken,previewArtShader,onCaptureCamera,lightEditing,lightCallbacks,materialEditing,onMaterials,onMaterialSelect}:Props){
  const parsed=parseModelUrl(url)
  const settings=normalizeModelPresentation(presentation)
  const configuration=useRef(settings);configuration.current=settings
@@ -29,13 +29,16 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
  const rotationRef=useRef(rotate);rotationRef.current=rotate
  const lightStateRef=useRef(lightEditing);lightStateRef.current=lightEditing
  const lightCallbacksRef=useRef(lightCallbacks);lightCallbacksRef.current=lightCallbacks
+ const materialEditingRef=useRef(materialEditing);materialEditingRef.current=materialEditing
+ const materialCallbacks=useRef({onMaterials,onMaterialSelect});materialCallbacks.current={onMaterials,onMaterialSelect}
  useEffect(()=>{setRotate(settings.autoRotate)},[settings.autoRotate])
  useEffect(()=>{stage.current?.setPresentation(configuration.current)})
  useEffect(()=>{stage.current?.resetCamera()},[resetCameraToken])
  useEffect(()=>{stage.current?.setMode(mode)},[mode])
- useEffect(()=>{if(previewArtShader){setMode('material');setPanelOpen(false)}},[previewArtShader,settings.artShader.preset,settings.artShader.chromaticAberration])
+ useEffect(()=>{if(previewArtShader){setMode('material');setPanelOpen(false)}},[previewArtShader,settings.artShader.preset,settings.artShader.chromaticAberration,materialEditing?.selected])
  useEffect(()=>{stage.current?.setRotation(rotate)},[rotate])
  useEffect(()=>{if(lightEditing)stage.current?.setLightEditing(lightEditing)},[lightEditing])
+ useEffect(()=>{if(materialEditing)stage.current?.setMaterialEditing(materialEditing)},[materialEditing])
  useEffect(()=>{stage.current?.setOptions(options)},[options])
  useEffect(()=>{stage.current?.setAnimation(animation,playing)},[animation,playing])
  useEffect(()=>{
@@ -55,9 +58,9 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
    setResolvedSource(source)
    const {createModelStage}=await import('../../lib/model-inspector-stage')
    if(!live||!canvas.current)return
-   instance=createModelStage(canvas.current,source,configuration.current,{onLoad:value=>{if(live){setStats(value);setReady(true);setError('')}},onError:()=>{if(live)setError('Could not load the 3D model. Check its format, textures and connection.')}},lightCallbacksRef.current?{onSelect:id=>lightCallbacksRef.current?.onSelect(id),onChange:(id,patch)=>lightCallbacksRef.current?.onChange(id,patch)}:undefined)
+   instance=createModelStage(canvas.current,source,configuration.current,{onLoad:value=>{if(live){setStats(value);materialCallbacks.current.onMaterials?.(value.materials);setReady(true);setError('')}},onError:()=>{if(live)setError('Could not load the 3D model. Check its format, textures and connection.')}},lightCallbacksRef.current?{onSelect:id=>lightCallbacksRef.current?.onSelect(id),onChange:(id,patch)=>lightCallbacksRef.current?.onChange(id,patch)}:undefined,materialCallbacks.current.onMaterialSelect?id=>materialCallbacks.current.onMaterialSelect?.(id):undefined)
    stage.current=instance
-   instance.setMode(modeRef.current);instance.setRotation(rotationRef.current);if(lightStateRef.current)instance.setLightEditing(lightStateRef.current)
+   instance.setMode(modeRef.current);instance.setRotation(rotationRef.current);if(lightStateRef.current)instance.setLightEditing(lightStateRef.current);if(materialEditingRef.current)instance.setMaterialEditing(materialEditingRef.current)
   }
   void prepare().catch(()=>{if(live)setError('Could not initialize the 3D viewer. Check WebGL support and the model file.')})
   return ()=>{live=false;instance?.dispose();if(stage.current===instance)stage.current=null;if(objectUrl)URL.revokeObjectURL(objectUrl)}
