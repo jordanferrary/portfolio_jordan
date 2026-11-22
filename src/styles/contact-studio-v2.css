@@ -2,26 +2,26 @@
 /* Contact Studio, image attachments and sortable portfolio: same violet glass system. */
 .gallery-sort-tip{
  display:flex;align-items:center;gap:10px;
- color:#d4acee;background:linear-gradient(110deg,rgba(57,20,89,.72),rgba(23,9,38,.65));
- border:1px solid #7542a3;border-radius:16px;
+ color:var(--jf-muted);background:linear-gradient(110deg,color-mix(in srgb,var(--jf-surface) 72%,transparent),color-mix(in srgb,var(--jf-surface-deep) 65%,transparent));
+ border:1px solid var(--jf-border);border-radius:16px;
  padding:10px 14px;margin:0 0 18px;font-size:12px;
- box-shadow:inset 0 1px #f4cdff19;
+ box-shadow:inset 0 1px color-mix(in srgb,var(--jf-secondary) 10%,transparent);
 }
-.gallery-sort-tip svg{color:#b657f7;flex-shrink:0}
+.gallery-sort-tip svg{color:var(--jf-muted);flex-shrink:0}
 .gallery-body .masonry-column .gallery-card[draggable="true"]{cursor:grab;touch-action:pan-y}
 .gallery-body .masonry-column .gallery-card.is-dragging{
  opacity:.44;cursor:grabbing;transform:scale(.97);
- border:1px dashed #c678ff!important;
+ border:1px dashed var(--jf-secondary)!important;
 }
 .gallery-body .masonry-column .gallery-card.is-drop-target{
- outline:2px solid #c86bff;outline-offset:3px;
- box-shadow:0 0 22px #af45ff75!important;
+ outline:2px solid var(--jf-secondary);outline-offset:3px;
+ box-shadow:0 0 22px color-mix(in srgb,var(--jf-primary) 46%,transparent)!important;
 }
 .gallery-drag-handle{
  position:absolute;z-index:10;top:11px;left:11px;
  display:grid;place-items:center;width:29px;height:29px;
- border-radius:10px;background:#260c3bdc;border:1px solid #9a48d1;
- box-shadow:0 0 12px #882bd750;pointer-events:none;color:#dba3ff;
+ border-radius:10px;background:color-mix(in srgb,var(--jf-surface) 86%,transparent);border:1px solid var(--jf-border);
+ box-shadow:0 0 12px color-mix(in srgb,var(--jf-primary) 31%,transparent);pointer-events:none;color:var(--jf-muted);
 }
 .gallery-body .gallery-card .gallery-move-controls{
  position:absolute;z-index:11;right:12px;bottom:44px;
@@ -29,11 +29,11 @@
 }
 .gallery-move-controls button{
  display:grid;place-items:center;width:27px;height:27px;padding:0;
- border-radius:50%;background:linear-gradient(140deg,#4f206f,#230e40e8);
- border:1px solid #9953db;color:#e0a8ff;
- box-shadow:0 0 12px #7026a853;
+ border-radius:50%;background:linear-gradient(140deg,var(--jf-surface-tint),color-mix(in srgb,var(--jf-surface) 91%,transparent));
+ border:1px solid var(--jf-border);color:var(--jf-muted);
+ box-shadow:0 0 12px color-mix(in srgb,var(--jf-primary) 33%,transparent);
 }
-.gallery-move-controls button:hover:not(:disabled){background:#7633ad;color:white}
+.gallery-move-controls button:hover:not(:disabled){background:var(--jf-primary);color:white}
 .gallery-move-controls button:disabled{opacity:.3;cursor:default}
 @media(max-width:720px){
  .gallery-drag-handle{width:25px;height:25px}
@@ -44,93 +44,93 @@
 /* Contact edits intentionally reuse the Local Studio's own controls. */
 .contact-editor{width:min(620px,100%)}
 .contact-editor-head p,.contact-editor-categories p{
- font-size:12px;line-height:1.55;color:#bfa4d4;margin:0 0 16px;
+ font-size:12px;line-height:1.55;color:var(--jf-muted);margin:0 0 16px;
 }
 .contact-editor .editor-scroll>label{
  display:flex;flex-direction:column;gap:8px;font-size:12px;
- color:#ccb1e0;margin-bottom:15px
+ color:var(--jf-muted);margin-bottom:15px
 }
 .contact-editor input[type="text"],.contact-editor .editor-scroll input:not([type=checkbox]),
 .contact-editor textarea{
  display:block;width:100%;min-width:0;box-sizing:border-box;
- padding:10px 11px;border:1px solid #65418a;border-radius:12px;
- background:#160b28;color:#f5ebff;font-size:12px;outline:0;
+ padding:10px 11px;border:1px solid var(--jf-border);border-radius:12px;
+ background:var(--jf-surface-deep);color:var(--jf-text);font-size:12px;outline:0;
 }
 .contact-editor input:focus,.contact-editor textarea:focus{
- border-color:#b763f5;box-shadow:0 0 0 2px #a746ee28
+ border-color:var(--jf-secondary);box-shadow:0 0 0 2px color-mix(in srgb,var(--jf-primary) 16%,transparent)
 }
 .contact-editor-categories,.contact-editor-options{
- border:1px solid #59347f;background:linear-gradient(150deg,#25123b93,#110921af);
+ border:1px solid var(--jf-border);background:linear-gradient(150deg,color-mix(in srgb,var(--jf-surface) 58%,transparent),color-mix(in srgb,var(--jf-surface-deep) 69%,transparent));
  border-radius:18px;padding:15px;margin:18px 0
 }
 .contact-editor-categories h3,.contact-editor-options h3{
- color:#eecfff;font-size:14px;margin:0 0 7px
+ color:var(--jf-text);font-size:14px;margin:0 0 7px
 }
 .contact-services-list{display:flex;flex-direction:column;gap:7px}
 .contact-service-row{display:flex;gap:6px;align-items:center;min-width:0}
 .contact-service-row input{flex:1;min-width:0}
 .contact-service-row button{
  display:grid;place-items:center;flex:0 0 31px;width:31px;height:33px;
- background:#371a54;border:1px solid #6e3d92;border-radius:10px;color:#dbb1f1;
+ background:var(--jf-surface);border:1px solid var(--jf-border);border-radius:10px;color:var(--jf-muted);
 }
 .contact-service-row button:disabled{opacity:.29;cursor:not-allowed}
-.contact-service-row button:hover:not(:disabled){background:#652b93;border-color:#a95fe1}
+.contact-service-row button:hover:not(:disabled){background:var(--jf-surface-tint);border-color:var(--jf-border)}
 .contact-service-add{display:flex;align-items:center;gap:8px;margin-top:12px}
 .contact-service-add input{flex:1;min-width:0}
 .contact-service-add button{
- display:inline-flex;align-items:center;gap:6px;border:1px solid #a352dc;
+ display:inline-flex;align-items:center;gap:6px;border:1px solid var(--jf-border);
  border-radius:12px;padding:10px 12px;
- background:linear-gradient(110deg,#652698,#351452);font-size:12px;color:white;
+ background:linear-gradient(110deg,var(--jf-surface-tint),var(--jf-surface));font-size:12px;color:white;
 }
 .contact-editor-options label{
  display:flex;flex-direction:row;align-items:center;gap:9px;
- font-size:12px;padding:10px 0;color:#dcc5ef
+ font-size:12px;padding:10px 0;color:var(--jf-text)
 }
-.contact-editor-options input{accent-color:#a83df0;width:17px;height:17px}
+.contact-editor-options input{accent-color:var(--jf-muted);width:17px;height:17px}
 .contact-dev-edit{
  display:inline-flex;gap:8px;align-items:center;
  padding:9px 13px;margin-top:17px;
- background:linear-gradient(140deg,#512178bf,#2b1245bf);
- border:1px solid #874ac0;border-radius:999px;color:#e9cefc;font-size:12px;
+ background:linear-gradient(140deg,color-mix(in srgb,var(--jf-surface-tint) 75%,transparent),color-mix(in srgb,var(--jf-surface) 75%,transparent));
+ border:1px solid var(--jf-border);border-radius:999px;color:var(--jf-text);font-size:12px;
 }
-.contact-dev-edit:hover{border-color:#c57aff}
+.contact-dev-edit:hover{border-color:var(--jf-secondary)}
 
 /* Quote attachments stay compact; no upload panel different from the art direction. */
 .contact-attachments{
  display:flex;flex-wrap:wrap;gap:9px;align-items:center;
- border:1px solid #674086;border-radius:16px;
- background:linear-gradient(135deg,#2a164087,#160a289e);
+ border:1px solid var(--jf-border);border-radius:16px;
+ background:linear-gradient(135deg,color-mix(in srgb,var(--jf-surface) 53%,transparent),color-mix(in srgb,var(--jf-surface-deep) 62%,transparent));
  padding:13px 14px;
 }
 .contact-attachments-head{
  display:flex;gap:8px;align-items:center;flex:1 1 100%;
- color:#eed6ff;font-size:12px;font-weight:700;
+ color:var(--jf-text);font-size:12px;font-weight:700;
 }
-.contact-attachments-head svg{color:#b45bea}
-.contact-attachments-head small{font-weight:400;color:#bc9dcf}
+.contact-attachments-head svg{color:var(--jf-muted)}
+.contact-attachments-head small{font-weight:400;color:var(--jf-muted)}
 .contact-attach-action{
  display:inline-flex!important;flex-direction:row!important;align-items:center;gap:8px;
- border:1px solid #9653c5;border-radius:12px;
- padding:8px 12px;background:#4b2070;color:#f2e2fe;cursor:pointer;
+ border:1px solid var(--jf-border);border-radius:12px;
+ padding:8px 12px;background:var(--jf-surface-tint);color:var(--jf-text);cursor:pointer;
  font-size:12px;
 }
-.contact-attach-action:hover{background:#652b90}
+.contact-attach-action:hover{background:var(--jf-surface-tint)}
 .contact-attach-action input[type=file]{display:none}
-.contact-attachment-note{flex:1;min-width:125px;font-size:10px;color:#b8a2ca;line-height:1.45}
+.contact-attachment-note{flex:1;min-width:125px;font-size:10px;color:var(--jf-muted);line-height:1.45}
 .contact-file-list{display:flex;flex-direction:column;gap:7px;width:100%;margin-top:5px}
 .contact-file{
  min-width:0;display:flex;align-items:center;gap:8px;padding:8px 9px;
- border:1px solid #624181;border-radius:12px;background:#1b0c2d
+ border:1px solid var(--jf-border);border-radius:12px;background:var(--jf-surface-deep)
 }
-.contact-file>svg{flex-shrink:0;color:#bb6eea}
+.contact-file>svg{flex-shrink:0;color:var(--jf-muted)}
 .contact-file span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
-.contact-file small{font-size:10px;color:#bba6d0;white-space:nowrap}
-.contact-file button{border:0;background:#37164e;color:#e1b6f3;border-radius:8px;width:25px;height:25px;display:grid;place-items:center}
+.contact-file small{font-size:10px;color:var(--jf-muted);white-space:nowrap}
+.contact-file button{border:0;background:var(--jf-surface);color:var(--jf-text);border-radius:8px;width:25px;height:25px;display:grid;place-items:center}
 .contact-preview-note{
  display:inline-flex;align-items:center;gap:7px;margin:0;
- color:#c1a6d9;font-size:10px;line-height:1.4
+ color:var(--jf-muted);font-size:10px;line-height:1.4
 }
-.contact-preview-note svg{color:#b767ed}
+.contact-preview-note svg{color:var(--jf-muted)}
 .inbox-local-caption{
  display:flex;align-items:center;gap:7px;padding:10px 17px;
  font-size:11px;color:#baa0cd;background:#2915379c;
