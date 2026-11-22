@@ -3,6 +3,6 @@
   "upstream": "jordanferrary/alquimago",
   "upstreamCommit": "ecb015c793d957444883a23485179903e13b4fca",
   "bundleBlobSha": "7721d040b5afc4a288faae04d9e5ec3fa0e5412a",
-  "builtAt": "2026-11-22T16:50:43.407Z",
+  "builtAt": "2026-11-22T17:14:07.530Z",
   "source": "npm run build from upstream main in GitHub Actions"
 }
