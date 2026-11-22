@@ -65,3 +65,12 @@ test('unlisted ordinary projects stay out of every public listing and featured s
  assert.match(app,/portfolio.projects.find\(p=>p.id===projectId\)/)
  assert.match(admin,/Visibilidade do projeto/)
 })
+
+test('project listing choices are explicit and sensitive notices retain their separate status',async()=>{
+ const admin=await readFile('src/components/sections/admin-editor.tsx','utf8')
+ assert.match(admin,/role="group" aria-label="Visibilidade do projeto"/)
+ assert.match(admin,/isSensitiveTheme\(draft\)\?<p className="editor-help" role="status">Visibilidade com aviso de conteúdo/)
+ assert.match(admin,/type="radio" name=\{'project-listing-'\+draft.id\} checked=\{!isUnlisted\(draft\)\}/)
+ assert.match(admin,/type="radio" name=\{'project-listing-'\+draft.id\} checked=\{isUnlisted\(draft\)\}/)
+ assert.match(admin,/onChange=\{\(\)=>patch\(\{unlisted:true,featured:false,featuredOrder:undefined\}\)\}/)
+})
