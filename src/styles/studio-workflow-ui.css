@@ -74,7 +74,7 @@
 .image-converter-panel .converter-upload-text span{font-size:11px;line-height:1.45;color:var(--jf-muted)}
 .image-converter-panel .converter-source-thumb{display:block;width:60px;height:54px;object-fit:contain;background:var(--jf-background);border:1px solid var(--jf-studio-line);border-radius:9px;flex:0 0 60px}
 .image-converter-panel .converter-file-input{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap;opacity:0;pointer-events:none}
-.image-converter-panel .converter-choose{min-height:39px;flex:0 0 auto;border:1px solid var(--jf-border);border-radius:9px;padding:9px 12px;background:var(--jf-studio-raised);color:var(--jf-text);font:600 12px inherit;cursor:pointer}
+.image-converter-panel .converter-choose{min-height:39px;flex:0 0 auto;border:1px solid var(--jf-border);border-radius:9px;padding:9px 12px;background:var(--jf-studio-raised);color:var(--jf-text);font-size:12px;font-weight:600;cursor:pointer}
 .image-converter-panel .converter-choose:hover{border-color:var(--jf-secondary);background:var(--jf-studio-wash)}
 .image-converter-panel .converter-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
 .editor-overlay .image-converter-panel .converter-fields>label{display:grid;gap:10px;min-width:0;margin:0!important;font-size:12px;color:var(--jf-text)!important}

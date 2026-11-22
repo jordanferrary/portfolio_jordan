@@ -1,5 +1,5 @@
 import {useEffect,useRef,useState} from 'react'
-import type {ChangeEvent,DragEvent} from 'react'
+import type {ChangeEvent,DragEvent,CSSProperties} from 'react'
 import {Download,FileImage,ImageDown,Info,Upload,X} from 'lucide-react'
 import {optimizeImage} from '../../lib/image-optimize'
 
@@ -22,7 +22,7 @@ export function ImageConverter({onClose}:{onClose:()=>void}){
  const acceptFile=(next:File|null)=>{
   setError('')
   if(!next){setFile(null);setResult(null);return}
-  if(!ACCEPTED.includes(next.type)){setError('Escolha uma imagem PNG, JPG, WebP ou AVIF.');return}
+  if(!ACCEPTED.includes(next.type)){setFile(null);setResult(null);setError('Escolha uma imagem PNG, JPG, WebP ou AVIF.');return}
   setFile(next);setResult(null)
  }
  const pickFile=(event:ChangeEvent<HTMLInputElement>)=>{
@@ -86,7 +86,7 @@ export function ImageConverter({onClose}:{onClose:()=>void}){
       <label className="converter-quality">
        <span className="converter-quality-caption">Qualidade WebP <output htmlFor="converter-quality" tabularNums>{quality}%</output></span>
        <input id="converter-quality" type="range" min={55} max={95} step={1} value={quality} disabled={busy}
-        style={{'--converter-progress':((quality-55)/40*100)+'%'} as React.CSSProperties}
+        style={{'--converter-progress':((quality-55)/40*100)+'%'} as CSSProperties}
         onChange={event=>{setQuality(Number(event.target.value));setResult(null)}}/>
        <span className="converter-quality-scale"><small>Menor arquivo</small><small>Mais detalhes</small></span>
       </label>
