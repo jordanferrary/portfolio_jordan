@@ -143,7 +143,7 @@
 /* The viewport owns its background; the WebGL canvas remains transparent. */
 .model-scene-backdrop{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
 .model-scene-backdrop img{display:block;width:100%;height:100%;max-width:none}
-.project-model-frame>.project-model-stage{position:relative;z-index:1;background:transparent!important}
+.project-model-frame>.project-model-stage{position:relative;background:transparent!important}
 .project-model-stage>.project-model-canvas{background:transparent!important}
 .model-studio-dialog{width:min(1560px,97vw);height:min(1020px,95dvh);border-radius:18px}
 .model-studio-dialog.model-studio-wide{width:100vw;height:100dvh;border-radius:0}

@@ -29,7 +29,7 @@ test('local and published model refs retain external URL compatibility',()=>{
 test('Studio backup and publishing preserve binary model assets',async()=>{
  const [media,publish,viewer,refs]=await Promise.all(['src/lib/media-store.ts','src/lib/github-publish.ts','src/components/ui/project-model.tsx','src/lib/published-assets.ts'].map(p=>readFile(p,'utf8')))
  assert.match(media,/b\.type==='image'\|\|b\.type==='model'/)
- assert.match(publish,/block\.type==='model'\)block\.content=await stage\(block\.content,'model'\)/)
+ assert.match(publish,/block\.type==='model'\)\{block\.content=await stage\(block\.content,'model'\)/)
  assert.match(viewer,/URL\.revokeObjectURL/)
  assert.match(viewer,/if\(!activated\|\|!parsed\)return/)
  assert.match(refs,/images\|audio\|models/)
