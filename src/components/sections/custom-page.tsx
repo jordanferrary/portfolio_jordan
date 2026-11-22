@@ -45,7 +45,7 @@ export function CustomPageView({page,editing,onEdit,headingSymbol}:{page:CustomP
   <header className={'custom-page-hero'+(page.heroImage?' has-image':'')}>
    {page.heroImage&&<AssetImage src={page.heroImage} className="custom-page-hero-image" alt="" style={{objectPosition:page.heroPositionX+'% '+page.heroPositionY+'%'}}/>}
    <div className="custom-page-hero-content">
-    <span className="custom-page-eyebrow"><HeadingSymbol symbol={headingSymbol} size={15}/> {cleanHeadingText(page.eyebrow||'CREATIVE SPACE')}</span>
+    {cleanHeadingText(page.eyebrow)&&<span className="custom-page-eyebrow"><HeadingSymbol symbol={headingSymbol} size={15}/> {cleanHeadingText(page.eyebrow)}</span>}
     <h1>{page.title}</h1>
     {page.subtitle&&<RichText className="custom-page-subtitle" value={page.subtitle}/>}
     {editing&&<button className="custom-page-edit" type="button" onClick={onEdit}><Pencil size={16}/> Edit page</button>}

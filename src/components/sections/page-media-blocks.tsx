@@ -33,7 +33,7 @@ export function ArtistShowcase({block}:{block:PageBlock}){
    {documentUrl?<button type="button" className="artist-showcase-document-preview" onClick={()=>setZoom(true)} title="Click to inspect PDF" aria-label={'View certificate: '+(current.name||'Selected item')}>
      <PdfPagePreview key={documentUrl} url={documentUrl} label={current.name||'Certificate'} mode="detail"/>
     </button>:<button type="button" className="artist-showcase-zoom" onClick={()=>setZoom(true)} aria-label="Enlarge selected image"><AssetImage src={current.image} alt={current.name||'Selected item'}/><span><Maximize2 size={16}/> Zoom</span></button>}
-   <div className="artist-showcase-detail-copy"><span className="artist-showcase-kicker">ITEM DETAILS</span>{current.name&&<h3>{current.name}</h3>}{current.description&&<p>{current.description}</p>}
+   <div className="artist-showcase-detail-copy">{current.name&&<h3>{current.name}</h3>}{current.description&&<p>{current.description}</p>}
      {current.showLink!==false&&destination&&<a className="artist-showcase-portfolio" href={destination} target="_blank" rel="noopener noreferrer">{current.linkLabel?.trim()||'View portfolio'} <ArrowUpRight size={17}/></a>}
    </div>
   </aside>}

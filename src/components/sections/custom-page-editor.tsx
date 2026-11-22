@@ -264,7 +264,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
       {!visibleIcons.length&&<p className="custom-page-icon-empty">Nenhum ícone corresponde à pesquisa.</p>}
      </div>}
     <label className="custom-page-visibility"><input type="checkbox" checked={draft.showInNav} onChange={e=>patch({showInNav:e.target.checked})}/> Mostrar esta página na barra de navegação</label>
-    <label>Texto pequeno acima do título<input maxLength={120} value={draft.eyebrow} onChange={e=>patch({eyebrow:e.target.value})} placeholder="✦ PREMIUM RESOURCES"/></label>
+    <label>Texto opcional acima do título<input maxLength={120} value={draft.eyebrow} onChange={e=>patch({eyebrow:e.target.value})} placeholder="Deixe vazio para ocultar"/></label>
     <TextComposer label="Apresentação abaixo do título" rows={4} value={draft.subtitle} onChange={subtitle=>patch({subtitle})}/>
     <div className="editor-section-title"><h3>Capa da página</h3><p>Opcional. Use uma imagem discreta como nos projetos; ela não substitui seu conteúdo.</p></div>
     <PageMediaField value={draft.heroImage} onChange={heroImage=>patch({heroImage})} folder={folder} slot="hero" label="Banner / arte de fundo" onError={setError}/>

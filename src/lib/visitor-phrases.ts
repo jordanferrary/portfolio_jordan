@@ -1,5 +1,6 @@
 /** Human-reviewed translations for UI and existing portfolio copy. Original text is English. */
 export const VISITOR_PHRASES:Record<string,{pt:string;es:string}>={
+ "My courses, certifications and educational milestones as a digital artist.":{pt:"Meus cursos, certificações e marcos da minha formação como artista digital.",es:"Mis cursos, certificaciones y logros de mi formación como artista digital."},
  "For commissions or collaborations, send me a message.":{pt:"Para encomendas ou colaborações, envie uma mensagem.",es:"Para encargos o colaboraciones, envíame un mensaje."},
  "Behind the art":{pt:"Por trás da arte",es:"Detrás del arte"},
  "Choose a social platform and send me a message.":{pt:"Escolha uma rede social e me envie uma mensagem.",es:"Elige una red social y envíame un mensaje."},

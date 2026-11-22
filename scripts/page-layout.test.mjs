@@ -65,3 +65,17 @@ test('Contact centers its complete grid, retains social links and equalizes card
  assert.match(contact,/target="_blank" rel="noopener noreferrer"/)
  assert.doesNotMatch(contact,/contact-social-atmosphere/)
 })
+
+test('custom pages use one width baseline and PDF captions do not darken documents',async()=>{
+ const view=await read('src/components/sections/custom-page.tsx')
+ const galleryView=await read('src/components/sections/page-media-blocks.tsx')
+ assert.match(view,/cleanHeadingText\(page.eyebrow\)&&/)
+ assert.doesNotMatch(view,/page.eyebrow\|\|'CREATIVE SPACE'/)
+ assert.match(css,/\.site-main>\.custom-page-wide\{--jf-custom-width:var\(--jf-page-layout-max\)\}/)
+ assert.match(css,/\.custom-page>\.custom-page-body\{\s*max-width:none;padding:clamp/)
+ assert.match(css,/\.artist-showcase-card:has\(\.artist-showcase-pdf-card\)::after\{display:none\}/)
+ assert.match(css,/\.artist-showcase-card:has\(\.artist-showcase-pdf-card\)>span\{\s*position:relative/)
+ assert.match(galleryView,/--showcase-columns/)
+ assert.match(galleryView,/--showcase-open-columns/)
+ assert.match(galleryView,/<PdfZoomViewer url=\{documentUrl\}/)
+})

@@ -346,3 +346,86 @@
  .site-shell.contact-route .contact-social-directory.contact-directory-grid .contact-social-card-icon{width:34px;height:34px;flex-basis:34px}
  .site-shell.contact-route .contact-social-directory.contact-directory-icons .contact-social-card{min-height:58px;padding:8px}
 }
+
+/* Shared Page Builder layout. Both width options retain their independent
+   content widths, while hero, blocks and footer use identical page edges. */
+.site-shell .site-main>.custom-page{
+ --jf-custom-width:1120px;
+ max-width:var(--jf-custom-width);
+ padding-top:clamp(88px,10vh,112px);
+ margin-inline:auto;
+}
+.site-shell .site-main>.custom-page-wide{--jf-custom-width:var(--jf-page-layout-max)}
+.site-shell .custom-page>.custom-page-hero{
+ min-height:0;
+ align-items:center;
+ border-radius:24px;
+ box-shadow:0 16px 42px #0003;
+}
+.site-shell .custom-page>.custom-page-hero.has-image{min-height:clamp(260px,34vh,340px)}
+.site-shell .custom-page .custom-page-hero-content{
+ width:100%;max-width:none;
+ padding:clamp(24px,3.3vw,46px);
+}
+.site-shell .custom-page .custom-page-hero-content h1{
+ max-width:20ch;margin:0 0 14px;text-wrap:balance;
+}
+.site-shell .custom-page .custom-page-eyebrow{
+ margin-bottom:12px;text-transform:none;letter-spacing:.04em!important;
+}
+.site-shell .custom-page .custom-page-subtitle{max-width:56ch}
+.site-shell .custom-page .custom-page-subtitle p{margin:0 0 .75em}
+.site-shell .custom-page .custom-page-subtitle p:last-child{margin-bottom:0}
+.site-shell .custom-page .custom-page-hero-image{filter:brightness(.9)}
+.site-shell .custom-page>.custom-page-hero.has-image::after{
+ background:linear-gradient(90deg,
+  color-mix(in srgb,var(--jf-background) 96%,transparent) 0%,
+  color-mix(in srgb,var(--jf-background) 88%,transparent) 28%,
+  color-mix(in srgb,var(--jf-background) 66%,transparent) 48%,
+  color-mix(in srgb,var(--jf-background) 15%,transparent) 83%),
+  linear-gradient(0deg,color-mix(in srgb,var(--jf-background) 42%,transparent),transparent 45%)!important;
+}
+.site-shell .custom-page>.custom-page-body{
+ max-width:none;padding:clamp(24px,3.2vw,44px) 0 0;
+}
+.site-shell .custom-page .artist-showcase{margin:0 0 28px}
+.site-shell .custom-page .artist-showcase-grid{gap:clamp(10px,1.2vw,18px)}
+/* Documents remain readable: separate the caption from the white preview
+   instead of placing a dark artwork gradient across the certificate. */
+.site-shell .custom-page .artist-showcase-card:has(.artist-showcase-pdf-card){
+ display:flex;flex-direction:column;
+ aspect-ratio:auto;border-radius:15px;
+ color:var(--jf-text);
+ background:var(--jf-surface-deep)!important;
+}
+.site-shell .custom-page .artist-showcase-card:has(.artist-showcase-pdf-card)::after{display:none}
+.site-shell .custom-page .artist-showcase-card .artist-showcase-pdf-card{
+ position:relative;inset:auto;
+ width:100%;aspect-ratio:7/10;
+ flex:0 0 auto;background:#fff;
+}
+.site-shell .custom-page .artist-showcase-card:has(.artist-showcase-pdf-card)>span{
+ position:relative;inset:auto;display:flex;align-items:center;
+ min-height:calc(2.6em + 18px);width:100%;
+ padding:9px 12px;box-sizing:border-box;
+ overflow-wrap:anywhere;text-shadow:none;
+ border-top:1px solid var(--jf-panel-edge);
+}
+.site-shell .custom-page .artist-showcase-card:not(:has(.artist-showcase-pdf-card)){border-radius:15px}
+.site-shell .custom-page .artist-showcase-detail-copy h3{margin-top:0}
+@media(max-width:900px){
+ .site-shell .site-main>.custom-page{padding-top:82px}
+ .site-shell .custom-page>.custom-page-hero.has-image{min-height:280px}
+ .site-shell .custom-page>.custom-page-hero.has-image::after{
+  background:linear-gradient(90deg,color-mix(in srgb,var(--jf-background) 95%,transparent),color-mix(in srgb,var(--jf-background) 75%,transparent) 55%,color-mix(in srgb,var(--jf-background) 35%,transparent))!important;
+ }
+}
+@media(max-width:600px){
+ .site-shell .site-main>.custom-page{padding-top:70px}
+ .site-shell .custom-page>.custom-page-hero{border-radius:18px}
+ .site-shell .custom-page>.custom-page-hero.has-image{min-height:250px}
+ .site-shell .custom-page .custom-page-hero-content{padding:22px 18px}
+ .site-shell .custom-page>.custom-page-body{padding-top:20px}
+ .site-shell .custom-page .artist-showcase-grid{gap:9px}
+ .site-shell .custom-page .artist-showcase-card:has(.artist-showcase-pdf-card)>span{padding:8px 9px}
+}
