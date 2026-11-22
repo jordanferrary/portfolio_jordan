@@ -27,6 +27,7 @@ const GlitchPaletteEditor=lazy(()=>import('./components/sections/glitch-palette-
 import { applyThemePalette } from './lib/theme-palette'
 import {applyTypography} from './lib/typography'
 import {applyStudioControls,normalizeStudioControls} from './lib/studio-controls'
+const StudioThemeLibrary=lazy(()=>import('./components/sections/studio-theme-library').then(m=>({default:m.StudioThemeLibrary})))
 const StudioMaintenance=lazy(()=>import('./components/sections/studio-maintenance').then(m=>({default:m.StudioMaintenance})))
 const StudioControlsEditor=lazy(()=>import('./components/sections/studio-controls-editor').then(m=>({default:m.StudioControlsEditor})))
 import {applyGlitchPalette} from './lib/glitch-palette'
@@ -133,8 +134,21 @@ export function App(){
  const portfolio=usePortfolio(editing)
  const controls=normalizeStudioControls(portfolio.studioControls)
  const [previewDraft,setPreviewDraft]=useState(false)
+ const [themeLibraryOpen,setThemeLibraryOpen]=useState(false)
  const [maintenanceTab,setMaintenanceTab]=useState<'history'|'health'|null>(null)
  const viewEditing=editing&&!previewDraft
+ useEffect(()=>{
+  if(!editing||githubPublishOpen)return
+  const key=(event:KeyboardEvent)=>{
+   if(!(event.ctrlKey||event.metaKey)||event.altKey||event.defaultPrevented)return
+   const target=event.target instanceof Element?event.target:null
+   if(target?.closest('input,textarea,select,[contenteditable=true]')||document.querySelector('.editor-overlay,[aria-modal=true]'))return
+   const name=event.key.toLowerCase()
+   if(name==='z'&&!event.shiftKey&&portfolio.historyInfo.past.length){event.preventDefault();portfolio.undo()}
+   else if((name==='y'||(name==='z'&&event.shiftKey))&&portfolio.historyInfo.future.length){event.preventDefault();portfolio.redo()}
+  }
+  window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
+ },[editing,githubPublishOpen,portfolio.undo,portfolio.redo,portfolio.historyInfo.past.length,portfolio.historyInfo.future.length])
  useEffect(()=>{
   setManualTranslations(normalizeStudioControls(portfolio.studioControls).translations)
   document.documentElement.lang=visitorLanguage==='pt'?'pt-BR':visitorLanguage
@@ -149,7 +163,7 @@ export function App(){
   if(githubPublishOpen)return
   setEditing(false);setGateOpen(false);setEditor(undefined);setHomeEditorOpen(false);setAboutEditorOpen(false);setContactEditorOpen(false)
   setGalleryBackgroundEditorOpen(false);setLogoEditorOpen(false);setSiteIdentityOpen(false);setThemePaletteOpen(false);setGlitchPaletteOpen(false)
-  setImageConverterOpen(false);setMediaManagerOpen(false);setSkin3DOpen(false);setCustomPageEditorTarget(null);setControlsTab(null);setMaintenanceTab(null);setPreviewDraft(false);setStagedMediaDeletions([])
+  setImageConverterOpen(false);setMediaManagerOpen(false);setSkin3DOpen(false);setCustomPageEditorTarget(null);setControlsTab(null);setMaintenanceTab(null);setThemeLibraryOpen(false);setPreviewDraft(false);setStagedMediaDeletions([])
  }
  const [galleryFilter,setGalleryFilter]=useState('SFW')
  const [revealedProjects,setRevealedProjects]=useState<Set<string>>(()=>new Set())
@@ -224,6 +238,7 @@ export function App(){
   {id:'draft-preview',label:previewDraft?'Sair da prévia':'Prévia do visitante',description:'Visualizar o rascunho sem os botões contextuais de edição',section:'Páginas',icon:Eye,onClick:()=>setPreviewDraft(value=>!value)},
   {id:'studio-history',label:'Histórico local',description:'Desfazer e refazer alterações nesta sessão',section:'Conteúdo',icon:Layers,onClick:()=>setMaintenanceTab('history')},
   {id:'studio-health',label:'Diagnóstico',description:'Verificação de referências, contraste e integridade',section:'Conteúdo',icon:ScanLine,onClick:()=>setMaintenanceTab('health')},
+  {id:'theme-library',label:'Biblioteca de temas',description:'Salvar, importar, exportar e reutilizar identidades visuais',section:'Identidade',icon:Palette,onClick:()=>setThemeLibraryOpen(true)},
   {id:'global-layout',label:'Layout e materiais',description:'Dimensões, espaçamento, cantos e Liquid Glass por dispositivo',section:'Identidade',icon:Layers,onClick:()=>setControlsTab('layout')},
   {id:'global-motion',label:'Animações',description:'Modo e duração da transição de páginas',section:'Identidade',icon:ScanLine,onClick:()=>setControlsTab('motion')},
   {id:'global-features',label:'Funcionalidades',description:'Ativar ou ocultar módulos públicos',section:'Conteúdo',icon:Eye,onClick:()=>setControlsTab('features')},
@@ -398,6 +413,7 @@ export function App(){
  {editing&&customPageEditorTarget!==null&&<CustomPageEditor key={customPageEditorTarget} initialPageId={customPageEditorTarget} pages={portfolio.customPages} onSavePages={portfolio.setCustomPages} onNavigatePage={navigateCustomPage} onClose={()=>setCustomPageEditorTarget(null)}/>}
  {editing&&skin3DOpen&&<Alquimago3DEditor onClose={()=>setSkin3DOpen(false)} onPublish={()=>openPublishDialog('studio')}/>}
  {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>{setMediaManagerOpen(false);openPublishDialog('studio')}} onPreparePublished={paths=>{setStagedMediaDeletions(paths);setMediaManagerOpen(false);openPublishDialog('studio')}}/>}
+ {editing&&themeLibraryOpen&&<StudioThemeLibrary store={portfolio} onApply={portfolio.applyDesignTheme} onClose={()=>setThemeLibraryOpen(false)}/>}
  {editing&&maintenanceTab&&<StudioMaintenance tab={maintenanceTab} past={portfolio.historyInfo.past} future={portfolio.historyInfo.future} onUndo={portfolio.undo} onRedo={portfolio.redo} onAudit={portfolio.runAudit} onClose={()=>setMaintenanceTab(null)}/>}
  {editing&&controlsTab&&<StudioControlsEditor value={portfolio.studioControls} initialTab={controlsTab} onSave={portfolio.setStudioControls} onClose={()=>setControlsTab(null)}/>}
  {editing&&themePaletteOpen&&<ThemePaletteEditor symbol={portfolio.headingSymbol} value={portfolio.themePalette} typography={portfolio.typography} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}

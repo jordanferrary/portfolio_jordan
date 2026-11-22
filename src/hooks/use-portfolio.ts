@@ -1,4 +1,5 @@
 import { useCallback,useRef,useState } from 'react'
+import {normalizeDesignTheme,type DesignTheme} from '../lib/design-themes'
 import {auditStudio} from '../lib/studio-health'
 import {normalizeStudioControls,type StudioControls} from '../lib/studio-controls'
 import {normalizeTypography,type TypographySettings} from '../lib/typography'
@@ -136,7 +137,7 @@ export function usePortfolio(editing=false){
  const persist=useCallback((next:PortfolioStore)=>{storeRef.current=next;setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('')}catch{setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[])
  const save=useCallback((next:PortfolioStore)=>{
   const previous=storeRef.current
-  const keys=(Object.keys(next) as (keyof PortfolioStore)[]).filter(key=>JSON.stringify(previous[key])!==JSON.stringify(next[key]))
+  const keys=(Object.keys(next) as (keyof PortfolioStore)[]).filter(key=>previous[key]!==next[key]&&JSON.stringify(previous[key])!==JSON.stringify(next[key]))
   if(!keys.length)return
   history.current.past=[...history.current.past,{store:previous,time:Date.now(),label:keys.join(', ')}].slice(-30)
   history.current.future=[]
@@ -192,6 +193,10 @@ export function usePortfolio(editing=false){
  const setBranding=(values:Pick<PortfolioStore,'siteLogo'|'siteLogoHover'|'siteLogoSize'|'siteLogoHoverScale'>)=>save({...storeRef.current,...values,siteLogoSize:clampBrandScale(values.siteLogoSize,100,65,180),siteLogoHoverScale:clampBrandScale(values.siteLogoHoverScale,110,100,170)})
  const setSiteIdentity=(values:Pick<PortfolioStore,'siteFavicon'|'seoTitle'|'seoDescription'>)=>save({...storeRef.current,...values,seoTitle:values.seoTitle.trim().slice(0,110),seoDescription:values.seoDescription.trim().slice(0,240)})
  const setThemePalette=(themePalette:ThemePalette,headingSymbol:HeadingSymbolStyle=storeRef.current.headingSymbol,typography?:TypographySettings)=>save({...storeRef.current,themePalette:normalizeThemePalette(themePalette),headingSymbol:normalizeHeadingSymbol(headingSymbol),typography:normalizeTypography(typography??storeRef.current.typography)})
+ const applyDesignTheme=(input:DesignTheme)=>{
+  const theme=normalizeDesignTheme(input),current=storeRef.current
+  save({...current,themePalette:theme.palette,typography:theme.typography,glitchPalette:theme.glitch,headingSymbol:theme.symbol,studioControls:normalizeStudioControls({...normalizeStudioControls(current.studioControls),...theme.design})})
+ }
  const setStudioControls=(studioControls:StudioControls)=>save({...storeRef.current,studioControls:normalizeStudioControls(studioControls)})
  const setTypography=(typography:TypographySettings)=>save({...storeRef.current,typography:normalizeTypography(typography)})
  const setGlitchPalette=(glitchPalette:GlitchPalette)=>save({...storeRef.current,glitchPalette:normalizeGlitchPalette(glitchPalette)})
@@ -240,5 +245,5 @@ export function usePortfolio(editing=false){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,applyDesignTheme,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }

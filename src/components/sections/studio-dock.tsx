@@ -82,7 +82,7 @@ export function StudioDock({
  const categoriesWithCount=CATEGORIES.map(category=>({
   ...category,count:actions.filter(action=>action.section===category.id).length
  }))
- const featuredIds=['palette','new-project','alquimago-grimorio','alquimago-skin3d','media-manager','custom-pages']
+ const featuredIds=['global-layout','palette','draft-preview','studio-health','new-project','custom-pages']
  const featured=featuredIds.map(id=>actions.find(action=>action.id===id))
   .filter((action):action is StudioAction=>Boolean(action))
  const visible=normalized?matching:actions.filter(action=>action.section===section)
