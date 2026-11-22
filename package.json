@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "typecheck": "tsc -b",
-    "test:studio": "node scripts/studio-smoke.mjs && node --test scripts/studio-integrity.test.mjs scripts/studio-controls.test.mjs scripts/studio-composition.test.mjs",
+    "test:studio": "node scripts/studio-smoke.mjs && node --test scripts/studio-integrity.test.mjs scripts/studio-controls.test.mjs scripts/studio-composition.test.mjs scripts/studio-native-modules.test.mjs",
     "sync:alquimago": "node scripts/sync-alquimago.mjs",
     "prebuild": "node scripts/sync-alquimago.mjs",
     "build": "tsc -b && vite build",
