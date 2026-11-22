@@ -1,11 +1,12 @@
 import type {Project} from '../data/projects'
+import {canFeatureProject} from './project-listing'
 
 /** The Home has exactly three showcase slots. Gallery order is independent. */
 export const FEATURED_LIMIT=3
 
 export function getFeaturedProjects(projects:Project[]):Project[]{
  return projects.map((project,index)=>({project,index}))
-  .filter(({project})=>project.featured)
+  .filter(({project})=>project.featured&&canFeatureProject(project))
   .sort((a,b)=>{
    // Legacy projects have no custom rank and retain their original gallery order.
    const rank=(item:{project:Project;index:number})=>Number.isInteger(item.project.featuredOrder)&&
@@ -18,7 +19,7 @@ export function getFeaturedProjects(projects:Project[]):Project[]{
 
 /** Selecting Home projects never rearranges the gallery or edits artwork. */
 export function applyFeaturedSelection(projects:Project[],ids:string[]):Project[]{
- const valid=[...new Set(ids)].filter(id=>projects.some(p=>p.id===id)).slice(0,FEATURED_LIMIT)
+ const valid=[...new Set(ids)].filter(id=>projects.some(p=>p.id===id&&canFeatureProject(p))).slice(0,FEATURED_LIMIT)
  return projects.map(p=>{
   const rank=valid.indexOf(p.id)
   return {...p,featured:rank!==-1,featuredOrder:rank!==-1?rank:undefined}

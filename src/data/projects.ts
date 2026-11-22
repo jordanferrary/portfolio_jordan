@@ -8,7 +8,7 @@ export type Block = { id:string; type:BlockType; content:string; videoTitle?:str
 export type ProcessStep = { id:string; label:string; image:string }
 export type CategoryIcon = 'user'|'mountain'|'box'|'sparkles'|'grid'|'palette'|'film'|'brush'|'shapes'
 export type Category = { id:string; label:string; icon:CategoryIcon; image?:string }
-export type Project = { id:string;title:string;category:string;year:string;image:string;description:string;tools:string[];featured:boolean;featuredOrder?:number;sensitiveTheme?:boolean;blocks:Block[];processSteps?:ProcessStep[];processTemplateMigrated?:boolean;coverFocus?:ImageFraming;homeFocus?:ImageFraming;heroFocus?:ImageFraming }
+export type Project = { id:string;title:string;category:string;year:string;image:string;description:string;tools:string[];featured:boolean;featuredOrder?:number;sensitiveTheme?:boolean;unlisted?:boolean;blocks:Block[];processSteps?:ProcessStep[];processTemplateMigrated?:boolean;coverFocus?:ImageFraming;homeFocus?:ImageFraming;heroFocus?:ImageFraming }
 /**
  * Migrate the old, end-of-page process presentation into a movable block once.
  * The marker prevents a deliberately removed template from returning on reload.

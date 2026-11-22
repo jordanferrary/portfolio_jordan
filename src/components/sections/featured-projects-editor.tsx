@@ -4,6 +4,7 @@ import type {Project} from '../../data/projects'
 import {AssetImage} from '../ui/asset-image'
 import {framingStyle} from '../../lib/image-framing'
 import {FEATURED_LIMIT,getFeaturedProjects} from '../../lib/featured-projects'
+import {canFeatureProject} from '../../lib/project-listing'
 
 type Props={projects:Project[];onChange:(ids:string[])=>void}
 
@@ -13,7 +14,7 @@ export function FeaturedProjectsEditor({projects,onChange}:Props){
  const ids=selected.map(p=>p.id)
  const [search,setSearch]=useState('')
  const [replaceIndex,setReplaceIndex]=useState<number|null>(null)
- const candidates=useMemo(()=>projects.filter(p=>!ids.includes(p.id)&&
+ const candidates=useMemo(()=>projects.filter(p=>canFeatureProject(p)&&!ids.includes(p.id)&&
   (p.title+' '+p.category+' '+p.year+' '+p.tools.join(' ')).toLocaleLowerCase('pt-BR')
    .includes(search.toLocaleLowerCase('pt-BR').trim())),[projects,ids.join('|'),search])
  const commit=(next:string[])=>{onChange(next);setReplaceIndex(null)}
