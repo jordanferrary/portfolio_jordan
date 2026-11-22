@@ -67,7 +67,7 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
   return ()=>{live=false;instance?.dispose();if(stage.current===instance)stage.current=null;if(objectUrl)URL.revokeObjectURL(objectUrl)}
  },[activated,parsed?.url,retry])
  const fullscreen=()=>{if(document.fullscreenElement===frame.current)void document.exitFullscreen().catch(()=>{});else if(frame.current?.requestFullscreen)void frame.current.requestFullscreen().catch(()=>{})}
- if(!parsed)return <div className="project-model-invalid" role="status">3D model not available — GLB or glTF link required.</div>
+ if(!parsed)return <div className="project-model-invalid" role="status">3D model unavailable. A GLB or glTF link is required.</div>
  return <section className="project-model-block" aria-label={'Interactive model: '+title}>
   <div className="project-model-frame" ref={frame} style={activated?{background:'transparent'}:undefined}>
    {!activated?<button type="button" className="project-model-poster" onClick={()=>setActivated(true)} aria-label={'Open interactive 3D model: '+title}>

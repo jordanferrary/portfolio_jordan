@@ -52,7 +52,7 @@ export interface AboutContent {
  specialties:string[]
 }
 export const defaultAbout:AboutContent={
- eyebrow:'✦ Behind the art',
+ eyebrow:'Behind the art',
  titleFirst:'More than pixels.',
  titleAccent:'A creative vision.',
  name:'Jordan Ferrary',

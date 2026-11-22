@@ -1,6 +1,6 @@
 import '../../styles/theme-palette-editor.css'
 import { useEffect,useRef,useState } from 'react'
-import { Check,Palette,RotateCcw,Save,Sparkles,X } from 'lucide-react'
+import { Check,Palette,RotateCcw,Save,Paintbrush,X } from 'lucide-react'
 import { ChromaticPicker } from '../ui/chromatic-picker'
 import { applyThemePalette,contrastRatio,DEFAULT_THEME,PALETTE_FIELDS,type ThemeColorKey,type ThemePalette } from '../../lib/theme-palette'
 import {HeadingSymbol} from '../ui/heading-symbol'
@@ -32,7 +32,7 @@ export function ThemePaletteEditor({value,symbol=DEFAULT_HEADING_SYMBOL,onSave,o
   <section className="editor-panel theme-palette-editor" role="dialog" aria-modal="true" aria-label="Direção de arte e cores do portfólio">
    <header><div><span className="eyebrow">✦ ESTÚDIO DE CORES</span><h2>Direção de arte</h2><small>Controle as sete cores globais do site com precisão.</small></div><button type="button" aria-label="Fechar editor de cores" onClick={onClose}><X size={20}/></button></header>
    <div className="editor-scroll">
-    <div className="theme-editor-intro"><Sparkles size={18}/><p>Escolha uma identidade que combine com sua capa. O site responde às mudanças ao vivo; nada é publicado até você salvar e usar o GitHub Studio.</p></div>
+    <div className="theme-editor-intro"><Paintbrush size={18}/><p>Escolha uma identidade que combine com sua capa. O site responde às mudanças ao vivo; nada é publicado até você salvar e usar o GitHub Studio.</p></div>
     <div className="theme-workspace">
      <div className="theme-controls">
       <h3>Variáveis globais</h3>
@@ -45,7 +45,7 @@ export function ThemePaletteEditor({value,symbol=DEFAULT_HEADING_SYMBOL,onSave,o
        <div className="theme-mini-card" style={{background:draft.surface,borderColor:draft.border,color:draft.text}}>
         <span className="theme-mini-heading" style={{color:draft.secondary}}><HeadingSymbol symbol={draftSymbol} size={14}/> CREATIVE PORTFOLIO</span>
         <h4>Art beyond<br/><em style={{color:draft.primary}}>the ordinary.</em></h4>
-        <div className="theme-mini-actions"><div className="theme-mini-action theme-mini-glass-primary">Explore my work <span>↗</span></div><div className="theme-mini-action theme-mini-glass-secondary">Discover <span>✦</span></div></div>
+        <div className="theme-mini-actions"><div className="theme-mini-action theme-mini-glass-primary">Explore my work <span>↗</span></div><div className="theme-mini-action theme-mini-glass-secondary">Discover <span>↗</span></div></div>
        </div>
        <small style={{color:draft.muted}}>Prévia em tempo real · botões Liquid Glass, superfície, bordas e cores</small>
       </div>
@@ -76,7 +76,7 @@ export function ThemePaletteEditor({value,symbol=DEFAULT_HEADING_SYMBOL,onSave,o
      </div>
      <div className="theme-symbol-example"><span style={{color:draft.secondary}}><HeadingSymbol symbol={draftSymbol} size={16}/> EXPLORAR MEU PORTFÓLIO</span><strong style={{color:draft.text}}>Prévia do título</strong></div>
     </section>
-    <div className="theme-preset-area"><div><h3>Direções de cor</h3><p>Uma base rápida para experimentar — todos os valores continuam editáveis.</p></div><div className="theme-presets">{PRESETS.map(preset=><button type="button" key={preset.name} onClick={()=>setDraft({...preset.palette})} className="theme-preset"><span className="theme-preset-dots">{PALETTE_FIELDS.map(field=><i key={field.key} style={{background:preset.palette[field.key]}}/>)}</span><strong>{preset.name}</strong></button>)}</div></div>
+    <div className="theme-preset-area"><div><h3>Direções de cor</h3><p>Experimente uma base de cores e ajuste os valores como preferir.</p></div><div className="theme-presets">{PRESETS.map(preset=><button type="button" key={preset.name} onClick={()=>setDraft({...preset.palette})} className="theme-preset"><span className="theme-preset-dots">{PALETTE_FIELDS.map(field=><i key={field.key} style={{background:preset.palette[field.key]}}/>)}</span><strong>{preset.name}</strong></button>)}</div></div>
     <div className="theme-editor-bottom"><button type="button" className="theme-reset" onClick={()=>setDraft({...DEFAULT_THEME})}><RotateCcw size={15}/>Restaurar cores originais</button><p><Palette size={15}/> A visualização é imediata. Somente <b>Salvar paleta</b> grava o rascunho local; <b>Publicar</b> atualiza o site para todos.</p></div>
    </div>
    <footer><button type="button" className="subtle-action" onClick={onClose}>Cancelar</button><button type="button" className="save-action" onClick={save}><Save size={17}/>Salvar paleta</button></footer>

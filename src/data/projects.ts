@@ -34,7 +34,7 @@ const sample=(id:string,title:string,category:string,year:string,image:string,de
  {id:id+'-story',type:'text',content:description},
  {id:id+'-visual',type:'image',content:imageUrl('projects/'+id+'/'+image)},
  {id:id+'-process',type:'heading',content:'Creative process'},
- {id:id+'-details',type:'text',content:'From early exploration to final presentation — modeling, materials, lighting and artistic decisions.'}]
+ {id:id+'-details',type:'text',content:'From early exploration to final presentation: modeling, materials, lighting and artistic decisions.'}]
 })
 export const initialProjects:Project[]=[
  sample('void-wanderer','Void Wanderer','Characters','2026','void-wanderer.webp','A character study focused on style, expression and mood. This project explores a more introspective and mysterious aesthetic.',['ZBrush','Blender','Texturing'],true),
@@ -47,6 +47,6 @@ export const starterCategories:Category[]=[
  {id:'characters',label:'Characters',icon:'user'},
  {id:'environments',label:'Environments',icon:'mountain'},
  {id:'props',label:'Props',icon:'box'},
- {id:'stylized',label:'Stylized',icon:'sparkles'},
+ {id:'stylized',label:'Stylized',icon:'shapes'},
  {id:'others',label:'Others',icon:'grid'}]
 export const categoryIcons:CategoryIcon[]=['user','mountain','box','sparkles','grid','palette','film','brush','shapes']

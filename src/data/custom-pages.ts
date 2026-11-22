@@ -57,7 +57,7 @@ const iconSet=new Set<string>(customPageIconOptions.map(option=>option.value))
 const buttonActions=new Set<string>(['copy','url-current','url-new'])
 /** Stable IDs keep links working when a page title or navigation label changes. */
 export function newCustomPage():CustomPage{
- return {id:'page-'+crypto.randomUUID(),navLabel:'New page',icon:'sparkles',showInNav:true,eyebrow:'✦ CREATIVE SPACE',title:'New page',subtitle:'',heroImage:'',heroPositionX:50,heroPositionY:50,layout:'standard',blocks:[]}
+ return {id:'page-'+crypto.randomUUID(),navLabel:'New page',icon:'sparkles',showInNav:true,eyebrow:'CREATIVE SPACE',title:'New page',subtitle:'',heroImage:'',heroPositionX:50,heroPositionY:50,layout:'standard',blocks:[]}
 }
 /** Reorder existing pages by stable IDs without changing their content or permanent routes. */
 export function reorderCustomPages(pages:CustomPage[],fromId:string,toId:string):CustomPage[]{

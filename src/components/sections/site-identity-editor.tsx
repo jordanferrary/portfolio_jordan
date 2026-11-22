@@ -36,14 +36,14 @@ export function SiteIdentityEditor({value,homeBanner,onSave,onEditBanner,onClose
      <div className="identity-section-head"><h3>Prévia do link</h3><span>Automática</span></div>
      <div className="identity-link-preview" aria-label="Prévia aproximada do cartão ao compartilhar o site">
       <div className="identity-banner-preview"><AssetImage src={homeBanner} alt="Banner da Home que será usado no cartão compartilhado"/></div>
-      <div className="identity-link-info"><small>jordanferrary.github.io</small><strong translate="no">{draft.seoTitle||'Jordan Ferrary — Creative Portfolio'}</strong><p>{draft.seoDescription||'Explore creative 3D projects by Jordan Ferrary.'}</p></div>
+      <div className="identity-link-info"><small>jordanferrary.github.io</small><strong translate="no">{draft.seoTitle||'Jordan Ferrary | 3D Artist'}</strong><p>{draft.seoDescription||'Explore creative 3D projects by Jordan Ferrary.'}</p></div>
      </div>
      <p className="identity-help">Prévia ilustrativa: Discord, WhatsApp e outras plataformas podem alterar o recorte ou guardar uma imagem antiga em cache.</p>
      <button type="button" className="identity-secondary-button" onClick={()=>{onClose();onEditBanner()}}><ImagePlus size={16}/>Trocar banner na Home</button>
     </section>
     <section className="identity-section">
      <div className="identity-section-head"><h3>Textos do cartão</h3><span>Em inglês</span></div>
-     <label className="identity-field">Título público<input maxLength={110} value={draft.seoTitle} onChange={e=>update({seoTitle:e.target.value})} placeholder="Jordan Ferrary — Creative Portfolio"/></label>
+     <label className="identity-field">Título público<input maxLength={110} value={draft.seoTitle} onChange={e=>update({seoTitle:e.target.value})} placeholder="Jordan Ferrary | 3D Artist"/></label>
      <label className="identity-field">Descrição pública<textarea maxLength={240} rows={3} value={draft.seoDescription} onChange={e=>update({seoDescription:e.target.value})} placeholder="Describe your art and portfolio in English..."/></label>
      <p className="identity-help">Esses textos também serão usados nos metadados de busca do site. Mantenha seu nome como “Jordan Ferrary”.</p>
     </section>
