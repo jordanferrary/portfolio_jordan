@@ -10,6 +10,13 @@ export async function auditStudio(store:PortfolioStore,localRefs:string[]):Promi
   const ids=list.map(x=>x.id)
   if(ids.some(id=>!id)||new Set(ids).size!==ids.length)error(label+': IDs vazios ou duplicados.')
  }
+ for(const owner of [...store.projects,...store.customPages]){
+  const ids=owner.blocks.map(block=>block.id)
+  if(ids.some(id=>!id)||ids.length!==new Set(ids).size)error('Blocos com identificadores vazios ou duplicados em '+owner.title+'.')
+  for(const block of owner.blocks){
+   if(block.appearance?.hideMobile&&block.appearance?.hideDesktop)warning('Bloco oculto em todos os dispositivos: '+owner.title+' / '+block.type+'.')
+  }
+ }
  const labels=new Set(store.categories.map(c=>c.label))
  for(const p of store.projects){
   if(!p.title.trim())error('Projeto sem título.')

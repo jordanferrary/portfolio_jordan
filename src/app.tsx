@@ -271,7 +271,7 @@ export function App(){
   {id:'draft-preview',label:previewDraft?'Sair da prévia':'Prévia do visitante',description:'Visualizar o rascunho sem os botões contextuais de edição',section:'Páginas',icon:Eye,onClick:()=>setPreviewDraft(value=>!value)},
   {id:'studio-cloud',label:'Rascunho na nuvem',description:'Transferir backups privados entre dispositivos',section:'Conteúdo',icon:Layers,onClick:()=>setCloudOpen(true)},
   {id:'studio-checkpoints',label:'Pontos de recuperação',description:'Cópias persistentes do rascunho e mídias locais',section:'Conteúdo',icon:Layers,onClick:()=>setCheckpointsOpen(true)},
-  {id:'studio-history',label:'Histórico local',description:'Desfazer e refazer alterações nesta sessão',section:'Conteúdo',icon:Layers,onClick:()=>setMaintenanceTab('history')},
+  {id:'studio-history',label:'Histórico local',description:'Desfazer e refazer alterações recentes do rascunho',section:'Conteúdo',icon:Layers,onClick:()=>setMaintenanceTab('history')},
   {id:'studio-health',label:'Diagnóstico',description:'Verificação de referências, contraste e integridade',section:'Conteúdo',icon:ScanLine,onClick:()=>setMaintenanceTab('health')},
   {id:'theme-library',label:'Biblioteca de temas',description:'Salvar, importar, exportar e reutilizar identidades visuais',section:'Identidade',icon:Palette,onClick:()=>setThemeLibraryOpen(true)},
   {id:'native-composition',label:'Compositor e modelos',description:'Layouts nativos, modelos de páginas e componentes vinculados',section:'Páginas',icon:Layers,onClick:()=>setCompositionOpen(true)},
@@ -455,7 +455,7 @@ export function App(){
  {editing&&checkpointsOpen&&<StudioCheckpoints onCreate={()=>portfolio.makeCheckpoint()} onRestore={portfolio.recoverCheckpoint} onClose={()=>setCheckpointsOpen(false)}/>}
  {editing&&compositionOpen&&<StudioComposition pages={portfolio.customPages} layouts={portfolio.nativeLayouts??{}} homeModuleOrder={portfolio.homeModuleOrder} onSetHomeModuleOrder={portfolio.setHomeModuleOrder} onSetLayouts={portfolio.setNativeLayouts} onAddPage={next=>{portfolio.setCustomPages([next,...portfolio.customPages]);setCompositionOpen(false);setCustomPageEditorTarget(next.id)}} onEditPage={id=>{setCompositionOpen(false);setCustomPageEditorTarget(id)}} onClose={()=>setCompositionOpen(false)}/>}
  {editing&&themeLibraryOpen&&<StudioThemeLibrary store={portfolio} onApply={portfolio.applyDesignTheme} onClose={()=>setThemeLibraryOpen(false)}/>}
- {editing&&maintenanceTab&&<StudioMaintenance tab={maintenanceTab} past={portfolio.historyInfo.past} future={portfolio.historyInfo.future} onUndo={portfolio.undo} onRedo={portfolio.redo} onAudit={portfolio.runAudit} onClose={()=>setMaintenanceTab(null)}/>}
+ {editing&&maintenanceTab&&<StudioMaintenance tab={maintenanceTab} historyStorage={portfolio.historyStorage} past={portfolio.historyInfo.past} future={portfolio.historyInfo.future} onUndo={portfolio.undo} onRedo={portfolio.redo} onAudit={portfolio.runAudit} onClose={()=>setMaintenanceTab(null)}/>}
  {editing&&controlsTab&&<StudioControlsEditor value={portfolio.studioControls} initialTab={controlsTab} onSave={portfolio.setStudioControls} onClose={()=>setControlsTab(null)}/>}
  {editing&&themePaletteOpen&&<ThemePaletteEditor symbol={portfolio.headingSymbol} value={portfolio.themePalette} typography={portfolio.typography} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}
  {editing&&glitchPaletteOpen&&<GlitchPaletteEditor value={portfolio.glitchPalette} onSave={portfolio.setGlitchPalette} onClose={()=>setGlitchPaletteOpen(false)}/>}

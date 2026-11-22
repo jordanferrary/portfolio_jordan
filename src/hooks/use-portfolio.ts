@@ -1,6 +1,7 @@
-import { useCallback,useRef,useState } from 'react'
+import { useCallback,useEffect,useRef,useState } from 'react'
 import {normalizeDesignTheme,type DesignTheme} from '../lib/design-themes'
 import {createCheckpoint,restoreCheckpoint} from '../lib/studio-checkpoints'
+import {emptyHistory,loadDraftHistory,saveDraftHistory,type DraftHistory} from '../lib/studio-history'
 import {auditStudio} from '../lib/studio-health'
 import {normalizeStudioControls,type StudioControls} from '../lib/studio-controls'
 import {normalizeTypography,type TypographySettings} from '../lib/typography'
@@ -138,9 +139,34 @@ export function usePortfolio(editing=false){
  const [deployedStore]=useState<PortfolioStore>(publishedStore)
  const storeRef=useRef(store)
  const [saveError,setSaveError]=useState('')
- type HistoryEntry={store:PortfolioStore;time:number;label:string}
- const history=useRef<{past:HistoryEntry[];future:HistoryEntry[]}>({past:[],future:[]})
- const persist=useCallback((next:PortfolioStore)=>{storeRef.current=next;setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('')}catch{setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[])
+ const history=useRef<DraftHistory>(emptyHistory())
+ const epoch=useRef(0)
+ const hydrated=useRef(false)
+ const [historyStorage,setHistoryStorage]=useState<'loading'|'local'|'session'>('loading')
+ const [,refreshHistory]=useState(0)
+ useEffect(()=>{
+  if(!editing||hydrated.current)return
+  const generation=epoch.current,snapshot=JSON.stringify(storeRef.current)
+  let active=true
+  void loadDraftHistory(currentPublishedRevision,snapshot).then(result=>{
+   if(!active)return
+   hydrated.current=true
+   if(generation===epoch.current&&result){
+    history.current={past:result.past.map(entry=>({...entry,store:parseStore(entry.store)})),future:result.future.map(entry=>({...entry,store:parseStore(entry.store)}))}
+    refreshHistory(n=>n+1)
+   }
+   setHistoryStorage('local')
+  },()=>{if(active){hydrated.current=true;setHistoryStorage('session')}})
+  return()=>{active=false}
+ },[editing])
+ const writeHistory=useCallback((next:PortfolioStore)=>{
+  epoch.current++
+  const stamp=epoch.current
+  const snapshot=JSON.stringify(next)
+  const value={past:[...history.current.past],future:[...history.current.future]}
+  void saveDraftHistory(currentPublishedRevision,snapshot,value).then(()=>{if(epoch.current===stamp)setHistoryStorage('local')},()=>{if(epoch.current===stamp)setHistoryStorage('session')})
+ },[])
+ const persist=useCallback((next:PortfolioStore)=>{storeRef.current=next;setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('');writeHistory(next)}catch{epoch.current++;setHistoryStorage('session');setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[writeHistory])
  const save=useCallback((next:PortfolioStore)=>{
   const previous=storeRef.current
   const keys=(Object.keys(next) as (keyof PortfolioStore)[]).filter(key=>previous[key]!==next[key]&&JSON.stringify(previous[key])!==JSON.stringify(next[key]))
@@ -212,6 +238,7 @@ export function usePortfolio(editing=false){
   localStorage.removeItem(PENDING_KEY)
   history.current={past:[],future:[]}
   const restored=publishedStore();storeRef.current=restored;setStore(restored)
+  writeHistory(restored)
   setSaveError('')
  }
  const setGalleryBackground=(galleryBackground:string)=>save({...storeRef.current,galleryBackground})
@@ -283,5 +310,5 @@ export function usePortfolio(editing=false){
   if(storeRef.current!==previous)throw new Error('Rascunho alterado durante a importação.')
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,makeCheckpoint,recoverCheckpoint,applyDesignTheme,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setNativeLayouts,setHomeModuleOrder,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,buildBackup,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,makeCheckpoint,recoverCheckpoint,applyDesignTheme,historyInfo:historyInfo(),historyStorage,update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setNativeLayouts,setHomeModuleOrder,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,buildBackup,exportData,importData}
 }
