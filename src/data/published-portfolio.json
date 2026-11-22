@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-22T05:00:15.272Z-949dd6eb-7260-4867-8b2a-89a503e12069",
+  "revision": "2026-11-22T05:24:40.476Z-d1e161cb-0462-444f-8c4b-fccd6bb9b1ec",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -960,13 +960,13 @@
     "siteLogoHoverScale": 110,
     "siteFavicon": "",
     "themePalette": {
-      "primary": "#FF8145",
-      "secondary": "#FFCE54",
-      "background": "#130A0E",
-      "surface": "#281719",
+      "primary": "#B4AAFF",
+      "secondary": "#91DFFF",
+      "background": "#090B19",
+      "surface": "#1C1C34",
       "text": "#F8F3FF",
-      "muted": "#E0C1B4",
-      "border": "#995539"
+      "muted": "#C0C0DC",
+      "border": "#6669A6"
     },
     "typography": {
       "headingScale": 1,
