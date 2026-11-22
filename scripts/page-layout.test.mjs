@@ -54,6 +54,11 @@ test('About uses one editorial grid and keeps the secondary artwork outside the 
  assert.match(css,/grid-template-areas:"portrait header" "portrait information"/)
  assert.match(css,/grid-template-areas:"header" "portrait" "information"/)
  assert.match(css,/\.about-art-secondary\{\s*position:static/)
+ // The original about-image skin must not introduce a 1px line on the identity mark.
+ const identity=css.slice(css.indexOf('.site-shell.about-route .about-art-secondary{'))
+ const identityRule=identity.slice(0,identity.indexOf('}'))
+ assert.match(identityRule,/object-fit:contain;border:0!important;background:transparent;/)
+ assert.doesNotMatch(identityRule,/border-width:\\s*[12]px/)
  assert.match(css,/\.about-information\{\s*grid-area:information;[\s\S]*?border:0!important/)
 })
 
