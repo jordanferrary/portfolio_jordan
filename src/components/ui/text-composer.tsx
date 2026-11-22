@@ -52,7 +52,7 @@ export function TextComposer({value,onChange,label,rows=5,heading=false}:Props){
  const actions=[
   {key:'bold' as Command,name:'Negrito · Ctrl+B',icon:Bold,aria:'Negrito'},
   {key:'italic' as Command,name:'Itálico · Ctrl+I',icon:Italic,aria:'Itálico'},
-  {key:'accent' as Command,name:'Destacar em roxo',icon:Palette,aria:'Destaque roxo'},
+  {key:'accent' as Command,name:'Destacar com a cor do tema',icon:Palette,aria:'Destaque do tema'},
   {key:'h2' as Command,name:'Subtítulo grande',icon:Heading2,aria:'Subtítulo grande'},
   {key:'h3' as Command,name:'Subtítulo menor',icon:Heading3,aria:'Subtítulo menor'},
   {key:'normal' as Command,name:'Texto comum',icon:RemoveFormatting,aria:'Texto comum'}
@@ -66,6 +66,6 @@ export function TextComposer({value,onChange,label,rows=5,heading=false}:Props){
    <textarea ref={area} value={value} rows={rows} onChange={e=>{onChange(e.target.value);selection.current={start:e.target.selectionStart,end:e.target.selectionEnd}}} onSelect={remember} onClick={remember} onKeyUp={remember} onKeyDown={shortcut} aria-label={label} placeholder={heading?'Escreva um título e selecione trechos para formatar.':'Escreva seu texto. Selecione palavras e clique em B, I ou na paleta roxa.'}/>
    {value.trim()&&<div className="composer-live-preview"><span className="composer-preview-label">Prévia formatada</span><RichText value={value} heading={heading}/></div>}
   </>}
-  <small>Selecione palavras e clique em B (negrito), I (itálico) ou na paleta (roxo). Atalhos: Ctrl+B e Ctrl+I.</small>
+  <small>Selecione palavras e clique em B (negrito), I (itálico) ou na paleta (cor do tema). Atalhos: Ctrl+B e Ctrl+I.</small>
  </div>
 }

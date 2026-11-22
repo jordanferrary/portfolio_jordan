@@ -35,3 +35,18 @@ test('comparison handle foreground contrasts against the editable primary color'
   }
  }finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous}
 })
+
+test('access dialog, player hover, rich text and sidebar use live tokens',async()=>{
+ const [coverage,studio,custom,polish,composer,about]=await Promise.all(['src/styles/theme-coverage.css','src/styles/studio-palette-coverage.css','src/styles/custom-pages.css','src/styles/polish.css','src/components/ui/text-composer.tsx','src/components/sections/about-editor.tsx'].map(read))
+ assert.match(coverage,/\.gate-card\{[^}]*var\(--jf-studio-panel\)/)
+ assert.match(coverage,/\.music-widget \.music-main-toggle:hover:not\(:disabled\)\{[^}]*var\(--jf-primary\)/)
+ assert.match(coverage,/\.music-cover-button\{[^}]*var\(--jf-primary-glow\)/)
+ assert.match(custom,/scrollbar-color:var\(--jf-scroll-thumb\) transparent/)
+ assert.match(studio,/\.studio-hub-count\{[^}]*var\(--jf-studio-raised\)/)
+ assert.match(studio,/\.composer-live-preview,[^{}]*\{[^}]*var\(--jf-studio-deep\)/)
+ assert.match(studio,/\.local-warning\{[^}]*var\(--jf-studio-wash\)/)
+ assert.match(studio,/\.about-editor-image-actions>button/)
+ assert.doesNotMatch(composer,/roxo/i)
+ assert.doesNotMatch(about,/roxo/i)
+ assert.doesNotMatch(polish.match(/\.music-main-toggle:hover:not\(:disabled\)\{[^}]+\}/)?.[0]??'',/#[0-9a-f]{3,8}\b|rgba\(/i)
+})

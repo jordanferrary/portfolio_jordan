@@ -572,3 +572,36 @@ body{color:var(--jf-text);scrollbar-color:var(--jf-scroll-thumb) var(--jf-scroll
 .site-shell :is(.gallery-card .edit-on-card,.home-work-edit,.featured-edit){
  background:var(--jf-surface-tint)!important;border-color:var(--jf-border)!important;color:var(--jf-text)!important;
 }
+
+/* The music widget can also be rendered in a body portal on mobile. */
+.music-widget .music-cover-button{
+ border-color:var(--jf-primary)!important;background:var(--jf-surface-tint)!important;
+ box-shadow:0 0 15px var(--jf-primary-glow),0 0 1px var(--jf-secondary)!important;
+}
+.music-widget .music-main-toggle,
+.site-shell .music-widget .music-main-toggle{
+ background:var(--jf-liquid-tinted)!important;border-color:var(--jf-liquid-edge-hot)!important;
+ box-shadow:var(--jf-liquid-tinted-shadow)!important;color:var(--jf-text)!important;
+}
+.music-widget .music-main-toggle:hover:not(:disabled),
+.site-shell .music-widget .music-main-toggle:hover:not(:disabled){
+ background:linear-gradient(142deg,var(--jf-primary),var(--jf-surface-tint))!important;
+ border-color:var(--jf-secondary)!important;box-shadow:0 0 19px var(--jf-primary-glow)!important;
+}
+.music-widget .music-main-toggle svg{color:currentColor}
+.gate-overlay{background:var(--jf-studio-layer)!important}
+.gate-card{
+ background:linear-gradient(160deg,var(--jf-studio-panel),var(--jf-studio-deep))!important;
+ border-color:var(--jf-border)!important;color:var(--jf-text)!important;
+ box-shadow:0 15px 90px color-mix(in srgb,var(--jf-background) 80%,transparent),0 0 34px var(--jf-primary-glow)!important;
+}
+.gate-card .gate-close{background:var(--jf-studio-deep)!important;border-color:var(--jf-border)!important;color:var(--jf-text)!important}
+.gate-card .gate-icon{background:var(--jf-studio-raised)!important;border-color:var(--jf-border)!important;color:var(--jf-secondary)!important;box-shadow:0 0 25px var(--jf-primary-glow)!important}
+.gate-card :is(.eyebrow,label){color:var(--jf-secondary)!important}
+.gate-card>p:not(.eyebrow):not(.gate-error),.gate-card small{color:var(--jf-muted)!important}
+.gate-card input{background:var(--jf-studio-deep)!important;border-color:var(--jf-border)!important;color:var(--jf-text)!important;caret-color:var(--jf-primary)}
+.gate-card .gate-submit{background:linear-gradient(90deg,var(--jf-primary),var(--jf-surface-tint))!important;border-color:var(--jf-secondary)!important;color:var(--jf-text)!important}
+.gate-card :is(input,button):focus-visible{outline:2px solid var(--jf-secondary)!important;outline-offset:2px}
+.site-shell .sidebar .side-nav{scrollbar-color:var(--jf-scroll-thumb) transparent!important}
+.site-shell .sidebar .side-nav::-webkit-scrollbar-track{background:transparent}
+.site-shell .sidebar .side-nav::-webkit-scrollbar-thumb{background:var(--jf-scroll-thumb);border-color:transparent}
