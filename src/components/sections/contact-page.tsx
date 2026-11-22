@@ -14,10 +14,9 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
    Boolean(item.url)&&item.social.icon!=='mail'&&!item.url?.startsWith('mailto:'))
  const density=channels.length>=9?'icons':channels.length>=4?'grid':'list'
  return <main className="contact-page contact-social-page">
-  <div className="contact-social-atmosphere" aria-hidden="true"><i/><i/><i/></div>
   <div className="contact-social-layout">
    <section className="contact-social-intro">
-    <h1>{settings.titleFirst}<br/><em>{settings.titleAccent}</em></h1>
+    <h1>{settings.titleFirst}{settings.titleAccent&&<><br/><em>{settings.titleAccent}</em></>}</h1>
     {settings.introduction.trim()&&<p className="contact-social-description">{protectArtistName(settings.introduction)}</p>}
     <a className="contact-social-portfolio-link" href="#/portfolio">Explore the portfolio <ArrowRight size={17}/></a>
     {demoEnabled&&<button type="button" lang="pt-BR" className="contact-dev-edit" onClick={onEdit}><Pencil size={15}/>Personalizar contato e redes</button>}

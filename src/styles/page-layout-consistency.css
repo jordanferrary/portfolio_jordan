@@ -255,3 +255,94 @@
  .site-shell.about-route .about-art-primary{max-height:460px;border-radius:18px}
  .site-shell.about-route .about-disciplines{margin-top:20px;padding-top:16px}
 }
+
+/* Contact: center the whole composition in the available area after the rail.
+   One restrained glass surface, a clear invitation, and equal social links. */
+.site-shell.contact-route,
+.site-shell.contact-route>.site-main{
+ height:auto!important;min-height:100dvh!important;overflow:visible!important;
+}
+.site-shell.contact-route .contact-social-page{
+ box-sizing:border-box;display:flex!important;flex-direction:column;
+ justify-content:center;align-items:center;
+ width:100%;height:auto!important;min-height:100svh!important;
+ padding:clamp(96px,10vh,124px) 0 clamp(48px,6vh,76px)!important;
+}
+.site-shell.contact-route .contact-social-layout{
+ flex:0 0 auto;display:grid;
+ grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+ width:100%;max-width:1330px;margin-inline:auto;
+ gap:clamp(36px,6vw,100px);align-items:center;
+}
+.site-shell.contact-route .contact-social-intro{min-width:0;padding:0}
+.site-shell.contact-route .contact-social-intro h1{
+ max-width:none;margin:0 0 20px;text-wrap:balance;
+}
+.site-shell.contact-route .contact-social-intro .contact-social-description{
+ max-width:44ch;line-height:1.65;
+}
+.site-shell.contact-route .contact-social-portfolio-link{
+ margin-top:14px;padding-block:12px;
+}
+.site-shell.contact-route .contact-social-directory{
+ width:100%;max-width:none;min-width:0;
+ padding:clamp(22px,2.6vw,36px);
+ border-radius:24px;
+ box-shadow:0 18px 48px #0003,inset 0 1px #ffffff0d;
+ background:linear-gradient(145deg,
+  color-mix(in srgb,var(--jf-panel-elevated) 86%,transparent),
+  color-mix(in srgb,var(--jf-surface-deep) 90%,transparent))!important;
+}
+.site-shell.contact-route .contact-social-directory:before{
+ opacity:.35;height:1px;
+}
+.site-shell.contact-route .contact-social-directory .contact-social-directory-head{
+ margin:0 0 18px;padding:0 0 16px;
+ border-color:var(--jf-panel-edge);
+}
+.site-shell.contact-route .contact-social-directory-head h2{
+ margin:0;text-wrap:balance;
+}
+.site-shell.contact-route .contact-social-directory .contact-social-cards{gap:10px}
+.site-shell.contact-route .contact-social-directory .contact-social-card{
+ min-height:76px;padding:12px 15px;gap:14px;border-radius:14px;
+ box-shadow:none;
+ background:color-mix(in srgb,var(--jf-surface-deep) 75%,transparent)!important;
+}
+.site-shell.contact-route .contact-social-card-featured:before{display:none}
+.site-shell.contact-route .contact-social-directory .contact-social-card-icon{
+ width:44px;height:44px;flex-basis:44px;border-radius:12px;
+ color:var(--jf-secondary);background:var(--jf-primary-soft);
+ border-color:var(--jf-panel-edge);box-shadow:none;
+}
+.site-shell.contact-route .contact-social-directory .contact-social-card-arrow{
+ width:30px;height:30px;flex-basis:30px;
+ border:0;background:transparent;color:var(--jf-secondary);
+}
+.site-shell.contact-route .contact-social-directory .contact-social-card:hover{
+ background:var(--jf-surface-tint)!important;
+ box-shadow:0 6px 20px color-mix(in srgb,var(--jf-primary) 12%,transparent)!important;
+}
+.site-shell.contact-route .contact-social-directory.contact-directory-icons .contact-social-card{
+ min-height:68px;padding:10px;gap:0;
+}
+.site-shell.contact-route .contact-social-bottomline{width:100%;max-width:1330px;margin-top:32px}
+@media(max-width:1099px){
+ .site-shell.contact-route .contact-social-page{
+  display:flex!important;justify-content:flex-start;min-height:0!important;
+  padding:96px 0 36px!important;
+ }
+ .site-shell.contact-route .contact-social-layout{
+  grid-template-columns:minmax(0,1fr)!important;
+  max-width:760px;gap:28px;
+ }
+ .site-shell.contact-route .contact-social-bottomline{max-width:760px}
+}
+@media(max-width:600px){
+ .site-shell.contact-route .contact-social-page{padding:70px 0 20px!important}
+ .site-shell.contact-route .contact-social-layout{gap:20px}
+ .site-shell.contact-route .contact-social-directory{padding:18px;border-radius:19px}
+ .site-shell.contact-route .contact-social-directory .contact-social-card{min-height:64px;padding:9px 11px;gap:9px}
+ .site-shell.contact-route .contact-social-directory.contact-directory-grid .contact-social-card-icon{width:34px;height:34px;flex-basis:34px}
+ .site-shell.contact-route .contact-social-directory.contact-directory-icons .contact-social-card{min-height:58px;padding:8px}
+}

@@ -56,3 +56,12 @@ test('About uses one editorial grid and keeps the secondary artwork outside the 
  assert.match(css,/\.about-art-secondary\{\s*position:static/)
  assert.match(css,/\.about-information\{\s*grid-area:information;[\s\S]*?border:0!important/)
 })
+
+test('Contact centers its complete grid, retains social links and equalizes card accents',()=>{
+ assert.match(css,/\.contact-social-layout\{\s*flex:0 0 auto;display:grid;\s*grid-template-columns:minmax\(0,1\.05fr\) minmax\(0,\.95fr\);\s*width:100%;max-width:1330px;margin-inline:auto;/)
+ assert.match(css,/\.contact-social-card-featured:before\{display:none\}/)
+ assert.match(css,/\.contact-social-directory \.contact-social-card-icon\{[\s\S]*?background:var\(--jf-primary-soft\)/)
+ assert.match(contact,/channels\.map/)
+ assert.match(contact,/target="_blank" rel="noopener noreferrer"/)
+ assert.doesNotMatch(contact,/contact-social-atmosphere/)
+})
