@@ -127,7 +127,7 @@ test('illustration surfaces and optional RGB camera pass preserve technical mode
  assert.match(art,/jfInkColor/);assert.match(art,/smoothstep/);assert.match(stage,/lit\.flatShading=flat/)
  assert.match(stage,/mode==='material'&&\(presentation.artShader.chromaticAberration>0/);assert.match(stage,/!editState.helpers/)
  assert.match(stage,/chromaticPass.dispose\(\)/);assert.match(post,/vec3\(red.r,middle.g,blue.b\)/)
- assert.match(post,/target.dispose\(\)/);assert.match(ui,/Aberração cromática RGB/)
+ assert.match(post,/target.dispose\(\)/);assert.match(ui,/CameraEffectCard/)
 })
 
 test('material overrides have isolated layers and retain global defaults',async()=>{
@@ -179,4 +179,15 @@ test('model background settings survive normalization and publish local images',
  const [view,publish,art]=await Promise.all(['src/components/ui/project-model.tsx','src/lib/github-publish.ts','src/lib/model-art-shaders.ts'].map(path=>readFile(path,'utf8')))
  assert.match(view,/model-scene-backdrop/);assert.match(view,/backdropFill\(settings.background,settings.backdrop\)/);assert.match(publish,/block.modelPresentation.backdrop.image=await stage/)
  assert.match(art,/pearl:17,foil:18,opal:19/);assert.match(art,/jfSurfaceNormal/)
+})
+
+test('Studio shares visual shader samples across global and per-material controls',async()=>{
+ const [ui,materials,library,renderer,admin]=await Promise.all(['src/components/sections/model-presentation-editor.tsx','src/components/sections/model-material-editor.tsx','src/components/sections/model-look-library.tsx','src/lib/model-preview-renderer.ts','src/components/sections/admin-editor.tsx'].map(path=>readFile(path,'utf8')))
+ assert.match(ui,/model-studio-rail/);assert.match(ui,/CameraEffectCard/);assert.match(ui,/useLookPreviews/)
+ assert.match(materials,/ShaderPicker compact/);assert.match(library,/filterShaders/);assert.match(renderer,/attachArtShader/);assert.match(renderer,/createChromaticPass/);assert.match(renderer,/renderer\?\.forceContextLoss/)
+ assert.doesNotMatch(admin,/Capa representativa do modelo/)
+ const output=await build({entryPoints:['src/lib/model-preview-library.ts'],bundle:true,platform:'node',format:'esm',write:false,logLevel:'silent'})
+ const {PREVIEW_STYLES,filterShaders,CAMERA_EFFECTS}=await import('data:text/javascript;base64,'+Buffer.from(output.outputFiles[0].text).toString('base64'))
+ assert.equal(PREVIEW_STYLES.length,28);assert.equal(CAMERA_EFFECTS.length,5)
+ assert.ok(filterShaders('holo','pearl').some(p=>p.id==='pearl'));assert.ok(!filterShaders('all','flat',false).length)
 })
