@@ -1,7 +1,8 @@
-import {useEffect,useRef,useState} from 'react'
+import {useEffect,useRef,useState,type CSSProperties} from 'react'
 import {ArrowUpRight,Check,Copy,Pencil,FolderOpen} from 'lucide-react'
 import type {Block} from '../../data/projects'
 import type {CustomPage,PageBlock} from '../../data/custom-pages'
+import {resolvePageBlock} from '../../lib/page-composition'
 import {safePageHref} from '../../data/custom-pages'
 import {AssetImage} from '../ui/asset-image'
 import {RichText} from '../ui/rich-text'
@@ -40,7 +41,7 @@ function PageAction({block}: {block:PageBlock}){
   {message&&<span className="custom-page-action-feedback" role="status">{message}</span>}
  </section>
 }
-export function CustomPageView({page,editing,onEdit,headingSymbol}:{page:CustomPage;editing:boolean;onEdit:()=>void;headingSymbol?:HeadingSymbolStyle}){
+export function CustomPageView({page,pages=[],editing,onEdit,onEditBlock,headingSymbol}:{page:CustomPage;pages?:CustomPage[];editing:boolean;onEdit:()=>void;onEditBlock?:(id:string)=>void;headingSymbol?:HeadingSymbolStyle}){
  return <main className={'custom-page custom-page-'+page.layout}>
   <header className={'custom-page-hero'+(page.heroImage?' has-image':'')}>
    {page.heroImage&&<AssetImage src={page.heroImage} className="custom-page-hero-image" alt="" style={{objectPosition:page.heroPositionX+'% '+page.heroPositionY+'%'}}/>}
@@ -52,7 +53,15 @@ export function CustomPageView({page,editing,onEdit,headingSymbol}:{page:CustomP
    </div>
   </header>
   <div className="custom-page-body">
-   {page.blocks.length?<div className="story-blocks custom-page-story">{page.blocks.map(block=>block.type==='action'?<PageAction key={block.id} block={block}/>:block.type==='showcase'?<ArtistShowcase key={block.id} block={block}/>:block.type==='slideshow'?<PageSlideshow key={block.id} block={block}/>:<StoryBlock key={block.id} block={block as Block} projectTitle={page.title}/>)}</div>:
+   {page.blocks.length?<div className="story-blocks custom-page-story">{page.blocks.map(original=>{
+    const block=resolvePageBlock(original,pages),appearance=block.appearance
+    const node=block.type==='action'?<PageAction key={block.id} block={block}/>:block.type==='showcase'?<ArtistShowcase key={block.id} block={block}/>:block.type==='slideshow'?<PageSlideshow key={block.id} block={block}/>:<StoryBlock key={block.id} block={block as Block} projectTitle={page.title}/>
+    if(!appearance&&!editing)return node
+    const style={'--jf-block-width':(appearance?.width??100)+'%','--jf-block-space':(appearance?.space??0)+'px'} as CSSProperties
+    return <div key={block.id} className={'studio-component'+(appearance?.surface==='panel'?' component-panel':'')+(appearance?.hideMobile?' hide-mobile':'')+(appearance?.hideDesktop?' hide-desktop':'')+(editing?' component-editing':'')} data-align={appearance?.align??'center'} style={style}>
+     {editing&&onEditBlock&&<button type="button" className="studio-component-edit" aria-label="Editar este componente" onClick={()=>onEditBlock(block.id)}><Pencil size={14}/></button>}{node}
+    </div>
+   })}</div>:
     <div className="custom-page-empty"><FolderOpen size={27}/><p>{editing?'This page is ready for your content. Open the editor to add sections.':'More content is coming soon.'}</p>{editing&&<button type="button" onClick={onEdit}>Add content</button>}</div>}
   </div>
   <footer className="custom-page-footer"><span>JORDAN FERRARY</span><a href="#/portfolio">Explore the portfolio <ArrowUpRight size={15}/></a></footer>

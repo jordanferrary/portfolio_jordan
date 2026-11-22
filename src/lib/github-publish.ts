@@ -1,3 +1,4 @@
+import {refreshLinkedBlocks} from './page-composition'
 import type { PortfolioStore } from '../hooks/use-portfolio'
 import { isLocalMedia,readMedia } from './media-store'
 import { isKnownDemoTestimonial } from './testimonial-safety'
@@ -105,7 +106,8 @@ function stageSnapshot(store:PortfolioStore){
  // Deep clone so the form keeps local media previews during deployment.
  const publicData:PortfolioStore={
   imageVariants:store.imageVariants??{},
-  customPages:store.customPages??[],
+  customPages:refreshLinkedBlocks(store.customPages??[]),
+  nativeLayouts:store.nativeLayouts,
   projects:store.projects,
   categories:store.categories,
   home:store.home,
@@ -248,6 +250,7 @@ export async function publishPortfolioToGitHub(
    if(block.type==='slideshow'&&block.slideItems)for(const slide of block.slideItems)slide.image=await stage(slide.image,'image')
    // Interactive showcase images may now be uploaded local WebP assets.
    if(block.showcaseItems)for(const item of block.showcaseItems)item.image=await stage(item.image,'image')
+   if(block.type==='model'){block.content=await stage(block.content,'model');if(block.modelPresentation?.backdrop?.image)block.modelPresentation.backdrop.image=await stage(block.modelPresentation.backdrop.image,'image')}
    if(block.type==='image')block.content=await stage(block.content,'image')
    if(block.media)block.media=await stage(block.media,'image')
    if(block.after)block.after=await stage(block.after,'image')

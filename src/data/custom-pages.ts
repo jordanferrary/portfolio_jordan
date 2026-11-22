@@ -1,3 +1,4 @@
+import {normalizeBlockAppearance,normalizeBlockLink,type BlockAppearance,type BlockLink} from '../lib/component-settings'
 import type {Block,BlockType} from './projects'
 import {normalizeBundledImage} from '../lib/default-assets'
 import {isShowcasePdfLink} from '../lib/showcase-pdf'
@@ -15,6 +16,8 @@ export type SlideTransition='fade'|'slide'|'zoom'|'none'
 export type SlideItem={id:string;image:string;caption:string}
 export type PageBlock=Omit<Block,'type'> &{
  type:BlockType|'action'|'showcase'|'slideshow'
+ appearance?:BlockAppearance
+ linkedSource?:BlockLink
  buttonLabel?:string
  buttonAction?:PageButtonAction
  buttonStyle?:'primary'|'outline'
@@ -98,6 +101,8 @@ export function normalizeCustomPages(input:unknown):CustomPage[]{
    const block=item as PageBlock
    blocks.push({
     ...block,
+    appearance:normalizeBlockAppearance(block.appearance),
+    linkedSource:normalizeBlockLink(block.linkedSource),
     content:typeof block.content==='string'?(block.type==='image'?normalizeBundledImage(block.content):block.content):'',
     media:typeof block.media==='string'?normalizeBundledImage(block.media):undefined,
     after:typeof block.after==='string'?normalizeBundledImage(block.after):undefined,

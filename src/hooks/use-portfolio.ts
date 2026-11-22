@@ -10,6 +10,8 @@ import { isKnownDemoTestimonial } from '../lib/testimonial-safety'
 import { DEFAULT_FRAMING,DEFAULT_GALLERY_BANNER_FRAMING,normalizeFraming,type ImageFraming } from '../lib/image-framing'
 import {applyFeaturedSelection} from '../lib/featured-projects'
 import type {ResponsiveImageMap} from '../lib/image-variants'
+import {normalizeNativeLayouts,type NativeLayouts} from '../lib/component-settings'
+import {refreshLinkedBlocks} from '../lib/page-composition'
 import {normalizeCustomPages,type CustomPage} from '../data/custom-pages'
 import publishedPackage from '../data/published-portfolio.json'
 import { initialProjects, starterCategories, upgradeProcessTemplate, type Project, type Category } from '../data/projects'
@@ -20,7 +22,7 @@ const KEY='jordan-portfolio-local-v2'
 const PENDING_KEY='jordan-portfolio-publish-pending-v1'
 const bundled=publishedPackage as {schema:number;revision:string;store:unknown}
 export const currentPublishedRevision=bundled.revision||'initial'
-export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;typography?:TypographySettings;studioControls?:StudioControls;glitchPalette:GlitchPalette;headingSymbol:HeadingSymbolStyle;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;galleryFocus:ImageFraming;galleryContent:GalleryContent;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
+export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;typography?:TypographySettings;studioControls?:StudioControls;nativeLayouts?:NativeLayouts;glitchPalette:GlitchPalette;headingSymbol:HeadingSymbolStyle;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;galleryFocus:ImageFraming;galleryContent:GalleryContent;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
 export function clampBrandScale(value:unknown,fallback:number,min:number,max:number):number{
  const number=typeof value==='number'?value:Number(value)
  return Number.isFinite(number)?Math.max(min,Math.min(max,Math.round(number))):fallback
@@ -48,6 +50,7 @@ function parseStore(raw:unknown):PortfolioStore{
  const themePalette=normalizeThemePalette(obj.themePalette)
  const typography=normalizeTypography(obj.typography)
  const studioControls=normalizeStudioControls(obj.studioControls)
+ const nativeLayouts=normalizeNativeLayouts(obj.nativeLayouts)
  const glitchPalette=normalizeGlitchPalette(obj.glitchPalette)
  const headingSymbol=normalizeHeadingSymbol(obj.headingSymbol)
  const siteLogo=typeof obj.siteLogo==='string'?normalizeBundledImage(obj.siteLogo):''
@@ -71,7 +74,7 @@ function parseStore(raw:unknown):PortfolioStore{
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'&&!isKnownDemoTestimonial(t)):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
- return {customPages,imageVariants,themePalette,typography,studioControls,glitchPalette,headingSymbol,projects:projects.map(upgradeProcessTemplate),categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,galleryFocus,galleryContent,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
+ return {customPages,imageVariants,themePalette,typography,studioControls,nativeLayouts,glitchPalette,headingSymbol,projects:projects.map(upgradeProcessTemplate),categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,galleryFocus,galleryContent,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
 }
 function publishedStore():PortfolioStore{
  if(bundled.schema===1&&bundled.store){
@@ -172,7 +175,8 @@ export function usePortfolio(editing=false){
   save({...storeRef.current,projects:list})
  }
  const setCategories=(categories:Category[])=>save({...storeRef.current,categories})
- const setCustomPages=(customPages:CustomPage[])=>save({...storeRef.current,customPages:normalizeCustomPages(customPages)})
+ const setCustomPages=(customPages:CustomPage[])=>save({...storeRef.current,customPages:refreshLinkedBlocks(normalizeCustomPages(customPages))})
+ const setNativeLayouts=(nativeLayouts:NativeLayouts)=>save({...storeRef.current,nativeLayouts:normalizeNativeLayouts(nativeLayouts)})
  const setHome=(home:HomeContent)=>save({...storeRef.current,home})
  const markPublished=(revision:string,snapshot:string|null)=>{
   // Credential-free marker only. Never write the GitHub token to localStorage.
@@ -245,5 +249,5 @@ export function usePortfolio(editing=false){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,applyDesignTheme,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,applyDesignTheme,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setNativeLayouts,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }

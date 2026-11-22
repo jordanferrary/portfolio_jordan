@@ -17,6 +17,10 @@ export async function auditStudio(store:PortfolioStore,localRefs:string[]):Promi
   if(!p.image.trim())warning('Projeto sem capa: '+p.title)
  }
  for(const p of store.customPages)if(!p.navLabel.trim())warning('Página personalizada sem nome de navegação.')
+ for(const page of store.customPages)for(const block of page.blocks){
+  if(block.linkedSource&&!store.customPages.some(p=>p.id===block.linkedSource?.pageId&&p.blocks.some(b=>b.id===block.linkedSource?.blockId&&!b.linkedSource)))warning('Origem de componente vinculada ausente em '+page.navLabel+'; usando cópia de segurança.')
+ }
+ for(const [route,id] of Object.entries(store.nativeLayouts??{}))if(id&&!store.customPages.some(p=>p.id===id))warning('Composição nativa ausente em '+route+'; usando layout original.')
  const palette=store.themePalette
  for(const [label,a,b] of [['Texto/fundo',palette.text,palette.background],['Texto/cards',palette.text,palette.surface],['Texto secundário/fundo',palette.muted,palette.background],['Texto secundário/cards',palette.muted,palette.surface]]){
   if(contrastRatio(a,b)<4.5)warning(label+': contraste inferior a 4,5:1 nas cores-base.')

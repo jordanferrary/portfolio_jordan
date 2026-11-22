@@ -11,6 +11,8 @@ import {parseVideoEmbed} from '../../lib/video-embed'
 import {parseModelUrl} from '../../lib/model-embed'
 import {isLocalMedia,saveUploadedMedia} from '../../lib/media-store'
 import {customPageIconOptions,newCustomPage,normalizeCustomPages,reorderCustomPages,safePageHref,type CustomPage,type CustomPageIcon,type PageBlock,type PageButtonAction,type ShowcaseItem,type SlideItem,type SlideTransition} from '../../data/custom-pages'
+import {copyBlock,resolvePageBlock} from '../../lib/page-composition'
+import {normalizeBlockAppearance,type BlockAppearance} from '../../lib/component-settings'
 import {customPageIcons} from '../../lib/custom-page-icons'
 import {isShowcasePdfLink,safeShowcaseDocumentHref} from '../../lib/showcase-pdf'
 import {PdfPagePreview} from '../ui/pdf-page-preview'
@@ -18,6 +20,7 @@ import {PdfPagePreview} from '../ui/pdf-page-preview'
 type Props={
  pages:CustomPage[]
  initialPageId?:string|null
+ initialBlockId?:string|null
  onSavePages:(pages:CustomPage[])=>void
  onNavigatePage:(id:string)=>void
  onClose:()=>void
@@ -66,15 +69,16 @@ function PageMediaField({value,onChange,folder,slot,label,onError}:{value:string
  </div>
 }
 const clone=(page:CustomPage):CustomPage=>JSON.parse(JSON.stringify(page)) as CustomPage
-export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage,onClose}:Props){
+export function CustomPageEditor({pages,initialPageId,initialBlockId,onSavePages,onNavigatePage,onClose}:Props){
  const original=pages.find(page=>page.id===initialPageId)
  const [draft,setDraft]=useState<CustomPage|null>(()=>original?clone(original):initialPageId==='new'?newCustomPage():null)
- const [tab,setTab]=useState<Tab>(()=>original||initialPageId==='new'?'identity':'manage')
+ const [tab,setTab]=useState<Tab>(()=>original&&initialBlockId?'composition':original||initialPageId==='new'?'identity':'manage')
  const [error,setError]=useState('')
  const [dragged,setDragged]=useState('')
  const [draggedPage,setDraggedPage]=useState('')
  const [pageDropTarget,setPageDropTarget]=useState('')
  const pointerPage=useRef<{id:string;pointerId:number;startX:number;startY:number;moved:boolean}|null>(null)
+ useEffect(()=>{if(initialBlockId)document.getElementById('studio-block-'+initialBlockId)?.scrollIntoView({block:'start'})},[initialBlockId,tab])
  const [insertAt,setInsertAt]=useState<number|null>(null)
  const [iconPickerOpen,setIconPickerOpen]=useState(false)
  const [iconSearch,setIconSearch]=useState('')
@@ -100,6 +104,15 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
   (option.label+' '+option.value).normalize('NFD').replace(/\p{M}/gu,'').toLowerCase().includes(normalizedSearch)
  )
  const patchBlock=(id:string,change:Partial<PageBlock>)=>setDraft(value=>value?{...value,blocks:value.blocks.map(block=>block.id===id?{...block,...change}:block)}:value)
+ const [linkChoice,setLinkChoice]=useState('')
+ const linkedOptions=pages.filter(p=>p.id!==draft?.id).flatMap(p=>p.blocks.filter(b=>!b.linkedSource).map(b=>({page:p,block:b,key:p.id+'|'+b.id})))
+ const insertLinked=()=>{
+  const source=linkedOptions.find(option=>option.key===linkChoice)
+  if(!source||!draft||draft.blocks.length>=250)return
+  patch({blocks:[...draft.blocks,{...copyBlock(source.block),linkedSource:{pageId:source.page.id,blockId:source.block.id}}]})
+  setLinkChoice('')
+ }
+ const patchAppearance=(block:PageBlock,change:Partial<BlockAppearance>)=>patchBlock(block.id,{appearance:normalizeBlockAppearance({...block.appearance,...change})})
  const addBlock=(type:Kind,index?:number)=>{
   if(!draft)return
   const block:PageBlock={
@@ -279,9 +292,20 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
     <p className="local-warning">Monte seu conteúdo como um projeto: títulos, textos, imagens, galerias, vídeos, modelos 3D e botões. Organize os blocos com as setas ou arraste pela alça.</p>
     <div className="editor-section-title"><h3>Biblioteca de blocos</h3><p>Escolha o tipo de seção. Você poderá reorganizar tudo antes de salvar.</p></div>
     <div className="custom-page-template-grid">{templates.map(({type,title,description,Icon})=><button type="button" key={type} onClick={()=>addBlock(type)}><span className="custom-page-template-icon"><Icon size={23}/></span><strong>{title}</strong><small>{description}</small></button>)}</div>
+    <div className="studio-nav-row"><label>Vincular componente de outra página<select value={linkChoice} onChange={e=>setLinkChoice(e.target.value)}><option value="">Selecionar origem</option>{linkedOptions.map(o=><option key={o.key} value={o.key}>{o.page.navLabel} / {o.block.type} / {o.block.content.slice(0,45)}</option>)}</select></label><button type="button" className="subtle-action" disabled={!linkChoice||draft.blocks.length>=250} onClick={insertLinked}><Link2 size={15}/>Inserir componente vinculado</button></div>
     <div className="editor-section-title"><h3>Estrutura da página</h3><p>{draft.blocks.length} blocos · os visitantes verão esta mesma sequência.</p></div>
-    {draft.blocks.map((block,index)=><section className={'custom-page-edit-block'+(dragged===block.id?' dragging':'')} key={block.id} onDragOver={e=>e.preventDefault()} onDrop={e=>dropBlock(e,index)}>
+    {draft.blocks.map((block,index)=><section className={'custom-page-edit-block'+(dragged===block.id?' dragging':'')} key={block.id} id={'studio-block-'+block.id} onDragOver={e=>e.preventDefault()} onDrop={e=>dropBlock(e,index)}>
      <div className="custom-page-edit-block-head"><span className="custom-page-drag" draggable onDragStart={e=>{e.dataTransfer.setData('application/x-jf-page-block',block.id);setDragged(block.id)}} onDragEnd={()=>setDragged('')} title="Arrastar para reordenar"><GripVertical size={18}/></span><strong>{String(index+1).padStart(2,'0')} · {templates.find(t=>t.type===block.type)?.title??block.type}</strong><div><button type="button" onClick={()=>moveBlock(index,index-1)} disabled={index===0} aria-label="Mover bloco para cima"><ArrowUp size={16}/></button><button type="button" onClick={()=>moveBlock(index,index+1)} disabled={index===draft.blocks.length-1} aria-label="Mover bloco para baixo"><ArrowDown size={16}/></button><button type="button" onClick={()=>patch({blocks:draft.blocks.filter(item=>item.id!==block.id)})} aria-label="Excluir bloco"><Trash2 size={16}/></button></div></div>
+     <details className="studio-component-properties"><summary>Propriedades do componente</summary>
+      <label>Largura ({block.appearance?.width??100}%)<input type="range" min="50" max="100" step="5" value={block.appearance?.width??100} onChange={e=>patchAppearance(block,{width:Number(e.target.value)})}/></label>
+      <label>Espaço adicional acima ({block.appearance?.space??0}px)<input type="range" min="0" max="64" step="4" value={block.appearance?.space??0} onChange={e=>patchAppearance(block,{space:Number(e.target.value)})}/></label>
+      <label>Alinhamento<select value={block.appearance?.align??'center'} onChange={e=>patchAppearance(block,{align:e.target.value as BlockAppearance['align']})}><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option></select></label>
+      <label>Superfície<select value={block.appearance?.surface??'plain'} onChange={e=>patchAppearance(block,{surface:e.target.value as BlockAppearance['surface']})}><option value="plain">Original</option><option value="panel">Painel do tema</option></select></label>
+      <label><input type="checkbox" checked={block.appearance?.hideMobile===true} onChange={e=>patchAppearance(block,{hideMobile:e.target.checked})}/>Ocultar em celulares</label>
+      <label><input type="checkbox" checked={block.appearance?.hideDesktop===true} onChange={e=>patchAppearance(block,{hideDesktop:e.target.checked})}/>Ocultar em desktop</label>
+      <button type="button" className="subtle-action" onClick={()=>patchBlock(block.id,{appearance:undefined})}>Restaurar herança</button>
+     </details>
+     {block.linkedSource?<div className="studio-nav-row"><p>Componente vinculado. Edite a origem para atualizar as instâncias, ou desvincule para editar uma cópia independente.</p><button type="button" className="subtle-action" onClick={()=>patchBlock(block.id,{...resolvePageBlock(block,pages),linkedSource:undefined})}>Desvincular mantendo conteúdo</button></div>:<>
      {block.type==='heading'&&<TextComposer heading value={block.content} label="Título da seção" rows={3} onChange={content=>patchBlock(block.id,{content})}/>}
      {block.type==='text'&&<TextComposer value={block.content} label="Texto e descrição" rows={5} onChange={content=>patchBlock(block.id,{content})}/>}
      {block.type==='image'&&<PageMediaField value={block.content} onChange={content=>patchBlock(block.id,{content})} folder={folder} slot={block.id} label="Imagem de destaque" onError={setError}/>}
@@ -344,6 +368,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
       <p className="editor-help">Copiar funciona para PIX, prompts e textos grandes. Abrir URL usa apenas links permitidos; nunca executa código inserido no endereço. O botão não processa pagamentos.</p>
      </div>}
      <button type="button" className="custom-page-insert" onClick={()=>setInsertAt(index+1)}><Plus size={14}/> Inserir bloco depois deste · escolher layout</button>
+    </>}
     </section>)}
     {!draft.blocks.length&&<p className="custom-page-empty-composition"><Layers size={23}/> Sua página está vazia. Escolha um bloco acima para começar.</p>}
     <button type="button" className="custom-page-insert custom-page-add-end" onClick={()=>setInsertAt(draft.blocks.length)}><Plus size={15}/> Adicionar bloco · escolher layout</button>
