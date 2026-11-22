@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-21T22:31:51.005Z-dc1d5b6c-129b-4bf2-bbd0-9b5556d11f6a",
+  "revision": "2026-11-22T01:14:39.969Z-8168c489-4deb-4cd4-a987-d3b7bc4432f3",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -311,8 +311,134 @@
         "description": "isso é só um texte",
         "tools": [],
         "featured": false,
-        "blocks": [],
-        "processTemplateMigrated": true
+        "blocks": [
+          {
+            "id": "b-m6q9zpalq1s",
+            "type": "model",
+            "content": "site://models/studio/d5d8ee9b256bf5b3fb3fd2ed8f2c7735f0d79644189cee4f5d3ff06ed506b3c3.glb",
+            "slideAutoplay": false,
+            "slideEffect": "fade",
+            "slideInterval": 5000,
+            "slideHeight": 420,
+            "slideShowPauseButton": false,
+            "media": "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp",
+            "modelPresentation": {
+              "lighting": "studio",
+              "exposure": 1,
+              "environment": 1,
+              "keyLight": 2,
+              "lightAngle": 45,
+              "lightColor": "#ffffff",
+              "background": "#3a3348",
+              "autoRotate": true,
+              "rotationSpeed": 1,
+              "azimuth": -104.99540345818686,
+              "elevation": -14.739199078676052,
+              "zoom": 2.863945562104759,
+              "fov": 54,
+              "targetX": -0.009915909353455897,
+              "targetY": -0.033830551695867704,
+              "targetZ": -0.23909679263489161,
+              "usePresetRig": true,
+              "useEmbeddedLights": true,
+              "materialLighting": "original",
+              "relightUnlit": false,
+              "emissionScale": 1,
+              "artShader": {
+                "preset": "pencil",
+                "strength": 0.05,
+                "tint": "#ffffff",
+                "bands": 4,
+                "rimPower": 3,
+                "scanSpacing": 7,
+                "patternScale": 9,
+                "inkColor": "#6200ff",
+                "paperColor": "#ff0000",
+                "patternAngle": 25,
+                "chromaticAberration": 3.75,
+                "chromaticAngle": 195,
+                "crt": 1,
+                "vhs": 0.35,
+                "pixelSize": 0,
+                "bloom": 0.2,
+                "bloomThreshold": 1.7,
+                "bloomRadius": 2
+              },
+              "materialLooks": {
+                "mat-glb-0": {
+                  "surface": {
+                    "preset": "hologram",
+                    "strength": 0.05,
+                    "tint": "#9752ff",
+                    "bands": 4,
+                    "rimPower": 3,
+                    "scanSpacing": 7,
+                    "patternScale": 9,
+                    "inkColor": "#6200ff",
+                    "paperColor": "#ff0000",
+                    "patternAngle": 25,
+                    "chromaticAberration": 0,
+                    "chromaticAngle": 195,
+                    "crt": 0,
+                    "vhs": 0,
+                    "pixelSize": 0,
+                    "bloom": 0,
+                    "bloomThreshold": 1.7,
+                    "bloomRadius": 2
+                  },
+                  "light": {
+                    "preset": "original",
+                    "strength": 1,
+                    "tint": "#ffffff",
+                    "patternScale": 7,
+                    "bands": 4,
+                    "rimPower": 3,
+                    "scanSpacing": 7
+                  },
+                  "shadow": {
+                    "preset": "original",
+                    "strength": 1,
+                    "tint": "#ffffff",
+                    "patternScale": 7,
+                    "bands": 4,
+                    "rimPower": 3,
+                    "scanSpacing": 7
+                  },
+                  "shadowThreshold": 0.45,
+                  "shadowSoftness": 0.18,
+                  "rimStrength": 0,
+                  "rimTint": "#a35bff",
+                  "rimPower": 3,
+                  "baseTint": "#ff7575",
+                  "opacity": 1,
+                  "emission": 1.5,
+                  "emissionMode": "original",
+                  "emissionColor": "#ffffff",
+                  "roughness": 1.25,
+                  "metalness": 2
+                }
+              },
+              "lights": []
+            }
+          }
+        ],
+        "processTemplateMigrated": true,
+        "coverFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        },
+        "homeFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        },
+        "heroFocus": {
+          "x": 50,
+          "y": 50,
+          "zoom": 1
+        },
+        "processSteps": []
       },
       {
         "id": "project-mw4oyna3",
@@ -421,7 +547,7 @@
           "Zbrush",
           "Blender"
         ],
-        "featured": true,
+        "featured": false,
         "blocks": [
           {
             "id": "b-hz1kx7c54am",
@@ -538,7 +664,8 @@
           "x": 18.838926174496645,
           "y": 8.583875162548765,
           "zoom": 1
-        }
+        },
+        "sensitiveTheme": false
       }
     ],
     "categories": [

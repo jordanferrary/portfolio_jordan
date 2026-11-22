@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-21T22:31:51.005Z-dc1d5b6c-129b-4bf2-bbd0-9b5556d11f6a",
+  "revision": "2026-11-22T01:14:39.969Z-8168c489-4deb-4cd4-a987-d3b7bc4432f3",
   "projects": [
     {
       "id": "project-mwqz9gcn",
@@ -34,7 +34,7 @@
         "Blender"
       ],
       "description": "A spooky little hammerhead shark based on a concept by Oscar Ibanez. I had a lot of fun bringing this character into 3D and playing around with its shapes, expressions, and Halloween-inspired details.",
-      "featured": true
+      "featured": false
     }
   ]
 }
