@@ -45,3 +45,17 @@ test('material is scoped to controls, responsive, and honors accessibility',()=>
  assert.match(css,/:disabled/)
  assert.doesNotMatch(css,/^\s*button\s*\{/m,'Never style every button globally')
 })
+
+test('Material sliders use shared real CSS paint and separate icon radius',async()=>{
+ const [controls,editor,style]=await Promise.all(['src/lib/studio-controls.ts','src/components/sections/studio-controls-editor.tsx','src/styles/studio-controls.css'].map(p=>readFile(new URL('../'+p,import.meta.url),'utf8')))
+ assert.match(controls,/iconRadius:integer\(v.iconRadius,0,200,100\)/)
+ assert.match(editor,/studio-material-preview/)
+ assert.match(editor,/draft\[device\].glassOpacity\/100/)
+ assert.match(style,/\.side-link \.side-icon\{border-radius:calc\(22px \* var\(--jf-control-icon-radius,1\)\)!important/)
+ assert.match(style,/\.studio-material-icon,.studio-material-pill\{[^}]*background:var\(--jf-liquid-clear\)/)
+ assert.match(style,/--jf-control-opacity:var\(--jf-mobile-glassOpacity,1\)/)
+ const material=await readFile(new URL('../src/styles/liquid-glass-buttons.css',import.meta.url),'utf8')
+ assert.match(material,/:root,.studio-material-preview\{/)
+ assert.match(material,/calc\(79% \* var\(--jf-control-opacity,1\)\)/)
+ assert.match(material,/calc\(47% \* var\(--jf-control-sheen,1\)\)/)
+})

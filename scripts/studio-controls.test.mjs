@@ -19,7 +19,7 @@ test('existing site migrates without changing original visual defaults',()=>{
 })
 test('untrusted values clamp to supported controls and navigation remains reachable',()=>{
  const v=normalizeStudioControls({desktop:{width:99999,gap:-3,glassGlow:Infinity,radius:0},mobile:{gutter:99},motion:{mode:'bad',duration:0},features:{music:false},navigation:{order:['contato','contato','bad'],items:{inicio:{visible:false,icon:'bad'},portfolio:{label:'  Work  '}}}})
- assert.equal(v.desktop.width,1800);assert.equal(v.desktop.gap,75);assert.equal(v.desktop.glassGlow,100);assert.equal(v.desktop.radius,50);assert.equal(v.mobile.gutter,16)
+ assert.equal(v.desktop.width,1800);assert.equal(v.desktop.gap,75);assert.equal(v.desktop.glassGlow,100);assert.equal(v.desktop.radius,0);assert.equal(v.mobile.gutter,16)
  assert.equal(v.motion.mode,'glitch');assert.equal(v.motion.duration,120)
  assert.equal(v.features.music,false);assert.equal(v.features.profile,true)
  assert.equal(v.navigation.order[0],'contato');assert.deepEqual(new Set(v.navigation.order),new Set(NAV_IDS))
@@ -75,4 +75,24 @@ test('theme export contains only validated design settings, not content or crede
  assert.throws(()=>normalizeDesignTheme({schema:99,name:'Test'}))
  assert.match(library,/saveDesignThemes/)
  assert.match(hook,/const applyDesignTheme=/)
+})
+
+test('material and icon controls migrate old settings and bound independent devices',()=>{
+ const v=normalizeStudioControls({desktop:{radius:-20,iconRadius:999,glassBlur:900,glassGlow:-1,glassOpacity:0,glassSheen:500},mobile:{iconRadius:0,glassOpacity:40}})
+ assert.equal(v.desktop.radius,0)
+ assert.equal(v.desktop.iconRadius,200)
+ assert.equal(v.desktop.glassBlur,250)
+ assert.equal(v.desktop.glassGlow,0)
+ assert.equal(v.desktop.glassOpacity,15)
+ assert.equal(v.desktop.glassSheen,250)
+ assert.equal(v.mobile.iconRadius,0)
+ assert.equal(v.mobile.glassOpacity,40)
+ assert.equal(normalizeStudioControls({desktop:{glassBlur:60}}).desktop.iconRadius,100)
+ const map=new Map(),prior=globalThis.document
+ try{globalThis.document={documentElement:{style:{setProperty:(k,v)=>map.set(k,v)},dataset:{}}};applyStudioControls(v)
+ assert.equal(map.get('--jf-desktop-iconRadius'),'2')
+ assert.equal(map.get('--jf-mobile-iconRadius'),'0')
+ assert.equal(map.get('--jf-mobile-glassOpacity'),'0.4')
+ assert.equal(map.get('--jf-desktop-glassSheen'),'2.5')
+ }finally{if(prior===undefined)delete globalThis.document;else globalThis.document=prior}
 })

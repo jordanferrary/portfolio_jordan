@@ -11,8 +11,8 @@
 .studio-nav-row>div:first-child{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .studio-nav-actions{display:flex;gap:8px}
 .studio-nav-actions button{border:1px solid var(--jf-border);border-radius:8px;background:var(--jf-surface);color:var(--jf-text);padding:8px}
-:root{--jf-control-gap:var(--jf-desktop-gap,1);--jf-control-radius:var(--jf-desktop-radius,1);--jf-control-blur:var(--jf-desktop-glassBlur,1);--jf-control-glow:var(--jf-desktop-glassGlow,1)}
-@media(max-width:1099px){:root{--jf-control-gap:var(--jf-mobile-gap,1);--jf-control-radius:var(--jf-mobile-radius,1);--jf-control-blur:var(--jf-mobile-glassBlur,1);--jf-control-glow:var(--jf-mobile-glassGlow,1)}}
+:root{--jf-control-gap:var(--jf-desktop-gap,1);--jf-control-icon-radius:var(--jf-desktop-iconRadius,1);--jf-control-opacity:var(--jf-desktop-glassOpacity,1);--jf-control-sheen:var(--jf-desktop-glassSheen,1);--jf-control-radius:var(--jf-desktop-radius,1);--jf-control-blur:var(--jf-desktop-glassBlur,1);--jf-control-glow:var(--jf-desktop-glassGlow,1)}
+@media(max-width:1099px){:root{--jf-control-gap:var(--jf-mobile-gap,1);--jf-control-icon-radius:var(--jf-mobile-iconRadius,1);--jf-control-opacity:var(--jf-mobile-glassOpacity,1);--jf-control-sheen:var(--jf-mobile-glassSheen,1);--jf-control-radius:var(--jf-mobile-radius,1);--jf-control-blur:var(--jf-mobile-glassBlur,1);--jf-control-glow:var(--jf-mobile-glassGlow,1)}}
 :root[data-jf-motion="fade"] .jf-route-glitch .jf-glitch-scene{display:none}
 :root[data-jf-footer="false"] .site-shell .custom-page-footer{display:none}
 .site-shell .home-bottom-panels:empty{display:none}
@@ -50,3 +50,66 @@
 .site-shell .case-study .studio-component[data-align="left"]{margin-left:0}
 .site-shell .case-study .studio-component[data-align="right"]{margin-right:0}
 .site-shell .home-bottom-panels[data-modified="true"]>section{grid-column:auto}
+
+/* Independent icon geometry. Never reshape logos, illustrations, or uploaded media. */
+.site-shell .side-link .side-icon{border-radius:calc(22px * var(--jf-control-icon-radius,1))!important}
+@media(max-width:600px){.site-shell .side-link .side-icon{border-radius:calc(12px * var(--jf-control-icon-radius,1))!important}}
+.site-shell :is(.socials a,.socials .language-switcher-trigger,.card-open,.home-explore>span,.home-work-link .work-arrow),
+.music-widget :is(.music-main-toggle,.music-repeat,.music-volume-toggle){
+ border-radius:calc(50% * var(--jf-control-icon-radius,1))!important;
+}
+.studio-dock-anchor .studio-hub-icon{border-radius:calc(12px * var(--jf-control-icon-radius,1))!important}
+.studio-dock-anchor .studio-dock-mark{border-radius:calc(13px * var(--jf-control-icon-radius,1))!important}
+@media(max-width:600px){.studio-dock-anchor .studio-dock-mark{border-radius:calc(10px * var(--jf-control-icon-radius,1))!important}}
+.site-shell :is(.chips button,.filter-button){border-radius:calc(50px * var(--jf-control-icon-radius,1))!important}
+
+/* Final material coverage where earlier component-specific rules prevented live changes. */
+.site-shell .socials .language-switcher-trigger{
+ background:var(--jf-liquid-clear)!important;box-shadow:var(--jf-liquid-border-shadow)!important;
+}
+.music-widget .music-main-toggle,.site-shell .music-widget .music-main-toggle{
+ background:var(--jf-liquid-tinted)!important;box-shadow:var(--jf-liquid-tinted-shadow)!important;
+}
+.music-widget .music-main-toggle:hover:not(:disabled),.site-shell .music-widget .music-main-toggle:hover:not(:disabled){
+ background:var(--jf-liquid-tinted)!important;box-shadow:var(--jf-liquid-tinted-shadow),0 0 18px var(--jf-liquid-glow)!important;
+}
+.studio-dock-anchor .studio-dock :is(.studio-context-button,.studio-dock-actions button:not(.studio-dock-publish)),
+.studio-dock-anchor .studio-hub .studio-hub-category-grid>button{
+ background:var(--jf-liquid-clear)!important;box-shadow:var(--jf-liquid-border-shadow)!important;
+}
+.studio-dock-anchor .studio-dock .studio-dock-actions .studio-dock-publish{
+ background:var(--jf-liquid-tinted)!important;box-shadow:var(--jf-liquid-tinted-shadow)!important;
+}
+@media(prefers-reduced-transparency:no-preference){
+ .site-shell .socials .language-switcher-trigger,.music-widget .music-main-toggle,
+ .studio-dock-anchor .studio-dock :is(.studio-context-button,.studio-dock-actions button){
+  -webkit-backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(130%)!important;
+  backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(130%)!important;
+ }
+ @media(max-width:640px){
+  .site-shell :is(.side-icon,.socials a,.socials .language-switcher-trigger,.chips button,.filter-button),
+  .music-widget .music-main-toggle,.studio-dock-anchor .studio-dock :is(.studio-context-button,.studio-dock-actions button){
+   -webkit-backdrop-filter:blur(min(12px,calc(6px * var(--jf-control-blur,1)))) saturate(125%)!important;
+   backdrop-filter:blur(min(12px,calc(6px * var(--jf-control-blur,1)))) saturate(125%)!important;
+  }
+ }
+}
+@media(prefers-reduced-transparency:reduce){
+ .studio-material-preview :is(.studio-material-icon,.studio-material-pill),
+ .music-widget .music-main-toggle,.site-shell .music-widget .music-main-toggle,.site-shell .socials .language-switcher-trigger,
+ .studio-dock-anchor .studio-dock :is(.studio-context-button,.studio-dock-actions button){
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--jf-surface)!important;
+ }
+}
+
+/* The editor samples use the very same material tokens as the live buttons.
+   A patterned background makes transparency and blur visibly distinguishable. */
+.studio-material-preview{display:grid;gap:8px;color:var(--jf-muted);font-size:12px}
+.studio-material-caption{color:var(--jf-text);font-weight:650}
+.studio-material-sample{position:relative;isolation:isolate;overflow:hidden;min-height:124px;border:1px solid var(--jf-border);border-radius:calc(18px * var(--jf-control-radius,1));display:grid;place-items:center;background:var(--jf-background)}
+.studio-material-pattern{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 28%,var(--jf-primary),transparent 43%),radial-gradient(ellipse at 83% 75%,var(--jf-secondary),transparent 48%),repeating-linear-gradient(120deg,var(--jf-surface) 0 9px,var(--jf-background) 9px 17px);opacity:.95}
+.studio-material-panel{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;flex-wrap:wrap}
+.studio-material-icon,.studio-material-pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;color:var(--jf-text);border:1px solid var(--jf-liquid-edge);background:var(--jf-liquid-clear);box-shadow:var(--jf-liquid-border-shadow);-webkit-backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(130%);backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(130%)}
+.studio-material-icon{width:52px;height:52px;border-radius:calc(20px * var(--jf-control-icon-radius,1))}
+.studio-material-icon.is-tinted,.studio-material-pill{background:var(--jf-liquid-tinted);box-shadow:var(--jf-liquid-tinted-shadow);border-color:var(--jf-liquid-edge-hot)}
+.studio-material-pill{padding:12px 15px;border-radius:calc(32px * var(--jf-control-icon-radius,1))}

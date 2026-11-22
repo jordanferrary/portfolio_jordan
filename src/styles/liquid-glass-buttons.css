@@ -4,29 +4,30 @@
  * Studio's seven --jf-* colors remain the single source of truth.
  * Loaded after theme-coverage.css for visitor controls.
  */
-:root{
+:root,.studio-material-preview{
  --jf-liquid-edge:color-mix(in srgb,var(--jf-border) 62%,var(--jf-text) 38%);
  --jf-liquid-edge-hot:color-mix(in srgb,var(--jf-secondary) 58%,var(--jf-text) 42%);
- --jf-liquid-sheen:color-mix(in srgb,var(--jf-text) 32%,transparent);
- --jf-liquid-glow:color-mix(in srgb,var(--jf-primary) calc(26% * var(--jf-control-glow,1)),transparent);
+ --jf-liquid-sheen:color-mix(in srgb,var(--jf-text) clamp(0%,calc(32% * var(--jf-control-sheen,1)),80%),transparent);
+ --jf-liquid-glow:color-mix(in srgb,var(--jf-primary) clamp(0%,calc(26% * var(--jf-control-glow,1)),85%),transparent);
  --jf-liquid-dark:color-mix(in srgb,var(--jf-background) 68%,transparent);
  --jf-liquid-clear:
-  radial-gradient(ellipse 130% 80% at 24% -25%,color-mix(in srgb,var(--jf-text) 19%,transparent),transparent 67%),
-  linear-gradient(160deg,color-mix(in srgb,var(--jf-surface) 79%,transparent) 4%,
-   color-mix(in srgb,var(--jf-surface) 64%,transparent) 53%,
-   color-mix(in srgb,var(--jf-background) 82%,transparent) 100%);
+  radial-gradient(ellipse 130% 80% at 24% -25%,color-mix(in srgb,var(--jf-text) clamp(0%,calc(19% * var(--jf-control-sheen,1)),65%),transparent),transparent 67%),
+  linear-gradient(160deg,color-mix(in srgb,var(--jf-surface) clamp(0%,calc(79% * var(--jf-control-opacity,1)),100%),transparent) 4%,
+   color-mix(in srgb,var(--jf-surface) clamp(0%,calc(64% * var(--jf-control-opacity,1)),100%),transparent) 53%,
+   color-mix(in srgb,var(--jf-background) clamp(0%,calc(82% * var(--jf-control-opacity,1)),100%),transparent) 100%);
  --jf-liquid-tinted:
-  radial-gradient(ellipse 130% 80% at 24% -25%,color-mix(in srgb,var(--jf-text) 25%,transparent),transparent 68%),
-  linear-gradient(145deg,color-mix(in srgb,var(--jf-primary) 75%,var(--jf-surface) 25%) 0%,
-   color-mix(in srgb,var(--jf-primary) 63%,var(--jf-surface) 37%) 55%,
-   color-mix(in srgb,var(--jf-primary) 46%,var(--jf-background) 54%) 100%);
+  radial-gradient(ellipse 130% 80% at 24% -25%,color-mix(in srgb,var(--jf-text) clamp(0%,calc(25% * var(--jf-control-sheen,1)),75%),transparent),transparent 68%),
+  linear-gradient(145deg,color-mix(in srgb,color-mix(in srgb,var(--jf-primary) 75%,var(--jf-surface) 25%) clamp(0%,calc(100% * var(--jf-control-opacity,1)),100%),transparent) 0%,
+   color-mix(in srgb,color-mix(in srgb,var(--jf-primary) 63%,var(--jf-surface) 37%) clamp(0%,calc(100% * var(--jf-control-opacity,1)),100%),transparent) 55%,
+   color-mix(in srgb,color-mix(in srgb,var(--jf-primary) 46%,var(--jf-background) 54%) clamp(0%,calc(100% * var(--jf-control-opacity,1)),100%),transparent) 100%);
  --jf-liquid-border-shadow:
   inset 0 1px 0 var(--jf-liquid-sheen),
   inset 0 -1px 0 color-mix(in srgb,var(--jf-background) 75%,transparent),
-  inset 1px 0 0 color-mix(in srgb,var(--jf-text) 9%,transparent),
-  0 8px 23px var(--jf-liquid-dark);
+  inset 1px 0 0 color-mix(in srgb,var(--jf-text) clamp(0%,calc(9% * var(--jf-control-sheen,1)),50%),transparent),
+  0 8px 23px var(--jf-liquid-dark),
+  0 0 12px color-mix(in srgb,var(--jf-liquid-glow) 35%,transparent);
  --jf-liquid-tinted-shadow:
-  inset 0 1px 0 color-mix(in srgb,var(--jf-text) 47%,transparent),
+  inset 0 1px 0 color-mix(in srgb,var(--jf-text) clamp(0%,calc(47% * var(--jf-control-sheen,1)),90%),transparent),
   inset 0 -1px 0 color-mix(in srgb,var(--jf-background) 46%,transparent),
   0 9px 26px var(--jf-liquid-glow),
   0 7px 22px var(--jf-liquid-dark);
