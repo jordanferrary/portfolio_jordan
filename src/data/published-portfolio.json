@@ -923,14 +923,9 @@
     "contact": {
       "titleFirst": "Have a project",
       "titleAccent": "in mind?",
-      "introduction": "For collaborations, commissions, or questions about my work, reach out through my social profiles. Let’s start a conversation.",
-      "greeting": "Choose a platform below to explore my work or get in touch.",
-      "footerTags": [
-        "3D ART",
-        "CHARACTERS",
-        "ENVIRONMENTS",
-        "CREATIVE DIRECTION"
-      ]
+      "introduction": "For commissions or collaborations, send me a message.",
+      "greeting": "",
+      "footerTags": []
     },
     "galleryBackground": "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp",
     "galleryFocus": {
@@ -969,7 +964,7 @@
       "dark": "#0C0915",
       "intensity": 0.55
     },
-    "headingSymbol": "box",
+    "headingSymbol": "none",
     "seoTitle": "Jordan Ferrary | 3D Artist",
     "seoDescription": "Jordan Ferrary is a 3D artist, illustrator and motion designer. Discover characters, environments and creative projects."
   }

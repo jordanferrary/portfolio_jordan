@@ -1,14 +1,13 @@
-import {ArrowRight,ArrowUpRight,MessagesSquare,Pencil,Waypoints} from 'lucide-react'
+import {ArrowRight,ArrowUpRight,Pencil} from 'lucide-react'
 import type {SocialLink,ContactSettings} from '../../data/studio'
 import {safeSocialUrl,SocialMark} from '../ui/social-mark'
 import {protectArtistName} from '../ui/protected-name'
-import {HeadingSymbol} from '../ui/heading-symbol'
 import type {HeadingSymbolStyle} from '../../lib/heading-symbol'
 
 type Props={socials:SocialLink[];settings:ContactSettings;demoEnabled:boolean;onEdit:()=>void;headingSymbol?:HeadingSymbolStyle}
 
 /** Contact is now social-first: no browser-only inbox and no form that might never be read. */
-export function ContactPage({socials,settings,demoEnabled,onEdit,headingSymbol}:Props){
+export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
  const channels=socials
   .map(s=>({social:s,url:safeSocialUrl(s.url)}))
   .filter((item):item is {social:SocialLink;url:string}=>
@@ -18,18 +17,14 @@ export function ContactPage({socials,settings,demoEnabled,onEdit,headingSymbol}:
   <div className="contact-social-atmosphere" aria-hidden="true"><i/><i/><i/></div>
   <div className="contact-social-layout">
    <section className="contact-social-intro">
-    <p className="eyebrow"><HeadingSymbol symbol={headingSymbol}/> CONNECT & COLLABORATE</p>
     <h1>{settings.titleFirst}<br/><em>{settings.titleAccent}</em></h1>
-    <p className="contact-social-description">{protectArtistName(settings.introduction)}</p>
-    <div className="contact-social-divider" aria-hidden="true"><span/><span/></div>
-    <div className="contact-social-message"><span className="contact-social-message-icon"><MessagesSquare size={19}/></span><div><strong>Let's talk where we're already connected.</strong><p>Choose a social platform and send me a message.</p></div></div>
+    {settings.introduction.trim()&&<p className="contact-social-description">{protectArtistName(settings.introduction)}</p>}
     <a className="contact-social-portfolio-link" href="#/portfolio">Explore the portfolio <ArrowRight size={17}/></a>
     {demoEnabled&&<button type="button" lang="pt-BR" className="contact-dev-edit" onClick={onEdit}><Pencil size={15}/>Personalizar contato e redes</button>}
    </section>
    <section className={'contact-social-directory contact-directory-'+density} aria-label="Social media contact channels">
     <header className="contact-social-directory-head">
-     <div><h2>Find me online<span>.</span></h2><p>{settings.greeting}</p></div>
-     <span className="contact-social-head-ornament"><Waypoints size={21}/></span>
+     <div><h2>Find me online</h2>{settings.greeting.trim()&&<p>{settings.greeting}</p>}</div>
     </header>
     {channels.length>0?<div className={'contact-social-cards contact-cards-'+density}>
      {channels.map(({social,url},index)=>{

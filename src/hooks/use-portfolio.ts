@@ -56,9 +56,9 @@ function parseStore(raw:unknown):PortfolioStore{
  const contact:ContactSettings={
   titleFirst:typeof obj.contact?.titleFirst==='string'?obj.contact.titleFirst:defaultContact.titleFirst,
   titleAccent:typeof obj.contact?.titleAccent==='string'?obj.contact.titleAccent:defaultContact.titleAccent,
-  introduction:(obj.contact?.introduction?.startsWith('Conte sua ideia')||obj.contact?.introduction==='Share your idea, creative goals, and what you need from a 3D artist. Let’s explore how we can bring your project to life.')
+  introduction:(obj.contact?.introduction?.startsWith('Conte sua ideia')||obj.contact?.introduction==='For collaborations, commissions, or questions about my work, reach out through my social profiles. Let’s start a conversation.'||obj.contact?.introduction==='Share your idea, creative goals, and what you need from a 3D artist. Let’s explore how we can bring your project to life.')
    ?defaultContact.introduction:typeof obj.contact?.introduction==='string'?obj.contact.introduction:defaultContact.introduction,
-  greeting:(obj.contact?.greeting?.startsWith('Olá!')||obj.contact?.greeting==='Tell me about your project and share any references you have in mind.')
+  greeting:(obj.contact?.greeting?.startsWith('Olá!')||obj.contact?.greeting==='Choose a platform below to explore my work or get in touch.'||obj.contact?.greeting==='Tell me about your project and share any references you have in mind.')
    ?defaultContact.greeting:typeof obj.contact?.greeting==='string'?obj.contact.greeting:defaultContact.greeting,
   footerTags:normalizeContactTags(obj.contact?.footerTags)
  }

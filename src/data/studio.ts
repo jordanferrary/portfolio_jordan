@@ -73,9 +73,9 @@ export interface ContactSettings {
 export const defaultContact:ContactSettings={
  titleFirst:'Have a project',
  titleAccent:'in mind?',
- introduction:'For collaborations, commissions, or questions about my work, reach out through my social profiles. Let’s start a conversation.',
- greeting:'Choose a platform below to explore my work or get in touch.',
- footerTags:['3D ART','CHARACTERS','ENVIRONMENTS','CREATIVE DIRECTION'],
+ introduction:'For commissions or collaborations, send me a message.',
+ greeting:'',
+ footerTags:[],
 }
 
 /** Normalize Contact footer tags. Empty array deliberately hides the entire ribbon. */

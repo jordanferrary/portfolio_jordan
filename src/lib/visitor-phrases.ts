@@ -1,5 +1,7 @@
 /** Human-reviewed translations for UI and existing portfolio copy. Original text is English. */
 export const VISITOR_PHRASES:Record<string,{pt:string;es:string}>={
+ "For commissions or collaborations, send me a message.":{pt:"Para encomendas ou colaborações, envie uma mensagem.",es:"Para encargos o colaboraciones, envíame un mensaje."},
+ "Behind the art":{pt:"Por trás da arte",es:"Detrás del arte"},
  "Choose a social platform and send me a message.":{pt:"Escolha uma rede social e me envie uma mensagem.",es:"Elige una red social y envíame un mensaje."},
  "BEHIND THE ARTWORK":{pt:"POR TRÁS DA OBRA",es:"DETRÁS DE LA OBRA"},
  "ITEM DETAILS":{pt:"DETALHES DO ITEM",es:"DETALLES DEL ELEMENTO"},
