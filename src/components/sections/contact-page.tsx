@@ -39,6 +39,6 @@ export function ContactPage({socials,settings,demoEnabled,onEdit}:Props){
     </div>:<div className="contact-social-empty"><p>Social profiles are being updated. Please check back soon.</p>{demoEnabled&&<button type="button" onClick={onEdit}>Configurar redes sociais</button>}</div>}
    </section>
   </div>
-  {settings.footerTags.length>0&&<div className="contact-social-bottomline" aria-label="Creative specialties">{settings.footerTags.map((label,index)=><span key={index} className="contact-social-bottomline-item">{index>0&&<i aria-hidden="true"/>}<span>{label}</span></span>)}</div>}
+  {settings.footerTags.length>0&&<div className="contact-social-bottomline" aria-label="Creative specialties">{settings.footerTags.map((label,index)=><span key={index} className="contact-social-bottomline-item"><span>{label}</span></span>)}</div>}
  </main>
 }

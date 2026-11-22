@@ -254,13 +254,12 @@
 .contact-social-empty p{margin:0 0 12px}
 .contact-social-empty button{background:var(--jf-primary-soft);border:1px solid var(--jf-primary);padding:10px 12px;border-radius:10px;color:#fff}
 .contact-social-bottomline{
- display:flex;flex-wrap:wrap;align-items:center;gap:13px;
+ display:flex;flex-wrap:wrap;align-items:center;gap:18px;
  margin-top:clamp(55px,8vw,110px);
  padding:19px 0;
  border-top:1px solid color-mix(in srgb,var(--jf-primary) 21%,transparent);
  color:#897a9b;font-size:10px;font-weight:700;letter-spacing:.16em;
 }
-.contact-social-bottomline i{width:3px;height:3px;border-radius:50%;background:var(--jf-primary);opacity:.7}
 @media(hover:hover){
  .site-shell .contact-social-primary-link:hover{
   transform:translateY(-3px);
@@ -309,7 +308,7 @@
  .contact-social-card-icon svg{width:23px;height:23px}
  .contact-social-card-info strong{font-size:17px}
  .contact-social-card-arrow{width:30px;height:30px;flex-basis:30px}
- .contact-social-bottomline{gap:9px;font-size:9px;letter-spacing:.09em}
+ .contact-social-bottomline{gap:12px;font-size:9px;letter-spacing:.09em}
 }
 
 /* Owner-only contact editor keeps the rest of Local Studio visually consistent. */
@@ -367,8 +366,7 @@
 
 
 /* Editable creative-specialties ribbon, fully owner-controlled. */
-.contact-social-bottomline-item{display:inline-flex;align-items:center;gap:13px;min-width:0}
-.contact-social-bottomline-item>i{display:inline-block;flex:0 0 3px}
+.contact-social-bottomline-item{display:inline-flex;align-items:center;min-width:0}
 .contact-social-bottomline-item>span{overflow-wrap:anywhere}
 .contact-editor-tags{padding:18px 0 12px;border-top:1px solid #54366e}
 .contact-editor-tags .contact-editor-section-title{margin-bottom:16px}
