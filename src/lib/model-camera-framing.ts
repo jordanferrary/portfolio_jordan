@@ -33,3 +33,25 @@ export function horizontalOrbitStep(x:number,z:number,deltaSeconds:number,speed:
 export function shouldOrbit(enabled:boolean,interacting:boolean,controlsEnabled:boolean,now:number,resumeAt:number){
  return enabled&&!interacting&&controlsEnabled&&now>=resumeAt
 }
+
+/** Fit a full turntable sweep using a cylinder enclosing the model's bounds
+ * relative to its orbit target. Frustum-plane support functions account for
+ * perspective depth and elevation, without over-framing long, flat models
+ * using a full bounding sphere. Margin is reserved on each screen edge. */
+export function safeTurntableDistance(horizontalRadius:number,halfHeight:number,elevation:number,fov:number,aspect:number,margin=.08){
+ const r=Math.max(0,horizontalRadius),h=Math.max(0,halfHeight)
+ const scale=1-2*Math.min(.3,Math.max(0,margin))
+ const tv=Math.max(.0001,Math.tan(radians(fov/2))*scale)
+ const th=Math.max(.0001,tv*aspect)
+ const c=Math.abs(Math.cos(elevation)),s=Math.abs(Math.sin(elevation))
+ const horizontal=r*Math.hypot(1/th,c)+h*s
+ const verticalA=r*Math.abs(c-s/tv)+h*Math.abs(s+c/tv)
+ const verticalB=r*Math.abs(c+s/tv)+h*Math.abs(s-c/tv)
+ return Math.max(horizontal,verticalA,verticalB,Math.hypot(r,h)*.01,.0001)*1.015
+}
+/** Guard bands are in drawing-buffer pixels. Bloom uses a quarter-size buffer. */
+export function orbitEdgeMargin(width:number,height:number,pixelRatio:number,chromatic:number,bloom:number,bloomRadius:number,crt:number,vhs:number,pixelSize:number){
+ const shortest=Math.max(1,Math.min(width,height))
+ const effectPixels=chromatic*pixelRatio+(vhs>0?3:0)+(pixelSize*pixelRatio*.5)+(bloom>0?4*3.230769*bloomRadius+2:0)
+ return Math.min(.28,.065+effectPixels/shortest+crt*.035)
+}

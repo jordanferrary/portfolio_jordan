@@ -296,3 +296,22 @@ test('opt-in horizontal orbit preserves distance and elevation and ignores passi
  assert.match(stage,/camera.position.set\(controls.target.x\+x,camera.position.y,controls.target.z\+z\)/)
  assert.doesNotMatch(stage,/hovered|pointerenter|pointerleave/)
 })
+
+test('orbit fitting contains elongated models at every angle and reserves room for effects',async()=>{
+ const output=await build({entryPoints:['src/lib/model-camera-framing.ts'],bundle:true,platform:'node',format:'esm',write:false,logLevel:'silent'})
+ const {safeTurntableDistance,orbitEdgeMargin}=await import('data:text/javascript;base64,'+Buffer.from(output.outputFiles[0].text).toString('base64'))
+ for(const aspect of [.8,1.6,2.4])for(const elevation of [-1.2,-.4,0,.3,1.2])for(const [r,h] of [[5,.3],[.5,4],[3,2]]){
+  const fov=38,margin=.12,d=safeTurntableDistance(r,h,elevation,fov,aspect,margin)
+  const tv=Math.tan(fov*Math.PI/360)*(1-2*margin),th=tv*aspect
+  const c=Math.cos(elevation),s=Math.sin(elevation)
+  for(let i=0;i<360;i+=2)for(const y of [-h,h]){
+   const a=i*Math.PI/180,x=r*Math.sin(a),z=r*Math.cos(a),depth=d-(z*c+y*s),vertical=y*c-z*s
+   assert.ok(depth>0);assert.ok(Math.abs(x)<=depth*th+1e-8);assert.ok(Math.abs(vertical)<=depth*tv+1e-8)
+  }
+ }
+ assert.ok(orbitEdgeMargin(1000,600,1,5,.5,3,.3,0,0)>orbitEdgeMargin(1000,600,1,0,0,3,0,0,0))
+ assert.ok(safeTurntableDistance(5,.3,0,38,1.6,.08)<safeTurntableDistance(5,5,0,38,1.6,.08))
+ const [stage,post]=await Promise.all(['src/lib/model-inspector-stage.ts','src/lib/model-chromatic-pass.ts'].map(path=>readFile(path,'utf8')))
+ assert.match(stage,/distance<safeDistance/);assert.match(stage,/camera.position.copy\(controls.target\).addScaledVector\(orbitOffset,safeDistance\/distance\)/)
+ assert.match(post,/sampleScene\(uv\+separation\)/)
+})

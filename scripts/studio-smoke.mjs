@@ -126,7 +126,7 @@ try{
   assert.match(editorSource,/<ProjectDivider icon=\{b\.dividerIcon\} variant=\{b\.dividerStyle\} preview\/>/)
   const star=element(app.ProjectDivider,{icon:'star',variant:'solid',preview:true})
   assert.match(star,/art-divider-solid/)
-  assert.match(star,/lucide-star/)
+  assert.match(star,/lucide-pen-tool/)
   assert.match(star,/Prévia da linha divisória/)
   const diamond=element(app.ProjectDivider,{icon:'diamond',variant:'dashed',preview:true})
   assert.match(diamond,/art-divider-dashed/)

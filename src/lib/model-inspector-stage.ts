@@ -11,7 +11,7 @@ import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model
 import {createLightGizmos} from './model-light-gizmos'
 import {attachArtShader,createArtUniforms,updateArtUniforms,updateMaterialLayers,type ArtUniforms} from './model-art-shaders'
 import {createChromaticPass} from './model-chromatic-pass'
-import {responsiveCameraFov,referenceFitDistance,cameraZoomForDistance,wrapCameraAzimuth,horizontalOrbitStep,shouldOrbit} from './model-camera-framing'
+import {responsiveCameraFov,referenceFitDistance,cameraZoomForDistance,wrapCameraAzimuth,horizontalOrbitStep,shouldOrbit,safeTurntableDistance,orbitEdgeMargin} from './model-camera-framing'
 export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[];animationClips:ModelAnimationInfo[];unlitMaterials:number;materials:MaterialInfo[]}
 export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean,speed?:number,loop?:boolean)=>void;restartAnimation:()=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;setLightEditing:(state:LightEditState)=>void;frameLights:()=>void;setMaterialEditing:(state:MaterialEditState)=>void;dispose:()=>void}
 const rad=THREE.MathUtils.degToRad
@@ -112,6 +112,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  let chromaticPass:ReturnType<typeof createChromaticPass>|null=null
  const vertexCenter=new THREE.Vector3(),size=new THREE.Vector3()
  let radius=1,fitDistance=3
+ const orbitSize=new THREE.Vector2(),orbitOffset=new THREE.Vector3()
  let editState:LightEditState={selected:null,helpers:false,target:false,solo:false}
  const embeddedLights=new Map<THREE.Light,boolean>()
  const gizmos=lightEditing?createLightGizmos(scene,camera,canvas,controls,customLights,vertexCenter,()=>radius,lightEditing):null
@@ -300,7 +301,25 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   }
   if(animationPlaying)mixer?.update(delta)
   const artTime=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:time/1000;for(const uniforms of artUniforms.values())uniforms.jfTime.value=artTime
-  controls.update(delta);gizmos?.sync()
+  controls.update(delta)
+  // Keep the entire model inside a safe frame throughout every azimuth.
+  // Only enlarge the live orbit distance; never overwrite the saved camera.
+  if(shouldOrbit(rotate,interacting,controls.enabled,performance.now(),idleUntil)){
+   orbitOffset.subVectors(camera.position,controls.target)
+   const distance=orbitOffset.length()
+   const horizontalRadius=Math.hypot(size.x*.5+Math.abs(vertexCenter.x-controls.target.x),size.z*.5+Math.abs(vertexCenter.z-controls.target.z))
+   const halfHeight=size.y*.5+Math.abs(vertexCenter.y-controls.target.y)
+   renderer.getDrawingBufferSize(orbitSize)
+   const fx=presentation.artShader,art=mode==='material'&&!editState.helpers
+   const margin=orbitEdgeMargin(orbitSize.x,orbitSize.y,renderer.getPixelRatio(),art?fx.chromaticAberration:0,art?fx.bloom:0,fx.bloomRadius,art?fx.crt:0,art?fx.vhs:0,art?fx.pixelSize:0)
+   const safeDistance=safeTurntableDistance(horizontalRadius,halfHeight,Math.atan2(orbitOffset.y,Math.hypot(orbitOffset.x,orbitOffset.z)),camera.fov,camera.aspect,margin)
+   if(distance>0&&distance<safeDistance){
+    controls.maxDistance=Math.max(controls.maxDistance,safeDistance)
+    camera.position.copy(controls.target).addScaledVector(orbitOffset,safeDistance/distance)
+    camera.far=Math.max(camera.far,safeDistance+radius*4);camera.updateProjectionMatrix();camera.lookAt(controls.target)
+   }
+  }
+  gizmos?.sync()
   if(mode==='material'&&(presentation.artShader.chromaticAberration>0||presentation.artShader.crt>0||presentation.artShader.vhs>0||presentation.artShader.pixelSize>0||presentation.artShader.bloom>0)&&!editState.helpers){chromaticPass??=createChromaticPass(renderer);chromaticPass.render(scene,camera,presentation.artShader,artTime)}else{if(chromaticPass){chromaticPass.dispose();chromaticPass=null}renderer.render(scene,camera)}
  })
  return {
