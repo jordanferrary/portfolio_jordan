@@ -315,3 +315,27 @@ test('orbit fitting contains elongated models at every angle and reserves room f
  assert.match(stage,/distance<safeDistance/);assert.match(stage,/camera.position.copy\(controls.target\).addScaledVector\(orbitOffset,safeDistance\/distance\)/)
  assert.match(post,/sampleScene\(uv\+separation\)/)
 })
+
+test('padded compositor retains CRT corners, RGB offsets and bloom beyond original viewport UVs',async()=>{
+ const output=await build({entryPoints:['src/lib/model-camera-framing.ts'],bundle:true,platform:'node',format:'esm',write:false,logLevel:'silent'})
+ const {compositorGuardBand}=await import('data:text/javascript;base64,'+Buffer.from(output.outputFiles[0].text).toString('base64'))
+ for(const [w,h] of [[320,400],[1200,750],[2560,1440],[4000,2000]])for(const dpr of [1,1.5]){
+  const guard=compositorGuardBand(w,h,dpr,1,1,12,12,2,8,4096)
+  assert.ok(guard.width<=4096&&guard.height<=4096)
+  for(let x=0;x<=1;x+=.05)for(let y=0;y<=1;y+=.05){
+   const cx=x-.5,cy=y-.5,r2=cx*cx+cy*cy
+   const u=x+cx*r2*.12,v=y+cy*r2*.12
+   const shiftX=.0025+(12*dpr+1.8+6*dpr)/w,shiftY=(12*dpr+6*dpr)/h
+   for(const sign of [-1,1]){
+    const px=(u+sign*shiftX-.5)*guard.scaleX+.5,py=(v+sign*shiftY-.5)*guard.scaleY+.5
+    assert.ok(px>=0&&px<=1&&py>=0&&py<=1)
+   }
+  }
+ }
+ const post=await readFile('src/lib/model-chromatic-pass.ts','utf8')
+ assert.match(post,/paddedUv\(uv\)/)
+ assert.match(post,/texture2D\(bloomMap,clamp\(paddedUv\(uv\)/)
+ assert.match(post,/view.projectionMatrix.copy\(originalProjection\)/)
+ assert.match(post,/view.projectionMatrixInverse.copy\(originalInverse\)/)
+ assert.doesNotMatch(post,/rgb=vec3\(0\.0\);alpha=0\.0/)
+})

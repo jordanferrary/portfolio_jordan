@@ -55,3 +55,21 @@ export function orbitEdgeMargin(width:number,height:number,pixelRatio:number,chr
  const effectPixels=chromatic*pixelRatio+(vhs>0?3:0)+(pixelSize*pixelRatio*.5)+(bloom>0?4*3.230769*bloomRadius+2:0)
  return Math.min(.28,.065+effectPixels/shortest+crt*.035)
 }
+
+/** Camera compositor guard band. The CRT warp can sample outside [0,1]
+ * even when the visible pixel is still inside the viewport. Reserve that
+ * displacement plus chromatic separation, VHS, pixel quantization and blur.
+ * The returned scale maps original viewport UVs into the padded render target. */
+export function compositorGuardBand(width:number,height:number,pixelRatio:number,crt:number,vhs:number,chromatic:number,pixelSize:number,bloom:number,bloomRadius:number,maxTextureSize:number){
+ const w=Math.max(1,width),h=Math.max(1,height)
+ // At a corner, abs(centered*dot(centered,centered)*.12) <= .03.
+ const warp=Math.max(0,crt)*.03
+ const glow=bloom>0?Math.ceil(4*3.230769*bloomRadius+8):0
+ const pixels=Math.max(0,chromatic)*pixelRatio+Math.max(0,pixelSize)*pixelRatio*.5+glow+4
+ const padX=Math.ceil(w*(warp+Math.max(0,vhs)*.0025)+Math.max(0,vhs)*1.8+pixels)
+ const padY=Math.ceil(h*warp+pixels)
+ const fullWidth=w+2*padX,fullHeight=h+2*padY
+ const limit=Math.max(1,maxTextureSize)
+ const resolutionScale=Math.min(1,limit/fullWidth,limit/fullHeight)
+ return {width:Math.max(1,Math.floor(fullWidth*resolutionScale)),height:Math.max(1,Math.floor(fullHeight*resolutionScale)),scaleX:w/fullWidth,scaleY:h/fullHeight}
+}
