@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import type {ModelMode} from './model-presentation'
+import type {ModelMode,ModelPresentation} from './model-presentation'
 type PBR=THREE.MeshPhysicalMaterial
 const basic=(src:THREE.Material,params:THREE.MeshBasicMaterialParameters={})=>new THREE.MeshBasicMaterial({side:src.side,toneMapped:false,...params})
 export function createChecker():THREE.CanvasTexture{
@@ -48,14 +48,28 @@ function weightMaterial(src:THREE.Material){
  mat.customProgramCacheKey=()=> 'jf-skin-weights'
  return mat
 }
+export const isPresentationMaterial=(mode:ModelMode)=>mode==='material'||mode==='neutral'||mode==='bones'||mode==='shaded-wire'
+export function createPresentationMaterial(mode:ModelMode,source:THREE.Material,settings:Pick<ModelPresentation,'relightUnlit'>):THREE.Material{
+ const basicSource=source as THREE.MeshBasicMaterial
+ const clone:THREE.Material=settings.relightUnlit&&basicSource.isMeshBasicMaterial
+  ?new THREE.MeshStandardMaterial({
+   name:source.name,color:basicSource.color.clone(),map:basicSource.map,alphaMap:basicSource.alphaMap,
+   aoMap:basicSource.aoMap,aoMapIntensity:basicSource.aoMapIntensity,lightMap:basicSource.lightMap,lightMapIntensity:basicSource.lightMapIntensity,
+   alphaTest:source.alphaTest,transparent:source.transparent,opacity:source.opacity,side:source.side,vertexColors:source.vertexColors,
+   depthTest:source.depthTest,depthWrite:source.depthWrite,visible:source.visible,roughness:.85,metalness:0,toneMapped:true
+  }):source.clone()
+ if(mode==='neutral')clone.toneMapped=false
+ if(mode==='shaded-wire'){clone.transparent=false;clone.opacity=1;clone.depthTest=true;clone.depthWrite=true;if('wireframe' in clone)(clone as PBR).wireframe=false;clone.polygonOffset=false;if('transmission' in clone)(clone as PBR).transmission=0}
+ return clone
+}
+export function applyPresentationEmission(material:THREE.Material,source:THREE.Material,scale:number){
+ const next=material as PBR,original=source as PBR
+ if(next.isMeshStandardMaterial&&original.isMeshStandardMaterial)next.emissiveIntensity=original.emissiveIntensity*scale
+}
 export function debugMaterial(mode:ModelMode,source:THREE.Material,textures:{checker:()=>THREE.Texture;matcap:()=>THREE.Texture}):THREE.Material{
  const src=source as PBR
  const color=src.color?.clone()??new THREE.Color(0xffffff)
- if(mode==='material'||mode==='neutral'||mode==='bones'||mode==='shaded-wire'){
-  const clone=source.clone();if(mode==='neutral')clone.toneMapped=false
-  if(mode==='shaded-wire'){clone.transparent=false;clone.opacity=1;clone.depthTest=true;clone.depthWrite=true;if('wireframe' in clone)(clone as PBR).wireframe=false;clone.polygonOffset=false;if('transmission' in clone)(clone as PBR).transmission=0}
-  return clone
- }
+ if(isPresentationMaterial(mode))return createPresentationMaterial(mode,source,{relightUnlit:false})
  if(mode==='wireframe')return basic(source,{wireframe:true,color:0xcfb9ff,side:THREE.DoubleSide})
  if(mode==='normals')return new THREE.MeshNormalMaterial({side:source.side})
  if(mode==='unlit')return basic(source,{color,map:src.map??null,vertexColors:source.vertexColors})

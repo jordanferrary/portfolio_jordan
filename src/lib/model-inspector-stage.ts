@@ -6,7 +6,7 @@ import {KTX2Loader} from 'three/examples/jsm/loaders/KTX2Loader.js'
 import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js'
 import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,type InspectorOptions,type ModelMode,type ModelPresentation,type ModelCamera,type LightEditState,type LightEditCallbacks} from './model-presentation'
-import {createChecker,createMatcap,debugMaterial} from './model-debug-materials'
+import {createChecker,createMatcap,debugMaterial,isPresentationMaterial,createPresentationMaterial,applyPresentationEmission} from './model-debug-materials'
 import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model-solid-wireframe'
 import {createLightGizmos} from './model-light-gizmos'
 export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[];unlitMaterials:number}
@@ -147,10 +147,12 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   }
   gizmos?.sync()
  }
+ function updateEmission(){for(const [variantMode,cache] of variants)if(isPresentationMaterial(variantMode))for(const [source,material] of cache)applyPresentationEmission(material,source,presentation.emissionScale)}
  function variant(mat:THREE.Material):THREE.Material{
   let cache=variants.get(mode);if(!cache){cache=new Map();variants.set(mode,cache)}
   const previous=cache.get(mat);if(previous)return previous
-  const next=presentation.relightUnlit&&mat instanceof THREE.MeshBasicMaterial&&['material','neutral','shaded-wire','bones'].includes(mode)?new THREE.MeshStandardMaterial({color:mat.color.clone(),map:mat.map,alphaMap:mat.alphaMap,alphaTest:mat.alphaTest,transparent:mode==='shaded-wire'?false:mat.transparent,opacity:mode==='shaded-wire'?1:mat.opacity,side:mat.side,vertexColors:mat.vertexColors,roughness:.85,metalness:0,toneMapped:mode!=='neutral'}):debugMaterial(mode,mat,{checker:()=>checker??(checker=createChecker()),matcap:()=>matcap??(matcap=createMatcap())})
+  const next=isPresentationMaterial(mode)?createPresentationMaterial(mode,mat,presentation):debugMaterial(mode,mat,{checker:()=>checker??(checker=createChecker()),matcap:()=>matcap??(matcap=createMatcap())})
+  if(isPresentationMaterial(mode))applyPresentationEmission(next,mat,presentation.emissionScale)
   if(isWireOverlay(mode))attachSolidWireShader(next,wireUniforms)
   cache.set(mat,next);return next
  }
@@ -202,7 +204,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   clips=gltf.animations;mixer=new THREE.AnimationMixer(model)
   const available=new Set<ModelMode>(['material','neutral','clay','wireframe','shaded-wire','clay-wire','flat','flat-wire','normals','unlit','matcap','metalness','roughness','opacity','emission','specular'])
   const stats:ModelStats={triangles:0,vertices:0,meshes:0,available:[],animations:clips.map((clip,i)=>clip.name||'Animation '+(i+1)),unlitMaterials:0}
-  model.traverse(obj=>{if(obj instanceof THREE.Light)embeddedLights.set(obj,obj.visible);if(obj instanceof THREE.Mesh){original.set(obj,obj.material);originalGeometry.set(obj,obj.geometry);stats.meshes++
+  model.traverse(obj=>{if(obj instanceof THREE.Light)embeddedLights.set(obj,obj.visible);if(obj instanceof THREE.Mesh){if(!obj.geometry.hasAttribute('normal')&&obj.geometry.hasAttribute('position'))obj.geometry.computeVertexNormals();original.set(obj,obj.material);originalGeometry.set(obj,obj.geometry);stats.meshes++
    if(obj.geometry.hasAttribute('uv'))available.add('uv')
    if(obj instanceof THREE.SkinnedMesh){available.add('bones');if(obj.geometry.hasAttribute('skinWeight'))available.add('weights')}
    for(const material of Array.isArray(obj.material)?obj.material:[obj.material]){if(material instanceof THREE.MeshBasicMaterial)stats.unlitMaterials++;const pbr=material as THREE.MeshStandardMaterial;if(pbr.normalMap){available.add('normal-map');available.add('matcap-surface')}if(pbr.aoMap)available.add('ao')}
@@ -222,7 +224,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   controls.update(delta);gizmos?.sync();renderer.render(scene,camera)
  })
  return {
-  setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;presentation=next;applyLighting();if(relight){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();setMode(mode)}if(reframe)resetCamera()},
+  setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;const emissionChanged=next.emissionScale!==presentation.emissionScale;presentation=next;applyLighting();if(relight){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();setMode(mode)}else if(emissionChanged)updateEmission();if(reframe)resetCamera()},
   setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,resetCamera,captureCamera,frameLights,setLightEditing(state){editState=state;gizmos?.setState(state);applyLighting()},
   dispose(){if(disposed)return;disposed=true;renderer.setAnimationLoop(null);observer.disconnect();intersection.disconnect();controls.dispose();canvas.removeEventListener('pointerenter',enter);canvas.removeEventListener('pointerleave',exit)
    mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model)

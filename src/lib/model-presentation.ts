@@ -4,11 +4,11 @@ export type ModelLight={id:string;name:string;type:'directional'|'point'|'spot';
 export type ModelCamera={azimuth:number;elevation:number;zoom:number;fov:number;targetX:number;targetY:number;targetZ:number}
 export type ModelPresentation=ModelCamera&{
  lighting:'studio'|'soft'|'contrast';exposure:number;environment:number;keyLight:number;lightAngle:number;lightColor:string;background:string;
- autoRotate:boolean;rotationSpeed:number;usePresetRig:boolean;useEmbeddedLights:boolean;relightUnlit:boolean;lights:ModelLight[]
+ autoRotate:boolean;rotationSpeed:number;usePresetRig:boolean;useEmbeddedLights:boolean;materialLighting:'scene'|'original';relightUnlit:boolean;emissionScale:number;lights:ModelLight[]
 }
 export const DEFAULT_MODEL_PRESENTATION:ModelPresentation={
  lighting:'studio',exposure:1,environment:1,keyLight:2,lightAngle:45,lightColor:'#ffffff',background:'#15101e',
- autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,useEmbeddedLights:true,relightUnlit:false,lights:[]
+ autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,useEmbeddedLights:true,materialLighting:'scene',relightUnlit:true,emissionScale:1,lights:[]
 }
 const numeric=(v:unknown,fallback:number,min:number,max:number)=>typeof v==='number'&&Number.isFinite(v)?Math.min(max,Math.max(min,v)):fallback
 const color=(v:unknown,fallback:string)=>typeof v==='string'&&/^#[a-f0-9]{6}$/i.test(v)?v:fallback
@@ -36,7 +36,7 @@ export function normalizeModelPresentation(value?:Partial<ModelPresentation>|nul
  autoRotate:typeof v.autoRotate==='boolean'?v.autoRotate:d.autoRotate,rotationSpeed:numeric(v.rotationSpeed,d.rotationSpeed,.2,4),
  azimuth:numeric(v.azimuth,d.azimuth,-180,180),elevation:numeric(v.elevation,d.elevation,-89,89),zoom:numeric(v.zoom,d.zoom,.2,8),
  fov:numeric(v.fov,d.fov,15,80),targetX:numeric(v.targetX,0,-5,5),targetY:numeric(v.targetY,0,-5,5),targetZ:numeric(v.targetZ,0,-5,5),
- usePresetRig:v.usePresetRig!==false,useEmbeddedLights:v.useEmbeddedLights!==false,relightUnlit:v.relightUnlit===true,lights:normalizeLights(v.lights)}
+ usePresetRig:v.usePresetRig!==false,useEmbeddedLights:v.useEmbeddedLights!==false,materialLighting:v.materialLighting==='original'?'original':'scene',relightUnlit:v.materialLighting!=='original',emissionScale:numeric(v.emissionScale,d.emissionScale,0,2),lights:normalizeLights(v.lights)}
 }
 export type InspectorGroup={label:string;items:readonly {id:ModelMode;label:string;hint?:string}[]}
 export const INSPECTOR_GROUPS:readonly InspectorGroup[]=[
