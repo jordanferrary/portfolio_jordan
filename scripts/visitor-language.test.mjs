@@ -175,3 +175,12 @@ test('concise visitor copy keeps automatic language detection and local translat
  assert.equal(t.localPhrase('ITEM DETAILS','es'),'DETALLES DEL ELEMENTO')
  assert.equal(t.localPhrase('Choose a social platform and send me a message.','pt'),'Escolha uma rede social e me envie uma mensagem.')
 })
+
+test('comparison inspection lives in the before and after labels above the slider',async()=>{
+ const [view,css]=await Promise.all([text('src/components/sections/project-page.tsx'),text('src/styles/media-extras.css')])
+ assert.doesNotMatch(view,/comparison-zoom-actions/)
+ assert.match(view,/<button type="button" className="compare-label left" onClick=\{\(\)=>setExpanded\('before'\)\}/)
+ assert.match(view,/<button type="button" className="compare-label right" onClick=\{\(\)=>setExpanded\('after'\)\}/)
+ assert.match(view,/aria-label="Compare before and after"/)
+ assert.match(css,/button\.compare-label\{\s*z-index:5;\s*pointer-events:auto;/)
+})

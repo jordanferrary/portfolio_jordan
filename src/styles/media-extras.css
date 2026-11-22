@@ -24,85 +24,37 @@
 
 .video-block-editor{display:flex;flex-direction:column;gap:13px}.video-block-editor>label{display:flex;flex-direction:column;gap:8px;font-size:12px;color:#d1b5e4}.video-block-editor>label>input{width:100%;min-width:0;padding:11px;background:#160b28;color:#fff;border:1px solid #65418a;border-radius:10px}
 
-/* A single, lightweight glass toolbar belongs to the comparison artwork. */
-.site-shell .comparison-zoom-actions{
- display:flex;
- align-items:center;
- justify-content:center;
- gap:4px;
- width:max-content;
- max-width:100%;
- margin:13px auto 0;
- padding:5px;
- border:1px solid color-mix(in srgb,var(--jf-border,#684387) 70%,transparent);
- border-radius:999px;
- background:linear-gradient(145deg,
-  color-mix(in srgb,var(--jf-surface-tint,#2d1a42) 82%,transparent),
-  color-mix(in srgb,var(--jf-surface-deep,#150b21) 90%,transparent));
- box-shadow:0 6px 22px #0004,inset 0 1px #ffffff15;
- -webkit-backdrop-filter:blur(16px) saturate(140%);
- backdrop-filter:blur(16px) saturate(140%);
-}
-.site-shell .comparison-zoom-actions button{
+/* Both comparison labels double as image inspection controls. Keep them above
+   the transparent comparison slider; only their own hit areas intercept input. */
+.site-shell .comparison-images button.compare-label{
+ z-index:5;
+ pointer-events:auto;
  display:inline-flex;
  align-items:center;
  justify-content:center;
- gap:8px;
- min-width:0;
- min-height:38px;
- padding:8px 16px;
- border:1px solid transparent;
+ gap:7px;
+ min-height:36px;
+ max-width:44%;
+ margin:0;
+ padding:7px 12px;
+ border:1px solid color-mix(in srgb,var(--jf-border,#684387) 52%,transparent);
  border-radius:999px;
- background:transparent;
- color:var(--jf-copy-soft,#dbc7ea);
- font-size:12px;
- font-weight:650;
- line-height:1.2;
- white-space:nowrap;
- cursor:zoom-in;
- transition:background-color .2s ease,color .2s ease,border-color .2s ease,box-shadow .2s ease;
-}
-.site-shell .comparison-zoom-actions button svg{
- flex:0 0 auto;
- color:var(--jf-secondary,#ce96ef);
- opacity:.9;
-}
-.site-shell .comparison-zoom-actions button span{
- display:block;
- overflow:hidden;
- min-width:0;
- text-overflow:ellipsis;
-}
-@media(hover:hover){
- .site-shell .comparison-zoom-actions button:hover{
-  background:color-mix(in srgb,var(--jf-primary,#8e36bc) 20%,transparent);
-  color:var(--jf-text,#fff);
-  border-color:color-mix(in srgb,var(--jf-primary,#8e36bc) 36%,transparent);
-  box-shadow:inset 0 1px #ffffff0c;
- }
-}
-.site-shell .comparison-zoom-actions button:focus-visible{
- outline:2px solid var(--jf-secondary,#ce96ef);
- outline-offset:2px;
+ background:color-mix(in srgb,var(--jf-background,#150b24) 82%,transparent);
  color:var(--jf-text,#fff);
+ font:inherit;
+ font-size:12px;
+ line-height:1.2;
+ cursor:zoom-in;
+ touch-action:manipulation;
+ backdrop-filter:blur(8px);
+ transition:background-color .18s ease,border-color .18s ease;
 }
-@media(max-width:560px){
- .site-shell .comparison-zoom-actions{
-  width:100%;
-  max-width:100%;
-  margin-top:11px;
- }
- .site-shell .comparison-zoom-actions button{
-  flex:1 1 50%;
-  width:0;
-  padding:10px 8px;
-  font-size:11px;
- }
-}
-@media(prefers-reduced-motion:reduce){
- .site-shell .comparison-zoom-actions button{transition:none}
-}
-
+.site-shell .comparison-images button.compare-label svg{flex:none;color:var(--jf-secondary,#ce96ef)}
+.site-shell .comparison-images button.compare-label span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+@media(hover:hover){.site-shell .comparison-images button.compare-label:hover{background:var(--jf-surface,#251333);border-color:var(--jf-secondary,#ce96ef)}}
+.site-shell .comparison-images button.compare-label:focus-visible{outline:2px solid var(--jf-secondary,#ce96ef);outline-offset:2px}
+@media(max-width:600px){.site-shell .comparison-images button.compare-label{bottom:9px;min-height:40px;font-size:11px;padding:7px 10px;gap:5px}.site-shell .comparison-images button.compare-label.left{left:9px}.site-shell .comparison-images button.compare-label.right{right:9px}}
+@media(prefers-reduced-motion:reduce){.site-shell .comparison-images button.compare-label{transition:none}}
 
 /* Video and 3D layouts have distinct miniatures in the composition picker. */
 .template-sketch.video,.template-sketch.model{display:grid;place-items:center;position:relative;overflow:hidden;background:linear-gradient(145deg,#301848,#120c21);border:1px solid #6d3d92;border-radius:12px;color:#c997f0}
