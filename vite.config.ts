@@ -51,6 +51,23 @@ function socialMetadata(){
 }
 
 
+/**
+ * Some hosts send .mjs with an invalid content type. Publish the PDF.js module
+ * worker as a normal .js asset, which browsers still load as a module worker.
+ */
+function compatiblePdfWorker():Plugin{
+ return {
+  name:'jf-compatible-pdf-worker',
+  generateBundle(){
+   this.emitFile({
+    type:'asset',
+    fileName:'assets/pdf.worker.compat.js',
+    source:readFileSync(new URL('./node_modules/pdfjs-dist/build/pdf.worker.min.mjs',import.meta.url))
+   })
+  }
+ }
+}
+
 function buildDiagnostic():Plugin{
  return {
   name:'jf-build-diagnostic',
@@ -68,7 +85,7 @@ function buildDiagnostic():Plugin{
 }
 
 export default defineConfig({
- plugins:[react(),tailwindcss(),socialMetadata(),buildDiagnostic()],
+ plugins:[react(),tailwindcss(),socialMetadata(),compatiblePdfWorker(),buildDiagnostic()],
  define:{'import.meta.env.VITE_BUILD_SHA':JSON.stringify(buildRevision)},
  base,
  server:{host:'0.0.0.0'}

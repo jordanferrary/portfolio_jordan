@@ -3,6 +3,7 @@ import {useEffect,useRef,useState,type PointerEvent as ReactPointerEvent,type Wh
 import {createPortal} from 'react-dom'
 import {ChevronLeft,ChevronRight,Minus,Plus,RotateCcw,X} from 'lucide-react'
 import {pdfFetchHref,pdfPreviewHref} from '../../lib/showcase-pdf'
+import {pdfWorkerHref} from '../../lib/pdf-worker'
 import {isPointOnDisplayedArtwork} from '../../lib/lightbox-hit-test'
 
 type Point={x:number;y:number}
@@ -41,9 +42,8 @@ export function PdfZoomViewer({url,title,onClose}:{url:string;title:string;onClo
   void (async()=>{
    try{
     const pdfjs=await import('pdfjs-dist')
-    const workerUrl=(await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default
     if(cancelled)return
-    pdfjs.GlobalWorkerOptions.workerSrc=workerUrl
+    pdfjs.GlobalWorkerOptions.workerSrc=pdfWorkerHref()
     loadingTask=pdfjs.getDocument({url:direct,withCredentials:false,disableRange:true,disableStream:true})
     const pdf=await loadingTask.promise
     if(cancelled)return

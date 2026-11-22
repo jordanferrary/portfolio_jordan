@@ -23,3 +23,17 @@ test('Drive links retain a non-GitHub iframe fallback, malicious schemes are rej
  assert.equal(safeShowcaseDocumentHref('data:application/pdf;base64,abc'),null)
  assert.equal(pdfFetchHref('https://github.com/user/repo/blob/main/README.md'),null)
 })
+
+test('both PDF viewers share a host-compatible JavaScript module worker',async()=>{
+ const vite=await readFile(new URL('../vite.config.ts',import.meta.url),'utf8')
+ const preview=await readFile(new URL('../src/components/ui/pdf-page-preview.tsx',import.meta.url),'utf8')
+ const zoom=await readFile(new URL('../src/components/ui/pdf-zoom-viewer.tsx',import.meta.url),'utf8')
+ const helper=await readFile(new URL('../src/lib/pdf-worker.ts',import.meta.url),'utf8')
+ assert.ok(vite.includes("fileName:'assets/pdf.worker.compat.js'"))
+ assert.ok(vite.includes("pdfjs-dist/build/pdf.worker.min.mjs"))
+ assert.ok(preview.includes("pdfWorkerHref()"))
+ assert.ok(zoom.includes("pdfWorkerHref()"))
+ assert.ok(helper.includes("import.meta.env.BASE_URL"))
+ assert.ok(!preview.includes("pdf.worker.min.mjs?url"))
+ assert.ok(!zoom.includes("pdf.worker.min.mjs?url"))
+})

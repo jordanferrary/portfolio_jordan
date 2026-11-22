@@ -1,6 +1,7 @@
 import {useEffect,useRef,useState} from 'react'
 import {FileText} from 'lucide-react'
 import {pdfFetchHref,pdfPreviewHref} from '../../lib/showcase-pdf'
+import {pdfWorkerHref} from '../../lib/pdf-worker'
 
 type Mode='card'|'detail'|'editor'|'zoom'
 type PreviewState='waiting'|'loading'|'ready'|'error'
@@ -39,9 +40,8 @@ export function PdfPagePreview({url,label,mode='detail'}:{url:string;label:strin
   void (async()=>{
    try{
     const pdfjs=await import('pdfjs-dist')
-    const workerUrl=(await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default
     if(cancelled)return
-    pdfjs.GlobalWorkerOptions.workerSrc=workerUrl
+    pdfjs.GlobalWorkerOptions.workerSrc=pdfWorkerHref()
     const task=pdfjs.getDocument({url:direct,withCredentials:false,disableRange:true,disableStream:true})
     closeDocument=()=>task.destroy()
     const doc=await task.promise
