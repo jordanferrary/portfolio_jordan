@@ -3,7 +3,7 @@ export type ArtShaderPreset='original'|'toon'|'noir'|'rim'|'iridescent'|'hologra
 export type ArtShader={preset:ArtShaderPreset;strength:number;tint:string;bands:number;rimPower:number;scanSpacing:number;patternScale:number;inkColor:string;paperColor:string;patternAngle:number;chromaticAberration:number;chromaticAngle:number}
 export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;description:string;tint:string;swatch:string}[]=[
  {id:'original',name:'Original PBR',description:'Materiais e iluminação naturais.',tint:'#ffffff',swatch:'radial-gradient(circle at 30% 25%,#f5ebd7,#786853 45%,#25212b 80%)'},
- {id:'toon',name:'Cel / Toon',description:'Luz em faixas, acabamento de ilustração.',tint:'#ffffff',swatch:'radial-gradient(circle at 30% 30%,#ecb891 0 32%,#b35f7d 33% 57%,#43365f 58%)'},
+ {id:'toon',name:'Cel / Toon',description:'Faixas de luz sobre as cores originais.',tint:'#ffffff',swatch:'radial-gradient(circle at 30% 30%,#ecb891 0 32%,#b35f7d 33% 57%,#43365f 58%)'},
  {id:'noir',name:'Film Noir',description:'Contraste monocromático cinematográfico.',tint:'#dce7ff',swatch:'radial-gradient(circle at 30% 25%,#f0f0f0,#787878 35%,#0b0b10 72%)'},
  {id:'rim',name:'Neon Rim',description:'Contorno luminoso dependente da câmera.',tint:'#a35bff',swatch:'radial-gradient(circle at 45% 48%,#232038 0 42%,#6f3bc6 65%,#e0aaff 81%,#292138 86%)'},
  {id:'iridescent',name:'Iridescent',description:'Reflexo colorido que muda com o ângulo.',tint:'#9fbaff',swatch:'conic-gradient(from 35deg,#e3a5fa,#657fec,#78e0d8,#fce3a0,#e3a5fa)'},
