@@ -71,3 +71,32 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+  hostinger:
+    name: Build static site for Hostinger
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Prepare social preview and favicon from published content
+        run: |
+          python3 -m pip install --disable-pip-version-check Pillow
+          python3 scripts/build_site_identity.py
+      - name: Build for custom domain
+        run: npm run build
+        env:
+          PUBLIC_SITE_URL: https://jordan.astralchains.com/
+          GITHUB_PAGES: 'false'
+          VITE_BUILD_SHA: ${{ github.sha }}
+          VITE_ALQUIMAGO_AUTH_ORIGIN: ${{ vars.ALQUIMAGO_AUTH_ORIGIN }}
+      - name: Push generated static site to Hostinger branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: hostinger
