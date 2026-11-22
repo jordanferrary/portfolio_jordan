@@ -99,7 +99,7 @@
   --jf-page-label:12px;
  }
 }
-.site-shell .site-main :is(.home-intro,.gallery-heading,.about-page-header,.contact-social-intro,.custom-page-hero,.project-hero-content)>h1{
+.site-shell .site-main :is(.home-intro,.gallery-heading,.about-page-header,.contact-social-intro,.custom-page-hero-content,.project-hero-content)>h1{
  font-family:var(--jf-page-heading-font)!important;
  font-size:var(--jf-page-display)!important;
  font-weight:800!important;
@@ -107,7 +107,7 @@
  letter-spacing:-.045em!important;
  overflow-wrap:break-word;
 }
-.site-shell .site-main :is(.home-intro,.gallery-heading,.about-page-header,.contact-social-intro,.custom-page-hero,.project-hero-content)>h1 :is(em,span){
+.site-shell .site-main :is(.home-intro,.gallery-heading,.about-page-header,.contact-social-intro,.custom-page-hero-content,.project-hero-content)>h1 :is(em,span){
  font-size:inherit!important;font-weight:inherit;line-height:inherit;letter-spacing:inherit;
 }
 .site-shell .site-main :is(.about-information>h2,.contact-social-directory-head h2,.project-artwork-heading h2,.project-artwork-process-heading h2,.project-process-section h2,.story-block .rich-text h2,.custom-page-subtitle h2){
@@ -142,7 +142,7 @@
  line-height:1.4!important;
  letter-spacing:.04em!important;
 }
-.site-shell .site-main :is(.home-panel-heading h2,.home-about-panel h2,.work-title,.gallery-card h2,.gallery-card h3,.contact-social-card-info strong,.artist-showcase-card strong,.story-block .rich-text h4){
+.site-shell .site-main :is(.home-panel-heading h2,.home-about-panel h2,.work-title,.gallery-card .project-copy b,.contact-social-card-info strong,.artist-showcase-card strong,.artist-showcase-card .artist-showcase-caption,.story-block .rich-text h4){
  font-family:var(--jf-page-heading-font)!important;
  font-size:var(--jf-page-card-title)!important;
  font-weight:700!important;
@@ -155,7 +155,7 @@
  font-size:var(--jf-page-label)!important;
  line-height:1.4!important;
 }
-.site-shell .site-main :is(.media-caption,.feedback-content small,.home-availability,.home-specialties small,.home-specialties span,.home-panel-heading button,.project-process-section figcaption,.project-artwork-heading>p,.custom-page-footer,.tools span,.artist-showcase-card small,.compare-label){
+.site-shell .site-main :is(.media-caption,.feedback-content small,.home-availability,.home-specialties small,.home-specialties span,.home-panel-heading button,.project-process-section figcaption,.project-artwork-heading>p,.custom-page-footer,.tools span,.gallery-card .project-copy small,.gallery-card .category-badge,.artist-showcase-card small,.compare-label){
  font-family:var(--jf-page-body-font)!important;
  font-size:var(--jf-page-caption)!important;
  line-height:1.4!important;

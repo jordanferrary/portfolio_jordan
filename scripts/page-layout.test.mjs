@@ -27,7 +27,7 @@ test('public pages share one responsive semantic type scale',()=>{
  assert.match(css,/--jf-page-display:clamp\(34px,8\.4vw,48px\)/)
  assert.match(css,/--jf-page-section:clamp\(24px,2\.05vw,34px\)/)
  assert.match(css,/--jf-page-description:clamp\(15px,1vw,17px\)/)
- assert.match(css,/\.home-intro,\.gallery-heading,\.about-page-header,\.contact-social-intro,\.custom-page-hero,\.project-hero-content\)>h1/)
+ assert.match(css,/\.home-intro,\.gallery-heading,\.about-page-header,\.contact-social-intro,\.custom-page-hero-content,\.project-hero-content\)>h1/)
  assert.match(css,/font-size:var\(--jf-page-display\)!important/)
  assert.match(css,/font-size:var\(--jf-page-section\)!important/)
  assert.match(css,/font-size:var\(--jf-page-description\)!important/)
