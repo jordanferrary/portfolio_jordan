@@ -9,6 +9,7 @@
  --jf-studio-line:color-mix(in srgb,var(--jf-border) 72%,var(--jf-surface) 28%);
  --jf-studio-strong-line:color-mix(in srgb,var(--jf-border) 65%,var(--jf-secondary) 35%);
  --jf-studio-label:color-mix(in srgb,var(--jf-secondary) 65%,var(--jf-text) 35%);
+ --jf-familiar-action:color-mix(in srgb,var(--jf-primary) 48%,var(--jf-surface));
  --jf-studio-wash:color-mix(in srgb,var(--jf-primary) 15%,var(--jf-surface));
 }
 
