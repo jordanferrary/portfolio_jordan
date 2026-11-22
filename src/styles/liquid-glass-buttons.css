@@ -56,7 +56,7 @@
 }
 
 /* Native-looking edge illumination for persistent floating navigation. */
-.site-shell :is(.side-icon,.socials a,.card-open,){
+.site-shell :is(.side-icon,.socials a,.card-open){
  border-color:var(--jf-liquid-edge)!important;
  background:var(--jf-liquid-clear)!important;
  box-shadow:var(--jf-liquid-border-shadow)!important;

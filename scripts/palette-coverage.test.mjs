@@ -1,0 +1,37 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import {readFile} from 'node:fs/promises'
+import ts from 'typescript'
+const read=path=>readFile(new URL('../'+path,import.meta.url),'utf8')
+const [publicCss,studio,scroll,base,home,compare,theme]=await Promise.all(['src/styles/theme-coverage.css','src/styles/studio-palette-coverage.css','src/styles/scroll-controls.css','src/styles/globals.css','src/styles/home-revision.css','src/styles/revision.css','src/lib/theme-palette.ts'].map(read))
+test('category vectors and Home project arrow inherit palette without tinting custom art',()=>{
+ assert.match(base,/\.chips svg\{[^}]*color:currentColor/)
+ assert.match(publicCss,/\.category-badge\) svg\{\s*color:currentColor!important;/)
+ assert.match(home,/\.work-arrow\{[^}]*background:color-mix\(in srgb,var\(--jf-surface-tint\)/)
+ assert.match(publicCss,/\.home-work-link \.work-arrow\{[^}]*var\(--jf-border\)/)
+})
+test('comparison and Studio surfaces use the current palette',()=>{
+ assert.match(compare,/\.compare-line span\{[^}]*background:var\(--jf-primary\)/)
+ assert.match(publicCss,/\.compare-line span\{[^}]*var\(--jf-on-primary,var\(--jf-text\)\)/)
+ assert.match(studio,/\.studio-hub-welcome\{[^}]*var\(--jf-studio-raised\)/)
+ assert.match(studio,/\.studio-hub-nav-item.selected\{box-shadow:inset 3px 0 var\(--jf-secondary\)/)
+ assert.match(studio,/\.studio-hub-footer\{background:var\(--jf-studio-deep\)/)
+})
+test('scrollbar chrome has no fixed violet and uses the same tokens inside Studio',()=>{
+ const chrome=scroll.split('/* Explicitly remove native square range UI')[0]
+ assert.doesNotMatch(chrome,/#[0-9a-f]{3,8}\b/i)
+ assert.match(chrome,/::-webkit-scrollbar-thumb\{\s*background:var\(--jf-scroll-thumb\)/)
+ assert.match(studio,/scrollbar-color:var\(--jf-scroll-thumb\) var\(--jf-scroll-track\)/)
+})
+test('comparison handle foreground contrasts against the editable primary color',async()=>{
+ const js=ts.transpileModule(theme,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext}}).outputText
+ const {applyThemePalette,contrastRatio,DEFAULT_THEME}=await import('data:text/javascript;charset=utf-8,'+encodeURIComponent(js))
+ const values=new Map(),previous=globalThis.document
+ try{
+  globalThis.document={documentElement:{style:{setProperty:(k,v)=>values.set(k,v)}}}
+  for(const primary of ['#A234FA','#FF8145','#3D91FF','#000000','#FFFFFF','#777777']){
+   applyThemePalette({...DEFAULT_THEME,primary})
+   assert.ok(contrastRatio(values.get('--jf-on-primary'),primary)>=4.5)
+  }
+ }finally{if(previous===undefined)delete globalThis.document;else globalThis.document=previous}
+})

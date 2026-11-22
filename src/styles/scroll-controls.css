@@ -1,22 +1,25 @@
 
-/* Portfolio-native scrollbar: graphite track and violet neon thumb. */
-:root{scrollbar-width:thin;scrollbar-color:#713e99 #12081e}
-html,body,.site-main,.gallery-page,.editor-scroll,.asset-modal-scroll,.quick-insert-popover,.admin-inbox-panel,.inbox-content,.inbox-list,.music-popover,.quick-image-controls,textarea{
- scrollbar-width:thin;scrollbar-color:#7842a2 #11091e;
+/* Scrollbars use the live theme, including nested Studio panels and portals. */
+:root{
+ --jf-scroll-track:var(--jf-surface-deep);
+ --jf-scroll-thumb:color-mix(in srgb,var(--jf-primary) 65%,var(--jf-border));
+ --jf-scroll-hover:var(--jf-primary);
+ scrollbar-width:thin;
+ scrollbar-color:var(--jf-scroll-thumb) var(--jf-scroll-track);
+}
+html,body,.site-main,.gallery-page,.editor-scroll,.asset-modal-scroll,.quick-insert-popover,.admin-inbox-panel,.inbox-content,.inbox-list,.music-popover,.quick-image-controls,textarea,.studio-hub-workspace-scroll,.studio-hub-sidebar{
+ scrollbar-width:thin;scrollbar-color:var(--jf-scroll-thumb) var(--jf-scroll-track);
 }
 ::-webkit-scrollbar{width:9px;height:9px}
-::-webkit-scrollbar-track{background:linear-gradient(180deg,#10071b,#180d26);border-radius:20px}
+::-webkit-scrollbar-track{background:var(--jf-scroll-track);border-radius:20px}
 ::-webkit-scrollbar-thumb{
- background:linear-gradient(180deg,#6b2b95,#9d40db 50%,#683094);
- border:2px solid #170c26;
+ background:var(--jf-scroll-thumb);
+ border:2px solid var(--jf-scroll-track);
  border-radius:999px;
- box-shadow:inset 0 0 4px #c390ef77;
+ box-shadow:inset 0 0 4px var(--jf-secondary-glow);
 }
-::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8b3cbd,#bd59fc 50%,#823bb7)}
-::-webkit-scrollbar-corner{background:#13091e}
-@supports(selector(::-webkit-scrollbar)){
- html{scrollbar-width:auto}
-}
+::-webkit-scrollbar-thumb:hover{background:var(--jf-scroll-hover)}
+::-webkit-scrollbar-corner{background:var(--jf-scroll-track)}
 
 /* Explicitly remove native square range UI in Chromium, Opera and Firefox. */
 .music-widget .music-volume-inline{

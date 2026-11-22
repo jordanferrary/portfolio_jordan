@@ -65,6 +65,8 @@ export function normalizeThemePalette(raw:unknown):ThemePalette{
 export function applyThemePalette(palette:ThemePalette):void{
  const target=document.documentElement.style
  for(const field of PALETTE_FIELDS)target.setProperty('--jf-'+field.key,palette[field.key])
+ const ink=contrastRatio(palette.text,palette.primary)>=4.5?palette.text:contrastRatio('#FFFFFF',palette.primary)>=contrastRatio('#000000',palette.primary)?'#FFFFFF':'#000000'
+ target.setProperty('--jf-on-primary',ink)
  target.setProperty('--color-primary',palette.primary)
  target.setProperty('--color-background',palette.background)
  target.setProperty('--color-text',palette.text)

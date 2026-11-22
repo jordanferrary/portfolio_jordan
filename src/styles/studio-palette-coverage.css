@@ -36,7 +36,7 @@
 .project-focus-overlay .editor-head .eyebrow{color:var(--jf-studio-label)!important}
 .editor-overlay:not(.project-focus-overlay)>.editor-panel>.editor-scroll,
 .project-focus-overlay .editor-scroll{
- scrollbar-color:var(--jf-border) var(--jf-studio-deep)!important;
+ scrollbar-color:var(--jf-scroll-thumb) var(--jf-scroll-track)!important;
 }
 .project-focus-overlay{
  background:var(--jf-background)!important;
@@ -231,3 +231,18 @@
  background:var(--jf-studio-raised)!important;border-color:var(--jf-secondary)!important;color:var(--jf-text)!important;
 }
 .editor-overlay :is(.music-track-cover-preview,.asset-pick-card img){background:var(--jf-background)}
+
+/* Welcome card, keyboard hint, selection rail and footer also inherit the theme. */
+.studio-dock-anchor .studio-hub-welcome{
+ background:radial-gradient(circle at 93% 4%,var(--jf-primary-soft),transparent 62%),
+ linear-gradient(140deg,var(--jf-studio-raised),var(--jf-studio-panel))!important;
+ border-color:var(--jf-studio-strong-line)!important;
+ box-shadow:inset 0 1px var(--jf-secondary-glow)!important;
+}
+.studio-dock-anchor .studio-hub-footer{background:var(--jf-studio-deep)!important}
+.studio-dock-anchor .studio-hub-welcome p{color:var(--jf-muted)!important}
+.studio-dock-anchor :is(.studio-hub-welcome>.studio-hub-eyebrow,.studio-hub-section-heading>div>span){color:var(--jf-studio-label)!important}
+.studio-dock-anchor .studio-hub-search kbd{background:var(--jf-studio-deep)!important;border-color:var(--jf-studio-line)!important;color:var(--jf-muted)!important}
+.studio-dock-anchor .studio-hub-nav-item.selected{box-shadow:inset 3px 0 var(--jf-secondary)!important}
+.studio-dock-anchor .studio-hub-nav-item small{color:var(--jf-muted)!important}
+.studio-dock-anchor :is(.studio-hub,.studio-hub-workspace-scroll,.studio-hub-sidebar){scrollbar-color:var(--jf-scroll-thumb) var(--jf-scroll-track)!important}

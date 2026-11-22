@@ -543,4 +543,32 @@
 .site-shell .rich-text h4{color:var(--jf-secondary)}
 .site-shell .media-caption .rich-text{color:var(--jf-muted)}
 .site-shell .home-availability i{background:#87f572;box-shadow:0 0 7px #88ff6a}
-body{color:var(--jf-text);scrollbar-color:var(--jf-border) var(--jf-background)}
+body{color:var(--jf-text);scrollbar-color:var(--jf-scroll-thumb) var(--jf-scroll-track)}
+
+/* Vector icons inherit the actual control text color. Uploaded custom icons
+   keep their original artwork instead of applying a destructive tint. */
+.site-shell :is(.chips button,.filter-button,.category-badge) svg{
+ color:currentColor!important;
+ stroke:currentColor;
+}
+.site-shell .home-work-link .work-arrow{
+ background:color-mix(in srgb,var(--jf-surface-tint) 84%,transparent)!important;
+ border-color:var(--jf-border)!important;color:var(--jf-secondary)!important;
+ box-shadow:0 2px 8px var(--jf-primary-soft);
+}
+.site-shell .home-work-link:hover .work-arrow{background:var(--jf-surface-tint)!important;border-color:var(--jf-secondary)!important}
+.site-shell .gallery-card .card-open{color:var(--jf-on-primary,var(--jf-text))}
+.site-shell .comparison-images .compare-line{background:var(--jf-secondary)}
+.site-shell .comparison-images .compare-line span{
+ background:var(--jf-primary);
+ color:var(--jf-on-primary,var(--jf-text));
+ border-color:var(--jf-secondary);
+ box-shadow:0 2px 12px var(--jf-primary-glow);
+}
+.site-shell .sidebar .brand-wrap .brand-edit-button{
+ background:var(--jf-surface-tint);color:var(--jf-text);border-color:var(--jf-border);
+}
+.site-shell .sidebar .brand-wrap .brand-edit-button:hover{background:var(--jf-primary);color:var(--jf-on-primary,var(--jf-text))}
+.site-shell :is(.gallery-card .edit-on-card,.home-work-edit,.featured-edit){
+ background:var(--jf-surface-tint)!important;border-color:var(--jf-border)!important;color:var(--jf-text)!important;
+}
