@@ -9,6 +9,7 @@ import { parseModelUrl } from '../../lib/model-embed'
 import { parseVideoEmbed } from '../../lib/video-embed'
 import { TextComposer } from '../ui/text-composer'
 import { ProjectFramingEditor } from './project-framing-editor'
+import {BlockProperties} from '../ui/block-properties'
 import { ProjectDivider } from '../ui/project-divider'
 import type { ProcessStep } from '../../data/projects'
 import { categoryIcons,type Block,type BlockType,type Category,type CategoryIcon,type GalleryEntry,type SlideEntry,type Project } from '../../data/projects'
@@ -57,10 +58,11 @@ function ToolTags({tools,onChange}:{tools:string[];onChange:(next:string[])=>voi
  }
  return <div className="tool-tags"><div className="tag-list">{tools.map(tool=><button type="button" key={tool} onClick={()=>onChange(tools.filter(t=>t!==tool))}>{tool}<X size={13}/></button>)}</div><input aria-label="Adicionar ferramentas" placeholder="Ex.: Blender, ZBrush, Substance…" value={text} onChange={e=>{if(e.target.value.includes(',')||e.target.value.includes('\n')){const fragments=e.target.value.split(/[,\n]+/);const trailing=fragments.pop()??'';const values=fragments.map(x=>x.trim()).filter(Boolean);if(values.length)onChange([...new Set([...tools,...values])]);setText(trailing)}else setText(e.target.value)}} onKeyDown={e=>{if(e.key==='Enter'||e.key===','){e.preventDefault();add(text)}else if(e.key==='Tab'&&text.trim())add(text)}} onBlur={()=>{if(text.trim())add(text)}}/><small>Vírgula, Enter ou Tab adicionam uma ferramenta. Clique na etiqueta para remover.</small></div>
 }
-interface Props {project:Project|null; projects:Project[];categories:Category[];onSave:(project:Project)=>void;onDelete:(id:string)=>void;onClose:()=>void;onCategories:(categories:Category[])=>void;onExport:()=>Promise<void>;onImport:(file:File)=>Promise<void>}
-export function AdminEditor({project,projects,categories,onSave,onDelete,onClose,onCategories,onExport,onImport}:Props){
+interface Props {initialBlockId?:string|null;project:Project|null; projects:Project[];categories:Category[];onSave:(project:Project)=>void;onDelete:(id:string)=>void;onClose:()=>void;onCategories:(categories:Category[])=>void;onExport:()=>Promise<void>;onImport:(file:File)=>Promise<void>}
+export function AdminEditor({initialBlockId,project,projects,categories,onSave,onDelete,onClose,onCategories,onExport,onImport}:Props){
  const [draft,setDraft]=useState<Project>(project??blank(categories[0]?.label))
- const [tab,setTab]=useState<'project'|'framing'|'composition'|'process'|'filters'|'backup'>('project')
+ const [tab,setTab]=useState<'project'|'framing'|'composition'|'process'|'filters'|'backup'>(initialBlockId?'composition':'project')
+ useEffect(()=>{if(tab==='composition'&&initialBlockId)document.getElementById('studio-project-block-'+initialBlockId)?.scrollIntoView({block:'start'})},[tab,initialBlockId])
  const [newCategory,setNewCategory]=useState('')
  const [newIcon,setNewIcon]=useState<CategoryIcon>('grid')
  const [newImage,setNewImage]=useState('')
@@ -134,8 +136,9 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <div className="template-gallery">{templates.map(t=><button type="button" key={t.type} className="template-tile" draggable={t.type!=='process'||!draft.blocks.some(b=>b.type==='process')} disabled={t.type==='process'&&draft.blocks.some(b=>b.type==='process')} title={t.type==='process'&&draft.blocks.some(b=>b.type==='process')?'Já adicionado. Arraste o bloco na composição para reposicionar.':t.description} onDragStart={e=>e.dataTransfer.setData('application/x-jf-template',t.type)} onClick={()=>addBlock(t.type)}><span className={'template-sketch '+t.type} aria-hidden="true">{t.type==='video'?<Clapperboard size={27}/>:t.type==='model'?<BoxIcon size={29}/>:<><i/><i/><i/></>}</span><b>{t.label}</b><small>{t.description}</small></button>)}</div>
  <div className="editor-section-title"><h3>Composição do projeto</h3><p>Arraste pela alça para reordenar; use as setas como alternativa.</p></div>
  <div className="blocks-list" onDragOver={e=>e.preventDefault()} onDrop={e=>{if(e.target===e.currentTarget){const t=e.dataTransfer.getData('application/x-jf-template') as BlockType;if(templates.some(a=>a.type===t))addBlock(t)}}}>
- {draft.blocks.map((b,i)=><section key={b.id} data-block-id={b.id} className={'edit-block '+(dragged===b.id?'dragging':'')} onDragOver={e=>e.preventDefault()} onDrop={e=>onBlockDrop(e,i)}>
+ {draft.blocks.map((b,i)=><section key={b.id} id={'studio-project-block-'+b.id} data-block-id={b.id} className={'edit-block '+(dragged===b.id?'dragging':'')} onDragOver={e=>e.preventDefault()} onDrop={e=>onBlockDrop(e,i)}>
  <div className="edit-block-top"><span className="drag-handle" draggable onDragStart={e=>{e.dataTransfer.setData('application/x-jf-block',b.id);setDragged(b.id)}} onDragEnd={()=>setDragged('')} title="Arrastar bloco"><GripVertical size={18}/></span><b>{i+1}. {titleFor(b.type)}</b><div><button type="button" onClick={()=>move(i,i-1)} aria-label="Mover acima"><ArrowUp size={16}/></button><button type="button" onClick={()=>move(i,i+1)} aria-label="Mover abaixo"><ArrowDown size={16}/></button><button type="button" onClick={()=>patch({blocks:draft.blocks.filter(x=>x.id!==b.id)})} aria-label="Excluir bloco"><Trash2 size={16}/></button></div></div>
+ <BlockProperties value={b.appearance} onChange={appearance=>updateBlock(b.id,{appearance})}/>
  {b.type==='process'&&<div className="project-composition-enhanced">
   <label>Título da seção<input value={b.content} onChange={e=>updateBlock(b.id,{content:e.target.value})} maxLength={90} placeholder="Creative process"/></label>
   <p className="editor-help">Este template exibe as {(draft.processSteps??[]).filter(step=>step.image?.trim()).length} etapa(s) com imagem da guia Processo. No computador, ocupa uma linha; no celular, vira um carrossel. Mova este bloco usando as setas ou a alça acima.</p>

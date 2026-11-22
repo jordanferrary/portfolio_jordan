@@ -28,3 +28,17 @@ export function normalizeNativeLayouts(raw:unknown):NativeLayouts{
  }
  return out
 }
+
+export const HOME_UPPER=['intro','profile'] as const
+export const HOME_LOWER=['featured','testimonials','focus'] as const
+export type HomeModuleOrder={upper:(typeof HOME_UPPER)[number][];lower:(typeof HOME_LOWER)[number][]}
+export function normalizeOrder<T extends string>(raw:unknown,defaults:readonly T[]):T[]{
+ const order:T[]=[]
+ if(Array.isArray(raw))for(const item of raw)if(defaults.includes(item)&&!order.includes(item))order.push(item)
+ for(const item of defaults)if(!order.includes(item))order.push(item)
+ return order
+}
+export function normalizeHomeModuleOrder(raw:unknown):HomeModuleOrder{
+ const v=raw&&typeof raw==='object'?raw as Partial<HomeModuleOrder>:{}
+ return {upper:normalizeOrder(v.upper,HOME_UPPER),lower:normalizeOrder(v.lower,HOME_LOWER)}
+}

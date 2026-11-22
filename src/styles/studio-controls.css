@@ -40,3 +40,13 @@
  .studio-component-properties{padding:12px;margin:8px 0;border:1px solid var(--jf-border);border-radius:10px}.studio-component-properties summary{cursor:pointer;color:var(--jf-secondary)}.studio-component-properties>label{margin-top:10px}.studio-component-properties[open]{display:grid;gap:6px}
 @media(max-width:750px){.studio-component.hide-mobile:not(.component-editing){display:none}.site-shell .studio-component{max-width:100%}}
 @media(min-width:751px){.studio-component.hide-desktop:not(.component-editing){display:none}}
+
+.studio-module-row{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--jf-border);border-radius:10px}
+.studio-module-row>strong{flex:1}.studio-module-row>span{cursor:grab}.studio-module-row>button{color:var(--jf-text);background:var(--jf-surface);border:1px solid var(--jf-border);border-radius:7px;padding:6px}.studio-module-row>button:disabled{opacity:.4}
+.studio-component-properties .studio-inline-checkbox{display:flex;align-items:center;gap:8px}
+.site-shell .home-about-panel{position:relative}
+.site-shell .home-intro>.studio-component-edit{top:0;right:0}
+.site-shell .case-study .studio-component{margin-inline:auto}
+.site-shell .case-study .studio-component[data-align="left"]{margin-left:0}
+.site-shell .case-study .studio-component[data-align="right"]{margin-right:0}
+.site-shell .home-bottom-panels[data-modified="true"]>section{grid-column:auto}

@@ -1,11 +1,15 @@
 import {useState} from 'react'
-import {X,Plus,Copy,Download,Trash2,Upload} from 'lucide-react'
+import {X,Plus,Copy,Download,Trash2,Upload,ArrowUp,ArrowDown,GripVertical} from 'lucide-react'
 import type {CustomPage} from '../../data/custom-pages'
 import {instantiatePage,normalizePageTemplate,readPageTemplates,savePageTemplates,type PageTemplate} from '../../lib/page-composition'
-import {NATIVE_ROUTES,type NativeLayouts,type NativeRoute} from '../../lib/component-settings'
+import {NATIVE_ROUTES,normalizeHomeModuleOrder,type HomeModuleOrder,type NativeLayouts,type NativeRoute} from '../../lib/component-settings'
 const labels:Record<NativeRoute,string>={inicio:'Home',portfolio:'Portfólio',sobre:'Sobre',contato:'Contato'}
-export function StudioComposition({pages,layouts,onSetLayouts,onAddPage,onEditPage,onClose}:{pages:CustomPage[];layouts:NativeLayouts;onSetLayouts:(value:NativeLayouts)=>void;onAddPage:(page:CustomPage)=>void;onEditPage:(id:string)=>void;onClose:()=>void}){
- const [tab,setTab]=useState<'routes'|'templates'>('routes')
+export function StudioComposition({pages,layouts,homeModuleOrder,onSetHomeModuleOrder,onSetLayouts,onAddPage,onEditPage,onClose}:{pages:CustomPage[];layouts:NativeLayouts;homeModuleOrder?:HomeModuleOrder;onSetHomeModuleOrder:(value:HomeModuleOrder)=>void;onSetLayouts:(value:NativeLayouts)=>void;onAddPage:(page:CustomPage)=>void;onEditPage:(id:string)=>void;onClose:()=>void}){
+ const [tab,setTab]=useState<'routes'|'templates'|'modules'>('routes')
+ const [moduleOrder,setModuleOrder]=useState(()=>normalizeHomeModuleOrder(homeModuleOrder))
+ const moduleLabels:Record<string,string>={intro:'Apresentação',profile:'Perfil',featured:'Destaques',testimonials:'Depoimentos',focus:'Foco criativo'}
+ const reorder=<K extends keyof HomeModuleOrder,>(group:K,from:number,to:number)=>setModuleOrder(prev=>{const list=[...prev[group]];if(from<0||to<0||from>=list.length||to>=list.length)return prev;const [item]=list.splice(from,1);list.splice(to,0,item);return {...prev,[group]:list}})
+ const [drag,setDrag]=useState<{group:keyof HomeModuleOrder;index:number}|null>(null)
  const [draft,setDraft]=useState<NativeLayouts>({...layouts})
  const [templates,setTemplates]=useState(readPageTemplates)
  const [source,setSource]=useState('')
@@ -22,16 +26,20 @@ export function StudioComposition({pages,layouts,onSetLayouts,onAddPage,onEditPa
  const exportTemplate=(t:PageTemplate)=>{const url=URL.createObjectURL(new Blob([JSON.stringify(t,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='page-template.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
  return <div className="editor-overlay" lang="pt-BR"><section className="editor-panel studio-controls-editor" role="dialog" aria-modal="true" aria-label="Compositor de páginas">
   <header><h2>Compositor de páginas</h2><button type="button" aria-label="Fechar" onClick={onClose}><X size={20}/></button></header>
-  <div className="editor-tabs"><button type="button" aria-pressed={tab==='routes'} onClick={()=>setTab('routes')}>Páginas nativas</button><button type="button" aria-pressed={tab==='templates'} onClick={()=>setTab('templates')}>Modelos</button></div>
+  <div className="editor-tabs"><button type="button" aria-pressed={tab==='routes'} onClick={()=>setTab('routes')}>Páginas nativas</button><button type="button" aria-pressed={tab==='modules'} onClick={()=>setTab('modules')}>Módulos da Home</button><button type="button" aria-pressed={tab==='templates'} onClick={()=>setTab('templates')}>Modelos</button></div>
   <div className="editor-scroll">{tab==='routes'?<>
    <p>Escolha uma página montada com blocos para apresentar em uma rota nativa. O conteúdo original permanece guardado. A rota e os links continuam iguais; substituir o Portfólio oculta sua galeria nativa.</p>
    {NATIVE_ROUTES.map(route=><div className="studio-nav-row" key={route}><strong>{labels[route]}</strong><label>Composição<select value={draft[route]??''} onChange={e=>setDraft(prev=>({...prev,[route]:e.target.value||undefined}))}><option value="">Layout original</option>{pages.map(p=><option key={p.id} value={p.id}>{p.navLabel}</option>)}</select></label>{draft[route]&&<button type="button" className="subtle-action" onClick={()=>onEditPage(draft[route]!)}>Editar composição selecionada</button>}</div>)}
    <button type="button" className="subtle-action" onClick={()=>onEditPage('new')}><Plus size={16}/>Criar composição</button>
+  </>:tab==='modules'?<>
+   <p>Reorganize os módulos existentes dentro das duas áreas da Home, sem substituir o conteúdo. Use as setas ou arraste pela alça.</p>
+   {(['upper','lower'] as const).map(group=><div className="studio-nav-row" key={group}><h3>{group==='upper'?'Apresentação e perfil':'Painéis inferiores'}</h3>{moduleOrder[group].map((id,i)=><div className="studio-module-row" key={id} onDragOver={e=>e.preventDefault()} onDrop={e=>{e.preventDefault();if(drag?.group===group)reorder(group,drag.index,i);setDrag(null)}}><span draggable onDragStart={e=>{e.dataTransfer.setData('text/plain',id);setDrag({group,index:i})}} onDragEnd={()=>setDrag(null)}><GripVertical size={19}/></span><strong>{moduleLabels[id]}</strong><button type="button" aria-label={'Subir '+moduleLabels[id]} disabled={i===0} onClick={()=>reorder(group,i,i-1)}><ArrowUp size={16}/></button><button type="button" aria-label={'Descer '+moduleLabels[id]} disabled={i===moduleOrder[group].length-1} onClick={()=>reorder(group,i,i+1)}><ArrowDown size={16}/></button></div>)}</div>)}
+   <button type="button" className="subtle-action" onClick={()=>setModuleOrder(normalizeHomeModuleOrder(undefined))}>Restaurar ordem original</button>
   </>:<>
    <p>Salve uma página como modelo independente e reutilizável. Arquivos locais continuam referenciados; para transferi-los a outro navegador, exporte também um backup de mídias.</p>
    <label>Página de origem<select value={source} onChange={e=>setSource(e.target.value)}><option value="">Selecionar</option>{pages.map(p=><option key={p.id} value={p.id}>{p.navLabel}</option>)}</select></label>
    <label>Nome do modelo<input value={name} maxLength={60} onChange={e=>setName(e.target.value)}/></label><div className="studio-nav-actions"><button type="button" disabled={!source||!name.trim()} onClick={saveTemplate}><Copy size={15}/>Salvar modelo</button><label><Upload size={15}/>Importar modelo<input type="file" accept=".json" onChange={e=>{const file=e.currentTarget.files?.[0];e.currentTarget.value='';if(file)void importTemplate(file)}}/></label></div>
    {templates.map((t,i)=><div className="studio-nav-row" key={t.name}><strong>{t.name}</strong><small>{t.page.blocks.length} blocos</small><div className="studio-nav-actions"><button type="button" onClick={()=>{if(pages.length>=80){setMessage('Limite de páginas atingido.');return}onAddPage(instantiatePage(t.page,[]))}}>Criar página</button><button type="button" onClick={()=>exportTemplate(t)}><Download size={15}/>Exportar</button><button type="button" aria-label={'Excluir '+t.name} onClick={()=>{try{persist(templates.filter((_,j)=>i!==j))}catch{setMessage('Falha ao excluir modelo.')}}}><Trash2 size={15}/></button></div></div>)}{message&&<p role="status">{message}</p>}
-  </>}</div><footer><button type="button" className="subtle-action" onClick={onClose}>Fechar</button>{tab==='routes'&&<button type="button" className="save-action" onClick={()=>{onSetLayouts(draft);onClose()}}>Salvar composições</button>}</footer>
+  </>}</div><footer><button type="button" className="subtle-action" onClick={onClose}>Fechar</button>{tab==='routes'&&<button type="button" className="save-action" onClick={()=>{onSetLayouts(draft);onClose()}}>Salvar composições</button>}{tab==='modules'&&<button type="button" className="save-action" onClick={()=>{onSetHomeModuleOrder(moduleOrder);onClose()}}>Salvar ordem</button>}</footer>
  </section></div>
 }

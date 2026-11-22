@@ -1,4 +1,4 @@
-import { lazy,Suspense,useState } from 'react'
+import { lazy,Suspense,useState,type CSSProperties } from 'react'
 import { ArrowLeft,ArrowUpRight,Pencil,Search } from 'lucide-react'
 import type { Block,Project,ProcessStep } from '../../data/projects'
 import { AssetImage } from '../ui/asset-image'
@@ -35,11 +35,17 @@ export function StoryBlock({block,projectTitle,processSteps=[]}:{block:Block;pro
  if(block.type==='gallery')return <section className="story-block story-multi-images">{(block.gallery??[]).filter(Boolean).map((source,i)=><ZoomableArt key={source+i} src={source} alt={projectTitle+', image '+(i+1)} loading="lazy" sizes="(max-width: 800px) 100vw, 500px"/>)}</section>
  return null
 }
-export function ProjectPage({project,onBack,editing,onEdit,showLikeCounts,headingSymbol}:{project:Project;onBack:()=>void;editing:boolean;onEdit:()=>void;showLikeCounts:boolean;headingSymbol?:HeadingSymbolStyle}){
+export function ProjectPage({project,onBack,editing,onEdit,onEditBlock,showLikeCounts,headingSymbol}:{project:Project;onBack:()=>void;editing:boolean;onEdit:()=>void;onEditBlock?:(id:string)=>void;showLikeCounts:boolean;headingSymbol?:HeadingSymbolStyle}){
  const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery','video','model','slideshow'].includes(block.type))
  const needsArtworkShowcase=!hasDetailedArtwork
  return <main data-alquimago-project={project.title} data-alquimago-category={project.category} data-alquimago-year={String(project.year??'')} data-alquimago-tools={project.tools?.join(', ')??''} className={'project-page'+(needsArtworkShowcase?' project-page-artwork-only':'')}><button className="back-link" onClick={onBack}><ArrowLeft size={18}/> Back to portfolio</button><div className="project-hero"><AssetImage src={project.image} alt={project.title} style={framingStyle(project.heroFocus)}/><div className="project-hero-content"><span className="eyebrow"><HeadingSymbol symbol={headingSymbol}/> {project.category} / {project.year}</span><h1>{project.title}</h1><RichText className="project-hero-description" value={project.description}/><div className="tools">{project.tools.map(t=><span key={t}>{t}</span>)}</div>{editing&&<button className="primary-action" onClick={onEdit}><Pencil size={16}/>Editar projeto</button>}</div></div><div className="project-engagement"><ProjectLike projectId={project.id} showCount={showLikeCounts}/></div><div className="case-study">
-  {project.blocks.length>0&&<div className="story-blocks">{project.blocks.map(b=><StoryBlock key={b.id} block={b} projectTitle={project.title} processSteps={project.processSteps}/>)}</div>}
+  {project.blocks.length>0&&<div className="story-blocks">{project.blocks.map(b=>{
+   const node=<StoryBlock key={b.id} block={b} projectTitle={project.title} processSteps={project.processSteps}/>,a=b.appearance
+   if(!a&&!editing)return node
+   return <div key={b.id} className={'studio-component'+(a?.surface==='panel'?' component-panel':'')+(a?.hideMobile?' hide-mobile':'')+(a?.hideDesktop?' hide-desktop':'')+(editing?' component-editing':'')} data-align={a?.align??'center'} style={{'--jf-block-width':(a?.width??100)+'%','--jf-block-space':(a?.space??0)+'px'} as CSSProperties}>
+    {editing&&onEditBlock&&<button type="button" className="studio-component-edit" aria-label="Editar este bloco" onClick={()=>onEditBlock(b.id)}><Pencil size={14}/></button>}{node}
+   </div>
+  })}</div>}
   {needsArtworkShowcase&&<section className="project-artwork-showcase" aria-label={'Artwork from '+project.title}>
    <div className="project-artwork-heading"><span><HeadingSymbol symbol={headingSymbol}/> FEATURED ARTWORK</span><h2>{project.title}</h2><p>{project.category}{project.year?' · '+project.year:''}</p></div>
    <figure className="project-artwork-frame"><ZoomableArt src={project.image} alt={'Full artwork: '+project.title} loading="lazy" sizes="(max-width: 800px) 100vw, 1000px"/></figure>

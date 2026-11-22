@@ -11,7 +11,7 @@ import { isKnownDemoTestimonial } from '../lib/testimonial-safety'
 import { DEFAULT_FRAMING,DEFAULT_GALLERY_BANNER_FRAMING,normalizeFraming,type ImageFraming } from '../lib/image-framing'
 import {applyFeaturedSelection} from '../lib/featured-projects'
 import type {ResponsiveImageMap} from '../lib/image-variants'
-import {normalizeNativeLayouts,type NativeLayouts} from '../lib/component-settings'
+import {normalizeBlockAppearance,normalizeHomeModuleOrder,normalizeNativeLayouts,type HomeModuleOrder,type NativeLayouts} from '../lib/component-settings'
 import {refreshLinkedBlocks} from '../lib/page-composition'
 import {normalizeCustomPages,type CustomPage} from '../data/custom-pages'
 import publishedPackage from '../data/published-portfolio.json'
@@ -23,7 +23,7 @@ const KEY='jordan-portfolio-local-v2'
 const PENDING_KEY='jordan-portfolio-publish-pending-v1'
 const bundled=publishedPackage as {schema:number;revision:string;store:unknown}
 export const currentPublishedRevision=bundled.revision||'initial'
-export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;typography?:TypographySettings;studioControls?:StudioControls;nativeLayouts?:NativeLayouts;glitchPalette:GlitchPalette;headingSymbol:HeadingSymbolStyle;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;galleryFocus:ImageFraming;galleryContent:GalleryContent;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
+export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;typography?:TypographySettings;studioControls?:StudioControls;nativeLayouts?:NativeLayouts;homeModuleOrder?:HomeModuleOrder;glitchPalette:GlitchPalette;headingSymbol:HeadingSymbolStyle;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;galleryFocus:ImageFraming;galleryContent:GalleryContent;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
 export function clampBrandScale(value:unknown,fallback:number,min:number,max:number):number{
  const number=typeof value==='number'?value:Number(value)
  return Number.isFinite(number)?Math.max(min,Math.min(max,Math.round(number))):fallback
@@ -43,7 +43,7 @@ function parseStore(raw:unknown):PortfolioStore{
   return {...c,label:englishCategory(c.label)}
  })
  for(const p of obj.projects)if(typeof p.id!=='string'||typeof p.title!=='string'||!Array.isArray(p.blocks))throw new Error('Projeto inválido')
- const projects=obj.projects.map(p=>({...p,category:englishCategory(p.category),image:normalizeBundledImage(p.image),featuredOrder:Number.isInteger(p.featuredOrder)&&p.featuredOrder!>=0&&p.featuredOrder!<3?p.featuredOrder:undefined,coverFocus:normalizeFraming(p.coverFocus),homeFocus:normalizeFraming(p.homeFocus??p.coverFocus),heroFocus:normalizeFraming(p.heroFocus),blocks:p.blocks.map(b=>({...b,content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage),galleryEntries:b.galleryEntries?.map(item=>({...item,image:normalizeBundledImage(item.image)})),slides:b.slides?.map(item=>({...item,image:normalizeBundledImage(item.image)}))})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
+ const projects=obj.projects.map(p=>({...p,category:englishCategory(p.category),image:normalizeBundledImage(p.image),featuredOrder:Number.isInteger(p.featuredOrder)&&p.featuredOrder!>=0&&p.featuredOrder!<3?p.featuredOrder:undefined,coverFocus:normalizeFraming(p.coverFocus),homeFocus:normalizeFraming(p.homeFocus??p.coverFocus),heroFocus:normalizeFraming(p.heroFocus),blocks:p.blocks.map(b=>({...b,appearance:normalizeBlockAppearance(b.appearance),content:b.type==='image'?normalizeBundledImage(b.content):b.content,media:b.media?normalizeBundledImage(b.media):b.media,after:b.after?normalizeBundledImage(b.after):b.after,gallery:b.gallery?.map(normalizeBundledImage),galleryEntries:b.galleryEntries?.map(item=>({...item,image:normalizeBundledImage(item.image)})),slides:b.slides?.map(item=>({...item,image:normalizeBundledImage(item.image)}))})),processSteps:Array.isArray(p.processSteps)?p.processSteps.map(step=>({...step,image:normalizeBundledImage(step.image)})):[]}))
  const home={...defaultHome,...(obj.home??{}),avatar:normalizeBundledImage(obj.home?.avatar??defaultHome.avatar),background:normalizeBundledImage(obj.home?.background??defaultHome.background),backgroundFocus:normalizeFraming(obj.home?.backgroundFocus??DEFAULT_FRAMING)}
  const galleryBackground=normalizeBundledImage(obj.galleryBackground??obj.home?.background??defaultGalleryBackground)
  const galleryFocus=normalizeFraming(obj.galleryFocus??DEFAULT_GALLERY_BANNER_FRAMING)
@@ -52,6 +52,7 @@ function parseStore(raw:unknown):PortfolioStore{
  const typography=normalizeTypography(obj.typography)
  const studioControls=normalizeStudioControls(obj.studioControls)
  const nativeLayouts=normalizeNativeLayouts(obj.nativeLayouts)
+ const homeModuleOrder=normalizeHomeModuleOrder(obj.homeModuleOrder)
  const glitchPalette=normalizeGlitchPalette(obj.glitchPalette)
  const headingSymbol=normalizeHeadingSymbol(obj.headingSymbol)
  const siteLogo=typeof obj.siteLogo==='string'?normalizeBundledImage(obj.siteLogo):''
@@ -75,7 +76,7 @@ function parseStore(raw:unknown):PortfolioStore{
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'&&!isKnownDemoTestimonial(t)):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
- return {customPages,imageVariants,themePalette,typography,studioControls,nativeLayouts,glitchPalette,headingSymbol,projects:projects.map(upgradeProcessTemplate),categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,galleryFocus,galleryContent,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
+ return {customPages,imageVariants,themePalette,typography,studioControls,nativeLayouts,homeModuleOrder,glitchPalette,headingSymbol,projects:projects.map(upgradeProcessTemplate),categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,galleryFocus,galleryContent,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
 }
 function publishedStore():PortfolioStore{
  if(bundled.schema===1&&bundled.store){
@@ -178,6 +179,7 @@ export function usePortfolio(editing=false){
  }
  const setCategories=(categories:Category[])=>save({...storeRef.current,categories})
  const setCustomPages=(customPages:CustomPage[])=>save({...storeRef.current,customPages:refreshLinkedBlocks(normalizeCustomPages(customPages))})
+ const setHomeModuleOrder=(homeModuleOrder:HomeModuleOrder)=>save({...storeRef.current,homeModuleOrder:normalizeHomeModuleOrder(homeModuleOrder)})
  const setNativeLayouts=(nativeLayouts:NativeLayouts)=>save({...storeRef.current,nativeLayouts:normalizeNativeLayouts(nativeLayouts)})
  const setHome=(home:HomeContent)=>save({...storeRef.current,home})
  const markPublished=(revision:string,snapshot:string|null)=>{
@@ -278,5 +280,5 @@ export function usePortfolio(editing=false){
   if(storeRef.current!==previous)throw new Error('Rascunho alterado durante a importação.')
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,makeCheckpoint,recoverCheckpoint,applyDesignTheme,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setNativeLayouts,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,makeCheckpoint,recoverCheckpoint,applyDesignTheme,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setNativeLayouts,setHomeModuleOrder,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }

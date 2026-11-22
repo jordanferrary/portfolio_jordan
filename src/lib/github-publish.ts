@@ -108,6 +108,7 @@ function stageSnapshot(store:PortfolioStore){
   imageVariants:store.imageVariants??{},
   customPages:refreshLinkedBlocks(store.customPages??[]),
   nativeLayouts:store.nativeLayouts,
+  homeModuleOrder:store.homeModuleOrder,
   projects:store.projects,
   categories:store.categories,
   home:store.home,
