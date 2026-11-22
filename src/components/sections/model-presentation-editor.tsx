@@ -1,7 +1,7 @@
 import {useEffect,useRef,useState} from 'react'
 import {Box,Camera,Check,Lightbulb,Plus,RotateCcw,Save,SlidersHorizontal,Trash2,X,Eye,EyeOff,Move,Target,Palette,Layers} from 'lucide-react'
 import {ProjectModel} from '../ui/project-model'
-import {createModelLight,normalizeModelPresentation,DEFAULT_MODEL_PRESENTATION,MAX_MODEL_LIGHTS,presetDirectionalLights,ART_SHADER_PRESETS,DEFAULT_ART_SHADER,newMaterialLook,type MaterialLook,type MaterialInfo,type ArtShader,type ModelPresentation,type ModelLight} from '../../lib/model-presentation'
+import {createModelLight,normalizeModelPresentation,DEFAULT_MODEL_PRESENTATION,MAX_MODEL_LIGHTS,presetDirectionalLights,ART_SHADER_PRESETS,DEFAULT_ART_SHADER,type MaterialLook,type MaterialInfo,type ArtShader,type ModelPresentation,type ModelLight} from '../../lib/model-presentation'
 import {MaterialLookEditor} from './model-material-editor'
 import '../../styles/project-model.css'
 type Props={url:string;poster?:string;title:string;value?:Partial<ModelPresentation>;onChange:(value:ModelPresentation)=>void}
