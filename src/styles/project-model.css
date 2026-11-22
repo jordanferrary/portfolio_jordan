@@ -252,3 +252,11 @@
 @media(prefers-reduced-transparency:reduce){.project-model-frame>.model-geometry-readout{background:var(--jf-background,#0a0812);backdrop-filter:none}}
 
 .model-playback-toolbar{display:flex;align-items:center;gap:4px;min-width:0;max-width:100%}.model-playback-toolbar select{max-width:150px;min-width:0;width:124px;height:32px;background:var(--jf-background);color:var(--jf-text);border:1px solid var(--jf-border);border-radius:8px;font:inherit;font-size:11px;padding:4px 6px;text-overflow:ellipsis}.model-playback-toolbar button:disabled{opacity:.45;cursor:default}.model-clip-list{display:grid;gap:6px;max-height:260px;overflow:auto;flex-shrink:0}.model-clip-list button{display:flex;align-items:center;gap:10px;padding:9px;border:1px solid var(--jf-border);border-radius:10px;background:var(--jf-background);color:var(--jf-text);cursor:pointer;text-align:left}.model-clip-list button[aria-pressed=true]{border-color:var(--jf-secondary);background:var(--jf-liquid-tinted,var(--jf-surface))}.model-clip-list button span{display:grid;gap:4px;flex:1;min-width:0;overflow-wrap:anywhere}.model-clip-list small{color:var(--jf-muted);font-size:10px}.model-clip-list svg{flex-shrink:0}@media(max-width:740px){.model-studio-rail button{min-width:43px}.model-playback-toolbar select{max-width:100px}.model-inspector-actions{flex-wrap:wrap}}
+
+/* Animation playback and camera orbit are separate groups. */
+.model-playback-toolbar{padding-inline-end:7px;margin-inline-end:2px;border-inline-end:1px solid var(--jf-border)}
+.site-shell .model-inspector-toolbar .model-orbit-toggle[aria-pressed=true]{background:var(--jf-liquid-tinted,var(--jf-primary));border-color:var(--jf-liquid-edge-hot,var(--jf-secondary));box-shadow:var(--jf-liquid-tinted-shadow);color:var(--jf-text)}
+.site-shell .model-inspector-toolbar .model-orbit-toggle[aria-pressed=false]{opacity:.78}
+.site-shell .model-inspector-toolbar .model-orbit-toggle:focus-visible{outline:2px solid var(--jf-secondary);outline-offset:2px}
+@media(prefers-reduced-motion:no-preference){.model-orbit-toggle[aria-pressed=true] svg{animation:model-orbit-indicator 5s linear infinite}@keyframes model-orbit-indicator{to{transform:rotate(360deg)}}}
+@media(max-width:600px){.model-playback-toolbar{padding-inline-end:4px;margin-inline-end:0}}

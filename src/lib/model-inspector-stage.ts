@@ -31,7 +31,7 @@ function disposeObject(root:THREE.Object3D){
  for(const s of skeletons)s.dispose()
 }
 export function createModelStage(host:HTMLElement,source:string,initial:ModelPresentation,callbacks:{onLoad:(stats:ModelStats)=>void;onError:(error:unknown)=>void;onAnimationFinished?:()=>void},lightEditing?:LightEditCallbacks,onMaterialSelect?:(id:string)=>void):ModelStage{
- let disposed=false,model:THREE.Object3D|undefined,presentation=initial,mode:ModelMode='material',rotate=initial.autoRotate,hovered=false,interacting=false,visible=true,idleUntil=0
+ let disposed=false,model:THREE.Object3D|undefined,presentation=initial,mode:ModelMode='material',rotate=false,hovered=false,interacting=false,visible=true,idleUntil=0
  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'})
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5))
  renderer.outputColorSpace=THREE.SRGBColorSpace

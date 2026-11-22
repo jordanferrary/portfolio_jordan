@@ -41,7 +41,7 @@ export type ModelPresentation=ModelCamera&{
 }
 export const DEFAULT_MODEL_PRESENTATION:ModelPresentation={
  lighting:'studio',exposure:1,environment:1,keyLight:2,lightAngle:45,lightColor:'#ffffff',background:'#15101e',backdrop:DEFAULT_MODEL_BACKDROP,
- animation:DEFAULT_MODEL_ANIMATION,autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,useEmbeddedLights:true,materialLighting:'scene',relightUnlit:true,emissionScale:1,artShader:DEFAULT_ART_SHADER,materialLooks:{},lights:[]
+ animation:DEFAULT_MODEL_ANIMATION,autoRotate:false,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,useEmbeddedLights:true,materialLighting:'scene',relightUnlit:true,emissionScale:1,artShader:DEFAULT_ART_SHADER,materialLooks:{},lights:[]
 }
 const numeric=(v:unknown,fallback:number,min:number,max:number)=>typeof v==='number'&&Number.isFinite(v)?Math.min(max,Math.max(min,v)):fallback
 const color=(v:unknown,fallback:string)=>typeof v==='string'&&/^#[a-f0-9]{6}$/i.test(v)?v:fallback
