@@ -10,7 +10,7 @@ test('old blocks get defaults and invalid settings are clamped',()=>{
  assert.equal(p.exposure,3);assert.equal(p.zoom,.2);assert.equal(p.background,DEFAULT_MODEL_PRESENTATION.background);assert.equal(p.rotationSpeed,1);assert.equal(p.autoRotate,false)
  for(const id of ['material','clay','wireframe','shaded-wire','clay-wire','flat-wire','normals','uv','bones','metalness','roughness'])assert.ok(MODEL_MODES.some(m=>m.id===id))
 })
-test('real material inspection loads only on request and persists per block',async()=>{
+test('project models activate on entry and material inspection persists per block',async()=>{
  const [view,runtime,editor,page]=await Promise.all(['src/components/ui/project-model.tsx','src/lib/model-inspector-stage.ts','src/components/sections/admin-editor.tsx','src/components/sections/project-page.tsx'].map(p=>readFile(p,'utf8')))
  assert.match(view,/if\(!activated\|\|!parsed\)return/)
  assert.match(view,/import\('\.\.\/\.\.\/lib\/model-inspector-stage'\)/)
@@ -19,7 +19,8 @@ test('real material inspection loads only on request and persists per block',asy
  assert.match(runtime,/isWireOverlay\(mode\)/);assert.match(runtime,/releaseWireGeometries\(\)/);assert.match(runtime,/attachSolidWireShader\(next,wireUniforms\)/)
  assert.doesNotMatch(runtime,/gl_Position\.z -=|makeOverlay|overlayMaterial/)
  assert.match(runtime,/rotate&&!hovered&&!interacting/);assert.match(runtime,/renderer\.dispose\(\)/)
- assert.match(editor,/modelPresentation=>updateBlock/);assert.match(page,/presentation=\{block\.modelPresentation\}/)
+ assert.match(editor,/modelPresentation=>updateBlock/);assert.match(page,/presentation=\{block\.modelPresentation\}/);assert.match(page,/<ProjectModel startActive url=/);assert.match(view,/setRetry\(n=>n\+1\)/);assert.match(view,/project-model-error-poster/);assert.match(runtime,/if\(!visible\|\|document.hidden\|\|!model\)return/)
+ const app=await readFile('src/app.tsx','utf8');assert.match(app,/!shouldCoverProject\(project,revealedProjects\)&&<AppErrorBoundary compact>/)
 })
 
 test('solid topology expands indexed triangles without changing original geometry or material groups',async()=>{
