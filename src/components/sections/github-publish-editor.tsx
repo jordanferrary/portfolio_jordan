@@ -2,7 +2,8 @@ import '../../styles/github-publish.css'
 import { useEffect,useState } from 'react'
 import { AlertTriangle,CheckCircle2,CloudUpload,Download,ExternalLink,Eye,EyeOff,GitBranch,RotateCcw,ShieldCheck,X,FolderOpen,Trash2 } from 'lucide-react'
 import type { PortfolioStore } from '../../hooks/use-portfolio'
-import { currentPublishedRevision } from '../../hooks/use-portfolio'
+import {auditStudio} from '../../lib/studio-health'
+import { currentPublishedRevision,refsFor } from '../../hooks/use-portfolio'
 import { publishPortfolioToGitHub,type GitHubPublishResult } from '../../lib/github-publish'
 import {getRepositoryMedia,type RepositoryMedia} from '../../lib/github-media'
 import {PublishedMediaCard} from '../ui/published-media-card'
@@ -115,6 +116,9 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
   try{localSnapshot=localStorage.getItem('jordan-portfolio-local-v2')}catch{/* local storage unavailable */}
   setBusy(true);setError('');setResult(null)
   try{
+   const issues=await auditStudio(store,refsFor(store))
+   const blockers=issues.filter(issue=>issue.level==='error')
+   if(blockers.length)throw new Error('Publicação interrompida: '+blockers.map(issue=>issue.message).join('; '))
    // No publishing without a fresh check of the selected credential.
    const check=await vault.check(credential)
    if(viaAlquimago)setVaultStatus(check)

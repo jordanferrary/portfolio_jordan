@@ -27,10 +27,11 @@ const GlitchPaletteEditor=lazy(()=>import('./components/sections/glitch-palette-
 import { applyThemePalette } from './lib/theme-palette'
 import {applyTypography} from './lib/typography'
 import {applyStudioControls,normalizeStudioControls} from './lib/studio-controls'
+const StudioMaintenance=lazy(()=>import('./components/sections/studio-maintenance').then(m=>({default:m.StudioMaintenance})))
 const StudioControlsEditor=lazy(()=>import('./components/sections/studio-controls-editor').then(m=>({default:m.StudioControlsEditor})))
 import {applyGlitchPalette} from './lib/glitch-palette'
 import {detectCountryByIp,initialLanguage,languageFromCountry,saveLanguageChoice,savedLanguage,type VisitorLanguage} from './lib/visitor-language'
-import {observePublicOverlayTranslation,observePublicTranslation} from './lib/public-page-translation'
+import {observePublicOverlayTranslation,observePublicTranslation,setManualTranslations} from './lib/public-page-translation'
 import {AppErrorBoundary} from './components/ui/app-error-boundary'
 import {readAlquimagoVisibilityDraft,writeAlquimagoVisibilityDraft} from './lib/alquimago-visibility'
 import {alquimagoPublishTokenVault,retireStudioSavedTokens} from './lib/github-token-vault'
@@ -76,14 +77,7 @@ export function App(){
   })
   return()=>controller.abort()
  },[])
- useEffect(()=>{
-  document.documentElement.lang=visitorLanguage==='pt'?'pt-BR':visitorLanguage
-  const root=document.querySelector<HTMLElement>('.site-shell')
-  const stopPage=root?observePublicTranslation(root,visitorLanguage):()=>{}
-  // Art and PDF lightboxes are public React portals outside the page shell.
-  const stopLightboxes=observePublicOverlayTranslation(visitorLanguage)
-  return ()=>{stopLightboxes();stopPage()}
- },[visitorLanguage])
+
 
  const [gateOpen,setGateOpen]=useState(false)
  const [editor,setEditor]=useState<Project|null|undefined>(undefined)
@@ -138,12 +132,24 @@ export function App(){
  const [homeEditorTab,setHomeEditorTab]=useState<'home'|'featured'|'feedback'|'music'|'socials'|'likes'>('home')
  const portfolio=usePortfolio(editing)
  const controls=normalizeStudioControls(portfolio.studioControls)
+ const [previewDraft,setPreviewDraft]=useState(false)
+ const [maintenanceTab,setMaintenanceTab]=useState<'history'|'health'|null>(null)
+ const viewEditing=editing&&!previewDraft
+ useEffect(()=>{
+  setManualTranslations(normalizeStudioControls(portfolio.studioControls).translations)
+  document.documentElement.lang=visitorLanguage==='pt'?'pt-BR':visitorLanguage
+  const root=document.querySelector<HTMLElement>('.site-shell')
+  const stopPage=root?observePublicTranslation(root,visitorLanguage):()=>{}
+  // Art and PDF lightboxes are public React portals outside the page shell.
+  const stopLightboxes=observePublicOverlayTranslation(visitorLanguage)
+  return ()=>{stopLightboxes();stopPage()}
+ },[visitorLanguage,portfolio.studioControls,editing])
  useEffect(()=>{applyStudioControls(portfolio.studioControls)},[portfolio.studioControls])
  const lockStudio=()=>{
   if(githubPublishOpen)return
   setEditing(false);setGateOpen(false);setEditor(undefined);setHomeEditorOpen(false);setAboutEditorOpen(false);setContactEditorOpen(false)
   setGalleryBackgroundEditorOpen(false);setLogoEditorOpen(false);setSiteIdentityOpen(false);setThemePaletteOpen(false);setGlitchPaletteOpen(false)
-  setImageConverterOpen(false);setMediaManagerOpen(false);setSkin3DOpen(false);setCustomPageEditorTarget(null);setControlsTab(null);setStagedMediaDeletions([])
+  setImageConverterOpen(false);setMediaManagerOpen(false);setSkin3DOpen(false);setCustomPageEditorTarget(null);setControlsTab(null);setMaintenanceTab(null);setPreviewDraft(false);setStagedMediaDeletions([])
  }
  const [galleryFilter,setGalleryFilter]=useState('SFW')
  const [revealedProjects,setRevealedProjects]=useState<Set<string>>(()=>new Set())
@@ -215,6 +221,9 @@ export function App(){
   {id:'reviews',label:'Feedbacks',description:'Depoimentos reais e autoria',section:'Conteúdo',icon:MessageSquare,onClick:()=>openHomeTab('feedback')},
   {id:'social',label:'Redes sociais',description:'Links, ícones e plataformas',section:'Conteúdo',icon:Share2,onClick:()=>openHomeTab('socials')},
   {id:'likes',label:'Curtidas',description:'Visibilidade e contagem',section:'Conteúdo',icon:Heart,onClick:()=>openHomeTab('likes')},
+  {id:'draft-preview',label:previewDraft?'Sair da prévia':'Prévia do visitante',description:'Visualizar o rascunho sem os botões contextuais de edição',section:'Páginas',icon:Eye,onClick:()=>setPreviewDraft(value=>!value)},
+  {id:'studio-history',label:'Histórico local',description:'Desfazer e refazer alterações nesta sessão',section:'Conteúdo',icon:Layers,onClick:()=>setMaintenanceTab('history')},
+  {id:'studio-health',label:'Diagnóstico',description:'Verificação de referências, contraste e integridade',section:'Conteúdo',icon:ScanLine,onClick:()=>setMaintenanceTab('health')},
   {id:'global-layout',label:'Layout e materiais',description:'Dimensões, espaçamento, cantos e Liquid Glass por dispositivo',section:'Identidade',icon:Layers,onClick:()=>setControlsTab('layout')},
   {id:'global-motion',label:'Animações',description:'Modo e duração da transição de páginas',section:'Identidade',icon:ScanLine,onClick:()=>setControlsTab('motion')},
   {id:'global-features',label:'Funcionalidades',description:'Ativar ou ocultar módulos públicos',section:'Conteúdo',icon:Eye,onClick:()=>setControlsTab('features')},
@@ -369,25 +378,27 @@ export function App(){
   const key=(e:KeyboardEvent)=>{if(e.ctrlKey&&(e.key==='\\'||e.code==='Backslash')){e.preventDefault();if(editing){lockStudio()}else setGateOpen(true)}else if(e.key==='Escape'&&gateOpen)setGateOpen(false)}
   window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key)
  },[editing,gateOpen,githubPublishOpen])
- return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':page==='contato'?'site-shell contact-route':page==='sobre'?'site-shell about-route':'site-shell'}><Sidebar controls={controls} page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} onReorderCustomPages={(fromId,toId)=>portfolio.setCustomPages(reorderCustomPages(portfolio.customPages,fromId,toId))} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={editing} onEditLogo={()=>setLogoEditorOpen(true)}/><RouteGlitchTransition routeKey={routeIdentity} onCovered={commitRoute} motion={controls.motion}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={editing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}} language={visitorLanguage} onLanguageChange={changeVisitorLanguage}/>
- {page==='portfolio'&&<AppErrorBoundary compact><Suspense fallback={<RouteGlitchFallback/>}><Gallery filter={galleryFilter} onFilterChange={setGalleryFilter} revealedProjects={revealedProjects} headingSymbol={portfolio.headingSymbol} language={visitorLanguage} projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={editing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground} heroFocus={portfolio.galleryFocus} content={portfolio.galleryContent}/></Suspense></AppErrorBoundary>}
+ return <ImageVariantProvider variants={portfolio.imageVariants??{}}><AssetLibraryProvider projects={portfolio.projects} categories={portfolio.categories} home={portfolio.home} about={portfolio.about} galleryBackground={portfolio.galleryBackground} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteFavicon={portfolio.siteFavicon} tracks={portfolio.musicTracks} pages={portfolio.customPages}><div className={page==='inicio'?'site-shell home-route':page==='contato'?'site-shell contact-route':page==='sobre'?'site-shell about-route':'site-shell'}><Sidebar controls={controls} page={page==='project'?'portfolio':page} navigate={navigate} customPages={portfolio.customPages} customPageId={customPage?.id} onOpenCustomPage={navigateCustomPage} onManagePages={()=>setCustomPageEditorTarget('manage')} onReorderCustomPages={(fromId,toId)=>portfolio.setCustomPages(reorderCustomPages(portfolio.customPages,fromId,toId))} tracks={portfolio.musicTracks} siteLogo={portfolio.siteLogo} siteLogoHover={portfolio.siteLogoHover} siteLogoSize={portfolio.siteLogoSize} siteLogoHoverScale={portfolio.siteLogoHoverScale} editing={viewEditing} onEditLogo={()=>setLogoEditorOpen(true)}/><RouteGlitchTransition routeKey={routeIdentity} onCovered={commitRoute} motion={controls.motion}/><div className="site-main"><SocialBar links={portfolio.socialLinks} editing={viewEditing} onEdit={()=>{setHomeEditorTab('socials');setHomeEditorOpen(true)}} language={visitorLanguage} onLanguageChange={changeVisitorLanguage}/>
+ {page==='portfolio'&&<AppErrorBoundary compact><Suspense fallback={<RouteGlitchFallback/>}><Gallery filter={galleryFilter} onFilterChange={setGalleryFilter} revealedProjects={revealedProjects} headingSymbol={portfolio.headingSymbol} language={visitorLanguage} projects={portfolio.projects} categories={portfolio.categories} onOpen={openProject} editing={viewEditing} onAdd={()=>setEditor(null)} onEdit={setEditor} onReorder={portfolio.reorderProjects} heroImage={portfolio.galleryBackground} heroFocus={portfolio.galleryFocus} content={portfolio.galleryContent}/></Suspense></AppErrorBoundary>}
  {page==='project'&&project&&shouldCoverProject(project,revealedProjects)&&<section className="sensitive-project-warning" aria-labelledby="sensitive-warning-title" translate="no"><div className="sensitive-warning-panel"><div className="sensitive-warning-symbol" aria-hidden="true"><EyeOff size={28} strokeWidth={1.65}/></div><h1 id="sensitive-warning-title">{sensitiveCopy(visitorLanguage).warningTitle}</h1><p>{sensitiveCopy(visitorLanguage).warningText}</p><div className="sensitive-warning-actions"><button className="primary-action sensitive-warning-button" type="button" onClick={()=>navigate('portfolio')}><ArrowLeft size={17} aria-hidden="true"/><span>{sensitiveCopy(visitorLanguage).back}</span></button><button className="secondary-action sensitive-warning-button" type="button" onClick={()=>setRevealedProjects(previous=>new Set([...previous,project.id]))}><Eye size={17} aria-hidden="true"/><span>{sensitiveCopy(visitorLanguage).continue}</span></button></div></div></section>}
- {page==='project'&&project&&!shouldCoverProject(project,revealedProjects)&&<AppErrorBoundary compact><Suspense fallback={<RouteGlitchFallback/>}><ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={editing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts} headingSymbol={portfolio.headingSymbol}/></Suspense></AppErrorBoundary>}
+ {page==='project'&&project&&!shouldCoverProject(project,revealedProjects)&&<AppErrorBoundary compact><Suspense fallback={<RouteGlitchFallback/>}><ProjectPage project={project} onBack={()=>navigate('portfolio')} editing={viewEditing} onEdit={()=>setEditor(project)} showLikeCounts={portfolio.showLikeCounts} headingSymbol={portfolio.headingSymbol}/></Suspense></AppErrorBoundary>}
  {page==='project'&&!project&&<section className="simple-page"><h1>Project not found</h1><button onClick={()=>navigate('portfolio')}>Back to portfolio</button></section>}
- {page==='custom'&&customPage&&<AppErrorBoundary compact><Suspense fallback={<RouteGlitchFallback/>}><CustomPageView page={customPage} editing={editing} headingSymbol={portfolio.headingSymbol} onEdit={()=>setCustomPageEditorTarget(customPage.id)}/></Suspense></AppErrorBoundary>}
+ {page==='custom'&&customPage&&<AppErrorBoundary compact><Suspense fallback={<RouteGlitchFallback/>}><CustomPageView page={customPage} editing={viewEditing} headingSymbol={portfolio.headingSymbol} onEdit={()=>setCustomPageEditorTarget(customPage.id)}/></Suspense></AppErrorBoundary>}
  {page==='custom'&&!customPage&&<section className="simple-page"><h1>Page not found</h1><p>This page may have moved or been removed.</p><button type="button" className="primary-action" onClick={()=>navigate('inicio')}>Return home</button></section>}
- {page==='inicio'&&<HomePage features={controls.features} headingSymbol={portfolio.headingSymbol} profileName={portfolio.about.name} home={portfolio.home} testimonials={portfolio.testimonials} projects={portfolio.projects} editing={editing} onOpenProject={openProject} onEditProject={setEditor} onEditHome={()=>openHomeTab('feedback')} onManageFeatured={()=>openHomeTab('featured')} onNavigatePortfolio={()=>navigate('portfolio')}/>}
- {page==='sobre'&&<AboutPage headingSymbol={portfolio.headingSymbol} about={portfolio.about} editing={editing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
- {page==='contato'&&<ContactPage headingSymbol={portfolio.headingSymbol} socials={portfolio.socialLinks} settings={portfolio.contact} demoEnabled={editing} onEdit={()=>setContactEditorOpen(true)}/>}
+ {page==='inicio'&&<HomePage features={controls.features} headingSymbol={portfolio.headingSymbol} profileName={portfolio.about.name} home={portfolio.home} testimonials={portfolio.testimonials} projects={portfolio.projects} editing={viewEditing} onOpenProject={openProject} onEditProject={setEditor} onEditHome={()=>openHomeTab('feedback')} onManageFeatured={()=>openHomeTab('featured')} onNavigatePortfolio={()=>navigate('portfolio')}/>}
+ {page==='sobre'&&<AboutPage headingSymbol={portfolio.headingSymbol} about={portfolio.about} editing={viewEditing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
+ {page==='contato'&&<ContactPage headingSymbol={portfolio.headingSymbol} socials={portfolio.socialLinks} settings={portfolio.contact} demoEnabled={viewEditing} onEdit={()=>setContactEditorOpen(true)}/>}
  </div>
  {editing&&<AppErrorBoundary compact><Suspense fallback={null}><StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onNewProject={()=>setEditor(null)} onPublish={()=>openPublishDialog('studio')} onExport={portfolio.exportData} onImport={portfolio.importData} onRestorePublished={portfolio.restorePublished} publishedRevision={currentPublishedRevision} onLock={lockStudio} actions={studioActions}/></Suspense></AppErrorBoundary>} 
-  {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
+  {editing&&previewDraft&&<button type="button" className="studio-preview-exit" onClick={()=>setPreviewDraft(false)}>Sair da prévia</button>}
+ {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  <AppErrorBoundary compact editorOverlay><Suspense fallback={null}>
  {gateOpen&&<AdminGate onUnlock={()=>{setGateOpen(false);setEditing(true)}} onClose={()=>{setGateOpen(false);setSkin3DOpen(false)}}/>}
  {editing&&imageConverterOpen&&<ImageConverter onClose={()=>setImageConverterOpen(false)}/>}
  {editing&&customPageEditorTarget!==null&&<CustomPageEditor key={customPageEditorTarget} initialPageId={customPageEditorTarget} pages={portfolio.customPages} onSavePages={portfolio.setCustomPages} onNavigatePage={navigateCustomPage} onClose={()=>setCustomPageEditorTarget(null)}/>}
  {editing&&skin3DOpen&&<Alquimago3DEditor onClose={()=>setSkin3DOpen(false)} onPublish={()=>openPublishDialog('studio')}/>}
  {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>{setMediaManagerOpen(false);openPublishDialog('studio')}} onPreparePublished={paths=>{setStagedMediaDeletions(paths);setMediaManagerOpen(false);openPublishDialog('studio')}}/>}
+ {editing&&maintenanceTab&&<StudioMaintenance tab={maintenanceTab} past={portfolio.historyInfo.past} future={portfolio.historyInfo.future} onUndo={portfolio.undo} onRedo={portfolio.redo} onAudit={portfolio.runAudit} onClose={()=>setMaintenanceTab(null)}/>}
  {editing&&controlsTab&&<StudioControlsEditor value={portfolio.studioControls} initialTab={controlsTab} onSave={portfolio.setStudioControls} onClose={()=>setControlsTab(null)}/>}
  {editing&&themePaletteOpen&&<ThemePaletteEditor symbol={portfolio.headingSymbol} value={portfolio.themePalette} typography={portfolio.typography} onSave={portfolio.setThemePalette} onClose={()=>setThemePaletteOpen(false)}/>}
  {editing&&glitchPaletteOpen&&<GlitchPaletteEditor value={portfolio.glitchPalette} onSave={portfolio.setGlitchPalette} onClose={()=>setGlitchPaletteOpen(false)}/>}

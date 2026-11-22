@@ -1,3 +1,4 @@
+import type {TranslationEntry} from './studio-controls'
 import type {VisitorLanguage} from './visitor-language'
 import {VISITOR_PHRASES} from './visitor-phrases'
 
@@ -27,6 +28,8 @@ const NO_TRANSLATE_SELECTOR=[
  '[contenteditable="true"]','pre','code','kbd','samp','script','style','svg','noscript'
 ].join(',')
 type TextRecord={source:string;shown:string}
+let manualPhrases=new Map<string,TranslationEntry>()
+export function setManualTranslations(entries:TranslationEntry[]){manualPhrases=new Map(entries.map(entry=>[entry.source,entry]))}
 const seen=new WeakMap<Text,TextRecord>()
 const attributes=new WeakMap<Element,Map<string,TextRecord>>()
 type Cached={translated:string;expires:number}
@@ -72,13 +75,15 @@ function publicCopy(source:string){
 export function localPhrase(source:string,language:VisitorLanguage):string|null{
  if(language==='en')return source
  const text=source.trim()
+ const override=manualPhrases.get(text)?.[language]
+ if(override)return override
  const exact=VISITOR_PHRASES[text]?.[language]
  if(exact!==undefined)return exact
  // Gallery text is now authored in a textarea. Preserve its line breaks while
  // reusing the existing human-reviewed translations for each complete line.
  if(/\r?\n/.test(text)){
   const lines=text.split(/\r?\n/)
-  const translated=lines.map(line=>VISITOR_PHRASES[line.trim()]?.[language])
+  const translated=lines.map(line=>manualPhrases.get(line.trim())?.[language]||VISITOR_PHRASES[line.trim()]?.[language])
   if(translated.every((line):line is string=>typeof line==='string'))
    return translated.join('\n')
  }
@@ -110,6 +115,7 @@ function decodeEntities(value:string){
   .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&nbsp;/g,' ')
 }
 async function fetchTranslation(source:string,language:Exclude<VisitorLanguage,'en'>):Promise<string|null>{
+ if(typeof document!=='undefined'&&document.documentElement.dataset.jfStudioActive==='true')return null
  if(!reserveQuota(source.length))return null
  const controller=new AbortController()
  const timer=setTimeout(()=>controller.abort(),4200)
@@ -146,6 +152,8 @@ export async function translatePublicText(source:string,language:VisitorLanguage
  if(!publicCopy(text)||language==='en')return source
  const translatedLocal=localPhrase(text,language)
  if(translatedLocal)return translatedLocal
+ // Do not send unpublished creator content to external translation services.
+ if(typeof document!=='undefined'&&document.documentElement.dataset.jfStudioActive==='true')return source
  // Keep the artist name intact even inside a sentence not yet in the local phrasebook.
  // Translate only the surrounding text, never send the name to a translation API.
  if(/Jordan Ferrary/i.test(text)){

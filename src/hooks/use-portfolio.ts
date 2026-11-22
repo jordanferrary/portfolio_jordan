@@ -1,4 +1,5 @@
 import { useCallback,useRef,useState } from 'react'
+import {auditStudio} from '../lib/studio-health'
 import {normalizeStudioControls,type StudioControls} from '../lib/studio-controls'
 import {normalizeTypography,type TypographySettings} from '../lib/typography'
 import { DEFAULT_THEME,normalizeThemePalette,type ThemePalette } from '../lib/theme-palette'
@@ -92,9 +93,10 @@ function load():PortfolioStore{
  }catch{/* keep published or stock defaults */}
  return publishedStore()
 }
-function refsFor(store:PortfolioStore):string[]{
+export function refsFor(store:PortfolioStore):string[]{
  const refs=new Set(mediaRefs(store.projects,store.categories))
  for(const project of store.projects)for(const block of project.blocks){
+  if(block.modelPresentation?.backdrop?.image&&isLocalMedia(block.modelPresentation.backdrop.image))refs.add(block.modelPresentation.backdrop.image)
   for(const item of block.galleryEntries??[])if(isLocalMedia(item.image))refs.add(item.image)
   for(const slide of block.slides??[])if(isLocalMedia(slide.image))refs.add(slide.image)
  }
@@ -129,7 +131,31 @@ export function usePortfolio(editing=false){
  const [deployedStore]=useState<PortfolioStore>(publishedStore)
  const storeRef=useRef(store)
  const [saveError,setSaveError]=useState('')
- const save=useCallback((next:PortfolioStore)=>{storeRef.current=next;setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('')}catch{setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[])
+ type HistoryEntry={store:PortfolioStore;time:number;label:string}
+ const history=useRef<{past:HistoryEntry[];future:HistoryEntry[]}>({past:[],future:[]})
+ const persist=useCallback((next:PortfolioStore)=>{storeRef.current=next;setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('')}catch{setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[])
+ const save=useCallback((next:PortfolioStore)=>{
+  const previous=storeRef.current
+  const keys=(Object.keys(next) as (keyof PortfolioStore)[]).filter(key=>JSON.stringify(previous[key])!==JSON.stringify(next[key]))
+  if(!keys.length)return
+  history.current.past=[...history.current.past,{store:previous,time:Date.now(),label:keys.join(', ')}].slice(-30)
+  history.current.future=[]
+  persist(next)
+ },[persist])
+ const undo=()=>{
+  const entry=history.current.past.pop()
+  if(!entry)return
+  history.current.future.push({...entry,store:storeRef.current})
+  persist(entry.store)
+ }
+ const redo=()=>{
+  const entry=history.current.future.pop()
+  if(!entry)return
+  history.current.past.push({...entry,store:storeRef.current})
+  persist(entry.store)
+ }
+ const runAudit=()=>auditStudio(storeRef.current,refsFor(storeRef.current))
+ const historyInfo=()=>({past:history.current.past.map(({time,label})=>({time,label})),future:history.current.future.map(({time,label})=>({time,label}))})
  const update=(project:Project)=>save({...storeRef.current,projects:storeRef.current.projects.some(p=>p.id===project.id)?storeRef.current.projects.map(p=>p.id===project.id?project:p):[project,...storeRef.current.projects]})
  const remove=(id:string)=>save({...storeRef.current,projects:storeRef.current.projects.filter(p=>p.id!==id)})
  const setFeaturedProjects=(ids:string[])=>save({...storeRef.current,projects:applyFeaturedSelection(storeRef.current.projects,ids)})
@@ -157,6 +183,7 @@ export function usePortfolio(editing=false){
  const restorePublished=()=>{
   localStorage.removeItem(KEY)
   localStorage.removeItem(PENDING_KEY)
+  history.current={past:[],future:[]}
   const restored=publishedStore();storeRef.current=restored;setStore(restored)
   setSaveError('')
  }
@@ -213,5 +240,5 @@ export function usePortfolio(editing=false){
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }

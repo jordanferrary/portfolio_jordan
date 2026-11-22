@@ -3,7 +3,7 @@ export type NavId=typeof NAV_IDS[number]
 export const NAV_ICONS=['home','grid','user','mail','layers','book','image','star'] as const
 export type NavIcon=typeof NAV_ICONS[number]
 export type TranslationEntry={source:string;pt:string;es:string}
-export type LayoutSettings={width:number;gap:number;radius:number;glassBlur:number;glassGlow:number}
+export type LayoutSettings={width:number;gutter:number;gap:number;radius:number;glassBlur:number;glassGlow:number}
 export type StudioControls={
  desktop:LayoutSettings;mobile:LayoutSettings;
  motion:{mode:'glitch'|'fade'|'none';duration:number};
@@ -11,7 +11,7 @@ export type StudioControls={
  navigation:{order:NavId[];items:Record<Exclude<NavId,'custom'>,{label:string;visible:boolean;icon:NavIcon}>};
  translations:TranslationEntry[]
 }
-export const DEFAULT_LAYOUT:LayoutSettings={width:1470,gap:100,radius:100,glassBlur:100,glassGlow:100}
+export const DEFAULT_LAYOUT:LayoutSettings={width:1470,gutter:0,gap:100,radius:100,glassBlur:100,glassGlow:100}
 export const DEFAULT_CONTROLS:StudioControls={
  desktop:{...DEFAULT_LAYOUT},mobile:{...DEFAULT_LAYOUT},
  motion:{mode:'glitch',duration:260},
@@ -25,7 +25,7 @@ const bool=(value:unknown,fallback:boolean)=>typeof value==='boolean'?value:fall
 const str=(value:unknown,max:number)=>typeof value==='string'?value.trim().slice(0,max):''
 function layout(raw:unknown):LayoutSettings{
  const v=record(raw)
- return {width:integer(v.width,900,1800,1470),gap:integer(v.gap,75,135,100),radius:integer(v.radius,50,150,100),glassBlur:integer(v.glassBlur,0,150,100),glassGlow:integer(v.glassGlow,0,150,100)}
+ return {width:integer(v.width,900,1800,1470),gutter:integer(v.gutter,0,16,0),gap:integer(v.gap,75,135,100),radius:integer(v.radius,50,150,100),glassBlur:integer(v.glassBlur,0,150,100),glassGlow:integer(v.glassGlow,0,150,100)}
 }
 export function normalizeStudioControls(raw:unknown):StudioControls{
  const v=record(raw),m=record(v.motion),f=record(v.features),n=record(v.navigation),nItems=record(n.items)
@@ -52,6 +52,7 @@ export function applyStudioControls(raw:unknown){
   const size=v[device]
   for(const key of ['gap','radius','glassBlur','glassGlow'] as const)root.style.setProperty('--jf-'+device+'-'+key,String(size[key]/100))
   root.style.setProperty('--jf-'+device+'-width',size.width+'px')
+  root.style.setProperty('--jf-'+device+'-gutter',size.gutter+'px')
  }
  root.dataset.jfMotion=v.motion.mode
  root.dataset.jfFooter=String(v.features.footer)

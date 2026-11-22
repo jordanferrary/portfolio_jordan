@@ -15,7 +15,7 @@ test('all four visitor routes share one page-width baseline',()=>{
  assert.match(entry,/import '\.\/styles\/page-layout-consistency\.css'/)
  for(const name of ['home-dashboard','gallery-page','about-page','contact-social-page'])
   assert.ok(css.includes('.'+name),'Missing page baseline: '+name)
- assert.match(css,/--jf-page-layout-max:1470px/)
+ assert.match(css,/--jf-page-layout-max:var\(--jf-desktop-width,1470px\)/)
  assert.match(css,/max-width:var\(--jf-page-layout-max\)!important/)
  assert.match(css,/\.site-shell \.gallery-heading\{margin-left:0!important\}/)
  assert.match(css,/\.site-shell\.contact-route \.contact-social-page\{padding-inline:0!important\}/)
@@ -40,7 +40,7 @@ test('public pages share one responsive semantic type scale',()=>{
  assert.match(home,/className="home-intro"/)
 })
 test('gallery banner still bleeds right and fades after shared-width changes',()=>{
- assert.match(css,/--gallery-hero-bleed:calc\(34px \+ max\(0px,\(100vw - 1679px\) \/ 2\)\)/)
+ assert.match(css,/--gallery-hero-bleed:calc\(34px \+ max\(0px,\(100vw - \(var\(--jf-page-layout-max\) \+ 209px\)\) \/ 2\)\)/)
  const idx=entry.indexOf("import './styles/gallery-hero-refinement.css'")
  const late=entry.indexOf("import './styles/page-layout-consistency.css'")
  assert.ok(idx>=0&&late>idx,'Shared content width must override the earlier gallery bleed calculation')

@@ -29,7 +29,7 @@
  /* Gallery art retains its right-edge bleed after changing the content width.
     209px = 175px left site rail + 34px right site padding. */
  .site-shell .gallery-page{
-  --gallery-hero-bleed:calc(34px + max(0px,(100vw - 1679px) / 2));
+  --gallery-hero-bleed:calc(34px + max(0px,(100vw - (var(--jf-page-layout-max) + 209px)) / 2));
  }
 }
 @media(min-width:751px){
