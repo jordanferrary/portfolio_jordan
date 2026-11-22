@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-22T16:29:13.088Z-dae0649a-a0d8-4d9b-82ed-eb017637fa6a",
+  "revision": "2026-11-22T17:45:59.404Z-115fd368-e8e7-4178-b92d-1c43f4137f44",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -857,7 +857,7 @@
       "titleSecond": "worlds.",
       "introduction": "I'm Jordan Ferrary, a 3D artist focused on bringing ideas to life through art, modeling and creativity.",
       "avatar": "site://images/studio/1d22823c20c4e155dbff46bc2d1498ce239d7bfd6409a9bfd67fffec5fe226d5.jpg",
-      "background": "site://images/studio/85affb1cef3408f29920594c551fe227e82d6b13b6a13e4ae3a45f95154b8368.webp",
+      "background": "site://images/studio/146bfff4306ab2d66153d738c078aab9c1f409ab844a935630dc6867b5e0f6ae.webp",
       "backgroundFocus": {
         "x": 50,
         "y": 6,
@@ -954,10 +954,17 @@
       "searchPlaceholder": "Search for projects...",
       "emptyMessage": "No projects found. Try another filter or search term."
     },
-    "siteLogo": "site://images/studio/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5.png",
+    "siteLogo": "",
     "siteLogoHover": "",
     "siteLogoSize": 140,
     "siteLogoHoverScale": 110,
+    "siteLogoAppearance": {
+      "mode": "auto",
+      "primary": "#A234FA",
+      "secondary": "#CB89FF",
+      "glow": "#A234FA",
+      "glowStrength": 70
+    },
     "siteFavicon": "",
     "themePalette": {
       "primary": "#FF8145",
