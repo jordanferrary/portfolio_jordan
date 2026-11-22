@@ -76,7 +76,8 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   const transparent=source.transparent||material.opacity<1
   const flat=style.preset==='flat'||Boolean(base.flatShading)
   if(material.transparent!==transparent){material.transparent=transparent;material.needsUpdate=true}
-  material.depthWrite=source.depthWrite&&material.opacity>=1
+  material.depthWrite=source.depthWrite&&(!look||look.opacity>=1)
+  if(lit.isMeshStandardMaterial){lit.roughness=THREE.MathUtils.clamp((base.isMeshStandardMaterial?base.roughness:.85)*(look?.roughness??1),0,1);lit.metalness=THREE.MathUtils.clamp((base.isMeshStandardMaterial?base.metalness:0)*(look?.metalness??1),0,1)}
   if(lit.isMeshStandardMaterial&&lit.flatShading!==flat){lit.flatShading=flat;lit.needsUpdate=true}
   applyPresentationEmission(material,source,presentation.emissionScale*(look?.emission??1))
   material.visible=source.visible&&(!materialEdit.active||!materialEdit.isolate||!materialEdit.selected||id===materialEdit.selected)

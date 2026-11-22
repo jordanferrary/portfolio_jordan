@@ -132,7 +132,7 @@ test('illustration surfaces and optional RGB camera pass preserve technical mode
 test('material overrides have isolated layers and retain global defaults',async()=>{
  const p=normalizeModelPresentation({materialLooks:{'mat-glb-0':{surface:{preset:'hologram'},shadow:{preset:'crosshatch',strength:4},shadowThreshold:2},'mat-glb-1':{surface:{preset:'watercolor'},light:{preset:'toon'}}}})
  assert.equal(p.materialLooks['mat-glb-0'].surface.preset,'hologram')
- assert.equal(p.materialLooks['mat-glb-0'].shadow.strength,1)
+ assert.equal(p.materialLooks['mat-glb-0'].shadow.strength,1);assert.equal(p.materialLooks['mat-glb-0'].shadow.patternScale,7);assert.equal(p.materialLooks['mat-glb-0'].roughness,1)
  assert.equal(p.materialLooks['mat-glb-0'].shadowThreshold,.95)
  assert.equal(p.materialLooks['mat-glb-1'].light.preset,'toon')
  assert.equal(p.artShader.preset,'original')

@@ -55,20 +55,20 @@ export function normalizeArtShader(value?:Partial<ArtShader>|null):ArtShader{
  const preset=ART_SHADER_PRESETS.find(item=>item.id===v.preset)??ART_SHADER_PRESETS[0]
  return {preset:preset.id,strength:numeric(v.strength,d.strength,0,1),tint:color(v.tint,preset.tint),bands:Math.round(numeric(v.bands,d.bands,2,8)),rimPower:numeric(v.rimPower,d.rimPower,.5,8),scanSpacing:numeric(v.scanSpacing,d.scanSpacing,3,24),patternScale:numeric(v.patternScale,d.patternScale,3,24),inkColor:color(v.inkColor,d.inkColor),paperColor:color(v.paperColor,d.paperColor),patternAngle:numeric(v.patternAngle,d.patternAngle,0,180),chromaticAberration:numeric(v.chromaticAberration,0,0,12),chromaticAngle:numeric(v.chromaticAngle,0,0,360),crt:numeric(v.crt,0,0,1),vhs:numeric(v.vhs,0,0,1),pixelSize:numeric(v.pixelSize,0,0,12)}
 }
-export type MaterialLayer={preset:ArtShaderPreset;strength:number;tint:string}
-export type MaterialLook={surface:ArtShader;light:MaterialLayer;shadow:MaterialLayer;shadowThreshold:number;shadowSoftness:number;rimStrength:number;rimTint:string;rimPower:number;baseTint:string;opacity:number;emission:number}
+export type MaterialLayer={preset:ArtShaderPreset;strength:number;tint:string;patternScale:number;bands:number;rimPower:number;scanSpacing:number}
+export type MaterialLook={surface:ArtShader;light:MaterialLayer;shadow:MaterialLayer;shadowThreshold:number;shadowSoftness:number;rimStrength:number;rimTint:string;rimPower:number;baseTint:string;opacity:number;emission:number;roughness:number;metalness:number}
 export type MaterialInfo={id:string;name:string;meshes:number;color:string}
 export type MaterialEditState={active:boolean;selected:string|null;isolate:boolean;highlight:boolean}
 export function newMaterialLook(surface:ArtShader=DEFAULT_ART_SHADER):MaterialLook{
- return {surface:{...surface},light:{preset:'original',strength:1,tint:'#ffffff'},shadow:{preset:'original',strength:1,tint:'#ffffff'},shadowThreshold:.45,shadowSoftness:.18,rimStrength:0,rimTint:'#a35bff',rimPower:3,baseTint:'#ffffff',opacity:1,emission:1}
+ return {surface:{...surface,chromaticAberration:0,crt:0,vhs:0,pixelSize:0},light:{preset:'original',strength:1,tint:'#ffffff',patternScale:7,bands:4,rimPower:3,scanSpacing:7},shadow:{preset:'original',strength:1,tint:'#ffffff',patternScale:7,bands:4,rimPower:3,scanSpacing:7},shadowThreshold:.45,shadowSoftness:.18,rimStrength:0,rimTint:'#a35bff',rimPower:3,baseTint:'#ffffff',opacity:1,emission:1,roughness:1,metalness:1}
 }
 function normalizeLayer(value:unknown):MaterialLayer{
  const v=(value&&typeof value==='object'?value:{}) as Partial<MaterialLayer>
- const s=normalizeArtShader(v);return {preset:s.preset==='flat'?'original':s.preset,strength:numeric(v.strength,1,0,1),tint:s.tint}
+ const s=normalizeArtShader(v);return {preset:s.preset==='flat'?'original':s.preset,strength:numeric(v.strength,1,0,1),tint:s.tint,patternScale:s.patternScale,bands:s.bands,rimPower:s.rimPower,scanSpacing:s.scanSpacing}
 }
 export function normalizeMaterialLook(value:unknown):MaterialLook{
  const v=(value&&typeof value==='object'?value:{}) as Partial<MaterialLook>,d=newMaterialLook()
- return {surface:normalizeArtShader(v.surface),light:normalizeLayer(v.light),shadow:normalizeLayer(v.shadow),shadowThreshold:numeric(v.shadowThreshold,d.shadowThreshold,.05,.95),shadowSoftness:numeric(v.shadowSoftness,d.shadowSoftness,.01,.5),rimStrength:numeric(v.rimStrength,0,0,1),rimTint:color(v.rimTint,d.rimTint),rimPower:numeric(v.rimPower,3,.5,8),baseTint:color(v.baseTint,'#ffffff'),opacity:numeric(v.opacity,1,0,1),emission:numeric(v.emission,1,0,3)}
+ return {surface:normalizeArtShader(v.surface),light:normalizeLayer(v.light),shadow:normalizeLayer(v.shadow),shadowThreshold:numeric(v.shadowThreshold,d.shadowThreshold,.05,.95),shadowSoftness:numeric(v.shadowSoftness,d.shadowSoftness,.01,.5),rimStrength:numeric(v.rimStrength,0,0,1),rimTint:color(v.rimTint,d.rimTint),rimPower:numeric(v.rimPower,3,.5,8),baseTint:color(v.baseTint,'#ffffff'),opacity:numeric(v.opacity,1,0,1),emission:numeric(v.emission,1,0,3),roughness:numeric(v.roughness,1,0,2),metalness:numeric(v.metalness,1,0,2)}
 }
 function normalizeMaterialLooks(value:unknown):Record<string,MaterialLook>{
  if(!value||typeof value!=='object'||Array.isArray(value))return {}
