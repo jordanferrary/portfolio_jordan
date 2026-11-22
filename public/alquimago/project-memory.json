@@ -1,16 +1,16 @@
 {
   "schema": 2,
-  "updatedAt": "2026-11-22T02:58:08.322Z",
+  "updatedAt": "2026-11-22T03:37:32.223Z",
   "brain": {
     "energy": 100,
     "curiosity": 100,
     "focus": 0,
     "affinity": 57,
-    "xp": 240,
-    "interactions": 28,
+    "xp": 250,
+    "interactions": 29,
     "lastSeen": 1000000000000,
     "sleepUntil": 0,
-    "lastRewardAt": 1795316288322,
+    "lastRewardAt": 1795318652223,
     "lastAction": "publish",
     "lastRewardAction": "publish",
     "rewardedPages": {
@@ -37,7 +37,8 @@
       "pub-2026-11-21T22%3A31%3A51.005Z-dc1d5b6c-129b-4bf2-bbd0-9b5556d11f6a": 20778,
       "pub-2026-11-22T01%3A14%3A39.969Z-8168c489-4deb-4cd4-a987-d3b7bc4432f3": 20779,
       "pub-2026-11-22T01%3A21%3A17.706Z-6604b86d-3c2d-4620-8a81-16a87192cf1e": 20779,
-      "pub-2026-11-22T02%3A58%3A08.322Z-ad8605e5-c505-4bb0-9247-fe2347e094ba": 20779
+      "pub-2026-11-22T02%3A58%3A08.322Z-ad8605e5-c505-4bb0-9247-fe2347e094ba": 20779,
+      "pub-2026-11-22T03%3A37%3A32.223Z-fe5a141e-560c-4b9e-b832-c73df1b09a7f": 20779
     }
   },
   "neural": {
@@ -2690,7 +2691,7 @@
     "schema": 1,
     "seed": 77,
     "energy": 0,
-    "curiosity": 24.92000000000064,
+    "curiosity": 24.840000000000643,
     "stimulation": 0,
     "trust": 45,
     "rewardBias": [
@@ -2714,20 +2715,20 @@
     "contextWeights": {},
     "adaptation": {
       "quieto": 0,
-      "observar": 3.723010623957646e-11,
+      "observar": 3.425169774041035e-11,
       "dica": 0,
       "investigar": 0,
       "acenar": 0,
       "brilhar": 0,
       "brincar": 0,
-      "meditar": 0.032756758672896395,
+      "meditar": 0.030136217979064683,
       "celebrar": 0,
       "curiosidade": 0,
       "pensar": 0,
       "estudar": 0,
       "poção": 0,
       "alongar": 0,
-      "descansar": 0.0067184585288816686,
+      "descansar": 0.0061809818465711356,
       "acolher": 0
     },
     "episodes": [],

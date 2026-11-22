@@ -1,11 +1,11 @@
 {
   "schema": 1,
-  "revision": "2026-11-22T02:58:08.322Z-ad8605e5-c505-4bb0-9247-fe2347e094ba",
+  "revision": "2026-11-22T03:37:32.223Z-fe5a141e-560c-4b9e-b832-c73df1b09a7f",
   "projects": [
     {
       "id": "project-mwqz9gcn",
       "title": "nsfw text",
-      "category": "NSFW",
+      "category": "Props",
       "year": "2026",
       "tools": [],
       "description": "isso é só um texte",

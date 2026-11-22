@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-22T02:58:08.322Z-ad8605e5-c505-4bb0-9247-fe2347e094ba",
+  "revision": "2026-11-22T03:37:32.223Z-fe5a141e-560c-4b9e-b832-c73df1b09a7f",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -305,7 +305,7 @@
       {
         "id": "project-mwqz9gcn",
         "title": "nsfw text",
-        "category": "NSFW",
+        "category": "Props",
         "year": "2026",
         "image": "site://images/studio/6f8e18fa350e509c68d9da7df642d5d66f1e244f7f982a1550d24a1c84e2b234.webp",
         "description": "isso é só um texte",
@@ -578,7 +578,8 @@
           "y": 50,
           "zoom": 1
         },
-        "processSteps": []
+        "processSteps": [],
+        "unlisted": true
       },
       {
         "id": "project-mw4oyna3",
