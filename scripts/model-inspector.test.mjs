@@ -255,3 +255,13 @@ test('mesh statistics are a passive overlay inside the viewer with no instructio
  assert.match(view,/<dt>Verts<\/dt><dd>\{stats\.vertices\.toLocaleString\(\)\}/)
  assert.match(css,/\.project-model-frame>\.model-geometry-readout\{[^}]*position:absolute[^}]*pointer-events:none/)
 })
+
+test('animation clips are visible and initial playback settings persist',async()=>{
+ const config=normalizeModelPresentation({animation:{clip:3,autoplay:false,loop:false,speed:5}}).animation
+ assert.deepEqual(config,{clip:3,autoplay:false,loop:false,speed:3})
+ assert.equal(normalizeModelPresentation().animation.clip,-1)
+ const [stage,view,studio]=await Promise.all(['src/lib/model-inspector-stage.ts','src/components/ui/project-model.tsx','src/components/sections/model-presentation-editor.tsx'].map(path=>readFile(path,'utf8')))
+ assert.match(stage,/animationClips:clips.map/);assert.match(stage,/THREE.LoopRepeat:THREE.LoopOnce/);assert.match(stage,/setEffectiveTimeScale\(speed\)/);assert.match(stage,/mixer.addEventListener\('finished'/)
+ assert.match(view,/onAnimations\?\.\(value.animationClips\)/);assert.match(view,/model-playback-toolbar/);assert.match(view,/if\(ready\)stage.current\?\.setAnimation/)
+ assert.match(studio,/tab==='animations'/);assert.match(studio,/patchAnimation\(\{clip:index\}\)/);assert.match(studio,/animationClips.length/)
+})

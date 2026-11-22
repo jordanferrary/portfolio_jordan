@@ -32,13 +32,16 @@ export const DEFAULT_MODEL_BACKDROP:ModelBackdrop={mode:'solid',secondary:'#0807
 export const MAX_MODEL_LIGHTS=8
 export type ModelLight={id:string;name:string;type:'directional'|'point'|'spot';enabled:boolean;color:string;intensity:number;azimuth:number;elevation:number;distance:number;angle:number;softness:number;targetX:number;targetY:number;targetZ:number}
 export type ModelCamera={azimuth:number;elevation:number;zoom:number;fov:number;targetX:number;targetY:number;targetZ:number}
+export type ModelAnimationInfo={name:string;duration:number}
+export type ModelAnimationSettings={clip:number;autoplay:boolean;loop:boolean;speed:number}
+export const DEFAULT_MODEL_ANIMATION:ModelAnimationSettings={clip:-1,autoplay:true,loop:true,speed:1}
 export type ModelPresentation=ModelCamera&{
  lighting:'studio'|'soft'|'contrast';exposure:number;environment:number;keyLight:number;lightAngle:number;lightColor:string;background:string;backdrop:ModelBackdrop;
- autoRotate:boolean;rotationSpeed:number;usePresetRig:boolean;useEmbeddedLights:boolean;materialLighting:'scene'|'original';relightUnlit:boolean;emissionScale:number;artShader:ArtShader;materialLooks:Record<string,MaterialLook>;lights:ModelLight[]
+ animation:ModelAnimationSettings;autoRotate:boolean;rotationSpeed:number;usePresetRig:boolean;useEmbeddedLights:boolean;materialLighting:'scene'|'original';relightUnlit:boolean;emissionScale:number;artShader:ArtShader;materialLooks:Record<string,MaterialLook>;lights:ModelLight[]
 }
 export const DEFAULT_MODEL_PRESENTATION:ModelPresentation={
  lighting:'studio',exposure:1,environment:1,keyLight:2,lightAngle:45,lightColor:'#ffffff',background:'#15101e',backdrop:DEFAULT_MODEL_BACKDROP,
- autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,useEmbeddedLights:true,materialLighting:'scene',relightUnlit:true,emissionScale:1,artShader:DEFAULT_ART_SHADER,materialLooks:{},lights:[]
+ animation:DEFAULT_MODEL_ANIMATION,autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,useEmbeddedLights:true,materialLighting:'scene',relightUnlit:true,emissionScale:1,artShader:DEFAULT_ART_SHADER,materialLooks:{},lights:[]
 }
 const numeric=(v:unknown,fallback:number,min:number,max:number)=>typeof v==='number'&&Number.isFinite(v)?Math.min(max,Math.max(min,v)):fallback
 const color=(v:unknown,fallback:string)=>typeof v==='string'&&/^#[a-f0-9]{6}$/i.test(v)?v:fallback
@@ -93,12 +96,16 @@ function normalizeMaterialLooks(value:unknown):Record<string,MaterialLook>{
  if(!value||typeof value!=='object'||Array.isArray(value))return {}
  return Object.fromEntries(Object.entries(value).filter(([id])=>/^mat-[a-z0-9-]{1,100}$/.test(id)).slice(0,512).map(([id,look])=>[id,normalizeMaterialLook(look)]))
 }
+export function normalizeModelAnimation(value?:Partial<ModelAnimationSettings>|null):ModelAnimationSettings{
+ const v=value??{}
+ return {clip:Math.round(numeric(v.clip,-1,-1,100000)),autoplay:v.autoplay!==false,loop:v.loop!==false,speed:numeric(v.speed,1,.1,3)}
+}
 export function normalizeModelPresentation(value?:Partial<ModelPresentation>|null):ModelPresentation{
  const d=DEFAULT_MODEL_PRESENTATION,v=value??{}
  return {lighting:v.lighting==='soft'||v.lighting==='contrast'?v.lighting:'studio',
  exposure:numeric(v.exposure,d.exposure,.2,3),environment:numeric(v.environment,d.environment,0,2),keyLight:numeric(v.keyLight,d.keyLight,0,5),
  lightAngle:numeric(v.lightAngle,d.lightAngle,-180,180),lightColor:color(v.lightColor,d.lightColor),background:color(v.background,d.background),backdrop:normalizeBackdrop(v.backdrop),
- autoRotate:typeof v.autoRotate==='boolean'?v.autoRotate:d.autoRotate,rotationSpeed:numeric(v.rotationSpeed,d.rotationSpeed,.2,4),
+ animation:normalizeModelAnimation(v.animation),autoRotate:typeof v.autoRotate==='boolean'?v.autoRotate:d.autoRotate,rotationSpeed:numeric(v.rotationSpeed,d.rotationSpeed,.2,4),
  azimuth:numeric(v.azimuth,d.azimuth,-180,180),elevation:numeric(v.elevation,d.elevation,-89,89),zoom:numeric(v.zoom,d.zoom,.2,8),
  fov:numeric(v.fov,d.fov,15,80),targetX:numeric(v.targetX,0,-5,5),targetY:numeric(v.targetY,0,-5,5),targetZ:numeric(v.targetZ,0,-5,5),
  usePresetRig:v.usePresetRig!==false,useEmbeddedLights:v.useEmbeddedLights!==false,materialLighting:v.materialLighting==='original'?'original':'scene',relightUnlit:v.materialLighting!=='original',emissionScale:numeric(v.emissionScale,d.emissionScale,0,2),artShader:normalizeArtShader(v.artShader),materialLooks:normalizeMaterialLooks(v.materialLooks),lights:normalizeLights(v.lights)}

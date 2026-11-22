@@ -5,15 +5,15 @@ import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'
 import {KTX2Loader} from 'three/examples/jsm/loaders/KTX2Loader.js'
 import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js'
-import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,resolvePbrFactor,type InspectorOptions,type ModelMode,type ModelPresentation,type MaterialInfo,type MaterialEditState,type ModelCamera,type LightEditState,type LightEditCallbacks} from './model-presentation'
+import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,resolvePbrFactor,type InspectorOptions,type ModelMode,type ModelPresentation,type ModelAnimationInfo,type MaterialInfo,type MaterialEditState,type ModelCamera,type LightEditState,type LightEditCallbacks} from './model-presentation'
 import {createChecker,createMatcap,debugMaterial,isPresentationMaterial,createPresentationMaterial,applyPresentationEmission} from './model-debug-materials'
 import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model-solid-wireframe'
 import {createLightGizmos} from './model-light-gizmos'
 import {attachArtShader,createArtUniforms,updateArtUniforms,updateMaterialLayers,type ArtUniforms} from './model-art-shaders'
 import {createChromaticPass} from './model-chromatic-pass'
 import {responsiveCameraFov,referenceFitDistance,cameraZoomForDistance,wrapCameraAzimuth} from './model-camera-framing'
-export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[];unlitMaterials:number;materials:MaterialInfo[]}
-export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean)=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;setLightEditing:(state:LightEditState)=>void;frameLights:()=>void;setMaterialEditing:(state:MaterialEditState)=>void;dispose:()=>void}
+export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[];animationClips:ModelAnimationInfo[];unlitMaterials:number;materials:MaterialInfo[]}
+export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean,speed?:number,loop?:boolean)=>void;restartAnimation:()=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;setLightEditing:(state:LightEditState)=>void;frameLights:()=>void;setMaterialEditing:(state:MaterialEditState)=>void;dispose:()=>void}
 const rad=THREE.MathUtils.degToRad
 function disposeObject(root:THREE.Object3D){
  const geometries=new Set<THREE.BufferGeometry>(),materials=new Set<THREE.Material>(),textures=new Set<THREE.Texture>(),skeletons=new Set<THREE.Skeleton>()
@@ -30,7 +30,7 @@ function disposeObject(root:THREE.Object3D){
  for(const g of geometries)g.dispose()
  for(const s of skeletons)s.dispose()
 }
-export function createModelStage(host:HTMLElement,source:string,initial:ModelPresentation,callbacks:{onLoad:(stats:ModelStats)=>void;onError:(error:unknown)=>void},lightEditing?:LightEditCallbacks,onMaterialSelect?:(id:string)=>void):ModelStage{
+export function createModelStage(host:HTMLElement,source:string,initial:ModelPresentation,callbacks:{onLoad:(stats:ModelStats)=>void;onError:(error:unknown)=>void;onAnimationFinished?:()=>void},lightEditing?:LightEditCallbacks,onMaterialSelect?:(id:string)=>void):ModelStage{
  let disposed=false,model:THREE.Object3D|undefined,presentation=initial,mode:ModelMode='material',rotate=initial.autoRotate,hovered=false,interacting=false,visible=true,idleUntil=0
  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'})
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5))
@@ -250,10 +250,22 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   }
   applyOptions()
  }
- function setAnimation(index:number,playing:boolean){
+ function setAnimation(index:number,playing:boolean,speed=1,loop=true){
   if(!mixer||index<0||index>=clips.length){action?.stop();action=undefined;animationIndex=-1;animationPlaying=false;return}
-  if(index!==animationIndex){action?.stop();action=mixer.clipAction(clips[index]);action.reset().play();animationIndex=index}
-  animationPlaying=playing;if(action)action.paused=!playing
+  const changed=index!==animationIndex
+  if(changed){action?.stop();action=mixer.clipAction(clips[index]);action.reset().play();animationIndex=index}
+  if(!action)return
+  if(playing&&!loop&&action.time>=clips[index].duration)action.reset().play()
+  action.setLoop(loop?THREE.LoopRepeat:THREE.LoopOnce,loop?Infinity:1)
+  action.clampWhenFinished=true
+  action.setEffectiveTimeScale(speed)
+  action.paused=false
+  if(changed)mixer.update(0)
+  animationPlaying=playing;action.paused=!playing
+ }
+ function restartAnimation(){
+  if(!action||!mixer)return
+  action.reset().play();mixer.update(0);action.paused=!animationPlaying
  }
  const draco=new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/libs/draco/gltf/')
  const ktx2=new KTX2Loader().setTranscoderPath('https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/libs/basis/').detectSupport(renderer)
@@ -264,8 +276,9 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   const bounds=new THREE.Box3().setFromObject(model)
   if(!bounds.isEmpty()){bounds.getCenter(vertexCenter);bounds.getSize(size);radius=Math.max(size.length()/2,.0001)}
   clips=gltf.animations;mixer=new THREE.AnimationMixer(model)
+  mixer.addEventListener('finished',event=>{if(event.action===action){animationPlaying=false;callbacks.onAnimationFinished?.()}})
   const available=new Set<ModelMode>(['material','neutral','clay','wireframe','shaded-wire','clay-wire','flat','flat-wire','normals','unlit','matcap','metalness','roughness','opacity','emission','specular'])
-  const stats:ModelStats={triangles:0,vertices:0,meshes:0,available:[],animations:clips.map((clip,i)=>clip.name||'Animation '+(i+1)),unlitMaterials:0,materials:[]}
+  const stats:ModelStats={triangles:0,vertices:0,meshes:0,available:[],animations:clips.map((clip,i)=>clip.name||'Animation '+(i+1)),animationClips:clips.map((clip,i)=>({name:clip.name||'Animation '+(i+1),duration:clip.duration})),unlitMaterials:0,materials:[]}
   model.traverse(obj=>{if(obj instanceof THREE.Light)embeddedLights.set(obj,obj.visible);if(obj instanceof THREE.Mesh){if(!obj.geometry.hasAttribute('normal')&&obj.geometry.hasAttribute('position'))obj.geometry.computeVertexNormals();original.set(obj,obj.material);originalGeometry.set(obj,obj.geometry);stats.meshes++
    if(obj.geometry.hasAttribute('uv'))available.add('uv')
    if(obj instanceof THREE.SkinnedMesh){available.add('bones');if(obj.geometry.hasAttribute('skinWeight'))available.add('weights')}
@@ -289,7 +302,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  })
  return {
   setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;const emissionChanged=next.emissionScale!==presentation.emissionScale;presentation=next;applyLighting();if(relight){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();artUniforms.clear();setMode(mode)}else{if(emissionChanged)updateEmission();updateMaterialLooks()}if(reframe)resetCamera()},
-  setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,resetCamera,captureCamera,frameLights,setMaterialEditing(state){materialEdit=state;updateMaterialLooks()},setLightEditing(state){editState=state;gizmos?.setState(state);applyLighting()},
+  setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,restartAnimation,resetCamera,captureCamera,frameLights,setMaterialEditing(state){materialEdit=state;updateMaterialLooks()},setLightEditing(state){editState=state;gizmos?.setState(state);applyLighting()},
   dispose(){if(disposed)return;disposed=true;renderer.setAnimationLoop(null);canvas.removeEventListener('pointerdown',pickDown);canvas.removeEventListener('pointerup',pickUp);artUniforms.clear();observer.disconnect();intersection.disconnect();controls.dispose();canvas.removeEventListener('pointerenter',enter);canvas.removeEventListener('pointerleave',exit)
    mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model)
    for(const helper of skeletonHelpers){scene.remove(helper);helper.dispose()}
