@@ -93,3 +93,26 @@ test('scene lighting adapts unlit materials without replacing textures or PBR ch
  assert.equal(clone.isMeshPhysicalMaterial,true);assert.equal(clone.metalness,.8);assert.equal(clone.roughness,.2);assert.equal(clone.map,texture);assert.equal(clone.emissiveIntensity,.75);assert.equal(physical.emissiveIntensity,3)
  lit.dispose();preserved.dispose();source.dispose();clone.dispose();physical.dispose();texture.dispose()
 })
+
+test('art shaders are opt-in, persist and update uniforms without replacing materials',async()=>{
+ const settings=normalizeModelPresentation({artShader:{preset:'toon',strength:8,bands:99,rimPower:-2}})
+ assert.equal(settings.artShader.preset,'toon');assert.equal(settings.artShader.strength,1);assert.equal(settings.artShader.bands,8);assert.equal(settings.artShader.rimPower,.5)
+ assert.equal(normalizeModelPresentation().artShader.preset,'original')
+ const {MeshStandardMaterial,MeshBasicMaterial}=await import('three')
+ const result=await build({entryPoints:['src/lib/model-art-shaders.ts'],bundle:true,platform:'node',format:'esm',write:false,logLevel:'silent'})
+ const {createArtUniforms,updateArtUniforms,attachArtShader}=await import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].text).toString('base64'))
+ const uniforms=createArtUniforms(settings.artShader)
+ const mat=new MeshStandardMaterial(),mock={uniforms:{},fragmentShader:'#include <tonemapping_fragment>'}
+ attachArtShader(mat,uniforms);mat.onBeforeCompile(mock,{})
+ assert.match(mock.fragmentShader,/normalize\(normal\)/);assert.match(mock.fragmentShader,/mix\(originalArt,colorArt,jfArtStrength\)/)
+ assert.equal(mock.uniforms.jfArtMode,uniforms.jfArtMode)
+ const key=mat.customProgramCacheKey()
+ updateArtUniforms(uniforms,{...settings.artShader,preset:'hologram',strength:.3})
+ assert.equal(mock.uniforms.jfArtMode.value,5);assert.equal(mock.uniforms.jfArtStrength.value,.3);assert.equal(mat.customProgramCacheKey(),key)
+ const basic=new MeshBasicMaterial(),plain={uniforms:{},fragmentShader:'#include <tonemapping_fragment>'}
+ attachArtShader(basic,uniforms);basic.onBeforeCompile(plain,{})
+ assert.doesNotMatch(plain.fragmentShader,/normalize\(normal\)/)
+ const runtime=await readFile('src/lib/model-inspector-stage.ts','utf8')
+ assert.match(runtime,/if\(mode==='material'\)attachArtShader/);assert.match(runtime,/updateArtUniforms\(artUniforms,next.artShader\)/)
+ mat.dispose();basic.dispose()
+})

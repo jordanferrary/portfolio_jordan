@@ -1,14 +1,26 @@
 export type ModelMode='material'|'neutral'|'clay'|'wireframe'|'shaded-wire'|'clay-wire'|'flat'|'flat-wire'|'normals'|'unlit'|'metalness'|'roughness'|'normal-map'|'ao'|'opacity'|'emission'|'specular'|'scattering'|'matcap'|'matcap-surface'|'uv'|'bones'|'weights'
+export type ArtShaderPreset='original'|'toon'|'noir'|'rim'|'iridescent'|'hologram'|'blueprint'
+export type ArtShader={preset:ArtShaderPreset;strength:number;tint:string;bands:number;rimPower:number;scanSpacing:number}
+export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;description:string;tint:string;swatch:string}[]=[
+ {id:'original',name:'Original PBR',description:'Materiais e iluminação naturais.',tint:'#ffffff',swatch:'radial-gradient(circle at 30% 25%,#f5ebd7,#786853 45%,#25212b 80%)'},
+ {id:'toon',name:'Cel / Toon',description:'Luz em faixas, acabamento de ilustração.',tint:'#ffffff',swatch:'radial-gradient(circle at 30% 30%,#ecb891 0 32%,#b35f7d 33% 57%,#43365f 58%)'},
+ {id:'noir',name:'Film Noir',description:'Contraste monocromático cinematográfico.',tint:'#dce7ff',swatch:'radial-gradient(circle at 30% 25%,#f0f0f0,#787878 35%,#0b0b10 72%)'},
+ {id:'rim',name:'Neon Rim',description:'Contorno luminoso dependente da câmera.',tint:'#a35bff',swatch:'radial-gradient(circle at 45% 48%,#232038 0 42%,#6f3bc6 65%,#e0aaff 81%,#292138 86%)'},
+ {id:'iridescent',name:'Iridescent',description:'Reflexo colorido que muda com o ângulo.',tint:'#9fbaff',swatch:'conic-gradient(from 35deg,#e3a5fa,#657fec,#78e0d8,#fce3a0,#e3a5fa)'},
+ {id:'hologram',name:'Hologram',description:'Fre﻿snel e linhas de varredura sobre a malha sólida.',tint:'#54dcff',swatch:'repeating-linear-gradient(0deg,#143d62 0 4px,#75edff 5px,#143d62 7px)'},
+ {id:'blueprint',name:'Blueprint',description:'Tons técnicos azuis com realce das formas.',tint:'#5eafff',swatch:'radial-gradient(circle at 28% 25%,#c7edff,#397ec8 40%,#0f2448 75%)'}
+]
+export const DEFAULT_ART_SHADER:ArtShader={preset:'original',strength:.75,tint:'#ffffff',bands:4,rimPower:3,scanSpacing:7}
 export const MAX_MODEL_LIGHTS=8
 export type ModelLight={id:string;name:string;type:'directional'|'point'|'spot';enabled:boolean;color:string;intensity:number;azimuth:number;elevation:number;distance:number;angle:number;softness:number;targetX:number;targetY:number;targetZ:number}
 export type ModelCamera={azimuth:number;elevation:number;zoom:number;fov:number;targetX:number;targetY:number;targetZ:number}
 export type ModelPresentation=ModelCamera&{
  lighting:'studio'|'soft'|'contrast';exposure:number;environment:number;keyLight:number;lightAngle:number;lightColor:string;background:string;
- autoRotate:boolean;rotationSpeed:number;usePresetRig:boolean;useEmbeddedLights:boolean;materialLighting:'scene'|'original';relightUnlit:boolean;emissionScale:number;lights:ModelLight[]
+ autoRotate:boolean;rotationSpeed:number;usePresetRig:boolean;useEmbeddedLights:boolean;materialLighting:'scene'|'original';relightUnlit:boolean;emissionScale:number;artShader:ArtShader;lights:ModelLight[]
 }
 export const DEFAULT_MODEL_PRESENTATION:ModelPresentation={
  lighting:'studio',exposure:1,environment:1,keyLight:2,lightAngle:45,lightColor:'#ffffff',background:'#15101e',
- autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,useEmbeddedLights:true,materialLighting:'scene',relightUnlit:true,emissionScale:1,lights:[]
+ autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,useEmbeddedLights:true,materialLighting:'scene',relightUnlit:true,emissionScale:1,artShader:DEFAULT_ART_SHADER,lights:[]
 }
 const numeric=(v:unknown,fallback:number,min:number,max:number)=>typeof v==='number'&&Number.isFinite(v)?Math.min(max,Math.max(min,v)):fallback
 const color=(v:unknown,fallback:string)=>typeof v==='string'&&/^#[a-f0-9]{6}$/i.test(v)?v:fallback
@@ -28,6 +40,11 @@ function normalizeLights(value:unknown):ModelLight[]{
    targetX:numeric(v.targetX,0,-3,3),targetY:numeric(v.targetY,0,-3,3),targetZ:numeric(v.targetZ,0,-3,3)}]
  })
 }
+export function normalizeArtShader(value?:Partial<ArtShader>|null):ArtShader{
+ const v=value??{},d=DEFAULT_ART_SHADER
+ const preset=ART_SHADER_PRESETS.find(item=>item.id===v.preset)??ART_SHADER_PRESETS[0]
+ return {preset:preset.id,strength:numeric(v.strength,d.strength,0,1),tint:color(v.tint,preset.tint),bands:Math.round(numeric(v.bands,d.bands,2,8)),rimPower:numeric(v.rimPower,d.rimPower,.5,8),scanSpacing:numeric(v.scanSpacing,d.scanSpacing,3,24)}
+}
 export function normalizeModelPresentation(value?:Partial<ModelPresentation>|null):ModelPresentation{
  const d=DEFAULT_MODEL_PRESENTATION,v=value??{}
  return {lighting:v.lighting==='soft'||v.lighting==='contrast'?v.lighting:'studio',
@@ -36,7 +53,7 @@ export function normalizeModelPresentation(value?:Partial<ModelPresentation>|nul
  autoRotate:typeof v.autoRotate==='boolean'?v.autoRotate:d.autoRotate,rotationSpeed:numeric(v.rotationSpeed,d.rotationSpeed,.2,4),
  azimuth:numeric(v.azimuth,d.azimuth,-180,180),elevation:numeric(v.elevation,d.elevation,-89,89),zoom:numeric(v.zoom,d.zoom,.2,8),
  fov:numeric(v.fov,d.fov,15,80),targetX:numeric(v.targetX,0,-5,5),targetY:numeric(v.targetY,0,-5,5),targetZ:numeric(v.targetZ,0,-5,5),
- usePresetRig:v.usePresetRig!==false,useEmbeddedLights:v.useEmbeddedLights!==false,materialLighting:v.materialLighting==='original'?'original':'scene',relightUnlit:v.materialLighting!=='original',emissionScale:numeric(v.emissionScale,d.emissionScale,0,2),lights:normalizeLights(v.lights)}
+ usePresetRig:v.usePresetRig!==false,useEmbeddedLights:v.useEmbeddedLights!==false,materialLighting:v.materialLighting==='original'?'original':'scene',relightUnlit:v.materialLighting!=='original',emissionScale:numeric(v.emissionScale,d.emissionScale,0,2),artShader:normalizeArtShader(v.artShader),lights:normalizeLights(v.lights)}
 }
 export type InspectorGroup={label:string;items:readonly {id:ModelMode;label:string;hint?:string}[]}
 export const INSPECTOR_GROUPS:readonly InspectorGroup[]=[

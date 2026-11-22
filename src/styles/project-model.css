@@ -126,3 +126,14 @@
 .model-light-preview-notice{display:grid;gap:4px;font-size:11px;color:var(--jf-muted);padding:4px 0;flex-shrink:0}
 .model-light-preview-notice:empty{display:none}
 @media(max-width:740px){.model-light-tools{gap:3px}.model-light-tools button{min-height:28px;font-size:10px;padding:4px 6px}.model-light-preview-notice{font-size:10px}}
+
+/* Look-dev swatches are illustrative; the actual effect runs in the live viewport. */
+.model-studio-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+.model-studio-tabs button{gap:4px}
+.model-art-shader-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.model-art-shader-option{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:5px;min-width:0;padding:8px;background:var(--jf-background);border:1px solid var(--jf-border);border-radius:12px;color:var(--jf-text);cursor:pointer}
+.model-art-shader-option[aria-pressed=true]{border-color:var(--jf-secondary);background:var(--jf-liquid-clear,var(--jf-surface));box-shadow:inset 0 0 0 1px var(--jf-secondary)}
+.model-art-shader-swatch{display:block;width:100%;height:58px;border-radius:8px;box-shadow:inset 0 0 0 1px #ffffff22}
+.model-art-shader-option strong{font-size:11px;line-height:1.3}
+.model-art-shader-option small{font-size:10px;line-height:1.35;color:var(--jf-muted)}
+@media(max-width:740px){.model-studio-tabs button svg{width:13px;height:13px}.model-art-shader-swatch{height:42px}}
