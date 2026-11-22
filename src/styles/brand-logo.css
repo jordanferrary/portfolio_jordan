@@ -21,17 +21,17 @@
 .brand-logo-display .brand-logo-hover{
  opacity:0;transform:scale(var(--brand-size,1));
 }
-.brand-logo-display .brand-logo{display:block;width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 0 10px #a132ff65)}
+.brand-logo-display .brand-logo{display:block;width:100%;height:100%;object-fit:contain;object-position:center;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--jf-brand-glow,var(--jf-primary,#A234FA)) var(--jf-brand-glow-strength,70%),transparent))}
 .brand-logo-display .brand-monogram{
- display:block;line-height:1;color:#a33cff;
+ display:block;line-height:1;color:var(--jf-brand-primary,var(--jf-primary,#A234FA));
  font-size:28px;font-weight:800;letter-spacing:-6px;
- padding-right:6px;text-shadow:0 0 17px #9c2fff;
+ padding-right:6px;text-shadow:0 0 17px var(--jf-brand-glow,var(--jf-primary,#A234FA));
 }
 @media(hover:hover){
  .brand-logo-display:not(.has-brand-hover):hover .brand-logo-normal,
  .brand-logo-display.has-brand-hover:hover .brand-logo-hover{
   opacity:1;transform:scale(var(--brand-hover-total,1.1));
-  filter:drop-shadow(0 0 8px #b246ff78);
+  filter:drop-shadow(0 0 8px color-mix(in srgb,var(--jf-brand-glow,var(--jf-primary,#A234FA)) calc(var(--jf-brand-glow-strength,70%) * .65),transparent));
  }
  .brand-logo-display.has-brand-hover:hover .brand-logo-normal{opacity:0}
 }
@@ -39,7 +39,7 @@
 .brand-logo-display.has-brand-hover:focus-visible .brand-logo-hover,
 .brand-logo-preview-frame.brand-logo-display:not(.has-brand-hover)[data-preview-hover="true"] .brand-logo-normal,
 .brand-logo-preview-frame.brand-logo-display.has-brand-hover[data-preview-hover="true"] .brand-logo-hover{
- opacity:1;transform:scale(var(--brand-hover-total,1.1));filter:drop-shadow(0 0 8px #b246ff78);
+ opacity:1;transform:scale(var(--brand-hover-total,1.1));filter:drop-shadow(0 0 8px color-mix(in srgb,var(--jf-brand-glow,var(--jf-primary,#A234FA)) calc(var(--jf-brand-glow-strength,70%) * .65),transparent));
 }
 .brand-logo-display.has-brand-hover:focus-visible .brand-logo-normal,
 .brand-logo-preview-frame.brand-logo-display.has-brand-hover[data-preview-hover="true"] .brand-logo-normal{opacity:0}

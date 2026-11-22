@@ -86,3 +86,13 @@ test('JF logo uses the exact original Figma paths, editable theme colors and pub
  assert.match(publish,/siteLogoAppearance:store.siteLogoAppearance/)
  assert.match(css,/\.brand-logo-display \.brand-logo-vector/)
 })
+
+test('JF logo hover and focus preserve palette-driven glow including custom color and zero strength',async()=>{
+ const css=await read('src/styles/brand-logo.css')
+ const appearance=await read('src/lib/brand-logo-appearance.ts')
+ assert.equal((css.match(/filter:drop-shadow\\(0 0 8px color-mix\\(in srgb,var\\(--jf-brand-glow/g)||[]).length,2)
+ assert.doesNotMatch(css,/#b246ff78|#a132ff65|#9c2fff/i)
+ assert.match(css,/--jf-brand-glow-strength/)
+ assert.match(appearance,/--jf-brand-glow-strength/)
+ assert.match(appearance,/value.mode==='auto'/)
+})
