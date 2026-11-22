@@ -38,3 +38,14 @@ test('inspector connects to current route and shared properties',async()=>{
  assert.match(dock,/matchesTool\(query/)
  assert.match(dock,/toggleFavorite\(value,action.id\)/)
 })
+
+test('temporary visual preview is separate from draft save and clean visitor mode hides dock',async()=>{
+ const [app,inspector,project,custom,link]=await Promise.all(['src/app.tsx','src/components/sections/studio-inspector.tsx','src/components/sections/project-page.tsx','src/components/sections/custom-page.tsx','src/lib/page-composition.ts'].map(read))
+ assert.match(app,/onPreview=\{setAppearancePreview\}/)
+ assert.match(app,/viewEditing&&!inspectorOpen&&<AppErrorBoundary/)
+ assert.match(inspector,/onPreview\(dirty&&current\?/)
+ assert.match(inspector,/useEffect\(\(\)=>\(\)=>onPreview\(undefined\)/)
+ assert.match(project,/appearancePreview\?\.id===b.id\?appearancePreview.appearance:b.appearance/)
+ assert.match(custom,/appearancePreview\?\.id===original.id/)
+ assert.match(link,/appearance:block.appearance\}/)
+})

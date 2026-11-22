@@ -1,5 +1,6 @@
 /** Bounded component overrides. Missing settings inherit the established design. */
 export type BlockAppearance={width?:number;space?:number;align?:'left'|'center'|'right';surface?:'plain'|'panel'|'glass';padding?:number;corner?:number;opacity?:number;border?:boolean;hideMobile?:boolean;hideDesktop?:boolean}
+export type BlockAppearancePreview={id:string;appearance?:BlockAppearance}
 export type BlockLink={pageId:string;blockId:string}
 export function normalizeBlockAppearance(raw:unknown):BlockAppearance|undefined{
  if(!raw||typeof raw!=='object')return undefined

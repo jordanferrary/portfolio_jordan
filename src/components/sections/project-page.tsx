@@ -1,5 +1,6 @@
 import { lazy,Suspense,useState,type CSSProperties } from 'react'
 import { ArrowLeft,ArrowUpRight,Pencil,Search } from 'lucide-react'
+import type {BlockAppearancePreview} from '../../lib/component-settings'
 import type { Block,Project,ProcessStep } from '../../data/projects'
 import { AssetImage } from '../ui/asset-image'
 import { ZoomableArt } from '../ui/zoomable-art'
@@ -35,12 +36,12 @@ export function StoryBlock({block,projectTitle,processSteps=[]}:{block:Block;pro
  if(block.type==='gallery')return <section className="story-block story-multi-images">{(block.gallery??[]).filter(Boolean).map((source,i)=><ZoomableArt key={source+i} src={source} alt={projectTitle+', image '+(i+1)} loading="lazy" sizes="(max-width: 800px) 100vw, 500px"/>)}</section>
  return null
 }
-export function ProjectPage({project,onBack,editing,onEdit,onEditBlock,showLikeCounts,headingSymbol}:{project:Project;onBack:()=>void;editing:boolean;onEdit:()=>void;onEditBlock?:(id:string)=>void;showLikeCounts:boolean;headingSymbol?:HeadingSymbolStyle}){
+export function ProjectPage({project,onBack,editing,onEdit,onEditBlock,appearancePreview,showLikeCounts,headingSymbol}:{project:Project;onBack:()=>void;editing:boolean;onEdit:()=>void;onEditBlock?:(id:string)=>void;appearancePreview?:BlockAppearancePreview;showLikeCounts:boolean;headingSymbol?:HeadingSymbolStyle}){
  const hasDetailedArtwork=project.blocks.some(block=>['image','image-left','image-right','before-after','gallery','video','model','slideshow'].includes(block.type))
  const needsArtworkShowcase=!hasDetailedArtwork
  return <main data-alquimago-project={project.title} data-alquimago-category={project.category} data-alquimago-year={String(project.year??'')} data-alquimago-tools={project.tools?.join(', ')??''} className={'project-page'+(needsArtworkShowcase?' project-page-artwork-only':'')}><button className="back-link" onClick={onBack}><ArrowLeft size={18}/> Back to portfolio</button><div className="project-hero"><AssetImage src={project.image} alt={project.title} style={framingStyle(project.heroFocus)}/><div className="project-hero-content"><span className="eyebrow"><HeadingSymbol symbol={headingSymbol}/> {project.category} / {project.year}</span><h1>{project.title}</h1><RichText className="project-hero-description" value={project.description}/><div className="tools">{project.tools.map(t=><span key={t}>{t}</span>)}</div>{editing&&<button className="primary-action" onClick={onEdit}><Pencil size={16}/>Editar projeto</button>}</div></div><div className="project-engagement"><ProjectLike projectId={project.id} showCount={showLikeCounts}/></div><div className="case-study">
   {project.blocks.length>0&&<div className="story-blocks">{project.blocks.map(b=>{
-   const node=<StoryBlock key={b.id} block={b} projectTitle={project.title} processSteps={project.processSteps}/>,a=b.appearance
+   const node=<StoryBlock key={b.id} block={b} projectTitle={project.title} processSteps={project.processSteps}/>,a=editing&&appearancePreview?.id===b.id?appearancePreview.appearance:b.appearance
    if(!a&&!editing)return node
    return <div key={b.id} className={'studio-component'+(a?.surface==='panel'?' component-panel':a?.surface==='glass'?' component-glass':'')+(a?.border?' component-border':'')+(a?.hideMobile?' hide-mobile':'')+(a?.hideDesktop?' hide-desktop':'')+(editing?' component-editing':'')} data-studio-block={editing?b.id:undefined} data-align={a?.align??'center'} style={{'--jf-block-width':(a?.width??100)+'%','--jf-block-space':(a?.space??0)+'px','--jf-block-padding':a?.padding===undefined?undefined:a.padding+'px','--jf-block-corner':a?.corner===undefined?undefined:a.corner+'px','--jf-block-opacity':(a?.opacity??100)/100} as CSSProperties}>
     {editing&&onEditBlock&&<button type="button" className="studio-component-edit" aria-label="Editar este bloco" onClick={()=>onEditBlock(b.id)}><Pencil size={14}/></button>}{node}

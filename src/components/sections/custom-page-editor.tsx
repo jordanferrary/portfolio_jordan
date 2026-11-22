@@ -109,7 +109,7 @@ export function CustomPageEditor({pages,initialPageId,initialBlockId,onSavePages
  const insertLinked=()=>{
   const source=linkedOptions.find(option=>option.key===linkChoice)
   if(!source||!draft||draft.blocks.length>=250)return
-  patch({blocks:[...draft.blocks,{...copyBlock(source.block),linkedSource:{pageId:source.page.id,blockId:source.block.id}}]})
+  patch({blocks:[...draft.blocks,{...copyBlock(source.block),appearance:undefined,linkedSource:{pageId:source.page.id,blockId:source.block.id}}]})
   setLinkChoice('')
  }
  const addBlock=(type:Kind,index?:number)=>{

@@ -53,3 +53,13 @@ test('composition and checkpoint features are wired to the persistence and publi
  assert.match(gate,/await readGitHubSession\(\)/)
  assert.ok(JSON.parse(pkg).scripts['test:studio'].includes('studio-composition.test.mjs'))
 })
+
+test('linked instances without overrides continue inheriting after source edits',()=>{
+ const original={id:'source',type:'text',content:'Original',appearance:{width:80}}
+ const linked={id:'instance',type:'text',content:'Fallback',linkedSource:{pageId:'page-abcdefgh',blockId:'source'}}
+ const pages=[sample('page-abcdefgh',[original]),sample('page-ijklmnop',[linked])]
+ const refreshed=refreshLinkedBlocks(pages)
+ assert.equal(refreshed[1].blocks[0].appearance,undefined)
+ refreshed[0].blocks[0].appearance={width:65}
+ assert.equal(resolvePageBlock(refreshed[1].blocks[0],refreshed).appearance.width,65)
+})

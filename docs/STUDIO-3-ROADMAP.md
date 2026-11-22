@@ -42,3 +42,4 @@ O objetivo é autonomia sem editar código para operações comuns, mantendo o r
 - Inspetor visual inicial para blocos de projetos e páginas personalizadas, inclusive composições nativas substituídas. Hierarquia, seleção no site, localização, duplicação, ordenação, propriedades e acesso ao editor de conteúdo.
 - Propriedades compartilhadas: cantos, preenchimento, opacidade, borda, superfície Liquid Glass e controles existentes. Mantém a herança quando não há override. Salvar altera o rascunho; publicar continua explícito.
 - O inspetor não controla ainda cada elemento interno dos módulos nativos, e não substitui a edição de mídia nem a publicação. Integração de backend e homologação completas continuam pendentes.
+- Prévia temporária de propriedades no próprio bloco, sem gravar a cada ajuste; Ao fechar, a prévia é retirada. A prévia do visitante esconde também a barra do Studio. Novas instâncias vinculadas herdam a aparência da origem até receber um override explícito.

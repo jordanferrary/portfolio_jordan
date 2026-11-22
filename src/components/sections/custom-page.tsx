@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState,type CSSProperties} from 'react'
 import {ArrowUpRight,Check,Copy,Pencil,FolderOpen} from 'lucide-react'
+import type {BlockAppearancePreview} from '../../lib/component-settings'
 import type {Block} from '../../data/projects'
 import type {CustomPage,PageBlock} from '../../data/custom-pages'
 import {resolvePageBlock} from '../../lib/page-composition'
@@ -41,7 +42,7 @@ function PageAction({block}: {block:PageBlock}){
   {message&&<span className="custom-page-action-feedback" role="status">{message}</span>}
  </section>
 }
-export function CustomPageView({page,pages=[],editing,onEdit,onEditBlock,headingSymbol}:{page:CustomPage;pages?:CustomPage[];editing:boolean;onEdit:()=>void;onEditBlock?:(id:string)=>void;headingSymbol?:HeadingSymbolStyle}){
+export function CustomPageView({page,pages=[],editing,onEdit,onEditBlock,appearancePreview,headingSymbol}:{page:CustomPage;pages?:CustomPage[];editing:boolean;onEdit:()=>void;onEditBlock?:(id:string)=>void;appearancePreview?:BlockAppearancePreview;headingSymbol?:HeadingSymbolStyle}){
  return <main className={'custom-page custom-page-'+page.layout}>
   <header className={'custom-page-hero'+(page.heroImage?' has-image':'')}>
    {page.heroImage&&<AssetImage src={page.heroImage} className="custom-page-hero-image" alt="" style={{objectPosition:page.heroPositionX+'% '+page.heroPositionY+'%'}}/>}
@@ -54,7 +55,7 @@ export function CustomPageView({page,pages=[],editing,onEdit,onEditBlock,heading
   </header>
   <div className="custom-page-body">
    {page.blocks.length?<div className="story-blocks custom-page-story">{page.blocks.map(original=>{
-    const block=resolvePageBlock(original,pages),appearance=block.appearance
+    const block=resolvePageBlock(editing&&appearancePreview?.id===original.id?{...original,appearance:appearancePreview.appearance}:original,pages),appearance=block.appearance
     const node=block.type==='action'?<PageAction key={block.id} block={block}/>:block.type==='showcase'?<ArtistShowcase key={block.id} block={block}/>:block.type==='slideshow'?<PageSlideshow key={block.id} block={block}/>:<StoryBlock key={block.id} block={block as Block} projectTitle={page.title}/>
     if(!appearance&&!editing)return node
     const style={'--jf-block-width':(appearance?.width??100)+'%','--jf-block-space':(appearance?.space??0)+'px','--jf-block-padding':appearance?.padding===undefined?undefined:appearance.padding+'px','--jf-block-corner':appearance?.corner===undefined?undefined:appearance.corner+'px','--jf-block-opacity':(appearance?.opacity??100)/100} as CSSProperties
