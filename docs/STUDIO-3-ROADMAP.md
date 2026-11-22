@@ -29,3 +29,10 @@ O objetivo é autonomia sem editar código para operações comuns, mantendo o r
 - Checkpoints IndexedDB com mídia local referenciada, até cinco cópias de 100 MB; antes da publicação, importação e restauração da versão publicada. Se falhar, a operação exige confirmação explícita antes de continuar sem checkpoint.
 - Entrada via sessão GitHub verificada quando VITE_ALQUIMAGO_AUTH_ORIGIN está configurado; PIN continua somente no modo local sem serviço. Publicação continua exigindo autorização explícita, sem reuso de tokens locais.
 - Ainda exige configurar/verificar o Worker e suas variáveis no ambiente real. A interface local não é uma proteção para dados privados.
+
+## Terceira entrega
+- Reordenação dos módulos reais da Home por alças e setas, dentro dos grupos atuais.
+- Propriedades individuais e edição contextual também nos blocos dos projetos.
+- Sincronização manual de ZIP privado por R2 através do Worker de sessão existente. O bucket deve permanecer privado; o binding STUDIO_DRAFTS é opcional. Até 32 MB, controle de concorrência por revisão, confirmação de transferência, sem publicação automática.
+- Para habilitar de verdade: configurar o Worker GitHub App conforme auth-worker/README.md, associar o bucket privado ao binding STUDIO_DRAFTS, implantar o Worker e definir VITE_ALQUIMAGO_AUTH_ORIGIN no build. Não colocar segredos no frontend.
+- Múltiplos usuários, agendamento autônomo de publicação, estatísticas e sincronização automática continuam pendentes de infraestrutura, política de autorização e testes. Não confundir o painel de transferência com armazenamento já provisionado.

@@ -232,7 +232,7 @@ export function usePortfolio(editing=false){
  const setMusicTracks=(musicTracks:MusicTrack[])=>save({...storeRef.current,musicTracks})
  const setSocialLinks=(socialLinks:SocialLink[])=>save({...storeRef.current,socialLinks})
  const setShowLikeCounts=(showLikeCounts:boolean)=>save({...storeRef.current,showLikeCounts})
- const exportData=async()=>{
+ const buildBackup=async()=>{
   const store=storeRef.current
   const {default:JSZip}=await import('jszip')
   const zip=new JSZip()
@@ -246,7 +246,10 @@ export function usePortfolio(editing=false){
    if(blob)zip.file('public/assets/'+mediaKey(ref),blob)
    else throw new Error('Não foi possível exportar: uma mídia local está ausente.')
   }
-  const result=await zip.generateAsync({type:'blob'})
+  return zip.generateAsync({type:'blob'})
+ }
+ const exportData=async()=>{
+  const result=await buildBackup()
   const url=URL.createObjectURL(result)
   const link=document.createElement('a')
   link.href=url;link.download='jordan-portfolio-backup.zip';link.click()
@@ -280,5 +283,5 @@ export function usePortfolio(editing=false){
   if(storeRef.current!==previous)throw new Error('Rascunho alterado durante a importação.')
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,makeCheckpoint,recoverCheckpoint,applyDesignTheme,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setNativeLayouts,setHomeModuleOrder,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,makeCheckpoint,recoverCheckpoint,applyDesignTheme,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setNativeLayouts,setHomeModuleOrder,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,buildBackup,exportData,importData}
 }

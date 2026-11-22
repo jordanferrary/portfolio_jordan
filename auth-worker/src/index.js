@@ -1,3 +1,4 @@
+import {studioDraftRoute} from './studio-draft.js';
 /**
  * Alquimago GitHub App auth broker — Cloudflare Worker (no frontend tokens).
  *
@@ -49,7 +50,7 @@ function cors(request,env){
  return permittedOrigin(request,env)?{
   'Access-Control-Allow-Origin':frontend(env).origin,
   'Access-Control-Allow-Credentials':'true',
-  'Access-Control-Allow-Headers':'Content-Type, X-Alquimago-Request',
+  'Access-Control-Allow-Headers':'Content-Type, X-Alquimago-Request, X-Studio-Revision',
   'Access-Control-Allow-Methods':'GET, POST, PATCH, OPTIONS',
   'Vary':'Origin'
  }:{};
@@ -378,7 +379,7 @@ async function route(request,env){
   output.headers.append('Set-Cookie',flowCookie('',0));
   return output;
  }
- if(!['/auth/session','/auth/logout','/api/github','/api/assistant'].includes(path))
+ if(!['/auth/session','/auth/logout','/api/github','/api/assistant','/api/studio/draft'].includes(path))
   return error('Not found',404,headers);
  if(!permittedOrigin(request,env))return error('Origin is not authorized',403);
  if(path==='/auth/session'&&request.method==='GET'){
@@ -393,6 +394,7 @@ async function route(request,env){
   if(session)await env.SESSIONS.delete(keySession(session.id));
   return json({ok:true},200,{...headers,'Set-Cookie':cookie(SESSION_COOKIE,'',0,env)});
  }
+ if(path==='/api/studio/draft')return studioDraftRoute(request,env,await readSession(request,env),headers);
  if(path==='/api/assistant'&&request.method==='POST')
   return ownerAssistant(request,env,headers);
  if(path==='/api/github'&&['GET','POST','PATCH'].includes(request.method)){

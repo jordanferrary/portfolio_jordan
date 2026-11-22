@@ -16,3 +16,8 @@ id = "REPLACE_WITH_YOUR_KV_ID"
 
 # Cloudflare hosts only the secure proxy. Model provider: Google Gemini.
 # Keep provider credentials in server-side secrets; never in a VITE_* variable.
+
+# Optional private R2 binding. Do not enable a public URL for this bucket.
+# [[r2_buckets]]
+# binding = "STUDIO_DRAFTS"
+# bucket_name = "REPLACE_WITH_PRIVATE_STUDIO_BUCKET"

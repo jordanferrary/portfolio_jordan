@@ -25,6 +25,11 @@ function configuredOrigin():string|null{
  }catch{return null}
 }
 
+export function studioWorkerUrl(path:'/api/studio/draft'):string{
+ const origin=configuredOrigin()
+ if(!origin)throw new Error('Serviço de autenticação não configurado.')
+ return origin+path
+}
 export function hasGitHubLogin():boolean{return configuredOrigin()!==null}
 export function isGitHubWorkerCredential(value:string):boolean{return value===GITHUB_WORKER_SESSION}
 export function githubWorkerProxy(path:string):string{
