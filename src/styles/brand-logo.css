@@ -112,3 +112,44 @@
 @media(prefers-reduced-motion:reduce){
  .brand-logo-display .brand-logo-layer{transition:none}
 }
+
+/* Original Figma vector. CSS variables control both fills and the independent glow. */
+.brand-logo-display .brand-logo-vector{
+ display:block;
+ width:100%;
+ height:100%;
+ overflow:visible;
+ filter:drop-shadow(0 0 6px color-mix(in srgb,var(--jf-brand-glow,var(--jf-primary)) var(--jf-brand-glow-strength,70%),transparent))
+        drop-shadow(0 0 13px color-mix(in srgb,var(--jf-brand-glow,var(--jf-primary)) calc(var(--jf-brand-glow-strength,70%) * .52),transparent));
+}
+.brand-logo-editor .brand-logo-mode-options{display:flex;gap:9px;margin:13px 0}
+.brand-logo-editor .brand-logo-mode-options button{
+ flex:1;min-width:0;padding:11px 12px;border-radius:12px;
+ border:1px solid var(--jf-border,#7335A7);
+ background:color-mix(in srgb,var(--jf-surface,#170D26) 85%,transparent);
+ color:var(--jf-text,#F8F3FF);cursor:pointer;font-size:12px;
+}
+.brand-logo-editor .brand-logo-mode-options button[aria-pressed="true"]{
+ border-color:var(--jf-primary,#A234FA);
+ box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--jf-primary) 40%,transparent);
+ background:color-mix(in srgb,var(--jf-primary) 15%,var(--jf-surface));
+}
+.brand-logo-editor .brand-logo-color-panel{
+ padding:16px;margin-bottom:20px;border:1px solid var(--jf-border,#7335A7);
+ border-radius:16px;background:color-mix(in srgb,var(--jf-surface,#170D26) 90%,transparent);
+}
+.brand-logo-editor .brand-logo-color-fields{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}
+.brand-logo-editor .brand-logo-color-fields button{
+ display:flex;align-items:center;gap:9px;min-width:0;flex:1;
+ padding:9px;border:1px solid color-mix(in srgb,var(--jf-border) 68%,transparent);
+ background:transparent;border-radius:10px;color:var(--jf-text);cursor:pointer;font-size:11px;
+}
+.brand-logo-editor .brand-logo-color-fields button[aria-pressed="true"]{border-color:var(--jf-primary)}
+.brand-logo-editor .brand-logo-color-swatch{width:23px;height:23px;border-radius:7px;border:1px solid #ffffff50;flex:0 0 23px}
+.brand-logo-editor .brand-logo-color-hex{font-size:11px;color:var(--jf-muted);margin:0 0 10px}
+.brand-logo-editor .brand-logo-color-panel .chromatic-picker{max-width:100%}
+.brand-logo-editor .brand-logo-palette-help{font-size:12px;line-height:1.6;color:var(--jf-muted);margin:0 0 18px}
+@media(max-width:600px){.brand-logo-editor .brand-logo-mode-options{flex-direction:column}.brand-logo-editor .brand-logo-color-fields button{flex:1 1 125px}}
+
+.brand-logo-editor .brand-logo-color-panel>input[type="range"]{display:block;width:100%;accent-color:var(--jf-primary,#A234FA);cursor:pointer;margin:9px 0}
+.brand-logo-editor .brand-logo-color-panel .brand-logo-slider-label{margin-top:16px!important}

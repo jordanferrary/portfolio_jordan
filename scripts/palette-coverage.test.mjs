@@ -55,3 +55,33 @@ test('shared eyebrow icons inherit the current label color, including publicatio
  assert.match(base,/\.eyebrow svg\{color:currentColor\}/)
  assert.match(studio,/\.editor-overlay \.eyebrow svg,\s*\.gate-card \.eyebrow svg\{color:currentColor;stroke:currentColor\}/)
 })
+
+test('JF logo uses the exact original Figma paths, editable theme colors and published settings',async()=>{
+ const [source,mark,appearance,sidebar,editor,hook,app,publish,css]=await Promise.all([
+  'public/images/logo/JF.svg',
+  'src/components/ui/brand-mark.tsx',
+  'src/lib/brand-logo-appearance.ts',
+  'src/components/layout/sidebar.tsx',
+  'src/components/sections/brand-logo-editor.tsx',
+  'src/hooks/use-portfolio.ts',
+  'src/app.tsx',
+  'src/lib/github-publish.ts',
+  'src/styles/brand-logo.css'
+ ].map(read))
+ const paths=value=>Array.from(value.matchAll(/<path d="([^"]+)"/g),match=>match[1])
+ assert.deepEqual(paths(mark),paths(source),'the brand must retain both exact Figma vector shapes')
+ assert.match(mark,/--jf-brand-primary/)
+ assert.match(mark,/--jf-brand-secondary/)
+ assert.match(appearance,/mode:'auto'/)
+ assert.match(appearance,/normalizeHexColor/)
+ assert.match(appearance,/--jf-brand-glow-strength/)
+ assert.match(sidebar,/brandLogoStyle\(siteLogoAppearance\)/)
+ assert.match(sidebar,/<BrandMark\/>/)
+ assert.match(editor,/ChromaticPicker/)
+ assert.match(editor,/patchAppearance\(\{mode:'auto'\}\)/)
+ assert.match(editor,/patchAppearance\(\{mode:'custom'\}\)/)
+ assert.match(hook,/siteLogoAppearance:normalizeBrandLogoAppearance\(values.siteLogoAppearance\)/)
+ assert.match(app,/siteLogoAppearance=\{portfolio.siteLogoAppearance\}/)
+ assert.match(publish,/siteLogoAppearance:store.siteLogoAppearance/)
+ assert.match(css,/\.brand-logo-display \.brand-logo-vector/)
+})

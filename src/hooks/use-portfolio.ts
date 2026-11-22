@@ -6,6 +6,7 @@ import {auditStudio} from '../lib/studio-health'
 import {normalizeStudioControls,type StudioControls} from '../lib/studio-controls'
 import {normalizeTypography,type TypographySettings} from '../lib/typography'
 import { DEFAULT_THEME,normalizeThemePalette,type ThemePalette } from '../lib/theme-palette'
+import {DEFAULT_BRAND_LOGO_APPEARANCE,normalizeBrandLogoAppearance,type BrandLogoAppearance} from '../lib/brand-logo-appearance'
 import {DEFAULT_GLITCH_PALETTE,normalizeGlitchPalette,type GlitchPalette} from '../lib/glitch-palette'
 import {DEFAULT_HEADING_SYMBOL,normalizeHeadingSymbol,type HeadingSymbolStyle} from '../lib/heading-symbol'
 import { isKnownDemoTestimonial } from '../lib/testimonial-safety'
@@ -24,7 +25,7 @@ const KEY='jordan-portfolio-local-v2'
 const PENDING_KEY='jordan-portfolio-publish-pending-v1'
 const bundled=publishedPackage as {schema:number;revision:string;store:unknown}
 export const currentPublishedRevision=bundled.revision||'initial'
-export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;typography?:TypographySettings;studioControls?:StudioControls;nativeLayouts?:NativeLayouts;homeModuleOrder?:HomeModuleOrder;glitchPalette:GlitchPalette;headingSymbol:HeadingSymbolStyle;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;galleryFocus:ImageFraming;galleryContent:GalleryContent;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
+export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;typography?:TypographySettings;studioControls?:StudioControls;nativeLayouts?:NativeLayouts;homeModuleOrder?:HomeModuleOrder;glitchPalette:GlitchPalette;headingSymbol:HeadingSymbolStyle;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;galleryFocus:ImageFraming;galleryContent:GalleryContent;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number;siteLogoAppearance:BrandLogoAppearance}
 export function clampBrandScale(value:unknown,fallback:number,min:number,max:number):number{
  const number=typeof value==='number'?value:Number(value)
  return Number.isFinite(number)?Math.max(min,Math.min(max,Math.round(number))):fallback
@@ -56,13 +57,17 @@ function parseStore(raw:unknown):PortfolioStore{
  const homeModuleOrder=normalizeHomeModuleOrder(obj.homeModuleOrder)
  const glitchPalette=normalizeGlitchPalette(obj.glitchPalette)
  const headingSymbol=normalizeHeadingSymbol(obj.headingSymbol)
- const siteLogo=typeof obj.siteLogo==='string'?normalizeBundledImage(obj.siteLogo):''
+ // The former uploaded JF PNG is superseded by the original editable Figma SVG.
+ // Migrate only this exact known artwork; every other custom logo remains unchanged.
+ const storedLogo=typeof obj.siteLogo==='string'?normalizeBundledImage(obj.siteLogo):''
+ const siteLogo=/^(?:site:\/\/|.*\/)?images\/studio\/17e90b0b453988585a410920892180389c0637b4b08917c4518c8b71146913b5\.png$/i.test(storedLogo)?'':storedLogo
  const siteFavicon=typeof obj.siteFavicon==='string'?normalizeBundledImage(obj.siteFavicon):''
  const seoTitle=typeof obj.seoTitle==='string'&&obj.seoTitle.trim()?obj.seoTitle.replace(/^Jordan Ferrary — Creative Portfolio$/,'Jordan Ferrary | 3D Artist'):'Jordan Ferrary | 3D Artist'
  const seoDescription=typeof obj.seoDescription==='string'&&obj.seoDescription.trim()?obj.seoDescription.replace(/^Jordan Ferrary — 3D artist/,'Jordan Ferrary is a 3D artist'):'Jordan Ferrary is a 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'
  const siteLogoHover=typeof obj.siteLogoHover==='string'?normalizeBundledImage(obj.siteLogoHover):''
  const siteLogoSize=clampBrandScale(obj.siteLogoSize,100,65,180)
  const siteLogoHoverScale=clampBrandScale(obj.siteLogoHoverScale,110,100,170)
+ const siteLogoAppearance=normalizeBrandLogoAppearance(obj.siteLogoAppearance)
  const legacyBio=obj.about?.bio
  const about={...defaultAbout,...(obj.about??{}),bio:legacyBio&&/Lorem ipsum|Curabitur vehicula|Praesent et finibus/i.test(legacyBio)?defaultAbout.bio:legacyBio??defaultAbout.bio,portrait:normalizeBundledImage(obj.about?.portrait??defaultAbout.portrait),secondaryImage:normalizeBundledImage(obj.about?.secondaryImage??defaultAbout.secondaryImage)}
  const contact:ContactSettings={
@@ -77,13 +82,13 @@ function parseStore(raw:unknown):PortfolioStore{
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'&&!isKnownDemoTestimonial(t)):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
- return {customPages,imageVariants,themePalette,typography,studioControls,nativeLayouts,homeModuleOrder,glitchPalette,headingSymbol,projects:projects.map(upgradeProcessTemplate),categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,galleryFocus,galleryContent,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
+ return {customPages,imageVariants,themePalette,typography,studioControls,nativeLayouts,homeModuleOrder,glitchPalette,headingSymbol,projects:projects.map(upgradeProcessTemplate),categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,galleryFocus,galleryContent,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteLogoAppearance,siteFavicon,seoTitle,seoDescription}
 }
 function publishedStore():PortfolioStore{
  if(bundled.schema===1&&bundled.store){
   try{return parseStore(bundled.store)}catch{/* preserve original defaults when a malformed content file is committed */}
  }
- return {customPages:[],imageVariants:{},themePalette:{...DEFAULT_THEME},glitchPalette:{...DEFAULT_GLITCH_PALETTE},headingSymbol:DEFAULT_HEADING_SYMBOL,projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,galleryFocus:{...DEFAULT_GALLERY_BANNER_FRAMING},galleryContent:{...defaultGalleryContent},siteLogo:'',siteLogoHover:'',siteLogoSize:100,siteLogoHoverScale:110,siteFavicon:'',seoTitle:'Jordan Ferrary | 3D Artist',seoDescription:'Jordan Ferrary is a 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'}
+ return {customPages:[],imageVariants:{},themePalette:{...DEFAULT_THEME},glitchPalette:{...DEFAULT_GLITCH_PALETTE},headingSymbol:DEFAULT_HEADING_SYMBOL,projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,galleryFocus:{...DEFAULT_GALLERY_BANNER_FRAMING},galleryContent:{...defaultGalleryContent},siteLogo:'',siteLogoHover:'',siteLogoSize:100,siteLogoHoverScale:110,siteLogoAppearance:{...DEFAULT_BRAND_LOGO_APPEARANCE},siteFavicon:'',seoTitle:'Jordan Ferrary | 3D Artist',seoDescription:'Jordan Ferrary is a 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'}
 }
 function load():PortfolioStore{
  try{
@@ -243,7 +248,7 @@ export function usePortfolio(editing=false){
  }
  const setGalleryBackground=(galleryBackground:string)=>save({...storeRef.current,galleryBackground})
  const setGalleryPage=(galleryBackground:string,galleryContent:GalleryContent,galleryFocus:ImageFraming)=>save({...storeRef.current,galleryBackground,galleryFocus:normalizeFraming(galleryFocus),galleryContent:normalizeGalleryContent(galleryContent)})
- const setBranding=(values:Pick<PortfolioStore,'siteLogo'|'siteLogoHover'|'siteLogoSize'|'siteLogoHoverScale'>)=>save({...storeRef.current,...values,siteLogoSize:clampBrandScale(values.siteLogoSize,100,65,180),siteLogoHoverScale:clampBrandScale(values.siteLogoHoverScale,110,100,170)})
+ const setBranding=(values:Pick<PortfolioStore,'siteLogo'|'siteLogoHover'|'siteLogoSize'|'siteLogoHoverScale'|'siteLogoAppearance'>)=>save({...storeRef.current,...values,siteLogoAppearance:normalizeBrandLogoAppearance(values.siteLogoAppearance),siteLogoSize:clampBrandScale(values.siteLogoSize,100,65,180),siteLogoHoverScale:clampBrandScale(values.siteLogoHoverScale,110,100,170)})
  const setSiteIdentity=(values:Pick<PortfolioStore,'siteFavicon'|'seoTitle'|'seoDescription'>)=>save({...storeRef.current,...values,seoTitle:values.seoTitle.trim().slice(0,110),seoDescription:values.seoDescription.trim().slice(0,240)})
  const setThemePalette=(themePalette:ThemePalette,headingSymbol:HeadingSymbolStyle=storeRef.current.headingSymbol,typography?:TypographySettings)=>save({...storeRef.current,themePalette:normalizeThemePalette(themePalette),headingSymbol:normalizeHeadingSymbol(headingSymbol),typography:normalizeTypography(typography??storeRef.current.typography)})
  const applyDesignTheme=(input:DesignTheme)=>{
