@@ -220,7 +220,9 @@
 .site-shell.about-route .about-art-secondary{
  position:static;inset:auto;display:block;flex:0 0 auto;
  width:64px;height:64px;min-height:0;max-height:none;
- object-fit:contain;border-width:1px;border-radius:calc(12px * var(--jf-control-radius,1));box-shadow:none;
+ /* Remove the original 1px frame without cropping a transparent mark. */
+ object-fit:contain;border:0!important;background:transparent;
+ border-radius:calc(12px * var(--jf-control-radius,1));box-shadow:none;
 }
 .site-shell.about-route .about-information .about-bio{max-width:65ch}
 .site-shell.about-route .about-bio p{margin:0 0 1em}
