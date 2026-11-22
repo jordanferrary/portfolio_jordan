@@ -220,8 +220,10 @@
 .site-shell.about-route .about-art-secondary{
  position:static;inset:auto;display:block;flex:0 0 auto;
  width:64px;height:64px;min-height:0;max-height:none;
- /* Remove the original 1px frame without cropping a transparent mark. */
- object-fit:contain;border:0!important;background:transparent;
+ /* This identity image is slightly wider than tall (778 × 772).
+    'contain' leaves a fractional dark strip above and below a 64px square.
+    'cover' fills the frame, trimming less than a pixel at either side. */
+ object-fit:cover;object-position:center;border:0!important;background:transparent;
  border-radius:calc(12px * var(--jf-control-radius,1));box-shadow:none;
 }
 .site-shell.about-route .about-information .about-bio{max-width:65ch}
