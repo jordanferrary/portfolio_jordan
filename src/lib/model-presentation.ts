@@ -7,7 +7,7 @@ export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;descrip
  {id:'noir',name:'Film Noir',description:'Contraste monocromático cinematográfico.',tint:'#dce7ff',swatch:'radial-gradient(circle at 30% 25%,#f0f0f0,#787878 35%,#0b0b10 72%)'},
  {id:'rim',name:'Neon Rim',description:'Contorno luminoso dependente da câmera.',tint:'#a35bff',swatch:'radial-gradient(circle at 45% 48%,#232038 0 42%,#6f3bc6 65%,#e0aaff 81%,#292138 86%)'},
  {id:'iridescent',name:'Iridescent',description:'Reflexo colorido que muda com o ângulo.',tint:'#9fbaff',swatch:'conic-gradient(from 35deg,#e3a5fa,#657fec,#78e0d8,#fce3a0,#e3a5fa)'},
- {id:'hologram',name:'Hologram',description:'Fre﻿snel e linhas de varredura sobre a malha sólida.',tint:'#54dcff',swatch:'repeating-linear-gradient(0deg,#143d62 0 4px,#75edff 5px,#143d62 7px)'},
+ {id:'hologram',name:'Hologram',description:'Fresnel e linhas de varredura sobre a malha sólida.',tint:'#54dcff',swatch:'repeating-linear-gradient(0deg,#143d62 0 4px,#75edff 5px,#143d62 7px)'},
  {id:'blueprint',name:'Blueprint',description:'Tons técnicos azuis com realce das formas.',tint:'#5eafff',swatch:'radial-gradient(circle at 28% 25%,#c7edff,#397ec8 40%,#0f2448 75%)'}
 ]
 export const DEFAULT_ART_SHADER:ArtShader={preset:'original',strength:.75,tint:'#ffffff',bands:4,rimPower:3,scanSpacing:7}

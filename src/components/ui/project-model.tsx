@@ -8,9 +8,9 @@ import {resolvePublishedAsset} from '../../lib/published-assets'
 import {DEFAULT_INSPECTOR_OPTIONS,normalizeModelPresentation,ART_SHADER_PRESETS,type ModelMode,type ModelPresentation,type InspectorOptions,type ModelCamera,type LightEditState,type LightEditCallbacks} from '../../lib/model-presentation'
 import {ModelInspectorPanel} from './model-inspector-panel'
 import type {ModelStage,ModelStats} from '../../lib/model-inspector-stage'
-type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;resetCameraToken?:number;onCaptureCamera?:(camera:ModelCamera)=>void;lightEditing?:LightEditState;lightCallbacks?:LightEditCallbacks}
+type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;resetCameraToken?:number;previewArtShader?:boolean;onCaptureCamera?:(camera:ModelCamera)=>void;lightEditing?:LightEditState;lightCallbacks?:LightEditCallbacks}
 export function ProjectModel(props:Props){return <ModelViewer key={props.url} {...props}/>}
-function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,resetCameraToken,onCaptureCamera,lightEditing,lightCallbacks}:Props){
+function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,resetCameraToken,previewArtShader,onCaptureCamera,lightEditing,lightCallbacks}:Props){
  const parsed=parseModelUrl(url)
  const settings=normalizeModelPresentation(presentation)
  const configuration=useRef(settings);configuration.current=settings
@@ -33,6 +33,7 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
  useEffect(()=>{stage.current?.setPresentation(configuration.current)})
  useEffect(()=>{stage.current?.resetCamera()},[resetCameraToken])
  useEffect(()=>{stage.current?.setMode(mode)},[mode])
+ useEffect(()=>{if(previewArtShader){setMode('material');setPanelOpen(false)}},[previewArtShader,settings.artShader.preset])
  useEffect(()=>{stage.current?.setRotation(rotate)},[rotate])
  useEffect(()=>{if(lightEditing)stage.current?.setLightEditing(lightEditing)},[lightEditing])
  useEffect(()=>{stage.current?.setOptions(options)},[options])
