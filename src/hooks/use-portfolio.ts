@@ -1,4 +1,5 @@
-import { useCallback,useState } from 'react'
+import { useCallback,useRef,useState } from 'react'
+import {normalizeTypography,type TypographySettings} from '../lib/typography'
 import { DEFAULT_THEME,normalizeThemePalette,type ThemePalette } from '../lib/theme-palette'
 import {DEFAULT_GLITCH_PALETTE,normalizeGlitchPalette,type GlitchPalette} from '../lib/glitch-palette'
 import {DEFAULT_HEADING_SYMBOL,normalizeHeadingSymbol,type HeadingSymbolStyle} from '../lib/heading-symbol'
@@ -16,7 +17,7 @@ const KEY='jordan-portfolio-local-v2'
 const PENDING_KEY='jordan-portfolio-publish-pending-v1'
 const bundled=publishedPackage as {schema:number;revision:string;store:unknown}
 export const currentPublishedRevision=bundled.revision||'initial'
-export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;glitchPalette:GlitchPalette;headingSymbol:HeadingSymbolStyle;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;galleryFocus:ImageFraming;galleryContent:GalleryContent;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
+export interface PortfolioStore {customPages:CustomPage[];imageVariants:ResponsiveImageMap;themePalette:ThemePalette;typography?:TypographySettings;glitchPalette:GlitchPalette;headingSymbol:HeadingSymbolStyle;siteFavicon:string;seoTitle:string;seoDescription:string;projects:Project[];categories:Category[];home:HomeContent;testimonials:Testimonial[];musicTracks:MusicTrack[];socialLinks:SocialLink[];showLikeCounts:boolean;about:AboutContent;contact:ContactSettings;galleryBackground:string;galleryFocus:ImageFraming;galleryContent:GalleryContent;siteLogo:string;siteLogoHover:string;siteLogoSize:number;siteLogoHoverScale:number}
 export function clampBrandScale(value:unknown,fallback:number,min:number,max:number):number{
  const number=typeof value==='number'?value:Number(value)
  return Number.isFinite(number)?Math.max(min,Math.min(max,Math.round(number))):fallback
@@ -42,6 +43,7 @@ function parseStore(raw:unknown):PortfolioStore{
  const galleryFocus=normalizeFraming(obj.galleryFocus??DEFAULT_GALLERY_BANNER_FRAMING)
  const galleryContent=normalizeGalleryContent(obj.galleryContent)
  const themePalette=normalizeThemePalette(obj.themePalette)
+ const typography=normalizeTypography(obj.typography)
  const glitchPalette=normalizeGlitchPalette(obj.glitchPalette)
  const headingSymbol=normalizeHeadingSymbol(obj.headingSymbol)
  const siteLogo=typeof obj.siteLogo==='string'?normalizeBundledImage(obj.siteLogo):''
@@ -65,7 +67,7 @@ function parseStore(raw:unknown):PortfolioStore{
  const testimonials=Array.isArray(obj.testimonials)?obj.testimonials.filter(t=>typeof t.id==='string'&&typeof t.quote==='string'&&!isKnownDemoTestimonial(t)):[...defaultTestimonials]
  const musicTracks=Array.isArray(obj.musicTracks)?obj.musicTracks.filter(t=>typeof t.id==='string'&&typeof t.src==='string').map(t=>({...t,cover:t.cover?normalizeBundledImage(t.cover):t.cover})):[...defaultMusicTracks]
  const socialLinks=Array.isArray(obj.socialLinks)?obj.socialLinks.filter(s=>typeof s.id==='string'&&typeof s.label==='string'&&typeof s.url==='string'&&typeof s.icon==='string'):defaultSocialLinks
- return {customPages,imageVariants,themePalette,glitchPalette,headingSymbol,projects:projects.map(upgradeProcessTemplate),categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,galleryFocus,galleryContent,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
+ return {customPages,imageVariants,themePalette,typography,glitchPalette,headingSymbol,projects:projects.map(upgradeProcessTemplate),categories,home,testimonials,musicTracks,socialLinks,showLikeCounts:typeof obj.showLikeCounts==='boolean'?obj.showLikeCounts:false,about,contact,galleryBackground,galleryFocus,galleryContent,siteLogo,siteLogoHover,siteLogoSize,siteLogoHoverScale,siteFavicon,seoTitle,seoDescription}
 }
 function publishedStore():PortfolioStore{
  if(bundled.schema===1&&bundled.store){
@@ -123,8 +125,9 @@ export function usePortfolio(editing=false){
  // Public visitors always see the deployed GitHub content, even if this browser
  // previously used Local Studio. Local drafts only become visible while editing.
  const [deployedStore]=useState<PortfolioStore>(publishedStore)
+ const storeRef=useRef(store)
  const [saveError,setSaveError]=useState('')
- const save=useCallback((next:PortfolioStore)=>{setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('')}catch{setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[])
+ const save=useCallback((next:PortfolioStore)=>{storeRef.current=next;setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('')}catch{setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[])
  const update=(project:Project)=>save({...store,projects:store.projects.some(p=>p.id===project.id)?store.projects.map(p=>p.id===project.id?project:p):[project,...store.projects]})
  const remove=(id:string)=>save({...store,projects:store.projects.filter(p=>p.id!==id)})
  const setFeaturedProjects=(ids:string[])=>save({...store,projects:applyFeaturedSelection(store.projects,ids)})
@@ -142,9 +145,9 @@ export function usePortfolio(editing=false){
  const setCategories=(categories:Category[])=>save({...store,categories})
  const setCustomPages=(customPages:CustomPage[])=>save({...store,customPages:normalizeCustomPages(customPages)})
  const setHome=(home:HomeContent)=>save({...store,home})
- const markPublished=(revision:string)=>{
+ const markPublished=(revision:string,snapshot:string|null)=>{
   // Credential-free marker only. Never write the GitHub token to localStorage.
-  try{localStorage.setItem(PENDING_KEY,JSON.stringify({revision,snapshot:localStorage.getItem(KEY)}))}catch{/* publication itself already succeeded */}
+  try{localStorage.setItem(PENDING_KEY,JSON.stringify({revision,snapshot}))}catch{/* publication itself already succeeded */}
   // A successful authenticated publication is a meaningful familiar milestone.
   // Only the non-sensitive revision id is exposed to the local companion.
   window.dispatchEvent(new CustomEvent('alquimago:activity',{detail:{type:'published',revision}}))
@@ -152,14 +155,15 @@ export function usePortfolio(editing=false){
  const restorePublished=()=>{
   localStorage.removeItem(KEY)
   localStorage.removeItem(PENDING_KEY)
-  setStore(publishedStore())
+  const restored=publishedStore();storeRef.current=restored;setStore(restored)
   setSaveError('')
  }
  const setGalleryBackground=(galleryBackground:string)=>save({...store,galleryBackground})
  const setGalleryPage=(galleryBackground:string,galleryContent:GalleryContent,galleryFocus:ImageFraming)=>save({...store,galleryBackground,galleryFocus:normalizeFraming(galleryFocus),galleryContent:normalizeGalleryContent(galleryContent)})
  const setBranding=(values:Pick<PortfolioStore,'siteLogo'|'siteLogoHover'|'siteLogoSize'|'siteLogoHoverScale'>)=>save({...store,...values,siteLogoSize:clampBrandScale(values.siteLogoSize,100,65,180),siteLogoHoverScale:clampBrandScale(values.siteLogoHoverScale,110,100,170)})
  const setSiteIdentity=(values:Pick<PortfolioStore,'siteFavicon'|'seoTitle'|'seoDescription'>)=>save({...store,...values,seoTitle:values.seoTitle.trim().slice(0,110),seoDescription:values.seoDescription.trim().slice(0,240)})
- const setThemePalette=(themePalette:ThemePalette,headingSymbol:HeadingSymbolStyle=store.headingSymbol)=>save({...store,themePalette:normalizeThemePalette(themePalette),headingSymbol:normalizeHeadingSymbol(headingSymbol)})
+ const setThemePalette=(themePalette:ThemePalette,headingSymbol:HeadingSymbolStyle=storeRef.current.headingSymbol,typography?:TypographySettings)=>save({...storeRef.current,themePalette:normalizeThemePalette(themePalette),headingSymbol:normalizeHeadingSymbol(headingSymbol),typography:normalizeTypography(typography??storeRef.current.typography)})
+ const setTypography=(typography:TypographySettings)=>save({...storeRef.current,typography:normalizeTypography(typography)})
  const setGlitchPalette=(glitchPalette:GlitchPalette)=>save({...store,glitchPalette:normalizeGlitchPalette(glitchPalette)})
  const setAbout=(about:AboutContent)=>save({...store,about})
  const setContactPage=(contact:ContactSettings,socialLinks:SocialLink[])=>save({...store,contact,socialLinks})
@@ -178,6 +182,7 @@ export function usePortfolio(editing=false){
   for(const ref of allRefs){
    const blob=await readMedia(ref)
    if(blob)zip.file('public/assets/'+mediaKey(ref),blob)
+   else throw new Error('Não foi possível exportar: uma mídia local está ausente.')
   }
   const result=await zip.generateAsync({type:'blob'})
   const url=URL.createObjectURL(result)
@@ -193,14 +198,17 @@ export function usePortfolio(editing=false){
   if(!manifest)throw new Error('portfolio.json não encontrado.')
   const parsed=parseStore(JSON.parse(await manifest.async('string')) as unknown)
   const catalogFile=zip.file('media-library.json')
-  const catalog:LibraryAsset[]=catalogFile?JSON.parse(await catalogFile.async('string')) as LibraryAsset[]:[]
+  const rawCatalog:unknown=catalogFile?JSON.parse(await catalogFile.async('string')):[]
+  if(!Array.isArray(rawCatalog))throw new Error('Biblioteca de mídias inválida.')
+  const catalog:LibraryAsset[]=rawCatalog.filter((item):item is LibraryAsset=>Boolean(item&&typeof item==='object'&&typeof item.ref==='string'))
   const allRefs=new Set([...refsFor(parsed),...catalog.filter(a=>isLocalMedia(a.ref)).map(a=>a.ref)])
   for(const ref of allRefs){
    const item=zip.file('public/assets/'+mediaKey(ref))??zip.file('public/images/'+mediaKey(ref))
    if(item)await saveMediaBlob(ref,await item.async('blob'))
+   else if(!await readMedia(ref))throw new Error('Backup incompleto: há mídia local ausente. A restauração não foi concluída.')
   }
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }

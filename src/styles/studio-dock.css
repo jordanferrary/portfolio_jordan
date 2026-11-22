@@ -282,3 +282,5 @@
 @media(prefers-reduced-motion:reduce){
  .studio-hub-nav-item,.studio-hub-item-arrow{transition:none}
 }
+
+.studio-backup-import{position:relative;cursor:pointer}.studio-backup-import input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.studio-backup-import:focus-within{outline:2px solid var(--jf-secondary);outline-offset:2px}.studio-backup-notice{grid-column:1/-1;color:var(--jf-text);font-size:13px;overflow-wrap:anywhere}

@@ -18,8 +18,8 @@ export function ContactEditor({settings,links,onSave,onClose}:Props){
  const updateTags=(next:string[])=>patch({footerTags:next})
  const moveTag=(index:number,offset:number)=>{const next=[...draft.footerTags];const target=index+offset;if(target<0||target>=next.length)return;[next[index],next[target]]=[next[target],next[index]];updateTags(next)}
  const save=()=>{
-  if(!draft.titleFirst.trim()||!draft.titleAccent.trim()||!draft.introduction.trim()){
-   setError('Preencha o título e a apresentação da página.');return
+  if(!draft.titleFirst.trim()){
+   setError('Preencha a primeira linha do título.');return
   }
   onSave({...draft,titleFirst:draft.titleFirst.trim(),titleAccent:draft.titleAccent.trim(),introduction:draft.introduction.trim(),greeting:draft.greeting.trim(),footerTags:normalizeContactTags(draft.footerTags)},draftLinks)
   onClose()
@@ -30,13 +30,13 @@ export function ContactEditor({settings,links,onSave,onClose}:Props){
    <div className="contact-editor-head"><Sparkles size={20}/><p>O formulário foi substituído por canais de contato reais. Edite os textos em inglês e escolha quais redes devem aparecer na página. Nada é enviado a um serviço externo pelo Local Studio.</p></div>
    <section className="contact-editor-copy">
     <div className="contact-editor-section-title"><span>01 · APRESENTAÇÃO</span><h3>Textos da página</h3></div>
-    <div className="contact-editor-title-fields"><label>Primeira linha do título<input value={draft.titleFirst} maxLength={80} onChange={e=>patch({titleFirst:e.target.value})}/></label><label>Linha em destaque<input value={draft.titleAccent} maxLength={80} onChange={e=>patch({titleAccent:e.target.value})}/></label></div>
-    <label>Texto principal<textarea rows={3} value={draft.introduction} maxLength={600} onChange={e=>patch({introduction:e.target.value})}/></label>
+    <div className="contact-editor-title-fields"><label>Primeira linha do título<input value={draft.titleFirst} maxLength={80} onChange={e=>patch({titleFirst:e.target.value})}/></label><label>Linha em destaque (opcional)<input value={draft.titleAccent} maxLength={80} onChange={e=>patch({titleAccent:e.target.value})}/></label></div>
+    <label>Texto principal (opcional)<textarea rows={3} value={draft.introduction} maxLength={600} onChange={e=>patch({introduction:e.target.value})}/></label>
     <label>Convite acima das redes<textarea rows={2} value={draft.greeting} maxLength={220} onChange={e=>patch({greeting:e.target.value})}/></label>
     <p className="contact-editor-helper">Os textos acima aparecem para os visitantes em inglês. O painel administrativo continua em português.</p>
    </section>
    <section className="contact-editor-networks">
-    <div className="contact-editor-section-title"><span>02 · CANAIS DE CONTATO</span><h3>Perfis e links</h3><p>Somente redes com links válidos aparecem na página. A primeira rede configurada recebe maior destaque.</p></div>
+    <div className="contact-editor-section-title"><span>02 · CANAIS DE CONTATO</span><h3>Perfis e links</h3><p>Somente redes com links válidos aparecem na página. A ordem das redes é respeitada na página.</p></div>
     <SocialLinksEditor links={draftLinks} onChange={setDraftLinks}/>
    </section>
    <section className="contact-editor-tags">

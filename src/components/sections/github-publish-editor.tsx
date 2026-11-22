@@ -11,7 +11,7 @@ import {alquimagoPublishTokenVault,githubTokenVault,type GitHubTokenStatus} from
 type Props={
  entryPoint?:'studio'|'alquimago'
  store:PortfolioStore
- onPublished:(revision:string)=>void
+ onPublished:(revision:string,snapshot:string|null)=>void
  onRestore:()=>void
  onExport:()=>Promise<void>
  onClose:()=>void
@@ -111,6 +111,8 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
    if(!confirmDeletion){setError('Confirme que deseja excluir os arquivos selecionados.');return}
    if(!window.confirm('Remover definitivamente '+selectedPaths.length+' arquivo(s) do branch main na mesma publicação? Confira o backup e as referências antes de continuar.'))return
   }
+  let localSnapshot:string|null=null
+  try{localSnapshot=localStorage.getItem('jordan-portfolio-local-v2')}catch{/* local storage unavailable */}
   setBusy(true);setError('');setResult(null)
   try{
    // No publishing without a fresh check of the selected credential.
@@ -127,7 +129,7 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
    const familiar=document.querySelector('alquimago-familiar') as (HTMLElement&{snapshot?:()=>unknown})|null
    const familiarSnapshot=familiar?.snapshot?.()??null
    const finished=await publishPortfolioToGitHub(credential,store,currentPublishedRevision,setStatus,selectedPaths,familiarSnapshot)
-   onPublished(finished.revision)
+   onPublished(finished.revision,localSnapshot)
    setResult(finished)
    setStatus('As alterações estão no GitHub. A Cloudflare Pages publicará essa versão após a nova implantação concluir.')
   }catch(e){
@@ -151,7 +153,7 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
      <div className="github-publish-icon"><CloudUpload size={25}/></div>
      <div><strong>{viaAlquimago?'Autorização independente do familiar':'Publicação protegida pelo Local Studio'}</strong><p>{viaAlquimago?'O comando “vai comprar pão” abriu esta área protegida. O Alquimago nunca recebe o token pelo chat nem publica sozinho.':'Seus projetos e mídias são gravados no repositório somente após sua confirmação.'} A publicação só ocorre depois de sua autorização explícita.</p></div>
     </div>
-    <p className="github-publish-privacy"><ShieldCheck size={15}/>As mensagens do Alquimago nunca integram a publicação. O token fica criptografado no cofre separado do personagem.</p>
+    <p className="github-publish-privacy"><ShieldCheck size={15}/>As mensagens do Alquimago nunca integram a publicação. O Studio usa a autorização informada nesta sessão; o cofre separado é exclusivo do Alquimago.</p>
     <div className="github-publish-stats">
      <span><b>{store.projects.length}</b><small>projetos</small></span>
      <span><b>{store.musicTracks.length}</b><small>músicas</small></span>

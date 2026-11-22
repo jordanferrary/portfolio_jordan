@@ -18,6 +18,7 @@ type Props={
  onNewProject:()=>void
  onPublish:()=>void
  onExport:()=>Promise<void>
+ onImport?:(file:File)=>Promise<void>
  onRestorePublished:()=>void
  publishedRevision:string
  onLock:()=>void
@@ -37,10 +38,17 @@ const CATEGORIES:{id:StudioSection;description:string;icon:LucideIcon}[]=[
  * focused set of real actions on the right. No decorative or inert controls.
  */
 export function StudioDock({
- pageLabel,editLabel,onEditCurrent,onNewProject,onPublish,onExport,
+ pageLabel,editLabel,onEditCurrent,onNewProject,onPublish,onExport,onImport,
  onRestorePublished,publishedRevision,onLock,actions
 }:Props){
  const [open,setOpen]=useState(false)
+ const [backupBusy,setBackupBusy]=useState(false)
+ const [backupNotice,setBackupNotice]=useState('')
+ const runBackup=async(action:()=>Promise<void>,success:string)=>{
+  setBackupBusy(true);setBackupNotice('')
+  try{await action();setBackupNotice(success)}catch(error){setBackupNotice(error instanceof Error?error.message:'Operação de backup não concluída.')}
+  finally{setBackupBusy(false)}
+ }
  const [query,setQuery]=useState('')
  const [section,setSection]=useState<Workspace>('overview')
  const searchRef=useRef<HTMLInputElement>(null)
@@ -172,12 +180,18 @@ export function StudioDock({
        <p>Tente buscar por “cores”, “Alquimago” ou “projetos”.</p>
       </div>:section==='system'&&!normalized?
        <div className="studio-hub-grid studio-hub-management">
-        <button type="button" className="studio-hub-item" onClick={()=>{setOpen(false);void onExport()}}>
+        <button type="button" className="studio-hub-item" disabled={backupBusy} onClick={()=>void runBackup(onExport,'Backup exportado.')}>
          <span className="studio-hub-icon"><Download size={20}/></span>
          <span className="studio-hub-item-copy"><strong>Backup ZIP</strong><small>Exportar uma cópia dos projetos e mídias.</small></span>
          <ArrowRight size={15} className="studio-hub-item-arrow"/>
         </button>
-        <button type="button" className="studio-hub-item" onClick={()=>{
+        {onImport&&<label className="studio-hub-item studio-backup-import">
+         <span className="studio-hub-icon"><BookOpen size={20}/></span>
+         <span className="studio-hub-item-copy"><strong>Importar backup</strong><small>Restaurar ZIP ou JSON neste navegador.</small></span>
+         <input type="file" accept=".zip,.json,application/zip,application/json" disabled={backupBusy} onChange={event=>{const file=event.currentTarget.files?.[0];event.currentTarget.value='';if(file&&window.confirm('Substituir o rascunho local pelo backup selecionado?'))void runBackup(()=>onImport(file),'Backup importado no rascunho local.')}}/>
+        </label>}
+        {backupNotice&&<p className="studio-backup-notice" role="status">{backupNotice}</p>}
+        <button type="button" className="studio-hub-item" disabled={backupBusy} onClick={()=>{
          const confirmed=window.confirm('Descartar os rascunhos locais deste portfólio e recuperar os dados da versão publicada? Esta ação não altera o GitHub. Exporte um backup ZIP antes de continuar caso queira guardar seus rascunhos.')
          if(confirmed)invoke(onRestorePublished)
         }}>

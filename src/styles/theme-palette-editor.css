@@ -129,3 +129,5 @@
 .theme-symbol-example>strong{font-size:17px}
 @media(max-width:700px){.theme-symbol-options{grid-template-columns:repeat(3,minmax(0,1fr))}.theme-symbol-panel{padding:14px}.theme-symbol-panel-heading{gap:9px}.theme-symbol-reset{padding:7px}}
 @media(prefers-reduced-motion:reduce){.theme-symbol-option{transition:none}}
+
+.theme-type-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px;margin:16px 0}.theme-type-grid label{display:grid;gap:8px;font-size:13px;color:var(--jf-muted)}.theme-type-grid select{min-height:40px;padding:8px;border-radius:10px}.theme-type-grid input[type=range]{width:100%;accent-color:var(--jf-primary)}
