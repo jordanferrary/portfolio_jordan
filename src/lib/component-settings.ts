@@ -1,5 +1,5 @@
 /** Bounded component overrides. Missing settings inherit the established design. */
-export type BlockAppearance={width?:number;space?:number;align?:'left'|'center'|'right';surface?:'plain'|'panel';hideMobile?:boolean;hideDesktop?:boolean}
+export type BlockAppearance={width?:number;space?:number;align?:'left'|'center'|'right';surface?:'plain'|'panel'|'glass';padding?:number;corner?:number;opacity?:number;border?:boolean;hideMobile?:boolean;hideDesktop?:boolean}
 export type BlockLink={pageId:string;blockId:string}
 export function normalizeBlockAppearance(raw:unknown):BlockAppearance|undefined{
  if(!raw||typeof raw!=='object')return undefined
@@ -7,7 +7,11 @@ export function normalizeBlockAppearance(raw:unknown):BlockAppearance|undefined{
  if(typeof v.width==='number'&&Number.isFinite(v.width)&&v.width!==100)out.width=Math.max(50,Math.min(100,Math.round(v.width)))
  if(typeof v.space==='number'&&Number.isFinite(v.space)&&v.space!==0)out.space=Math.max(0,Math.min(64,Math.round(v.space)))
  if(v.align==='left'||v.align==='right')out.align=v.align
- if(v.surface==='panel')out.surface='panel'
+ if(v.surface==='panel'||v.surface==='glass')out.surface=v.surface
+ if(typeof v.padding==='number'&&Number.isFinite(v.padding))out.padding=Math.max(0,Math.min(48,Math.round(v.padding)))
+ if(typeof v.corner==='number'&&Number.isFinite(v.corner))out.corner=Math.max(0,Math.min(48,Math.round(v.corner)))
+ if(typeof v.opacity==='number'&&Number.isFinite(v.opacity)&&v.opacity<100)out.opacity=Math.max(45,Math.min(100,Math.round(v.opacity)))
+ if(v.border===true)out.border=true
  if(v.hideMobile===true)out.hideMobile=true
  if(v.hideDesktop===true)out.hideDesktop=true
  return Object.keys(out).length?out:undefined
@@ -41,4 +45,17 @@ export function normalizeOrder<T extends string>(raw:unknown,defaults:readonly T
 export function normalizeHomeModuleOrder(raw:unknown):HomeModuleOrder{
  const v=raw&&typeof raw==='object'?raw as Partial<HomeModuleOrder>:{}
  return {upper:normalizeOrder(v.upper,HOME_UPPER),lower:normalizeOrder(v.lower,HOME_LOWER)}
+}
+
+/** Reorder or duplicate only the addressed list, retaining all media references. */
+export function moveStudioBlock<T extends {id:string}>(blocks:T[],id:string,delta:number):T[]{
+ const index=blocks.findIndex(b=>b.id===id),target=index+delta
+ if(index<0||target<0||target>=blocks.length||!Number.isInteger(delta))return blocks
+ const next=[...blocks];const [item]=next.splice(index,1);next.splice(target,0,item);return next
+}
+export function duplicateStudioBlock<T extends {id:string}>(blocks:T[],id:string,newId:string):T[]{
+ const index=blocks.findIndex(b=>b.id===id)
+ if(index<0||blocks.length>=250||!newId||blocks.some(b=>b.id===newId))return blocks
+ const clone={...(JSON.parse(JSON.stringify(blocks[index])) as T),id:newId}
+ return [...blocks.slice(0,index+1),clone,...blocks.slice(index+1)]
 }

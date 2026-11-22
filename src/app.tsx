@@ -1,6 +1,7 @@
 import { lazy,Suspense,useRef,useEffect,useState } from 'react'
 import { Home,Grid2X2,UserRound,Mail,Image as ImageIcon,Heart,Music,Share2,Layers,Palette,ScanLine,Plus,MessageSquare,Eye,EyeOff,ArrowLeft } from 'lucide-react'
 import { Sidebar,type Page } from './components/layout/sidebar'
+import {moveStudioBlock,duplicateStudioBlock,type BlockAppearance} from './lib/component-settings'
 import {reorderCustomPages} from './data/custom-pages'
 import {RouteGlitchFallback,RouteGlitchTransition} from './components/ui/route-glitch-transition'
 import { SocialBar } from './components/layout/social-bar'
@@ -27,6 +28,7 @@ const GlitchPaletteEditor=lazy(()=>import('./components/sections/glitch-palette-
 import { applyThemePalette } from './lib/theme-palette'
 import {applyTypography} from './lib/typography'
 import {applyStudioControls,normalizeStudioControls} from './lib/studio-controls'
+const StudioInspector=lazy(()=>import('./components/sections/studio-inspector').then(m=>({default:m.StudioInspector})))
 const StudioCheckpoints=lazy(()=>import('./components/sections/studio-checkpoints').then(m=>({default:m.StudioCheckpoints})))
 const StudioCloud=lazy(()=>import('./components/sections/studio-cloud').then(m=>({default:m.StudioCloud})))
 const StudioComposition=lazy(()=>import('./components/sections/studio-composition').then(m=>({default:m.StudioComposition})))
@@ -138,6 +140,8 @@ export function App(){
  const portfolio=usePortfolio(editing)
  const controls=normalizeStudioControls(portfolio.studioControls)
  const [previewDraft,setPreviewDraft]=useState(false)
+ const [inspectorOpen,setInspectorOpen]=useState(false)
+ useEffect(()=>setInspectorOpen(false),[visibleRouteHash])
  const [checkpointsOpen,setCheckpointsOpen]=useState(false)
  const [cloudOpen,setCloudOpen]=useState(false)
  const [compositionOpen,setCompositionOpen]=useState(false)
@@ -171,7 +175,7 @@ export function App(){
   if(githubPublishOpen)return
   setEditing(false);setGateOpen(false);setEditor(undefined);setProjectBlockTarget(null);setHomeEditorOpen(false);setAboutEditorOpen(false);setContactEditorOpen(false)
   setGalleryBackgroundEditorOpen(false);setLogoEditorOpen(false);setSiteIdentityOpen(false);setThemePaletteOpen(false);setGlitchPaletteOpen(false)
-  setImageConverterOpen(false);setMediaManagerOpen(false);setSkin3DOpen(false);setCustomPageEditorTarget(null);setControlsTab(null);setMaintenanceTab(null);setThemeLibraryOpen(false);setCompositionOpen(false);setCloudOpen(false);setCheckpointsOpen(false);setComponentTarget(null);setPreviewDraft(false);setStagedMediaDeletions([])
+  setImageConverterOpen(false);setMediaManagerOpen(false);setSkin3DOpen(false);setCustomPageEditorTarget(null);setControlsTab(null);setMaintenanceTab(null);setThemeLibraryOpen(false);setCompositionOpen(false);setCloudOpen(false);setCheckpointsOpen(false);setComponentTarget(null);setPreviewDraft(false);setInspectorOpen(false);setStagedMediaDeletions([])
  }
  const [galleryFilter,setGalleryFilter]=useState('SFW')
  const [revealedProjects,setRevealedProjects]=useState<Set<string>>(()=>new Set())
@@ -204,10 +208,27 @@ export function App(){
  const openProject=(p:Project)=>switchRoute('#/project/'+p.id,'project',true)
  const pageLabels:Record<Page|'project'|'custom',string>={inicio:'Home',portfolio:'Galeria',sobre:'Sobre',contato:'Contato',project:'Projeto',custom:customPage?.navLabel??'Página'}
  const nativeComposition=page!=='project'&&page!=='custom'?portfolio.customPages.find(p=>p.id===portfolio.nativeLayouts?.[page]):undefined
+ const inspectedPage=nativeComposition??customPage
+ const inspectedProject=page==='project'&&project&&!shouldCoverProject(project,revealedProjects)?project:undefined
+ const inspectedBlocks=inspectedProject?.blocks??inspectedPage?.blocks
+ const saveInspected=(id:string,appearance?:BlockAppearance)=>{
+  if(inspectedProject)portfolio.update({...inspectedProject,blocks:inspectedProject.blocks.map(b=>b.id===id?{...b,appearance}:b)})
+  else if(inspectedPage)portfolio.setCustomPages(portfolio.customPages.map(p=>p.id===inspectedPage.id?{...p,blocks:p.blocks.map(b=>b.id===id?{...b,appearance}:b)}:p))
+ }
+ const moveInspected=(id:string,delta:number)=>{
+  if(inspectedProject)portfolio.update({...inspectedProject,blocks:moveStudioBlock(inspectedProject.blocks,id,delta)})
+  else if(inspectedPage)portfolio.setCustomPages(portfolio.customPages.map(p=>p.id===inspectedPage.id?{...p,blocks:moveStudioBlock(p.blocks,id,delta)}:p))
+ }
+ const duplicateInspected=(id:string)=>{
+  const newId='block-'+crypto.randomUUID()
+  if(inspectedProject)portfolio.update({...inspectedProject,blocks:duplicateStudioBlock(inspectedProject.blocks,id,newId)})
+  else if(inspectedPage)portfolio.setCustomPages(portfolio.customPages.map(p=>p.id===inspectedPage.id?{...p,blocks:duplicateStudioBlock(p.blocks,id,newId)}:p))
+ }
  const openComponent=(pageId:string,blockId:string)=>{setComponentTarget(blockId);setCustomPageEditorTarget(pageId)}
  const editCurrent=()=>{if(nativeComposition){setCustomPageEditorTarget(nativeComposition.id);return}if(page==='inicio')openHomeTab('home');else if(page==='portfolio')setGalleryBackgroundEditorOpen(true);else if(page==='sobre')setAboutEditorOpen(true);else if(page==='contato')setContactEditorOpen(true);else if(page==='custom')setCustomPageEditorTarget(customPage?.id??'manage');else setEditor(project??null)}
  const editingLabel=page==='project'?'Editar projeto':page==='custom'?'Editar página':page==='portfolio'?'Editar galeria':'Editar página'
  const studioActions:StudioAction[]=[
+  ...(inspectedBlocks&&!previewDraft?[{id:'visual-inspector',label:'Inspetor visual',description:'Hierarquia, seleção e propriedades dos blocos da página atual',section:'Páginas' as const,icon:ScanLine,onClick:()=>setInspectorOpen(true)}]:[]),
   {id:'home',label:'Home',description:'Apresentação, banner e conteúdo inicial',section:'Páginas',icon:Home,onClick:()=>openHomeTab('home')},
   {id:'featured-projects',label:'Projetos em destaque',description:'Escolher e reorganizar as 3 obras exibidas na Home',section:'Projetos',icon:Grid2X2,onClick:()=>openHomeTab('featured')},
   {id:'about',label:'Sobre',description:'Bio, especialidades e imagens',section:'Páginas',icon:UserRound,onClick:()=>setAboutEditorOpen(true)},
@@ -418,7 +439,8 @@ export function App(){
  {page==='sobre'&&!nativeComposition&&<AboutPage headingSymbol={portfolio.headingSymbol} about={portfolio.about} editing={viewEditing} onEdit={()=>setAboutEditorOpen(true)} onContact={()=>navigate('contato')}/>}
  {page==='contato'&&!nativeComposition&&<ContactPage headingSymbol={portfolio.headingSymbol} socials={portfolio.socialLinks} settings={portfolio.contact} demoEnabled={viewEditing} onEdit={()=>setContactEditorOpen(true)}/>}
  </div>
- {editing&&<AppErrorBoundary compact><Suspense fallback={null}><StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onNewProject={()=>setEditor(null)} onPublish={()=>openPublishDialog('studio')} onExport={portfolio.exportData} onImport={portfolio.importData} onRestorePublished={portfolio.restorePublished} publishedRevision={currentPublishedRevision} onLock={lockStudio} actions={studioActions}/></Suspense></AppErrorBoundary>} 
+ {editing&&!inspectorOpen&&<AppErrorBoundary compact><Suspense fallback={null}><StudioDock pageLabel={pageLabels[page]} editLabel={editingLabel} onEditCurrent={editCurrent} onUndo={portfolio.undo} onRedo={portfolio.redo} canUndo={portfolio.historyInfo.past.length>0} canRedo={portfolio.historyInfo.future.length>0} onNewProject={()=>setEditor(null)} onPublish={()=>openPublishDialog('studio')} onExport={portfolio.exportData} onImport={portfolio.importData} onRestorePublished={portfolio.restorePublished} publishedRevision={currentPublishedRevision} onLock={lockStudio} actions={studioActions}/></Suspense></AppErrorBoundary>} 
+ {viewEditing&&inspectorOpen&&inspectedBlocks&&<AppErrorBoundary compact><Suspense fallback={null}><StudioInspector key={visibleRouteHash} title={inspectedProject?.title??inspectedPage?.navLabel??'Página'} blocks={inspectedBlocks} onSave={saveInspected} onMove={moveInspected} onDuplicate={duplicateInspected} onEdit={id=>{setInspectorOpen(false);if(inspectedProject){setProjectBlockTarget(id);setEditor(inspectedProject)}else if(inspectedPage)openComponent(inspectedPage.id,id)}} onClose={()=>setInspectorOpen(false)}/></Suspense></AppErrorBoundary>}
   {editing&&previewDraft&&<button type="button" className="studio-preview-exit" onClick={()=>setPreviewDraft(false)}>Sair da prévia</button>}
  {portfolio.saveError&&<div className="storage-warning" role="alert">{portfolio.saveError}</div>}
  <AppErrorBoundary compact editorOverlay><Suspense fallback={null}>

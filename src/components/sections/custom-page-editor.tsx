@@ -12,7 +12,7 @@ import {parseModelUrl} from '../../lib/model-embed'
 import {isLocalMedia,saveUploadedMedia} from '../../lib/media-store'
 import {customPageIconOptions,newCustomPage,normalizeCustomPages,reorderCustomPages,safePageHref,type CustomPage,type CustomPageIcon,type PageBlock,type PageButtonAction,type ShowcaseItem,type SlideItem,type SlideTransition} from '../../data/custom-pages'
 import {copyBlock,resolvePageBlock} from '../../lib/page-composition'
-import {normalizeBlockAppearance,type BlockAppearance} from '../../lib/component-settings'
+import {BlockProperties} from '../ui/block-properties'
 import {customPageIcons} from '../../lib/custom-page-icons'
 import {isShowcasePdfLink,safeShowcaseDocumentHref} from '../../lib/showcase-pdf'
 import {PdfPagePreview} from '../ui/pdf-page-preview'
@@ -112,7 +112,6 @@ export function CustomPageEditor({pages,initialPageId,initialBlockId,onSavePages
   patch({blocks:[...draft.blocks,{...copyBlock(source.block),linkedSource:{pageId:source.page.id,blockId:source.block.id}}]})
   setLinkChoice('')
  }
- const patchAppearance=(block:PageBlock,change:Partial<BlockAppearance>)=>patchBlock(block.id,{appearance:normalizeBlockAppearance({...block.appearance,...change})})
  const addBlock=(type:Kind,index?:number)=>{
   if(!draft||draft.blocks.length>=250)return
   const block:PageBlock={
@@ -296,15 +295,7 @@ export function CustomPageEditor({pages,initialPageId,initialBlockId,onSavePages
     <div className="editor-section-title"><h3>Estrutura da página</h3><p>{draft.blocks.length} blocos · os visitantes verão esta mesma sequência.</p></div>
     {draft.blocks.map((block,index)=><section className={'custom-page-edit-block'+(dragged===block.id?' dragging':'')} key={block.id} id={'studio-block-'+block.id} onDragOver={e=>e.preventDefault()} onDrop={e=>dropBlock(e,index)}>
      <div className="custom-page-edit-block-head"><span className="custom-page-drag" draggable onDragStart={e=>{e.dataTransfer.setData('application/x-jf-page-block',block.id);setDragged(block.id)}} onDragEnd={()=>setDragged('')} title="Arrastar para reordenar"><GripVertical size={18}/></span><strong>{String(index+1).padStart(2,'0')} · {templates.find(t=>t.type===block.type)?.title??block.type}</strong><div><button type="button" onClick={()=>moveBlock(index,index-1)} disabled={index===0} aria-label="Mover bloco para cima"><ArrowUp size={16}/></button><button type="button" onClick={()=>moveBlock(index,index+1)} disabled={index===draft.blocks.length-1} aria-label="Mover bloco para baixo"><ArrowDown size={16}/></button><button type="button" onClick={()=>patch({blocks:draft.blocks.filter(item=>item.id!==block.id)})} aria-label="Excluir bloco"><Trash2 size={16}/></button></div></div>
-     <details className="studio-component-properties"><summary>Propriedades do componente</summary>
-      <label>Largura ({block.appearance?.width??100}%)<input type="range" min="50" max="100" step="5" value={block.appearance?.width??100} onChange={e=>patchAppearance(block,{width:Number(e.target.value)})}/></label>
-      <label>Espaço adicional acima ({block.appearance?.space??0}px)<input type="range" min="0" max="64" step="4" value={block.appearance?.space??0} onChange={e=>patchAppearance(block,{space:Number(e.target.value)})}/></label>
-      <label>Alinhamento<select value={block.appearance?.align??'center'} onChange={e=>patchAppearance(block,{align:e.target.value as BlockAppearance['align']})}><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option></select></label>
-      <label>Superfície<select value={block.appearance?.surface??'plain'} onChange={e=>patchAppearance(block,{surface:e.target.value as BlockAppearance['surface']})}><option value="plain">Original</option><option value="panel">Painel do tema</option></select></label>
-      <label><input type="checkbox" checked={block.appearance?.hideMobile===true} onChange={e=>patchAppearance(block,{hideMobile:e.target.checked})}/>Ocultar em celulares</label>
-      <label><input type="checkbox" checked={block.appearance?.hideDesktop===true} onChange={e=>patchAppearance(block,{hideDesktop:e.target.checked})}/>Ocultar em desktop</label>
-      <button type="button" className="subtle-action" onClick={()=>patchBlock(block.id,{appearance:undefined})}>Restaurar herança</button>
-     </details>
+     <BlockProperties value={block.appearance} onChange={appearance=>patchBlock(block.id,{appearance})}/>
      {block.linkedSource?<div className="studio-nav-row"><p>Componente vinculado. Edite a origem para atualizar as instâncias, ou desvincule para editar uma cópia independente.</p><button type="button" className="subtle-action" onClick={()=>patchBlock(block.id,{...resolvePageBlock(block,pages),linkedSource:undefined})}>Desvincular mantendo conteúdo</button></div>:<>
      {block.type==='heading'&&<TextComposer heading value={block.content} label="Título da seção" rows={3} onChange={content=>patchBlock(block.id,{content})}/>}
      {block.type==='text'&&<TextComposer value={block.content} label="Texto e descrição" rows={5} onChange={content=>patchBlock(block.id,{content})}/>}

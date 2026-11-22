@@ -36,3 +36,9 @@ O objetivo é autonomia sem editar código para operações comuns, mantendo o r
 - Sincronização manual de ZIP privado por R2 através do Worker de sessão existente. O bucket deve permanecer privado; o binding STUDIO_DRAFTS é opcional. Até 32 MB, controle de concorrência por revisão, confirmação de transferência, sem publicação automática.
 - Para habilitar de verdade: configurar o Worker GitHub App conforme auth-worker/README.md, associar o bucket privado ao binding STUDIO_DRAFTS, implantar o Worker e definir VITE_ALQUIMAGO_AUTH_ORIGIN no build. Não colocar segredos no frontend.
 - Múltiplos usuários, agendamento autônomo de publicação, estatísticas e sincronização automática continuam pendentes de infraestrutura, política de autorização e testes. Não confundir o painel de transferência com armazenamento já provisionado.
+
+## Quarta entrega: fluxo de edição
+- Favoritos e recentes locais na central, busca sem acentos, Ctrl/Cmd+K e Enter para abrir o primeiro resultado; acesso rápido ao histórico no desktop.
+- Inspetor visual inicial para blocos de projetos e páginas personalizadas, inclusive composições nativas substituídas. Hierarquia, seleção no site, localização, duplicação, ordenação, propriedades e acesso ao editor de conteúdo.
+- Propriedades compartilhadas: cantos, preenchimento, opacidade, borda, superfície Liquid Glass e controles existentes. Mantém a herança quando não há override. Salvar altera o rascunho; publicar continua explícito.
+- O inspetor não controla ainda cada elemento interno dos módulos nativos, e não substitui a edição de mídia nem a publicação. Integração de backend e homologação completas continuam pendentes.

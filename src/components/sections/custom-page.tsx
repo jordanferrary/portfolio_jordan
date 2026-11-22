@@ -57,8 +57,8 @@ export function CustomPageView({page,pages=[],editing,onEdit,onEditBlock,heading
     const block=resolvePageBlock(original,pages),appearance=block.appearance
     const node=block.type==='action'?<PageAction key={block.id} block={block}/>:block.type==='showcase'?<ArtistShowcase key={block.id} block={block}/>:block.type==='slideshow'?<PageSlideshow key={block.id} block={block}/>:<StoryBlock key={block.id} block={block as Block} projectTitle={page.title}/>
     if(!appearance&&!editing)return node
-    const style={'--jf-block-width':(appearance?.width??100)+'%','--jf-block-space':(appearance?.space??0)+'px'} as CSSProperties
-    return <div key={block.id} className={'studio-component'+(appearance?.surface==='panel'?' component-panel':'')+(appearance?.hideMobile?' hide-mobile':'')+(appearance?.hideDesktop?' hide-desktop':'')+(editing?' component-editing':'')} data-align={appearance?.align??'center'} style={style}>
+    const style={'--jf-block-width':(appearance?.width??100)+'%','--jf-block-space':(appearance?.space??0)+'px','--jf-block-padding':appearance?.padding===undefined?undefined:appearance.padding+'px','--jf-block-corner':appearance?.corner===undefined?undefined:appearance.corner+'px','--jf-block-opacity':(appearance?.opacity??100)/100} as CSSProperties
+    return <div key={block.id} className={'studio-component'+(appearance?.surface==='panel'?' component-panel':appearance?.surface==='glass'?' component-glass':'')+(appearance?.border?' component-border':'')+(appearance?.hideMobile?' hide-mobile':'')+(appearance?.hideDesktop?' hide-desktop':'')+(editing?' component-editing':'')} data-studio-block={editing?block.id:undefined} data-align={appearance?.align??'center'} style={style}>
      {editing&&onEditBlock&&<button type="button" className="studio-component-edit" aria-label="Editar este componente" onClick={()=>onEditBlock(block.id)}><Pencil size={14}/></button>}{node}
     </div>
    })}</div>:

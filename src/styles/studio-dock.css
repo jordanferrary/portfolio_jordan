@@ -284,3 +284,14 @@
 }
 
 .studio-backup-import{position:relative;cursor:pointer}.studio-backup-import input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}.studio-backup-import:focus-within{outline:2px solid var(--jf-secondary);outline-offset:2px}.studio-backup-notice{grid-column:1/-1;color:var(--jf-text);font-size:13px;overflow-wrap:anywhere}
+
+/* Compact tool discovery with independent, keyboard-operable favorite buttons. */
+.studio-tool-tile{position:relative;min-width:0;display:flex}
+.studio-tool-tile>.studio-hub-item{width:100%;padding-right:42px}
+.studio-tool-tile>.studio-tool-star{position:absolute;top:10px;right:9px;background:var(--jf-studio-deep);border:1px solid var(--jf-border);border-radius:8px;color:var(--jf-muted);width:30px;height:30px;display:grid;place-items:center;padding:0;cursor:pointer}
+.studio-tool-tile>.studio-tool-star[aria-pressed=true]{color:var(--jf-secondary);border-color:var(--jf-secondary)}
+.studio-tool-tile>.studio-tool-star[aria-pressed=true] svg{fill:currentColor}
+.studio-tool-tile>.studio-tool-star:focus-visible{outline:2px solid var(--jf-secondary);outline-offset:2px}
+.studio-dock-anchor .studio-hub-welcome{padding:15px 18px}.studio-dock-anchor .studio-hub-welcome h3{margin:0 0 4px}.studio-dock-anchor .studio-hub-welcome-actions{margin-top:10px}
+.studio-hub-section-heading h3{display:flex;align-items:center;gap:6px}
+@media(max-width:850px){.studio-dock-actions .studio-dock-history{display:none}}

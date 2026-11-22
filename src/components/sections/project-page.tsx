@@ -42,7 +42,7 @@ export function ProjectPage({project,onBack,editing,onEdit,onEditBlock,showLikeC
   {project.blocks.length>0&&<div className="story-blocks">{project.blocks.map(b=>{
    const node=<StoryBlock key={b.id} block={b} projectTitle={project.title} processSteps={project.processSteps}/>,a=b.appearance
    if(!a&&!editing)return node
-   return <div key={b.id} className={'studio-component'+(a?.surface==='panel'?' component-panel':'')+(a?.hideMobile?' hide-mobile':'')+(a?.hideDesktop?' hide-desktop':'')+(editing?' component-editing':'')} data-align={a?.align??'center'} style={{'--jf-block-width':(a?.width??100)+'%','--jf-block-space':(a?.space??0)+'px'} as CSSProperties}>
+   return <div key={b.id} className={'studio-component'+(a?.surface==='panel'?' component-panel':a?.surface==='glass'?' component-glass':'')+(a?.border?' component-border':'')+(a?.hideMobile?' hide-mobile':'')+(a?.hideDesktop?' hide-desktop':'')+(editing?' component-editing':'')} data-studio-block={editing?b.id:undefined} data-align={a?.align??'center'} style={{'--jf-block-width':(a?.width??100)+'%','--jf-block-space':(a?.space??0)+'px','--jf-block-padding':a?.padding===undefined?undefined:a.padding+'px','--jf-block-corner':a?.corner===undefined?undefined:a.corner+'px','--jf-block-opacity':(a?.opacity??100)/100} as CSSProperties}>
     {editing&&onEditBlock&&<button type="button" className="studio-component-edit" aria-label="Editar este bloco" onClick={()=>onEditBlock(b.id)}><Pencil size={14}/></button>}{node}
    </div>
   })}</div>}

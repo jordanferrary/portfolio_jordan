@@ -16,7 +16,7 @@ const MAX_DAY_CALLS=100
 const MAX_CACHE_ENTRIES=200
 const NO_TRANSLATE_SELECTOR=[
  '[translate="no"]','.notranslate','.language-switcher',
- '.editor-overlay','.editor-panel','.studio-dock','.studio-hub','.studio-component-edit','.studio-preview-exit',
+ '.editor-overlay','.editor-panel','.studio-dock','.studio-hub','.studio-inspector','.studio-component-edit','.studio-preview-exit',
  '.admin-gate','.gate-overlay',
  '.music-card-details strong','.music-card-details span',
  '.music-track-details b','.music-track-details small',

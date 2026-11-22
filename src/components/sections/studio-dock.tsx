@@ -3,9 +3,10 @@ import { useEffect,useRef,useState } from 'react'
 import {
  ArrowRight,BookOpen,ChevronDown,CloudUpload,Download,FileText,
  FolderKanban,LayoutGrid,LockKeyhole,Palette,Plus,Search,
- Settings2,Sparkles,WandSparkles,X
+ Settings2,Sparkles,WandSparkles,X,Star,Clock,Undo2,Redo2
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
+import {readWorkflow,saveWorkflow,matchesTool,visitTool,toggleFavorite} from '../../lib/studio-workflow'
 
 export type StudioSection='Páginas'|'Projetos'|'Familiar'|'Conteúdo'|'Identidade'
 export type StudioAction={
@@ -23,6 +24,7 @@ type Props={
  publishedRevision:string
  onLock:()=>void
  actions:StudioAction[]
+ onUndo?:()=>void;onRedo?:()=>void;canUndo?:boolean;canRedo?:boolean
 }
 type Workspace='overview'|'system'|StudioSection
 const CATEGORIES:{id:StudioSection;description:string;icon:LucideIcon}[]=[
@@ -39,9 +41,12 @@ const CATEGORIES:{id:StudioSection;description:string;icon:LucideIcon}[]=[
  */
 export function StudioDock({
  pageLabel,editLabel,onEditCurrent,onNewProject,onPublish,onExport,onImport,
- onRestorePublished,publishedRevision,onLock,actions
+ onRestorePublished,publishedRevision,onLock,actions,onUndo,onRedo,canUndo,canRedo
 }:Props){
  const [open,setOpen]=useState(false)
+ const [workflow,setWorkflow]=useState(readWorkflow)
+ useEffect(()=>{saveWorkflow(workflow)},[workflow])
+ useEffect(()=>{const key=(e:KeyboardEvent)=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'&&!e.defaultPrevented&&!document.querySelector('.editor-overlay,[aria-modal=true],.studio-inspector')){e.preventDefault();setOpen(true);window.requestAnimationFrame(()=>searchRef.current?.focus())}};document.addEventListener('keydown',key);return()=>document.removeEventListener('keydown',key)},[])
  const [backupBusy,setBackupBusy]=useState(false)
  const [backupNotice,setBackupNotice]=useState('')
  const runBackup=async(action:()=>Promise<void>,success:string)=>{
@@ -73,30 +78,30 @@ export function StudioDock({
  },[open])
  const invoke=(callback:()=>void)=>{setOpen(false);callback()}
  const choose=(next:Workspace)=>{setSection(next);setQuery('')}
- const normalized=query.toLocaleLowerCase('pt-BR').trim()
- const matching=actions.filter(action=>
-  !normalized||[action.label,action.description,action.section]
-   .some(value=>value.toLocaleLowerCase('pt-BR').includes(normalized))
- )
+ const normalized=query.trim()
+ const matching=actions.filter(action=>matchesTool(query,[action.label,action.description,action.section]))
+ const launch=(action:StudioAction)=>{setWorkflow(value=>visitTool(value,action.id));invoke(action.onClick)}
+ const favorites=workflow.favorites.flatMap(id=>actions.filter(a=>a.id===id))
+ const recent=workflow.recent.flatMap(id=>actions.filter(a=>a.id===id&&!workflow.favorites.includes(id)))
  const buildCode=String(import.meta.env.VITE_BUILD_SHA||'local').slice(0,7)
  const categoriesWithCount=CATEGORIES.map(category=>({
   ...category,count:actions.filter(action=>action.section===category.id).length
  }))
- const featuredIds=['global-layout','palette','draft-preview','studio-health','new-project','custom-pages']
+ const featuredIds=['visual-inspector','global-layout','palette','draft-preview','studio-health','new-project','custom-pages']
  const featured=featuredIds.map(id=>actions.find(action=>action.id===id))
   .filter((action):action is StudioAction=>Boolean(action))
  const visible=normalized?matching:actions.filter(action=>action.section===section)
  const current=CATEGORIES.find(category=>category.id===section)
  const tile=(action:StudioAction)=>{
   const Icon=action.icon
-  return <button type="button" key={action.id} className="studio-hub-item"
-   onClick={()=>invoke(action.onClick)}>
+  return <div className="studio-tool-tile" key={action.id}><button type="button" className="studio-hub-item"
+   onClick={()=>launch(action)}>
     <span className="studio-hub-icon"><Icon size={20} aria-hidden="true"/></span>
     <span className="studio-hub-item-copy">
      <strong>{action.label}</strong><small>{action.description}</small>
     </span>
     <ArrowRight size={15} className="studio-hub-item-arrow" aria-hidden="true"/>
-   </button>
+   </button><button type="button" className="studio-tool-star" aria-label={workflow.favorites.includes(action.id)?'Remover dos favoritos '+action.label:'Favoritar '+action.label} aria-pressed={workflow.favorites.includes(action.id)} onClick={()=>setWorkflow(value=>toggleFavorite(value,action.id))}><Star size={15}/></button></div>
  }
  return <div className="studio-dock-anchor" lang="pt-BR" ref={root}>
   {open&&<div id="studio-hub" className="studio-hub" role="dialog"
@@ -141,7 +146,7 @@ export function StudioDock({
      <div className="studio-hub-search">
       <Search size={17} aria-hidden="true"/>
       <input ref={searchRef} type="search" value={query}
-       onChange={event=>setQuery(event.target.value)}
+       onChange={event=>setQuery(event.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&normalized&&matching.length){e.preventDefault();launch(matching[0])}}}
        placeholder="Pesquisar ferramentas, páginas ou ações..."
        aria-label="Pesquisar ferramentas do Local Studio"/>
       {query?<button type="button" className="studio-hub-search-clear"
@@ -154,19 +159,17 @@ export function StudioDock({
        <p>Pesquisando em todas as áreas do Local Studio.</p></div>
       </div>:section==='overview'?<>
        <div className="studio-hub-welcome">
-        <span className="studio-hub-eyebrow">SEU ESPAÇO DE CRIAÇÃO</span>
-        <h3>O que vamos construir hoje?</h3>
-        <p>Seu portfólio está no controle. Encontre o editor certo e publique apenas quando estiver pronto.</p>
+        <h3>{pageLabel}</h3>
+        <p>Edite a página atual ou abra uma ferramenta.</p>
         <div className="studio-hub-welcome-actions">
          <button type="button" onClick={()=>invoke(onEditCurrent)}>
           <FileText size={16}/> Editar {pageLabel}
          </button>
         </div>
        </div>
-       <div className="studio-hub-section-heading">
-        <div><span>ATALHOS</span><h3>Ferramentas frequentes</h3>
-        <p>Acesso rápido às principais áreas de trabalho.</p></div>
-       </div>
+       {favorites.length>0&&<><div className="studio-hub-section-heading"><h3>Favoritos</h3></div><div className="studio-hub-grid">{favorites.map(tile)}</div></>}
+       {recent.length>0&&<><div className="studio-hub-section-heading"><h3><Clock size={15}/> Recentes</h3></div><div className="studio-hub-grid">{recent.map(tile)}</div></>}
+       <div className="studio-hub-section-heading"><h3>Ferramentas frequentes</h3></div>
       </>:section==='system'?<div className="studio-hub-section-heading">
        <div><span>SEGURANÇA E ARQUIVOS</span><h3>Gerenciamento</h3>
        <p>Backup, recuperação de rascunhos e encerramento de edição.</p></div>
@@ -207,7 +210,7 @@ export function StudioDock({
          <ArrowRight size={15} className="studio-hub-item-arrow"/>
         </button>
        </div>:<div className="studio-hub-grid">
-        {(normalized?matching:section==='overview'?featured:visible).map(tile)}
+        {(normalized?matching:section==='overview'?featured.filter(a=>!favorites.some(f=>f.id===a.id)&&!recent.some(r=>r.id===a.id)):visible).map(tile)}
        </div>}
       {section==='overview'&&!normalized&&<div className="studio-hub-overview-areas">
        <div className="studio-hub-section-heading"><div>
@@ -239,6 +242,8 @@ export function StudioDock({
     <button type="button" className="studio-context-button" onClick={()=>invoke(onEditCurrent)}>{editLabel}</button>
    </div>
    <div className="studio-dock-actions">
+    {onUndo&&<button type="button" className="studio-dock-history" disabled={!canUndo} title="Desfazer" aria-label="Desfazer última alteração" onClick={onUndo}><Undo2 size={17}/></button>}
+    {onRedo&&<button type="button" className="studio-dock-history" disabled={!canRedo} title="Refazer" aria-label="Refazer última alteração" onClick={onRedo}><Redo2 size={17}/></button>}
     <button type="button" className="studio-dock-new" onClick={()=>invoke(onNewProject)}
      title="Criar projeto"><Plus size={18}/><span>Novo projeto</span></button>
     <button type="button" className={'studio-menu-button'+(open?' active':'')}
