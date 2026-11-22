@@ -46,3 +46,8 @@ O objetivo é autonomia sem editar código para operações comuns, mantendo o r
 
 - Histórico recente também persistido em IndexedDB com limite de 30 registros e orçamento de 8 MB para os snapshots; recuperado somente quando o manifesto local e a revisão publicada coincidem. Caso o armazenamento falhe, o histórico permanece disponível apenas durante a sessão. Não substitui checkpoints de mídia nem sincroniza entre dispositivos.
 - Diagnóstico: IDs duplicados em blocos e visibilidade desativada em ambos os dispositivos.
+
+## Revisão de interface do Studio
+- Central compacta, navegação única, favoritos e recentes separados, seleção de busca por setas, atalhos de inspeção e prévia na barra. Sem repetir cartões de categorias.
+- Controles globais divididos entre geometria e Liquid Glass, com prévia ao lado em telas largas. Sobre e Contato divididos por seções sem descartar o rascunho ao alternar.
+- Cabeçalhos e rodapés administrativos mais compactos, barra móvel de duas linhas; estilos restritos ao Studio. Homologação visual ainda necessária.

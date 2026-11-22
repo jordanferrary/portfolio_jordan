@@ -91,3 +91,6 @@ import './styles/artwork-aspect-ratio.css'
 import './styles/sensitive-themes.css'
 
 import './styles/studio-controls.css'
+
+// Compact administrative workspaces; never style public routes.
+import './styles/studio-workflow-ui.css'
