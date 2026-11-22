@@ -21,3 +21,10 @@ export function normalizeProjectListing<T extends ListingProject&Pick<Project,'f
  const unlisted=isUnlisted(project)
  return {...project,unlisted,...(!canFeatureProject(project)?{featured:false,featuredOrder:undefined}:{})}
 }
+
+/** Public category chips reflect the normal listing, not the current search.
+ * Empty categories remain available for authoring; unlisted work never counts. */
+export function visibleGalleryCategories<T extends {label:string}>(categories:readonly T[],projects:readonly ListingProject[],editing:boolean):readonly T[]{
+ if(editing)return categories
+ return categories.filter(category=>projects.some(project=>projectInListing(project,category.label,false,'')))
+}

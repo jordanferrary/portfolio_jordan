@@ -82,3 +82,18 @@ test('visibility uses a scoped compact button group rather than stretched form i
  assert.match(css,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/)
  assert.match(css,/button\[aria-pressed=true\]/)
 })
+
+test('empty category chips are hidden publicly but retained in Studio',async()=>{
+ const result=await build({entryPoints:['src/lib/project-listing.ts'],bundle:true,format:'esm',platform:'node',write:false,logLevel:'silent'})
+ const {visibleGalleryCategories}=await import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].text).toString('base64'))
+ const categories=[{label:'Characters'},{label:'Environments'},{label:'Animation'}]
+ const projects=[{category:'Characters'},{category:'Environments',unlisted:true}]
+ assert.deepEqual(visibleGalleryCategories(categories,projects,false).map(c=>c.label),['Characters'])
+ assert.deepEqual(visibleGalleryCategories(categories,projects,true),categories)
+ assert.deepEqual(visibleGalleryCategories(categories,[],false),[])
+ assert.deepEqual(visibleGalleryCategories(categories,[...projects,{category:'Animation'}],false).map(c=>c.label),['Characters','Animation'])
+ const gallery=await readFile('src/components/sections/gallery.tsx','utf8')
+ assert.match(gallery,/visibleGalleryCategories\(categories,projects,editing\)/)
+ assert.match(gallery,/visibleCategories\.map\(c=><button/)
+ assert.match(gallery,/!visibleCategories\.some\(c=>c.label===filter\)\)setFilter\('SFW'\)/)
+})
