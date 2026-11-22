@@ -246,3 +246,12 @@ test('material selection stays outside scrolling properties and handles material
  assert.match(view,/onMaterials\?\.\(null\)/);assert.match(view,/onMaterials\?\.\(value.materials\)/)
  assert.match(css,/model-material-selector\{flex:0 0 auto/);assert.match(css,/model-studio-controls>\*\{flex-shrink:0\}/)
 })
+
+test('mesh statistics are a passive overlay inside the viewer with no instruction footer',async()=>{
+ const [view,css]=await Promise.all(['src/components/ui/project-model.tsx','src/styles/project-model.css'].map(path=>readFile(path,'utf8')))
+ assert.doesNotMatch(view,/className="model-inspector-meta"|Rotate · Zoom · Pan/)
+ assert.match(view,/<dl className="model-geometry-readout"[^>]*>/)
+ assert.match(view,/<dt>Tris<\/dt><dd>\{stats\.triangles\.toLocaleString\(\)\}/)
+ assert.match(view,/<dt>Verts<\/dt><dd>\{stats\.vertices\.toLocaleString\(\)\}/)
+ assert.match(css,/\.project-model-frame>\.model-geometry-readout\{[^}]*position:absolute[^}]*pointer-events:none/)
+})
