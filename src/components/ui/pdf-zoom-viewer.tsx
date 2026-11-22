@@ -180,6 +180,6 @@ export function PdfZoomViewer({url,title,onClose}:{url:string;title:string;onClo
    {status==='loading'&&<p className="pdf-lightbox-feedback">Loading certificate…</p>}
    {status==='error'&&<p className="pdf-lightbox-feedback">Unable to display this PDF. Check that the document is publicly accessible.</p>}
   </div>
-  <p className="art-lightbox-help">Mouse wheel or pinch to zoom · Drag to inspect · Arrow keys to change PDF pages · Esc to close</p>
+  <p className="art-lightbox-help">Scroll or pinch to zoom, and drag to move the page. Use the arrow keys to change pages or press Esc to close.</p>
  </div>,document.body)
 }

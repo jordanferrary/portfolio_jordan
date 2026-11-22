@@ -69,7 +69,7 @@ test('multi-line gallery copy and dynamic labels translate offline in Portuguese
 })
 test('recent public controls use local translations without relying on the free API',async()=>{
  const {localPhrase}=await moduleFrom('src/lib/public-page-translation.ts')
- for(const phrase of ["New page","Home page","Specialties","Featured projects","The person behind the art","Testimonials","Previous testimonial","Next testimonial","Inspect comparison versions","✦ BEHIND THE ARTWORK","A visual look at the stages behind this project.","Creative process images","Process carousel controls","Previous process image","Next process image","Scroll or pinch to zoom · Drag to inspect · Tap outside to close · Esc to close","Zoom controls","Zoom out","Zoom level","Zoom in","Reset view","Close viewer","3D model not available — GLB or glTF link required.","INTERACTIVE 3D","Explore model","Loading interactive 3D model…","Open model source","Rotate · Zoom · Pan — 3D assets load only on request","VIDEO","16:9 CINEMATIC","Zoom","✦ ITEM DETAILS","Interactive gallery","Close details","Enlarge selected image","Loop on · Repeat this track","Loop off · Play next track"]){
+ for(const phrase of ["New page","Home page","Specialties","Featured projects","The person behind the art","Testimonials","Previous testimonial","Next testimonial","Inspect comparison versions","✦ BEHIND THE ARTWORK","A visual look at the stages behind this project.","Creative process images","Process carousel controls","Previous process image","Next process image","Scroll or pinch to zoom, and drag to move the image. Click outside or press Esc to close.","Zoom controls","Zoom out","Zoom level","Zoom in","Reset view","Close viewer","3D model not available — GLB or glTF link required.","INTERACTIVE 3D","Explore model","Loading interactive 3D model…","Open model source","Rotate · Zoom · Pan — 3D assets load only on request","VIDEO","16:9 CINEMATIC","Zoom","✦ ITEM DETAILS","Interactive gallery","Close details","Enlarge selected image","Loop on · Repeat this track","Loop off · Play next track"]){
   assert.ok(localPhrase(phrase,'pt'),'Missing Portuguese translation: '+phrase)
   assert.ok(localPhrase(phrase,'es'),'Missing Spanish translation: '+phrase)
  }
@@ -144,7 +144,7 @@ test('PDF viewer and other public React portals are translated without scanning 
  for(const phrase of [
   'PDF viewing controls','Previous PDF page','Next PDF page','PDF page number','Close PDF',
   'Loading certificate…','Unable to display this PDF. Check that the document is publicly accessible.',
-  'Mouse wheel or pinch to zoom · Drag to inspect · Arrow keys to change PDF pages · Esc to close',
+  'Scroll or pinch to zoom, and drag to move the page. Use the arrow keys to change pages or press Esc to close.',
   'Click to inspect PDF','Loading PDF…','Preview unavailable','Open this document from the details panel'
  ]){
   assert.ok(localPhrase(phrase,'pt'),'Missing Portuguese translation: '+phrase)
@@ -162,7 +162,7 @@ test('PDF viewer and other public React portals are translated without scanning 
  assert.doesNotMatch(translator,/observePublicTranslation\(document\.body,language\)/)
  assert.match(app,/observePublicOverlayTranslation\(visitorLanguage\)/)
  assert.match(pdf,/PDF viewing controls/)
- assert.match(pdf,/Mouse wheel or pinch to zoom/)
+ assert.match(pdf,/Scroll or pinch to zoom, and drag to move the page/)
  assert.match(preview,/First page of PDF/)
 })
 

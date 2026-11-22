@@ -96,6 +96,6 @@ export function ArtLightbox({src,alt,onClose}:Props){
   <div className="art-lightbox-stage" ref={stage} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerEnd} onPointerCancel={pointerEnd} onWheel={wheel} onDoubleClick={()=>changeZoom(zoom===1?2:1)}>
    {resolved&&<img ref={imageRef} src={resolved} alt={alt} draggable={false} style={{transform:'translate('+pan.x+'px,'+pan.y+'px) scale('+zoom+')',cursor:zoom>1?'grab':'zoom-in'}}/>}
   </div>
-  <p className="art-lightbox-help">Scroll or pinch to zoom · Drag to inspect · Tap outside to close · Esc to close</p>
+  <p className="art-lightbox-help">Scroll or pinch to zoom, and drag to move the image. Click outside or press Esc to close.</p>
  </div>,document.body)
 }
