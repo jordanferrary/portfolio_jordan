@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-22T03:37:32.223Z-fe5a141e-560c-4b9e-b832-c73df1b09a7f",
+  "revision": "2026-11-22T05:00:15.272Z-949dd6eb-7260-4867-8b2a-89a503e12069",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -301,6 +301,18 @@
         ]
       }
     ],
+    "nativeLayouts": {},
+    "homeModuleOrder": {
+      "upper": [
+        "intro",
+        "profile"
+      ],
+      "lower": [
+        "featured",
+        "testimonials",
+        "focus"
+      ]
+    },
     "projects": [
       {
         "id": "project-mwqz9gcn",
@@ -948,21 +960,89 @@
     "siteLogoHoverScale": 110,
     "siteFavicon": "",
     "themePalette": {
-      "primary": "#A234FA",
-      "secondary": "#CB89FF",
-      "background": "#090611",
-      "surface": "#170D26",
+      "primary": "#FF8145",
+      "secondary": "#FFCE54",
+      "background": "#130A0E",
+      "surface": "#281719",
       "text": "#F8F3FF",
-      "muted": "#B7A0CD",
-      "border": "#7335A7"
+      "muted": "#E0C1B4",
+      "border": "#995539"
+    },
+    "typography": {
+      "headingScale": 1,
+      "bodyScale": 1,
+      "headingFont": "manrope",
+      "bodyFont": "dm-sans"
+    },
+    "studioControls": {
+      "desktop": {
+        "width": 1470,
+        "gutter": 0,
+        "gap": 100,
+        "radius": 100,
+        "glassBlur": 100,
+        "glassGlow": 100
+      },
+      "mobile": {
+        "width": 1470,
+        "gutter": 0,
+        "gap": 100,
+        "radius": 100,
+        "glassBlur": 100,
+        "glassGlow": 100
+      },
+      "motion": {
+        "mode": "glitch",
+        "duration": 260
+      },
+      "features": {
+        "music": true,
+        "profile": true,
+        "featured": true,
+        "focus": true,
+        "testimonials": true,
+        "footer": true
+      },
+      "navigation": {
+        "order": [
+          "inicio",
+          "portfolio",
+          "custom",
+          "sobre",
+          "contato"
+        ],
+        "items": {
+          "inicio": {
+            "label": "Home",
+            "visible": true,
+            "icon": "home"
+          },
+          "portfolio": {
+            "label": "Portfolio",
+            "visible": true,
+            "icon": "grid"
+          },
+          "sobre": {
+            "label": "About",
+            "visible": true,
+            "icon": "user"
+          },
+          "contato": {
+            "label": "Contact",
+            "visible": true,
+            "icon": "mail"
+          }
+        }
+      },
+      "translations": []
     },
     "glitchPalette": {
-      "magenta": "#79519C",
-      "cyan": "#687E9B",
-      "lime": "#777D91",
+      "magenta": "#FF2DAA",
+      "cyan": "#29F7FF",
+      "lime": "#C1FF36",
       "noise": "#554467",
-      "dark": "#0C0915",
-      "intensity": 0.55
+      "dark": "#05070E",
+      "intensity": 0.45
     },
     "headingSymbol": "none",
     "seoTitle": "Jordan Ferrary | 3D Artist",
