@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "revision": "2026-11-22T05:24:40.476Z-d1e161cb-0462-444f-8c4b-fccd6bb9b1ec",
+  "revision": "2026-11-22T13:40:26.412Z-cd145e18-77a1-44c1-bdad-cd3e7f0e240c",
   "store": {
     "imageVariants": {
       "site://images/studio/4c590a01258fd3a93e0945ab3aec225ef16febe67e0d68581f55b95a702e67c4.png": {
@@ -960,13 +960,13 @@
     "siteLogoHoverScale": 110,
     "siteFavicon": "",
     "themePalette": {
-      "primary": "#B4AAFF",
-      "secondary": "#91DFFF",
-      "background": "#090B19",
-      "surface": "#1C1C34",
+      "primary": "#3D91FF",
+      "secondary": "#43EDCD",
+      "background": "#070D1C",
+      "surface": "#111D32",
       "text": "#F8F3FF",
-      "muted": "#C0C0DC",
-      "border": "#6669A6"
+      "muted": "#ACCEDE",
+      "border": "#3A729A"
     },
     "typography": {
       "headingScale": 1,
@@ -979,17 +979,23 @@
         "width": 1470,
         "gutter": 0,
         "gap": 100,
-        "radius": 100,
+        "radius": 150,
+        "iconRadius": 200,
         "glassBlur": 100,
-        "glassGlow": 100
+        "glassGlow": 100,
+        "glassOpacity": 15,
+        "glassSheen": 250
       },
       "mobile": {
         "width": 1470,
         "gutter": 0,
         "gap": 100,
         "radius": 100,
+        "iconRadius": 100,
         "glassBlur": 100,
-        "glassGlow": 100
+        "glassGlow": 100,
+        "glassOpacity": 100,
+        "glassSheen": 100
       },
       "motion": {
         "mode": "glitch",
