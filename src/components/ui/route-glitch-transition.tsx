@@ -2,16 +2,16 @@ import {useLayoutEffect,useRef,useState,type CSSProperties,type AnimationEvent} 
 import {createPortal} from 'react-dom'
 
 /** Fixed deterministic coordinates avoid layout recalculation, assets, or randomness. */
-const fragments=Array.from({length:54},(_,i)=>({
+const fragments=Array.from({length:12},(_,i)=>({
  left:((i*43+7)%112-9)+'%',
  top:((i*67+Math.floor(i/5)*19)%97)+'%',
- width:(i%6===0?65+(i*11)%38:8+(i*23)%55)+'%',
- height:(i%7===0?.45+(i%4)*.55:1.2+(i*17)%11)+'%',
+ width:(14+(i*13)%37)+'%',
+ height:(.45+(i%5)*.55)+'%',
  delay:'-'+((i*79)%850)+'ms'
 }))
-const bands=Array.from({length:14},(_,i)=>({
+const bands=Array.from({length:4},(_,i)=>({
  top:((i*31+11)%97)+'%',
- height:(i%4===0?4.8:0.25+(i%5)*.6)+'%',
+ height:(.2+(i%3)*.25)+'%',
  delay:'-'+((i*103)%850)+'ms'
 }))
 export function GlitchSignalArt(){
@@ -63,7 +63,7 @@ export function RouteGlitchTransition({routeKey,onCovered}:{routeKey:string;onCo
  </div>,document.body)
 }
 
-/** Real Suspense fallback; its animated signal continues until the chunk arrives. */
+/** Real Suspense fallback; the subdued static signal remains until the chunk arrives. */
 export function RouteGlitchFallback(){
  const lang=typeof document!=='undefined'?document.documentElement.lang.toLowerCase():'en'
  const description=lang.startsWith('pt')?'Carregando conteúdo':lang.startsWith('es')?'Cargando contenido':'Loading content'

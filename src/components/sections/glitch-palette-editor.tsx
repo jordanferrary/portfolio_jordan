@@ -29,9 +29,9 @@ export function GlitchPaletteEditor({value,onSave,onClose}:Props){
  const save=()=>{onSave(normalizeGlitchPalette(draft));onClose()}
  return <div className="editor-overlay" lang="pt-BR" onMouseDown={e=>{if(e.target===e.currentTarget)onClose()}}>
   <section className="editor-panel glitch-palette-editor" role="dialog" aria-modal="true" aria-label="Paleta exclusiva do glitch">
-   <header><div><span className="eyebrow">✦ SIGNAL CORRUPTION</span><h2>Paleta do glitch</h2><small>Personalize a interferência digital sem alterar as cores do site.</small></div><button type="button" aria-label="Fechar paleta do glitch" onClick={onClose}><X size={20}/></button></header>
+   <header><div><span className="eyebrow">SOFT SIGNAL</span><h2>Paleta do glitch</h2><small>Personalize a interferência digital sem alterar as cores do site.</small></div><button type="button" aria-label="Fechar paleta do glitch" onClick={onClose}><X size={20}/></button></header>
    <div className="editor-scroll">
-    <p className="glitch-editor-description">Este efeito usa cores independentes: retângulos neon, bandas fragmentadas, ruído de sinal e deslocamentos bruscos. A prévia abaixo acompanha suas alterações.</p>
+    <p className="glitch-editor-description">Transição breve com fragmentos suaves e cores independentes da paleta do site. A luminosidade é limitada para manter a navegação confortável.</p>
     <div className="glitch-palette-workspace">
      <div className="glitch-editor-options">
       <h3>Canais de interferência</h3>
@@ -45,13 +45,13 @@ export function GlitchPaletteEditor({value,onSave,onClose}:Props){
       </div>
       <label className="glitch-editor-intensity">
        <span><SlidersHorizontal size={16}/>Intensidade <b>{Math.round(draft.intensity*100)}%</b></span>
-       <input type="range" min=".5" max="1.4" step=".05" value={draft.intensity} onChange={e=>setDraft(prev=>({...prev,intensity:Number(e.target.value)}))}/>
+       <input type="range" min=".15" max="1" step=".05" value={draft.intensity} onChange={e=>setDraft(prev=>({...prev,intensity:Number(e.target.value)}))}/>
       </label>
      </div>
      <div className="glitch-editor-demo">
       <h3>Prévia animada</h3>
       <div className="jf-glitch-preview" aria-label="Prévia da interferência digital" role="img" style={glitchPaletteStyle(draft)}><GlitchSignalArt/></div>
-      <p>Blocos e ruído em movimento · nenhuma cor do portfólio é modificada pela prévia.</p>
+      <p>A prévia usa as mesmas cores e intensidade da transição.</p>
       <h4>Direções prontas</h4>
       <div className="glitch-editor-presets">
        {GLITCH_PRESETS.map(preset=><button type="button" key={preset.name} onClick={()=>setPalette(preset.palette)}>
@@ -61,7 +61,7 @@ export function GlitchPaletteEditor({value,onSave,onClose}:Props){
       </div>
      </div>
     </div>
-    <div className="glitch-editor-note"><button type="button" className="subtle-action" onClick={()=>setPalette(DEFAULT_GLITCH_PALETTE)}><RotateCcw size={15}/>Restaurar glitch original</button><p>Salvar atualiza seu rascunho. Para disponibilizar a configuração aos visitantes, publique pelo Studio.</p></div>
+    <div className="glitch-editor-note"><button type="button" className="subtle-action" onClick={()=>setPalette(DEFAULT_GLITCH_PALETTE)}><RotateCcw size={15}/>Restaurar transição suave</button><p>Salvar atualiza seu rascunho. Para disponibilizar a configuração aos visitantes, publique pelo Studio.</p></div>
    </div>
    <footer><button type="button" className="subtle-action" onClick={onClose}>Cancelar</button><button type="button" className="save-action" onClick={save}><Save size={16}/>Salvar glitch</button></footer>
   </section>

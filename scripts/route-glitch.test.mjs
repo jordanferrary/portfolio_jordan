@@ -13,17 +13,14 @@ const [app,component,css,palette,editor,store,publish,entry,workflow]=await Prom
  read('src/main.tsx'),
  read('.github/workflows/deploy.yml')
 ])
-test('The actual transition draws large neon rectangles, blocks and moving noise',()=>{
- assert.match(component,/fragments=Array\.from\(\{length:54\}/)
- assert.match(component,/bands=Array\.from\(\{length:14\}/)
+test('The transition draws fewer subtle fragments without stepped animations',()=>{
+ assert.match(component,/fragments=Array\.from\(\{length:12\}/)
+ assert.match(component,/bands=Array\.from\(\{length:4\}/)
  assert.match(component,/<GlitchSignalArt\/>/)
- assert.match(css,/jf-glitch-block-jump 820ms steps\(1,end\) infinite/)
- assert.match(css,/jf-glitch-band-tear 830ms steps\(1,end\) infinite/)
- assert.match(css,/jf-glitch-static-noise 670ms steps\(3,end\) infinite/)
- assert.match(css,/feTurbulence/)
- assert.match(css,/\.jf-glitch-grain/)
- assert.match(css,/\.jf-glitch-chroma/)
- assert.match(css,/image-rendering:pixelated/)
+ assert.match(css,/jf-glitch-cover 100ms ease-in both/)
+ assert.match(css,/jf-glitch-reveal 160ms ease-out both/)
+ assert.match(css,/jf-glitch-drift 1800ms ease-in-out infinite alternate/)
+ assert.doesNotMatch(css,/steps\(|mix-blend-mode:screen/)
  assert.doesNotMatch(css,/::view-transition-old\(root\)/)
  assert.doesNotMatch(app,/startViewTransition|flushSync/)
 })
@@ -78,18 +75,17 @@ test('Palette remains separate from original seven colors and reduced motion is 
  assert.match(workflow,/npm run test:route-glitch/)
 })
 
-test('Visual comfort: darker default noise and capped brightness, while retaining user colors',()=>{
- assert.match(palette,/noise:'#554467'/)
- assert.match(css,/--jf-glitch-noise:#554467;/)
- assert.match(css,/color-mix\(in srgb,var\(--jf-glitch-noise\) 42%,var\(--jf-glitch-dark\) 58%\)/)
- assert.match(css,/filter:contrast\(140%\) brightness\(\.72\)/)
- assert.match(css,/opacity:calc\(\.27 \* min\(var\(--jf-glitch-intensity\),1\.1\)\)/)
- assert.doesNotMatch(css,/contrast\(240%\) brightness\(1\.16\)/)
- assert.match(css,/No full-screen brightness pulse on long waits/)
+test('Visual comfort: muted palette, capped color channels and no loading pulse',()=>{
+ assert.match(palette,/intensity:\.55/)
+ assert.match(palette,/Math\.max\(\.15,Math\.min\(1,i\)\)/)
+ assert.match(css,/--jf-glitch-magenta:#79519C;/)
+ assert.match(css,/color-mix\(in srgb,var\(--jf-glitch-magenta\) 28%,var\(--jf-signal-base\)\)/)
+ assert.match(css,/\.jf-route-glitch-pending\{opacity:1\}/)
+ assert.match(css,/\.jf-route-glitch-pending :is\(\.jf-glitch-block,\.jf-glitch-band\)\{animation:none\}/)
+ assert.doesNotMatch(css,/jf-glitch-pending-fade|brightness\(|steps\(/)
  assert.match(palette,/noise:normalizeHexColor\(raw\.noise\)\?\?DEFAULT_GLITCH_PALETTE\.noise/)
  assert.match(store,/glitchPalette=normalizeGlitchPalette\(obj\.glitchPalette\)/)
 })
-
 test('Desktop and mobile route changes use a two-phase transition rather than relying on loading',()=>{
  assert.match(app,/pendingPage\.current=next/)
  assert.match(app,/const commitRoute=\(hash:string\)=>/)

@@ -961,12 +961,12 @@
       "border": "#7335A7"
     },
     "glitchPalette": {
-      "magenta": "#D84CFF",
-      "cyan": "#5CF4FF",
-      "lime": "#ACFF58",
+      "magenta": "#79519C",
+      "cyan": "#687E9B",
+      "lime": "#777D91",
       "noise": "#554467",
-      "dark": "#060410",
-      "intensity": 1
+      "dark": "#0C0915",
+      "intensity": 0.55
     },
     "headingSymbol": "box",
     "seoTitle": "Jordan Ferrary | 3D Artist",

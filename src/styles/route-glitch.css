@@ -1,171 +1,82 @@
-/* DIGITAL SIGNAL CORRUPTION / Reference: rectangular neon block noise. */
-/* Independent palette — never touches --jf-primary or other site tokens. */
+/* A short, low-contrast digital transition. The independent palette remains editable. */
 :root{
- --jf-glitch-magenta:#D84CFF;
- --jf-glitch-cyan:#5CF4FF;
- --jf-glitch-lime:#ACFF58;
+ --jf-glitch-magenta:#79519C;
+ --jf-glitch-cyan:#687E9B;
+ --jf-glitch-lime:#777D91;
  --jf-glitch-noise:#554467;
- --jf-glitch-dark:#060410;
- --jf-glitch-intensity:1;
+ --jf-glitch-dark:#0C0915;
+ --jf-glitch-intensity:.55;
 }
 .jf-route-glitch,.jf-route-glitch-pending{
  position:fixed;inset:0;z-index:100000;
  pointer-events:none;overflow:hidden;isolation:isolate;
- background:var(--jf-glitch-dark);
+ background:color-mix(in srgb,var(--jf-glitch-dark) 22%,#0a0612);
 }
 .jf-route-glitch[data-phase="cover"]{
- animation:jf-glitch-cover 230ms steps(1,end) both;
+ animation:jf-glitch-cover 100ms ease-in both;
 }
 .jf-route-glitch[data-phase="reveal"]{
- animation:jf-glitch-reveal 350ms steps(1,end) both;
+ animation:jf-glitch-reveal 160ms ease-out both;
 }
-.jf-route-glitch-pending{animation:jf-glitch-pending-fade 850ms steps(1,end) infinite}
-.jf-glitch-scene{position:absolute;inset:0;isolation:isolate;overflow:hidden;background:var(--jf-glitch-dark)}
+/* Loading an uncached route must not replay the transition or pulse. */
+.jf-route-glitch-pending{opacity:1}
+.jf-glitch-scene{
+ position:absolute;inset:0;isolation:isolate;overflow:hidden;
+ --jf-signal-base:color-mix(in srgb,var(--jf-glitch-dark) 22%,#0a0612);
+ --jf-signal-violet:color-mix(in srgb,var(--jf-glitch-magenta) 28%,var(--jf-signal-base));
+ --jf-signal-blue:color-mix(in srgb,var(--jf-glitch-cyan) 24%,var(--jf-signal-base));
+ --jf-signal-accent:color-mix(in srgb,var(--jf-glitch-lime) 19%,var(--jf-signal-base));
+ background:var(--jf-signal-base);
+}
 .jf-glitch-gradient-field{
  position:absolute;inset:-4%;
- background:
-  linear-gradient(0deg,transparent 12%,color-mix(in srgb,var(--jf-glitch-magenta) 22%,transparent) 22%,transparent 31%),
-  linear-gradient(90deg,transparent 8%,color-mix(in srgb,var(--jf-glitch-cyan) 16%,transparent) 34%,transparent 56%),
-  radial-gradient(ellipse at 60% 57%,color-mix(in srgb,var(--jf-glitch-lime) 11%,transparent),transparent 67%);
- animation:jf-glitch-field 780ms steps(1,end) infinite;
+ background:radial-gradient(ellipse at 32% 40%,var(--jf-signal-violet),transparent 62%),
+ radial-gradient(ellipse at 78% 55%,var(--jf-signal-blue),transparent 58%);
+ opacity:calc(.42 * min(var(--jf-glitch-intensity),1));
 }
-.jf-glitch-blocks,.jf-glitch-bands{position:absolute;inset:0;overflow:hidden}
+.jf-glitch-blocks,.jf-glitch-bands{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.jf-glitch-blocks{opacity:calc(.42 * min(var(--jf-glitch-intensity),1))}
+.jf-glitch-bands{opacity:calc(.30 * min(var(--jf-glitch-intensity),1))}
 .jf-glitch-block{
- position:absolute;display:block;opacity:0;
- background:linear-gradient(180deg,
-  var(--jf-glitch-cyan) 0 19%,
-  var(--jf-glitch-magenta) 19% 52%,
-  var(--jf-glitch-lime) 52% 87%,
-  var(--jf-glitch-cyan) 87%);
- image-rendering:pixelated;
- box-shadow:-5px 0 0 color-mix(in srgb,var(--jf-glitch-magenta) 80%,transparent),
-  5px 0 0 color-mix(in srgb,var(--jf-glitch-cyan) 75%,transparent);
- animation:jf-glitch-block-jump 820ms steps(1,end) infinite;
+ position:absolute;display:block;
+ background:linear-gradient(90deg,transparent,var(--jf-signal-violet) 18%,var(--jf-signal-blue) 75%,transparent);
+ animation:jf-glitch-drift 1800ms ease-in-out infinite alternate;
 }
-.jf-glitch-block:nth-child(3n){background:var(--jf-glitch-lime)}
-.jf-glitch-block:nth-child(3n+1){background:linear-gradient(90deg,var(--jf-glitch-cyan),var(--jf-glitch-magenta) 68%,transparent)}
-.jf-glitch-block:nth-child(5n){background:var(--jf-glitch-magenta);opacity:.7}
-.jf-glitch-block:nth-child(7n){background:linear-gradient(90deg,var(--jf-glitch-lime),var(--jf-glitch-cyan),var(--jf-glitch-magenta));filter:blur(.6px)}
+.jf-glitch-block:nth-child(3n){background:linear-gradient(90deg,transparent,var(--jf-signal-accent),transparent)}
+.jf-glitch-block:nth-child(3n+1){background:linear-gradient(90deg,transparent,var(--jf-signal-blue),var(--jf-signal-violet),transparent)}
 .jf-glitch-band{
  position:absolute;left:-10%;width:120%;display:block;
- background:linear-gradient(90deg,transparent 0 5%,
-  var(--jf-glitch-magenta) 6% 25%,var(--jf-glitch-cyan) 25% 62%,
-  var(--jf-glitch-lime) 62% 87%,transparent 92%);
- box-shadow:0 -2px 0 color-mix(in srgb,var(--jf-glitch-cyan) 60%,transparent),
-  0 3px 0 color-mix(in srgb,var(--jf-glitch-magenta) 78%,transparent);
- opacity:0;animation:jf-glitch-band-tear 830ms steps(1,end) infinite;
+ background:linear-gradient(90deg,transparent 8%,var(--jf-signal-violet) 28%,var(--jf-signal-blue) 62%,transparent 92%);
+ animation:jf-glitch-drift 2200ms ease-in-out infinite alternate;
 }
-.jf-glitch-band:nth-child(3n){background:linear-gradient(90deg,
- transparent 0 10%,var(--jf-glitch-lime) 10% 32%,var(--jf-glitch-magenta) 32% 53%,
- transparent 53% 68%,var(--jf-glitch-cyan) 68% 89%,transparent 89%)}
-.jf-glitch-band:nth-child(4n){height:1px!important;background:var(--jf-glitch-cyan)}
-/* 128px locally generated fractal-noise tile, no network requests, no bitmap. */
+.jf-glitch-band:nth-child(2n){background:linear-gradient(90deg,transparent 20%,var(--jf-signal-accent) 46%,transparent 82%)}
+/* Static fine texture: never flashes, including during a long network wait. */
 .jf-glitch-grain{
- position:absolute;inset:-8%;
- background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'128'%20height%3D'128'%3E%3Cfilter%20id%3D'n'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'.83'%20numOctaves%3D'3'%20seed%3D'12'%20stitchTiles%3D'stitch'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'128'%20height%3D'128'%20filter%3D'url(%23n)'%20opacity%3D'.85'%2F%3E%3C%2Fsvg%3E");
- background-repeat:repeat;background-size:128px 128px;
- /* Even with a white user swatch, blend most of the grain into the dark
-    background before screening; do not let the SVG become a white flash. */
- background-color:color-mix(in srgb,var(--jf-glitch-noise) 42%,var(--jf-glitch-dark) 58%);
- background-blend-mode:multiply;
- image-rendering:pixelated;
- mix-blend-mode:screen;
- filter:contrast(140%) brightness(.72);
- opacity:calc(.18 * min(var(--jf-glitch-intensity),1.1));
- animation:jf-glitch-static-noise 670ms steps(3,end) infinite;
+ position:absolute;inset:0;
+ background-image:repeating-linear-gradient(0deg,transparent 0 3px,color-mix(in srgb,var(--jf-glitch-noise) 14%,var(--jf-signal-base)) 3px 4px);
+ opacity:calc(.12 * min(var(--jf-glitch-intensity),1));
+ pointer-events:none;
 }
 .jf-glitch-chroma{
  position:absolute;inset:0;
- background:
-  repeating-linear-gradient(90deg,transparent 0 42px,
-   color-mix(in srgb,var(--jf-glitch-lime) 34%,transparent) 43px 48px,
-   transparent 49px 131px),
-  repeating-linear-gradient(0deg,transparent 0 13px,
-   color-mix(in srgb,var(--jf-glitch-magenta) 22%,transparent) 14px 16px,
-   transparent 17px 77px);
- mix-blend-mode:screen;
- opacity:calc(.7 * var(--jf-glitch-intensity));
- clip-path:polygon(0 6%,100% 6%,100% 20%,0 20%,0 43%,100% 43%,100% 55%,0 55%,0 71%,100% 71%,100% 89%,0 89%);
- animation:jf-glitch-chroma-jitter 710ms steps(1,end) infinite;
+ background:repeating-linear-gradient(90deg,transparent 0 91px,var(--jf-signal-violet) 92px 93px,transparent 94px 155px);
+ opacity:calc(.09 * min(var(--jf-glitch-intensity),1));
+ pointer-events:none;
 }
-/* Both phases use the same full-viewport signal on phones and desktops.
-   Swap content while the outgoing page is completely covered (opacity:1). */
-@keyframes jf-glitch-cover{
- 0%{opacity:0}
- 15%{opacity:.27}
- 31%{opacity:.7}
- 49%{opacity:.93}
- 70%,100%{opacity:1}
+/* Commit the new page when fully covered, then reveal it without discrete steps. */
+@keyframes jf-glitch-cover{from{opacity:0}to{opacity:1}}
+@keyframes jf-glitch-reveal{from{opacity:1}to{opacity:0}}
+@keyframes jf-glitch-drift{
+ from{transform:translate3d(-1.2%,0,0)}
+ to{transform:translate3d(1.2%,0,0)}
 }
-@keyframes jf-glitch-reveal{
- 0%,12%{opacity:1}
- 30%{opacity:.93}
- 48%{opacity:.79}
- 65%{opacity:.49}
- 82%{opacity:.18}
- 100%{opacity:0}
-}
-@keyframes jf-glitch-pending-fade{
- /* No full-screen brightness pulse on long waits; texture supplies motion. */
- 0%,100%{opacity:1}
- 25%,75%{opacity:.97}
- 50%{opacity:.99}
-}
-@keyframes jf-glitch-block-jump{
- 0%,100%{opacity:0;transform:translate3d(0,0,0) scaleX(.85)}
- 7%{opacity:calc(.86 * var(--jf-glitch-intensity));transform:translate3d(-7vw,0,0) scaleX(1.15)}
- 19%{opacity:.46;transform:translate3d(9vw,0,0) scaleX(.87)}
- 31%{opacity:.93;transform:translate3d(-13vw,0,0) scaleX(1.23)}
- 46%{opacity:.2;transform:translate3d(5vw,0,0) scaleX(.68)}
- 54%{opacity:.98;transform:translate3d(-4vw,0,0) scaleX(1.1)}
- 71%{opacity:.5;transform:translate3d(14vw,0,0) scaleX(.95)}
- 86%{opacity:.81;transform:translate3d(-3vw,0,0)}
-}
-@keyframes jf-glitch-band-tear{
- 0%,100%{opacity:0;transform:translate3d(0,0,0)}
- 10%{opacity:.84;transform:translate3d(-12vw,0,0)}
- 24%{opacity:.52;transform:translate3d(17vw,0,0)}
- 37%{opacity:1;transform:translate3d(-6vw,0,0)}
- 52%{opacity:.25;transform:translate3d(10vw,0,0)}
- 67%{opacity:.88;transform:translate3d(-18vw,0,0)}
- 82%{opacity:.42;transform:translate3d(8vw,0,0)}
-}
-@keyframes jf-glitch-static-noise{
- 0%,100%{transform:translate3d(0,0,0);opacity:.1}
- 14%{transform:translate3d(-19px,13px,0);opacity:calc(.23 * min(var(--jf-glitch-intensity),1.1))}
- 33%{transform:translate3d(24px,-29px,0);opacity:.14}
- 47%{transform:translate3d(-39px,19px,0);opacity:calc(.27 * min(var(--jf-glitch-intensity),1.1))}
- 71%{transform:translate3d(17px,36px,0);opacity:.12}
- 87%{transform:translate3d(-15px,-31px,0);opacity:.18}
-}
-@keyframes jf-glitch-chroma-jitter{
- 0%,100%{opacity:0;transform:translate3d(0,0,0)}
- 10%{opacity:.6;transform:translate3d(-12px,0,0)}
- 27%{opacity:.25;transform:translate3d(24px,0,0)}
- 39%{opacity:.78;transform:translate3d(-38px,0,0)}
- 57%{opacity:.14;transform:translate3d(41px,0,0)}
- 76%{opacity:.63;transform:translate3d(-16px,0,0)}
-}
-@keyframes jf-glitch-field{
- 0%,100%{opacity:.25;transform:translate3d(0,0,0)}
- 21%{opacity:.65;transform:translate3d(-6vw,0,0)}
- 36%{opacity:.32;transform:translate3d(7vw,0,0)}
- 54%{opacity:.72;transform:translate3d(-9vw,0,0)}
- 83%{opacity:.23;transform:translate3d(5vw,0,0)}
-}
-
-/* The preview uses the same actual signal, clipped into its own aspect ratio. */
+.jf-route-glitch-pending :is(.jf-glitch-block,.jf-glitch-band){animation:none}
 .jf-glitch-preview{
  position:relative;isolation:isolate;overflow:hidden;min-height:175px;
- background:var(--jf-glitch-dark);
-}
-.jf-glitch-preview .jf-glitch-scene{
- animation:jf-glitch-pending-fade 850ms steps(1,end) infinite;
+ background:#0a0612;
 }
 @media(prefers-reduced-motion:reduce){
  .jf-route-glitch{display:none!important;animation:none!important}
  .jf-route-glitch-pending,.jf-glitch-preview .jf-glitch-scene{animation:none!important}
  .jf-glitch-scene :is(.jf-glitch-gradient-field,.jf-glitch-block,.jf-glitch-band,.jf-glitch-grain,.jf-glitch-chroma){animation:none!important}
- .jf-route-glitch-pending .jf-glitch-block,.jf-glitch-preview .jf-glitch-block{opacity:.45}
- .jf-glitch-band,.jf-glitch-chroma{display:none!important}
 }
