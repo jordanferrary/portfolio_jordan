@@ -78,7 +78,7 @@ test('JF logo uses the exact original Figma paths, editable theme colors and pub
  assert.match(sidebar,/brandLogoStyle\(siteLogoAppearance\)/)
  assert.match(sidebar,/<BrandMark\/>/)
  assert.match(editor,/ChromaticPicker/)
- assert.match(editor,/theme-palette-editor\\.css/)
+ assert.ok(editor.includes('theme-palette-editor.css'))
  assert.match(editor,/patchAppearance\(\{mode:'auto'\}\)/)
  assert.match(editor,/patchAppearance\(\{mode:'custom'\}\)/)
  assert.match(hook,/siteLogoAppearance:normalizeBrandLogoAppearance\(values.siteLogoAppearance\)/)
