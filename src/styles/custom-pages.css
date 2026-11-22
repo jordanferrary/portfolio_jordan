@@ -406,3 +406,37 @@
  .pdf-lightbox .art-lightbox-controls .pdf-lightbox-count{min-width:31px!important}
 }
 @media(prefers-reduced-motion:reduce){.pdf-lightbox-stage canvas{will-change:auto}}
+
+/* Page endings sit at the bottom of the document, not above stacked padding.
+   Short custom pages fill the available viewport; long pages scroll naturally.
+   Keep the mobile bottom navigation clear without the extra page padding. */
+.site-shell .site-main:has(> .custom-page),
+.site-shell .site-main:has(> .project-page){
+ --jf-page-end-clearance:18px;
+ padding-bottom:var(--jf-page-end-clearance);
+}
+.site-shell .site-main:has(> .custom-page){
+ display:flex;
+ flex-direction:column;
+ min-height:100vh;
+ min-height:100dvh;
+}
+.site-shell .site-main>.custom-page{
+ display:flex;
+ flex-direction:column;
+ flex:1 0 auto;
+ width:100%;
+ padding-bottom:0;
+}
+.site-shell .custom-page>.custom-page-body{width:100%;flex:1 0 auto}
+.site-shell .custom-page>.custom-page-footer{
+ flex:0 0 auto;
+ margin:clamp(38px,5vh,65px) 0 0;
+ padding:16px 4px 0;
+}
+.site-shell .project-page>.project-end{margin-bottom:0}
+@media(max-width:600px){
+ .site-shell .site-main:has(> .custom-page),
+ .site-shell .site-main:has(> .project-page){--jf-page-end-clearance:calc(92px + env(safe-area-inset-bottom,0px))}
+ .site-shell .custom-page>.custom-page-footer{margin-top:36px;padding-top:13px}
+}

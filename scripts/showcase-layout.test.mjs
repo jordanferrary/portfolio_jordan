@@ -36,3 +36,11 @@ test('portrait PDF previews fill the detail width and can be enlarged',()=>{
  assert.match(zoom,/setPageNumber\(n=>clamp/)
  assert.doesNotMatch(zoom,/Full PDF/)
 })
+
+test('custom page footer reaches the end without duplicate bottom spacing',()=>{
+ assert.match(css,/\.site-main:has\(> \.custom-page\)\{\s*display:flex;\s*flex-direction:column;\s*min-height:100vh;\s*min-height:100dvh;/)
+ assert.match(css,/\.site-main>\.custom-page\{[^}]*flex:1 0 auto;[^}]*padding-bottom:0;/)
+ assert.match(css,/\.custom-page>\.custom-page-body\{width:100%;flex:1 0 auto\}/)
+ assert.match(css,/\.custom-page>\.custom-page-footer\{[^}]*margin:clamp\(38px,5vh,65px\) 0 0;/)
+ assert.match(css,/--jf-page-end-clearance:calc\(92px \+ env\(safe-area-inset-bottom,0px\)\)/)
+})
