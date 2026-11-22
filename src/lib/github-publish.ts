@@ -256,7 +256,7 @@ export async function publishPortfolioToGitHub(
   project.image=await stage(project.image,'image')
   for(const step of project.processSteps??[])step.image=await stage(step.image,'image')
   for(const block of project.blocks){
-   if(block.type==='model')block.content=await stage(block.content,'model')
+   if(block.type==='model'){block.content=await stage(block.content,'model');if(block.modelPresentation?.backdrop?.image)block.modelPresentation.backdrop.image=await stage(block.modelPresentation.backdrop.image,'image')}
    if(block.type==='image')block.content=await stage(block.content,'image')
    if(block.media)block.media=await stage(block.media,'image')
    if(block.after)block.after=await stage(block.after,'image')

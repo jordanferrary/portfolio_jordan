@@ -168,3 +168,14 @@ test('emission stays independent from artistic shading and can use the base map'
  assert.match(stage,/presentation.artShader.bloom>0/);assert.match(post,/bloomPass\?\.dispose/);assert.match(bloom,/input.width\/4/)
  target.dispose();source.dispose();baseMap.dispose();emissiveMap.dispose()
 })
+
+test('model background settings survive normalization and publish local images',async()=>{
+ const p=normalizeModelPresentation({background:'#112233',backdrop:{mode:'radial',secondary:'#334455',centerX:150,centerY:-1,image:'media://model-backgrounds/test.webp'}})
+ assert.equal(p.backdrop.mode,'radial');assert.equal(p.backdrop.centerX,100);assert.equal(p.backdrop.centerY,0);assert.equal(p.backdrop.image,'media://model-backgrounds/test.webp')
+ assert.equal(normalizeModelPresentation({backdrop:{image:'javascript:alert(1)'}}).backdrop.image,'')
+ assert.equal(normalizeModelPresentation().backdrop.mode,'solid')
+ for(const preset of ['pearl','foil','opal','velvet','chrome','xray'])assert.equal(normalizeModelPresentation({artShader:{preset}}).artShader.preset,preset)
+ const [view,publish,art]=await Promise.all(['src/components/ui/project-model.tsx','src/lib/github-publish.ts','src/lib/model-art-shaders.ts'].map(path=>readFile(path,'utf8')))
+ assert.match(view,/model-scene-backdrop/);assert.match(view,/backdropFill\(settings.background,settings.backdrop\)/);assert.match(publish,/block.modelPresentation.backdrop.image=await stage/)
+ assert.match(art,/pearl:17,foil:18,opal:19/);assert.match(art,/jfSurfaceNormal/)
+})

@@ -1,5 +1,5 @@
 export type ModelMode='material'|'neutral'|'clay'|'wireframe'|'shaded-wire'|'clay-wire'|'flat'|'flat-wire'|'normals'|'unlit'|'metalness'|'roughness'|'normal-map'|'ao'|'opacity'|'emission'|'specular'|'scattering'|'matcap'|'matcap-surface'|'uv'|'bones'|'weights'
-export type ArtShaderPreset='original'|'toon'|'noir'|'rim'|'iridescent'|'hologram'|'blueprint'|'flat'|'hatch'|'crosshatch'|'stipple'|'halftone'|'pixel'|'outline'|'dither'|'watercolor'|'pencil'
+export type ArtShaderPreset='original'|'toon'|'noir'|'rim'|'iridescent'|'hologram'|'blueprint'|'flat'|'hatch'|'crosshatch'|'stipple'|'halftone'|'pixel'|'outline'|'dither'|'watercolor'|'pencil'|'pearl'|'foil'|'opal'|'velvet'|'chrome'|'xray'
 export type ArtShader={preset:ArtShaderPreset;strength:number;tint:string;bands:number;rimPower:number;scanSpacing:number;patternScale:number;inkColor:string;paperColor:string;patternAngle:number;chromaticAberration:number;chromaticAngle:number;crt:number;vhs:number;pixelSize:number;bloom:number;bloomThreshold:number;bloomRadius:number}
 export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;description:string;tint:string;swatch:string}[]=[
  {id:'original',name:'Original PBR',description:'Materiais e iluminação naturais.',tint:'#ffffff',swatch:'radial-gradient(circle at 30% 25%,#f5ebd7,#786853 45%,#25212b 80%)'},
@@ -18,18 +18,26 @@ export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;descrip
  {id:'outline',name:'Outline / Fresnel',description:'Contorno interno dependente do ângulo.',tint:'#241c32',swatch:'radial-gradient(circle at center,#e1c9aa 0 48%,#30233d 49% 57%,#8c749d 58%)'},
  {id:'dither',name:'Dithering',description:'Quantização com padrão ordenado.',tint:'#ffffff',swatch:'repeating-conic-gradient(#50466d 0 25%,#d8d4e4 0 50%) 0 0/6px 6px'},
  {id:'watercolor',name:'Watercolor',description:'Lavagem de cor e granulação procedural.',tint:'#ffffff',swatch:'radial-gradient(ellipse at 30% 30%,#f9e3d7,#bf8fae 48%,#575a8d 86%)'},
- {id:'pencil',name:'Pencil Sketch',description:'Grafite irregular e traços de desenho.',tint:'#ffffff',swatch:'repeating-linear-gradient(37deg,#e9e4d9 0 3px,#7b7470 4px,#e9e4d9 6px)'}
+ {id:'pencil',name:'Pencil Sketch',description:'Grafite irregular e traços de desenho.',tint:'#ffffff',swatch:'repeating-linear-gradient(37deg,#e9e4d9 0 3px,#7b7470 4px,#e9e4d9 6px)'},
+ {id:'pearl',name:'Holographic Pearl',description:'Ondas iridescentes pastel, acabamento perolado.',tint:'#ffffff',swatch:'linear-gradient(135deg,#6e6de3,#9ceaf0 24%,#fff3c9 40%,#f9b1f1 62%,#b5c8ff 80%,#8cf8e9)'},
+ {id:'foil',name:'Prismatic Foil',description:'Filme holográfico com reflexos espectrais saturados.',tint:'#ffffff',swatch:'linear-gradient(125deg,#303e94,#57f1ff,#ffffb6,#f14bb7,#7444e6,#76ffd4)'},
+ {id:'opal',name:'Opal / Mother of Pearl',description:'Brilho leitoso com nuvens cromáticas suaves.',tint:'#ffffff',swatch:'radial-gradient(ellipse at 28% 28%,#fff9e9,#b3e5e6 32%,#e5bfdc 64%,#a7a8d0)'},
+ {id:'velvet',name:'Velvet',description:'Acabamento acetinado com brilho nas bordas.',tint:'#a88bc9',swatch:'radial-gradient(circle,#281b39 20%,#644482 58%,#e1a8db 94%)'},
+ {id:'chrome',name:'Liquid Chrome',description:'Faixas especulares estilizadas, metal polido.',tint:'#ffffff',swatch:'linear-gradient(150deg,#161b29,#a9bccb 30%,#edf6ff 38%,#343c51 45%,#b3c8e1 73%,#202133)'},
+ {id:'xray',name:'X-Ray Glow',description:'Acabamento luminoso de radiografia estilizada, sem transparência.',tint:'#7cddff',swatch:'radial-gradient(circle,#0c233b,#2f719c 50%,#b5faff 88%)'}
 ]
 export const DEFAULT_ART_SHADER:ArtShader={preset:'original',strength:.75,tint:'#ffffff',bands:4,rimPower:3,scanSpacing:7,patternScale:7,inkColor:'#211c29',paperColor:'#f5eedc',patternAngle:45,chromaticAberration:0,chromaticAngle:0,crt:0,vhs:0,pixelSize:0,bloom:.35,bloomThreshold:1,bloomRadius:3}
+export type ModelBackdrop={mode:'solid'|'linear'|'radial'|'image'|'transparent';secondary:string;angle:number;centerX:number;centerY:number;image:string;fit:'cover'|'contain';opacity:number}
+export const DEFAULT_MODEL_BACKDROP:ModelBackdrop={mode:'solid',secondary:'#080713',angle:135,centerX:50,centerY:42,image:'',fit:'cover',opacity:1}
 export const MAX_MODEL_LIGHTS=8
 export type ModelLight={id:string;name:string;type:'directional'|'point'|'spot';enabled:boolean;color:string;intensity:number;azimuth:number;elevation:number;distance:number;angle:number;softness:number;targetX:number;targetY:number;targetZ:number}
 export type ModelCamera={azimuth:number;elevation:number;zoom:number;fov:number;targetX:number;targetY:number;targetZ:number}
 export type ModelPresentation=ModelCamera&{
- lighting:'studio'|'soft'|'contrast';exposure:number;environment:number;keyLight:number;lightAngle:number;lightColor:string;background:string;
+ lighting:'studio'|'soft'|'contrast';exposure:number;environment:number;keyLight:number;lightAngle:number;lightColor:string;background:string;backdrop:ModelBackdrop;
  autoRotate:boolean;rotationSpeed:number;usePresetRig:boolean;useEmbeddedLights:boolean;materialLighting:'scene'|'original';relightUnlit:boolean;emissionScale:number;artShader:ArtShader;materialLooks:Record<string,MaterialLook>;lights:ModelLight[]
 }
 export const DEFAULT_MODEL_PRESENTATION:ModelPresentation={
- lighting:'studio',exposure:1,environment:1,keyLight:2,lightAngle:45,lightColor:'#ffffff',background:'#15101e',
+ lighting:'studio',exposure:1,environment:1,keyLight:2,lightAngle:45,lightColor:'#ffffff',background:'#15101e',backdrop:DEFAULT_MODEL_BACKDROP,
  autoRotate:true,rotationSpeed:1,azimuth:30,elevation:15,zoom:1,fov:38,targetX:0,targetY:0,targetZ:0,usePresetRig:true,useEmbeddedLights:true,materialLighting:'scene',relightUnlit:true,emissionScale:1,artShader:DEFAULT_ART_SHADER,materialLooks:{},lights:[]
 }
 const numeric=(v:unknown,fallback:number,min:number,max:number)=>typeof v==='number'&&Number.isFinite(v)?Math.min(max,Math.max(min,v)):fallback
@@ -49,6 +57,17 @@ function normalizeLights(value:unknown):ModelLight[]{
    elevation:numeric(v.elevation,d.elevation,-90,90),distance:numeric(v.distance,d.distance,.25,12),angle:numeric(v.angle,d.angle,5,89),softness:numeric(v.softness,d.softness,0,1),
    targetX:numeric(v.targetX,0,-3,3),targetY:numeric(v.targetY,0,-3,3),targetZ:numeric(v.targetZ,0,-3,3)}]
  })
+}
+export function normalizeBackdrop(value?:Partial<ModelBackdrop>|null):ModelBackdrop{
+ const v=value??{},d=DEFAULT_MODEL_BACKDROP
+ const image=typeof v.image==='string'?v.image.trim().slice(0,2048):''
+ return {mode:v.mode==='linear'||v.mode==='radial'||v.mode==='image'||v.mode==='transparent'?v.mode:'solid',secondary:color(v.secondary,d.secondary),angle:numeric(v.angle,d.angle,0,360),centerX:numeric(v.centerX,d.centerX,0,100),centerY:numeric(v.centerY,d.centerY,0,100),image:/^(https?:\/\/|media:\/\/|site:\/\/images\/studio\/|\/images\/)/i.test(image)?image:'',fit:v.fit==='contain'?'contain':'cover',opacity:numeric(v.opacity,1,0,1)}
+}
+export function backdropFill(background:string,backdrop:ModelBackdrop):string{
+ if(backdrop.mode==='transparent')return 'transparent'
+ if(backdrop.mode==='linear')return `linear-gradient(${backdrop.angle}deg, ${background}, ${backdrop.secondary})`
+ if(backdrop.mode==='radial')return `radial-gradient(ellipse at ${backdrop.centerX}% ${backdrop.centerY}%, ${background}, ${backdrop.secondary})`
+ return background
 }
 export function normalizeArtShader(value?:Partial<ArtShader>|null):ArtShader{
  const v=value??{},d=DEFAULT_ART_SHADER
@@ -78,7 +97,7 @@ export function normalizeModelPresentation(value?:Partial<ModelPresentation>|nul
  const d=DEFAULT_MODEL_PRESENTATION,v=value??{}
  return {lighting:v.lighting==='soft'||v.lighting==='contrast'?v.lighting:'studio',
  exposure:numeric(v.exposure,d.exposure,.2,3),environment:numeric(v.environment,d.environment,0,2),keyLight:numeric(v.keyLight,d.keyLight,0,5),
- lightAngle:numeric(v.lightAngle,d.lightAngle,-180,180),lightColor:color(v.lightColor,d.lightColor),background:color(v.background,d.background),
+ lightAngle:numeric(v.lightAngle,d.lightAngle,-180,180),lightColor:color(v.lightColor,d.lightColor),background:color(v.background,d.background),backdrop:normalizeBackdrop(v.backdrop),
  autoRotate:typeof v.autoRotate==='boolean'?v.autoRotate:d.autoRotate,rotationSpeed:numeric(v.rotationSpeed,d.rotationSpeed,.2,4),
  azimuth:numeric(v.azimuth,d.azimuth,-180,180),elevation:numeric(v.elevation,d.elevation,-89,89),zoom:numeric(v.zoom,d.zoom,.2,8),
  fov:numeric(v.fov,d.fov,15,80),targetX:numeric(v.targetX,0,-5,5),targetY:numeric(v.targetY,0,-5,5),targetZ:numeric(v.targetZ,0,-5,5),

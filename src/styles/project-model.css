@@ -139,3 +139,34 @@
 @media(max-width:740px){.model-studio-tabs button svg{width:13px;height:13px}.model-art-shader-swatch{height:42px}}
 
 .model-studio-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}.model-studio-tabs button{flex-direction:column;gap:3px;font-size:10px}.model-material-list{display:grid;gap:5px;max-height:180px;overflow:auto;scrollbar-width:thin}.model-material-list button{display:flex;align-items:center;gap:9px;text-align:left;border:1px solid var(--jf-border);border-radius:9px;padding:8px;background:var(--jf-background);color:var(--jf-text)}.model-material-list button[aria-pressed=true]{border-color:var(--jf-secondary);background:var(--jf-liquid-clear,var(--jf-surface))}.model-material-list i{height:14px;width:14px;border-radius:4px;flex-shrink:0;border:1px solid #ffffff55}.model-material-list span{display:grid;gap:3px;min-width:0;overflow-wrap:anywhere}.model-material-list small{font-size:10px;color:var(--jf-muted)}.model-material-tools{display:flex;flex-wrap:wrap;gap:10px}.model-material-section{border:1px solid var(--jf-border);border-radius:12px;padding:10px}.model-material-section summary{cursor:pointer;color:var(--jf-secondary);font-weight:600}.model-material-section>label,.model-material-section>p{margin-top:10px}.model-studio-controls h3 svg{vertical-align:middle}
+
+/* The viewport owns its background; the WebGL canvas remains transparent. */
+.model-scene-backdrop{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.model-scene-backdrop img{display:block;width:100%;height:100%;max-width:none}
+.project-model-frame>.project-model-stage{position:relative;z-index:1;background:transparent!important}
+.project-model-stage>.project-model-canvas{background:transparent!important}
+.model-studio-dialog{width:min(1560px,97vw);height:min(1020px,95dvh);border-radius:18px}
+.model-studio-dialog.model-studio-wide{width:100vw;height:100dvh;border-radius:0}
+.model-studio-header-actions{display:flex;align-items:center;gap:6px}
+.model-studio-body{grid-template-columns:minmax(0,1fr) minmax(330px,400px)}
+.model-studio-header{padding:12px 18px}
+.model-studio-tabs{padding:10px;gap:5px}
+.model-studio-tabs button{min-height:46px;box-shadow:none}
+.model-studio-controls{padding:16px;gap:13px}
+.model-studio-controls h3{font-size:13px}
+.model-shader-filter{display:grid;gap:9px}
+.model-studio-controls .model-shader-filter>label{display:flex;align-items:center;gap:8px;border:1px solid var(--jf-border);border-radius:10px;padding:0 8px;background:var(--jf-background)}
+.model-studio-controls .model-shader-filter input{border:0;background:transparent;padding:9px 0}
+.model-shader-categories{display:flex;flex-wrap:wrap;gap:5px}
+.model-shader-categories button{padding:6px 9px;border:1px solid var(--jf-border);border-radius:8px;background:var(--jf-background);color:var(--jf-text);font-size:11px;cursor:pointer}
+.model-shader-categories button[aria-pressed=true]{border-color:var(--jf-secondary);background:var(--jf-liquid-tinted,var(--jf-surface))}
+.model-art-shader-grid{gap:7px;max-height:310px;overflow:auto;overscroll-behavior:contain;padding:1px;scrollbar-width:thin}
+.model-art-shader-option{display:grid;grid-template-columns:52px minmax(0,1fr);grid-template-rows:auto auto;align-items:center;gap:3px 8px;padding:7px;border-radius:9px}
+.model-art-shader-swatch{height:52px;grid-row:1/3;border-radius:7px}
+.model-art-shader-option small{font-size:9px;line-height:1.25}
+.model-studio-controls .model-material-section{background:color-mix(in srgb,var(--jf-background) 54%,transparent);padding:12px}
+.model-backdrop-preview{height:92px;border:1px solid var(--jf-border);border-radius:10px;overflow:hidden}
+.model-backdrop-preview img{width:100%;height:100%;display:block}
+.model-backdrop-upload{border:1px dashed var(--jf-border);border-radius:9px;padding:9px}
+@media(max-width:900px) and (min-width:741px){.model-studio-body{grid-template-columns:minmax(0,1fr) 310px}.model-art-shader-grid{grid-template-columns:1fr}}
+@media(max-width:740px){.model-studio-dialog{width:100vw;height:100dvh;border-radius:0}.model-studio-body{grid-template-columns:1fr;grid-template-rows:minmax(180px,44%) minmax(0,1fr)}.model-studio-controls{padding:10px}.model-studio-tabs button{min-height:39px}.model-art-shader-grid{max-height:240px}.model-art-shader-option{grid-template-columns:40px minmax(0,1fr)}.model-art-shader-swatch{height:40px}}
