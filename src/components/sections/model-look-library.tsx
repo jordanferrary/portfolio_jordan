@@ -5,14 +5,20 @@ import {ART_SHADER_PRESETS,type ArtShaderPreset} from '../../lib/model-presentat
 import {filterShaders,SHADER_CATEGORIES,CAMERA_EFFECTS,type CameraEffect} from '../../lib/model-preview-library'
 type Images=Record<string,string>
 const cache:Images={}
+let pending:Promise<void>|null=null
+let generation:AbortController|null=null
+const subscribers=new Set<(id:string,src:string)=>void>()
 export function useLookPreviews(active:boolean){
  const [images,setImages]=useState<Images>(()=>({...cache}))
  useEffect(()=>{
   if(!active)return
-  const controller=new AbortController()
-  if(Object.keys(cache).length>=ART_SHADER_PRESETS.length+CAMERA_EFFECTS.length){setImages({...cache});return}
-  void import('../../lib/model-preview-renderer').then(({renderPreviewLibrary})=>renderPreviewLibrary((id,src)=>{if(controller.signal.aborted)return;cache[id]=src;setImages(old=>({...old,[id]:src}))},controller.signal)).catch(()=>{})
-  return ()=>controller.abort()
+  const receive=(id:string,src:string)=>setImages(old=>({...old,[id]:src}))
+  subscribers.add(receive);setImages({...cache})
+  if(!pending&&Object.keys(cache).length<ART_SHADER_PRESETS.length+CAMERA_EFFECTS.length){
+   const controller=new AbortController();generation=controller
+   pending=import('../../lib/model-preview-renderer').then(({renderPreviewLibrary})=>renderPreviewLibrary((id,src)=>{cache[id]=src;for(const notify of subscribers)notify(id,src)},controller.signal)).catch(()=>{}).finally(()=>{pending=null;generation=null})
+  }
+  return ()=>{subscribers.delete(receive);if(!subscribers.size)setTimeout(()=>{if(!subscribers.size)generation?.abort()},150)}
  },[active])
  return images
 }

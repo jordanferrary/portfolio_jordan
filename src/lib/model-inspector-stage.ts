@@ -63,6 +63,12 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const wireUniforms=createWireUniforms(options.wireColor,options.wireOpacity)
  const materialIds=new Map<THREE.Material,string>()
  const materialInfo=new Map<string,MaterialInfo>()
+ function texturePreview(material:THREE.Material):string|undefined{
+  if(!onMaterialSelect)return
+  const image=(material as THREE.MeshStandardMaterial).map?.image
+  if(!image||!((typeof ImageBitmap!=='undefined'&&image instanceof ImageBitmap)||image instanceof HTMLImageElement||image instanceof HTMLCanvasElement))return
+  try{const sample=document.createElement('canvas');sample.width=sample.height=64;const context=sample.getContext('2d');if(!context)return;context.drawImage(image,0,0,64,64);return sample.toDataURL('image/png')}catch{return}
+ }
  const artUniforms=new Map<THREE.Material,ArtUniforms>()
  let materialEdit:MaterialEditState={active:false,selected:null,isolate:false,highlight:false}
  const lookFor=(source:THREE.Material)=>presentation.materialLooks[materialIds.get(source)??'']
@@ -255,7 +261,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   model.traverse(obj=>{if(obj instanceof THREE.Light)embeddedLights.set(obj,obj.visible);if(obj instanceof THREE.Mesh){if(!obj.geometry.hasAttribute('normal')&&obj.geometry.hasAttribute('position'))obj.geometry.computeVertexNormals();original.set(obj,obj.material);originalGeometry.set(obj,obj.geometry);stats.meshes++
    if(obj.geometry.hasAttribute('uv'))available.add('uv')
    if(obj instanceof THREE.SkinnedMesh){available.add('bones');if(obj.geometry.hasAttribute('skinWeight'))available.add('weights')}
-   for(const material of new Set(Array.isArray(obj.material)?obj.material:[obj.material])){if(!materialIds.has(material)){const association=gltf.parser.associations.get(material)?.materials;const id=typeof association==='number'?'mat-glb-'+association:'mat-local-'+materialIds.size;materialIds.set(material,id);if(!materialInfo.has(id))materialInfo.set(id,{id,name:material.name||'Material '+(materialInfo.size+1),meshes:0,color:'#ffffff'})}const info=materialInfo.get(materialIds.get(material)!)!;info.meshes++;const sourceColor=(material as THREE.MeshStandardMaterial).color;if(sourceColor)info.color='#'+sourceColor.getHexString();if(material instanceof THREE.MeshBasicMaterial)stats.unlitMaterials++;const pbr=material as THREE.MeshStandardMaterial;if(pbr.normalMap){available.add('normal-map');available.add('matcap-surface')}if(pbr.aoMap)available.add('ao')}
+   for(const material of new Set(Array.isArray(obj.material)?obj.material:[obj.material])){if(!materialIds.has(material)){const association=gltf.parser.associations.get(material)?.materials;const id=typeof association==='number'?'mat-glb-'+association:'mat-local-'+materialIds.size;materialIds.set(material,id);if(!materialInfo.has(id))materialInfo.set(id,{id,name:material.name||'Material '+(materialInfo.size+1),meshes:0,color:'#ffffff',texturePreview:texturePreview(material)})}const info=materialInfo.get(materialIds.get(material)!)!;info.meshes++;const sourceColor=(material as THREE.MeshStandardMaterial).color;if(sourceColor)info.color='#'+sourceColor.getHexString();if(material instanceof THREE.MeshBasicMaterial)stats.unlitMaterials++;const pbr=material as THREE.MeshStandardMaterial;if(pbr.normalMap){available.add('normal-map');available.add('matcap-surface')}if(pbr.aoMap)available.add('ao')}
    const position=obj.geometry.getAttribute('position');const count=obj instanceof THREE.InstancedMesh?obj.count:1
    stats.vertices+=(position?.count??0)*count;stats.triangles+=Math.floor((obj.geometry.index?.count??position?.count??0)/3)*count
   }})

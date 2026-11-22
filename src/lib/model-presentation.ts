@@ -76,7 +76,7 @@ export function normalizeArtShader(value?:Partial<ArtShader>|null):ArtShader{
 }
 export type MaterialLayer={preset:ArtShaderPreset;strength:number;tint:string;patternScale:number;bands:number;rimPower:number;scanSpacing:number}
 export type MaterialLook={surface:ArtShader;light:MaterialLayer;shadow:MaterialLayer;shadowThreshold:number;shadowSoftness:number;rimStrength:number;rimTint:string;rimPower:number;baseTint:string;opacity:number;emission:number;emissionMode:'original'|'base'|'color';emissionColor:string;roughness:number;metalness:number}
-export type MaterialInfo={id:string;name:string;meshes:number;color:string}
+export type MaterialInfo={id:string;name:string;meshes:number;color:string;texturePreview?:string}
 export type MaterialEditState={active:boolean;selected:string|null;isolate:boolean;highlight:boolean}
 export function newMaterialLook(surface:ArtShader=DEFAULT_ART_SHADER):MaterialLook{
  return {surface:{...surface,chromaticAberration:0,crt:0,vhs:0,pixelSize:0,bloom:0},light:{preset:'original',strength:1,tint:'#ffffff',patternScale:7,bands:4,rimPower:3,scanSpacing:7},shadow:{preset:'original',strength:1,tint:'#ffffff',patternScale:7,bands:4,rimPower:3,scanSpacing:7},shadowThreshold:.45,shadowSoftness:.18,rimStrength:0,rimTint:'#a35bff',rimPower:3,baseTint:'#ffffff',opacity:1,emission:1,emissionMode:'original',emissionColor:'#ffffff',roughness:1,metalness:1}
