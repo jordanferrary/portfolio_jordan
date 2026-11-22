@@ -200,7 +200,7 @@
 }
 .site-shell.about-route .about-art-primary{
  display:block;width:100%;height:auto;min-height:0;max-height: min(66vh,660px);
- object-fit:contain;object-position:center;background:var(--jf-surface-deep);
+ object-fit:cover;object-position:center;background:var(--jf-surface-deep);
  border-radius:22px;box-shadow:none;
 }
 .site-shell.about-route .about-information{
