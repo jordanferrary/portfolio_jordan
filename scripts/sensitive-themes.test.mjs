@@ -70,7 +70,15 @@ test('project listing choices are explicit and sensitive notices retain their se
  const admin=await readFile('src/components/sections/admin-editor.tsx','utf8')
  assert.match(admin,/role="group" aria-label="Visibilidade do projeto"/)
  assert.match(admin,/isSensitiveTheme\(draft\)\?<p className="editor-help" role="status">Visibilidade com aviso de conteúdo/)
- assert.match(admin,/type="radio" name=\{'project-listing-'\+draft.id\} checked=\{!isUnlisted\(draft\)\}/)
- assert.match(admin,/type="radio" name=\{'project-listing-'\+draft.id\} checked=\{isUnlisted\(draft\)\}/)
- assert.match(admin,/onChange=\{\(\)=>patch\(\{unlisted:true,featured:false,featuredOrder:undefined\}\)\}/)
+ assert.match(admin,/type="button" aria-pressed=\{!isUnlisted\(draft\)\}/)
+ assert.match(admin,/type="button" aria-pressed=\{isUnlisted\(draft\)\}/)
+ assert.match(admin,/onClick=\{\(\)=>patch\(\{unlisted:true,featured:false,featuredOrder:undefined\}\)\}/)
+})
+
+test('visibility uses a scoped compact button group rather than stretched form inputs',async()=>{
+ const [admin,css]=await Promise.all(['src/components/sections/admin-editor.tsx','src/styles/project-visibility.css'].map(path=>readFile(path,'utf8')))
+ assert.match(admin,/import '..\/..\/styles\/project-visibility.css'/)
+ assert.match(admin,/className="project-visibility-options"/)
+ assert.match(css,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/)
+ assert.match(css,/button\[aria-pressed=true\]/)
 })

@@ -1,5 +1,5 @@
 import { useEffect,useMemo,useState, type DragEvent } from 'react'
-import { ArrowDown,ArrowUp,Download,GripVertical,ImagePlus,Plus,Save,Trash2,Upload,X,Clapperboard,Box as BoxIcon } from 'lucide-react'
+import { ArrowDown,ArrowUp,Download,GripVertical,ImagePlus,Plus,Save,Trash2,Upload,X,Clapperboard,Globe,EyeOff,Check,Box as BoxIcon } from 'lucide-react'
 import { AssetImage } from '../ui/asset-image'
 import { AssetClipButton } from '../ui/asset-picker'
 import { QuickEditImageButton } from '../ui/image-quick-editor'
@@ -17,6 +17,7 @@ import {canFeatureProject,isUnlisted,normalizeProjectListing} from '../../lib/pr
 import { ModelFileField } from './model-file-field'
 import { ModelPresentationEditor } from './model-presentation-editor'
 import { isLocalMedia,saveUploadedMedia } from '../../lib/media-store'
+import '../../styles/project-visibility.css'
 
 const templates:{type:BlockType;label:string;description:string}[]=[
  {type:'heading',label:'Título',description:'Divisor de seção'},
@@ -122,7 +123,7 @@ export function AdminEditor({project,projects,categories,onSave,onDelete,onClose
  <MediaField value={draft.image} onChange={image=>patch({image})} folder={'projects/'+draft.id} slot="cover" label="Capa" onError={setMessage}/>{draft.image&&<button type="button" className="framing-shortcut" onClick={()=>setTab('framing')}>✦ Ajustar enquadramento da galeria, Home e banner</button>}
  <div className="project-description-composer"><p>Descrição principal</p><TextComposer label="Descrição do projeto" rows={4} value={draft.description} onChange={description=>patch({description})}/></div>
  <div className="tools-control"><p>Ferramentas utilizadas</p><ToolTags tools={draft.tools} onChange={tools=>patch({tools})}/></div>
- <div role="group" aria-label="Visibilidade do projeto"><strong>Visibilidade do projeto</strong>{isSensitiveTheme(draft)?<p className="editor-help" role="status">Visibilidade com aviso de conteúdo. A opção Não listado está reservada a projetos sem aviso de conteúdo.</p>:<><label className="checkbox-line"><input type="radio" name={'project-listing-'+draft.id} checked={!isUnlisted(draft)} onChange={()=>patch({unlisted:false})}/>Público</label><label className="checkbox-line"><input type="radio" name={'project-listing-'+draft.id} checked={isUnlisted(draft)} onChange={()=>patch({unlisted:true,featured:false,featuredOrder:undefined})}/>Não listado</label><p className="editor-help">{isUnlisted(draft)?'Fora da galeria e dos destaques. Acessível por link ou pelo código de busca. Não é privado nem protegido por senha.':'Aparece na galeria pública, de acordo com a categoria.'}</p></>}</div>
+ <div className="project-visibility-field" role="group" aria-label="Visibilidade do projeto"><span className="project-visibility-label">Visibilidade do projeto</span>{isSensitiveTheme(draft)?<p className="editor-help" role="status">Visibilidade com aviso de conteúdo. A opção Não listado está reservada a projetos sem aviso de conteúdo.</p>:<><div className="project-visibility-options"><button type="button" aria-pressed={!isUnlisted(draft)} onClick={()=>patch({unlisted:false})}><Globe size={17} aria-hidden="true"/><span>Público</span>{!isUnlisted(draft)&&<Check size={15} className="project-visibility-check" aria-hidden="true"/>}</button><button type="button" aria-pressed={isUnlisted(draft)} onClick={()=>patch({unlisted:true,featured:false,featuredOrder:undefined})}><EyeOff size={17} aria-hidden="true"/><span>Não listado</span>{isUnlisted(draft)&&<Check size={15} className="project-visibility-check" aria-hidden="true"/>}</button></div><p className="editor-help">{isUnlisted(draft)?'Fora da galeria e dos destaques. Acessível por link ou pelo código de busca. Não é privado nem protegido por senha.':'Aparece na galeria pública, de acordo com a categoria.'}</p></>}</div>
  <label className="checkbox-line"><input type="checkbox" checked={draft.featured} disabled={!canFeatureProject(draft)||(!draft.featured&&projects.filter(p=>canFeatureProject(p)&&p.featured&&p.id!==draft.id).length>=3)} onChange={e=>patch({featured:e.target.checked})}/>Exibir em trabalhos de destaque (máximo 3)</label>{canFeatureProject(draft)&&!draft.featured&&projects.filter(p=>canFeatureProject(p)&&p.featured&&p.id!==draft.id).length>=3&&<small>Os 3 espaços estão ocupados. Use Home → Destaques para substituir e reorganizar os projetos.</small>}
  </>}
  {tab==='framing'&&<ProjectFramingEditor image={draft.image} coverFocus={draft.coverFocus} homeFocus={draft.homeFocus} heroFocus={draft.heroFocus} onChange={values=>patch(values)}/>}

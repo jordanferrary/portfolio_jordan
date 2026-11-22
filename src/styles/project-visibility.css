@@ -1,0 +1,13 @@
+
+/* Keep these controls independent of generic input and checkbox styles. */
+.editor-overlay .project-visibility-field{display:grid;gap:8px;width:100%;min-width:0;margin-block:4px}
+.editor-overlay .project-visibility-label{font-size:12px;line-height:1.4;font-weight:500;color:var(--jf-muted,inherit)}
+.editor-overlay .project-visibility-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:5px;border:1px solid var(--jf-border,#573277);border-radius:12px;background:var(--jf-background,#140c20)}
+.editor-overlay .editor-panel .project-visibility-options>button{display:flex;align-items:center;justify-content:flex-start;gap:9px;min-width:0;min-height:40px;width:100%;margin:0;padding:8px 11px;border:1px solid transparent;border-radius:8px;background:transparent;box-shadow:none;color:var(--jf-muted,#b9a5cf);font:inherit;font-size:12px;line-height:1.3;text-align:left;cursor:pointer}
+.editor-overlay .editor-panel .project-visibility-options>button>span{min-width:0;flex:1;text-align:left;overflow-wrap:normal}
+.editor-overlay .editor-panel .project-visibility-options>button[aria-pressed=true]{background:var(--jf-liquid-tinted,var(--jf-surface,#30203e));border-color:var(--jf-secondary,#a76cda);color:var(--jf-text,#f8f3ff)}
+.editor-overlay .editor-panel .project-visibility-options>button:hover{border-color:var(--jf-secondary,#a76cda)}
+.editor-overlay .editor-panel .project-visibility-options>button:focus-visible{outline:2px solid var(--jf-secondary,#a76cda);outline-offset:2px}
+.editor-overlay .project-visibility-check{flex-shrink:0;color:var(--jf-secondary,#b78af4)}
+.editor-overlay .project-visibility-field>.editor-help{margin:0;line-height:1.5}
+@media(max-width:420px){.editor-overlay .editor-panel .project-visibility-options>button{padding:8px;gap:6px}.editor-overlay .project-visibility-options{gap:4px}}
