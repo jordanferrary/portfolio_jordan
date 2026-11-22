@@ -98,3 +98,12 @@ test('gallery search keeps focus feedback on the rounded outer field only',()=>{
  assert.match(css,/\.gallery-page \.search:focus-within\{\s*border-color:var\(--jf-primary\)!important;/)
  assert.match(css,/\.search:has\(input:focus-visible\)\{\s*outline:2px solid var\(--jf-secondary\)/)
 })
+
+test('Home feature grid fills available space for fewer projects without changing selection',()=>{
+ assert.match(home,/data-featured-count=\{featured.length\}/)
+ assert.match(home,/getFeaturedProjects\(/)
+ assert.match(css,/\.home-featured-cards\[data-featured-count="2"\]\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/)
+ assert.match(css,/\.home-featured-cards\[data-featured-count="1"\]\{grid-template-columns:minmax\(0,1fr\)/)
+ assert.match(css,/\.home-featured-cards\[data-featured-count="3"\]\{\s*grid-template-columns:none;grid-auto-flow:column;/)
+ assert.doesNotMatch(home,/focus-heading-icon/)
+})
