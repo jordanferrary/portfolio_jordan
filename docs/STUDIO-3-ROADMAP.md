@@ -22,3 +22,10 @@
 - Homologação de build, navegador desktop/mobile e publicação em ambiente de teste. Não confundir checagens de fonte com testes end-to-end.
 
 O objetivo é autonomia sem editar código para operações comuns, mantendo o repositório como fonte de versão e recuperação. Nenhum dado privado deve ser colocado no manifesto público.
+
+## Segunda entrega
+- Composições nativas opcionais baseadas nas páginas personalizadas, sem apagar os layouts anteriores.
+- Propriedades de bloco e edição contextual, vínculos de um nível com fallback, biblioteca local de modelos.
+- Checkpoints IndexedDB com mídia local referenciada, até cinco cópias de 100 MB; antes da publicação, importação e restauração da versão publicada. Se falhar, a operação é interrompida.
+- Entrada via sessão GitHub verificada quando VITE_ALQUIMAGO_AUTH_ORIGIN está configurado; PIN continua somente no modo local sem serviço. Publicação continua exigindo autorização explícita, sem reuso de tokens locais.
+- Ainda exige configurar/verificar o Worker e suas variáveis no ambiente real. A interface local não é uma proteção para dados privados.

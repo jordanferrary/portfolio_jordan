@@ -29,7 +29,7 @@ test('Page switching and Suspense fallback are textless and do not block navigat
  assert.match(app,/const openProject=\(p:Project\)=>switchRoute\('#\/project\/'\+p\.id,'project',true\)/)
  assert.match(app,/const navigateCustomPage=\(id:string\)=>switchRoute\('#\/page\/'\+id,'custom',true\)/)
  assert.match(app,/const sync=\(\)=>switchRoute\(location\.hash\|\|'#\/inicio',route\(\),false\)/)
- assert.equal((app.match(/fallback=\{<RouteGlitchFallback\/>\}/g)||[]).length,3)
+ assert.equal((app.match(/fallback=\{<RouteGlitchFallback\/>\}/g)||[]).length,4)
  assert.match(component,/createPortal\(<div className="jf-route-glitch"/)
  assert.match(component,/createPortal\(node,document\.body\)/)
  assert.match(component,/onAnimationEnd=\{finish\}/)

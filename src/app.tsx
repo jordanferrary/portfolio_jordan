@@ -27,6 +27,7 @@ const GlitchPaletteEditor=lazy(()=>import('./components/sections/glitch-palette-
 import { applyThemePalette } from './lib/theme-palette'
 import {applyTypography} from './lib/typography'
 import {applyStudioControls,normalizeStudioControls} from './lib/studio-controls'
+const StudioCheckpoints=lazy(()=>import('./components/sections/studio-checkpoints').then(m=>({default:m.StudioCheckpoints})))
 const StudioComposition=lazy(()=>import('./components/sections/studio-composition').then(m=>({default:m.StudioComposition})))
 const StudioThemeLibrary=lazy(()=>import('./components/sections/studio-theme-library').then(m=>({default:m.StudioThemeLibrary})))
 const StudioMaintenance=lazy(()=>import('./components/sections/studio-maintenance').then(m=>({default:m.StudioMaintenance})))
@@ -135,6 +136,7 @@ export function App(){
  const portfolio=usePortfolio(editing)
  const controls=normalizeStudioControls(portfolio.studioControls)
  const [previewDraft,setPreviewDraft]=useState(false)
+ const [checkpointsOpen,setCheckpointsOpen]=useState(false)
  const [compositionOpen,setCompositionOpen]=useState(false)
  const [componentTarget,setComponentTarget]=useState<string|null>(null)
  const [themeLibraryOpen,setThemeLibraryOpen]=useState(false)
@@ -166,7 +168,7 @@ export function App(){
   if(githubPublishOpen)return
   setEditing(false);setGateOpen(false);setEditor(undefined);setHomeEditorOpen(false);setAboutEditorOpen(false);setContactEditorOpen(false)
   setGalleryBackgroundEditorOpen(false);setLogoEditorOpen(false);setSiteIdentityOpen(false);setThemePaletteOpen(false);setGlitchPaletteOpen(false)
-  setImageConverterOpen(false);setMediaManagerOpen(false);setSkin3DOpen(false);setCustomPageEditorTarget(null);setControlsTab(null);setMaintenanceTab(null);setThemeLibraryOpen(false);setCompositionOpen(false);setComponentTarget(null);setPreviewDraft(false);setStagedMediaDeletions([])
+  setImageConverterOpen(false);setMediaManagerOpen(false);setSkin3DOpen(false);setCustomPageEditorTarget(null);setControlsTab(null);setMaintenanceTab(null);setThemeLibraryOpen(false);setCompositionOpen(false);setCheckpointsOpen(false);setComponentTarget(null);setPreviewDraft(false);setStagedMediaDeletions([])
  }
  const [galleryFilter,setGalleryFilter]=useState('SFW')
  const [revealedProjects,setRevealedProjects]=useState<Set<string>>(()=>new Set())
@@ -241,6 +243,7 @@ export function App(){
   {id:'social',label:'Redes sociais',description:'Links, ícones e plataformas',section:'Conteúdo',icon:Share2,onClick:()=>openHomeTab('socials')},
   {id:'likes',label:'Curtidas',description:'Visibilidade e contagem',section:'Conteúdo',icon:Heart,onClick:()=>openHomeTab('likes')},
   {id:'draft-preview',label:previewDraft?'Sair da prévia':'Prévia do visitante',description:'Visualizar o rascunho sem os botões contextuais de edição',section:'Páginas',icon:Eye,onClick:()=>setPreviewDraft(value=>!value)},
+  {id:'studio-checkpoints',label:'Pontos de recuperação',description:'Cópias persistentes do rascunho e mídias locais',section:'Conteúdo',icon:Layers,onClick:()=>setCheckpointsOpen(true)},
   {id:'studio-history',label:'Histórico local',description:'Desfazer e refazer alterações nesta sessão',section:'Conteúdo',icon:Layers,onClick:()=>setMaintenanceTab('history')},
   {id:'studio-health',label:'Diagnóstico',description:'Verificação de referências, contraste e integridade',section:'Conteúdo',icon:ScanLine,onClick:()=>setMaintenanceTab('health')},
   {id:'theme-library',label:'Biblioteca de temas',description:'Salvar, importar, exportar e reutilizar identidades visuais',section:'Identidade',icon:Palette,onClick:()=>setThemeLibraryOpen(true)},
@@ -420,6 +423,7 @@ export function App(){
  {editing&&customPageEditorTarget!==null&&<CustomPageEditor key={customPageEditorTarget} initialPageId={customPageEditorTarget} initialBlockId={componentTarget} pages={portfolio.customPages} onSavePages={portfolio.setCustomPages} onNavigatePage={navigateCustomPage} onClose={()=>{setCustomPageEditorTarget(null);setComponentTarget(null)}}/>}
  {editing&&skin3DOpen&&<Alquimago3DEditor onClose={()=>setSkin3DOpen(false)} onPublish={()=>openPublishDialog('studio')}/>}
  {editing&&mediaManagerOpen&&<MediaManager store={portfolio} onClose={()=>setMediaManagerOpen(false)} onOpenPublished={()=>{setMediaManagerOpen(false);openPublishDialog('studio')}} onPreparePublished={paths=>{setStagedMediaDeletions(paths);setMediaManagerOpen(false);openPublishDialog('studio')}}/>}
+ {editing&&checkpointsOpen&&<StudioCheckpoints onCreate={()=>portfolio.makeCheckpoint()} onRestore={portfolio.recoverCheckpoint} onClose={()=>setCheckpointsOpen(false)}/>}
  {editing&&compositionOpen&&<StudioComposition pages={portfolio.customPages} layouts={portfolio.nativeLayouts??{}} onSetLayouts={portfolio.setNativeLayouts} onAddPage={next=>{portfolio.setCustomPages([next,...portfolio.customPages]);setCompositionOpen(false);setCustomPageEditorTarget(next.id)}} onEditPage={id=>{setCompositionOpen(false);setCustomPageEditorTarget(id)}} onClose={()=>setCompositionOpen(false)}/>}
  {editing&&themeLibraryOpen&&<StudioThemeLibrary store={portfolio} onApply={portfolio.applyDesignTheme} onClose={()=>setThemeLibraryOpen(false)}/>}
  {editing&&maintenanceTab&&<StudioMaintenance tab={maintenanceTab} past={portfolio.historyInfo.past} future={portfolio.historyInfo.future} onUndo={portfolio.undo} onRedo={portfolio.redo} onAudit={portfolio.runAudit} onClose={()=>setMaintenanceTab(null)}/>}

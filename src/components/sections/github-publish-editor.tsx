@@ -2,6 +2,7 @@ import '../../styles/github-publish.css'
 import { useEffect,useState } from 'react'
 import { AlertTriangle,CheckCircle2,CloudUpload,Download,ExternalLink,Eye,EyeOff,GitBranch,RotateCcw,ShieldCheck,X,FolderOpen,Trash2 } from 'lucide-react'
 import type { PortfolioStore } from '../../hooks/use-portfolio'
+import {createCheckpoint} from '../../lib/studio-checkpoints'
 import {auditStudio} from '../../lib/studio-health'
 import { currentPublishedRevision,refsFor } from '../../hooks/use-portfolio'
 import { publishPortfolioToGitHub,type GitHubPublishResult } from '../../lib/github-publish'
@@ -13,7 +14,7 @@ type Props={
  entryPoint?:'studio'|'alquimago'
  store:PortfolioStore
  onPublished:(revision:string,snapshot:string|null)=>void
- onRestore:()=>void
+ onRestore:()=>Promise<void>
  onExport:()=>Promise<void>
  onClose:()=>void
  stagedDeletionPaths?:string[]
@@ -119,6 +120,7 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
    const issues=await auditStudio(store,refsFor(store))
    const blockers=issues.filter(issue=>issue.level==='error')
    if(blockers.length)throw new Error('Publicação interrompida: '+blockers.map(issue=>issue.message).join('; '))
+   await createCheckpoint(store,refsFor(store),'Antes de publicar')
    // No publishing without a fresh check of the selected credential.
    const check=await vault.check(credential)
    if(viaAlquimago)setVaultStatus(check)
@@ -145,9 +147,9 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
   }
   finally{setToken('');setBusy(false)}
  }
- const restore=()=>{
+ const restore=async()=>{
   if(!window.confirm('Substituir seu rascunho local pela versão publicada que está carregada neste site? Salve um backup ZIP se quiser manter suas alterações.'))return
-  onRestore();close()
+  setBusy(true);setError('');try{await onRestore();setToken('');onClose()}catch(e){setError(e instanceof Error?e.message:'Não foi possível restaurar o rascunho.')}finally{setBusy(false)}
  }
  return <div className="editor-overlay" lang="pt-BR" onMouseDown={e=>{if(e.target===e.currentTarget)close()}}>
   <section className="editor-panel github-publish-editor" role="dialog" aria-modal="true" aria-label={viaAlquimago?'Publicar com o Cofre do Alquimago':'Publicar portfólio no GitHub'}>

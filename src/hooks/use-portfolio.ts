@@ -1,5 +1,6 @@
 import { useCallback,useRef,useState } from 'react'
 import {normalizeDesignTheme,type DesignTheme} from '../lib/design-themes'
+import {createCheckpoint,restoreCheckpoint} from '../lib/studio-checkpoints'
 import {auditStudio} from '../lib/studio-health'
 import {normalizeStudioControls,type StudioControls} from '../lib/studio-controls'
 import {normalizeTypography,type TypographySettings} from '../lib/typography'
@@ -108,7 +109,8 @@ export function refsFor(store:PortfolioStore):string[]{
  for(const page of store.customPages){
   if(isLocalMedia(page.heroImage))refs.add(page.heroImage)
   for(const block of page.blocks){
-   if(block.type==='image'&&isLocalMedia(block.content))refs.add(block.content)
+   if((block.type==='image'||block.type==='model')&&isLocalMedia(block.content))refs.add(block.content)
+   if(block.modelPresentation?.backdrop?.image&&isLocalMedia(block.modelPresentation.backdrop.image))refs.add(block.modelPresentation.backdrop.image)
    if(block.media&&isLocalMedia(block.media))refs.add(block.media)
    if(block.after&&isLocalMedia(block.after))refs.add(block.after)
    for(const src of block.gallery??[])if(isLocalMedia(src))refs.add(src)
@@ -185,7 +187,19 @@ export function usePortfolio(editing=false){
   // Only the non-sensitive revision id is exposed to the local companion.
   window.dispatchEvent(new CustomEvent('alquimago:activity',{detail:{type:'published',revision}}))
  }
- const restorePublished=()=>{
+ const makeCheckpoint=(label='Checkpoint manual')=>createCheckpoint(storeRef.current,refsFor(storeRef.current),label)
+ const recoverCheckpoint=async(id:string)=>{
+  const previous=storeRef.current
+  await makeCheckpoint('Antes de restaurar checkpoint')
+  if(storeRef.current!==previous)throw new Error('O rascunho mudou durante a operação. Tente novamente.')
+  const restored=await restoreCheckpoint(id)
+  if(storeRef.current!==previous)throw new Error('O rascunho mudou durante a recuperação. Tente novamente.')
+  save(parseStore(restored))
+ }
+ const restorePublished=async()=>{
+  const previous=storeRef.current
+  await makeCheckpoint('Antes de restaurar versão publicada')
+  if(storeRef.current!==previous)throw new Error('O rascunho mudou durante a operação. Tente novamente.')
   localStorage.removeItem(KEY)
   localStorage.removeItem(PENDING_KEY)
   history.current={past:[],future:[]}
@@ -211,6 +225,7 @@ export function usePortfolio(editing=false){
  const setSocialLinks=(socialLinks:SocialLink[])=>save({...storeRef.current,socialLinks})
  const setShowLikeCounts=(showLikeCounts:boolean)=>save({...storeRef.current,showLikeCounts})
  const exportData=async()=>{
+  const store=storeRef.current
   const {default:JSZip}=await import('jszip')
   const zip=new JSZip()
   zip.file('portfolio.json',JSON.stringify(store,null,2))
@@ -230,13 +245,16 @@ export function usePortfolio(editing=false){
   window.setTimeout(()=>URL.revokeObjectURL(url),1000)
  }
  const importData=async(file:File)=>{
-  if(file.name.toLowerCase().endsWith('.json')){save(parseStore(JSON.parse(await file.text()) as unknown));return}
+  const previous=storeRef.current
+  if(file.name.toLowerCase().endsWith('.json')){const parsed=parseStore(JSON.parse(await file.text()) as unknown);for(const ref of refsFor(parsed))if(!await readMedia(ref))throw new Error('Backup JSON contém mídia local ausente. Importe o ZIP completo.');await makeCheckpoint('Antes de importar JSON');if(storeRef.current!==previous)throw new Error('Rascunho alterado durante a importação.');save(parsed);return}
   const {default:JSZip}=await import('jszip')
   const zip=await JSZip.loadAsync(file)
   const manifest=zip.file('portfolio.json')
   if(!manifest)throw new Error('portfolio.json não encontrado.')
   const parsed=parseStore(JSON.parse(await manifest.async('string')) as unknown)
   const catalogFile=zip.file('media-library.json')
+  await makeCheckpoint('Antes de importar ZIP')
+  if(storeRef.current!==previous)throw new Error('Rascunho alterado durante a importação.')
   const rawCatalog:unknown=catalogFile?JSON.parse(await catalogFile.async('string')):[]
   if(!Array.isArray(rawCatalog))throw new Error('Biblioteca de mídias inválida.')
   const catalog:LibraryAsset[]=rawCatalog.filter((item):item is LibraryAsset=>Boolean(item&&typeof item==='object'&&typeof item.ref==='string'))
@@ -247,7 +265,8 @@ export function usePortfolio(editing=false){
    else if(!await readMedia(ref))throw new Error('Backup incompleto: há mídia local ausente. A restauração não foi concluída.')
   }
   if(Array.isArray(catalog)&&catalog.length)await saveCatalogItems(catalog)
+  if(storeRef.current!==previous)throw new Error('Rascunho alterado durante a importação.')
   save(parsed)
  }
- return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,applyDesignTheme,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setNativeLayouts,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
+ return {...(editing?store:deployedStore),saveError,undo,redo,runAudit,makeCheckpoint,recoverCheckpoint,applyDesignTheme,historyInfo:historyInfo(),update,remove,reorderProjects,setFeaturedProjects,setCategories,setCustomPages,setNativeLayouts,setHome,setGalleryBackground,setGalleryPage,setBranding,setSiteIdentity,setThemePalette,setTypography,setStudioControls,setGlitchPalette,setAbout,setContactPage,setTestimonials,setMusicTracks,setSocialLinks,setShowLikeCounts,markPublished,restorePublished,exportData,importData}
 }
