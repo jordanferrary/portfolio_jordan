@@ -13,7 +13,7 @@ export function copyBlock(block:PageBlock):PageBlock{
 }
 export function instantiatePage(page:CustomPage,allPages:CustomPage[]):CustomPage{
  const copy=JSON.parse(JSON.stringify(page)) as CustomPage
- return {...copy,id:'page-'+crypto.randomUUID(),title:copy.title+' (cópia)',navLabel:copy.navLabel.slice(0,28)+' Copy',showInNav:false,blocks:copy.blocks.map(block=>({...copyBlock(resolvePageBlock(block,allPages)),linkedSource:undefined}))}
+ return {...copy,id:'page-'+crypto.randomUUID(),title:copy.title.slice(0,151)+' (cópia)',navLabel:copy.navLabel.slice(0,28)+' Copy',showInNav:false,blocks:copy.blocks.map(block=>({...copyBlock(resolvePageBlock(block,allPages)),linkedSource:undefined}))}
 }
 export function refreshLinkedBlocks(pages:CustomPage[]):CustomPage[]{
  return pages.map(page=>({...page,blocks:page.blocks.map(block=>resolvePageBlock(block,pages))}))

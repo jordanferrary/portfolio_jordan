@@ -15,8 +15,8 @@
 ## Pendências de infraestrutura e arquitetura
 - Autenticação de servidor e autorização por função com sessões verificadas; configurar provedor de identidade e proteger APIs. O PIN local não é autenticação real.
 - Armazenamento privado, sincronização e checkpoints duráveis, ambientes de revisão e rollback, agendamento.
-- Compositor de páginas nativas por blocos, componentes vinculados e biblioteca de templates; migração sem perda de conteúdo.
-- Override por página e componente, editor visual contextual, mais opções globais de ícones e materiais, sincronização da biblioteca de temas.
+- Evoluir o compositor de páginas nativas para incluir todos os módulos nativos como blocos arrastáveis; modelos e vínculos básicos entregues.
+- Expandir overrides e edição contextual para projetos e módulos fixos, mais opções globais de ícones e materiais, sincronização da biblioteca de temas.
 - SEO por rota, redirects e URLs canônicas; avaliar migração das rotas hash antes de prometer indexação individual.
 - Auditoria de links externos, teste de responsividade real, métricas de desempenho e acessibilidade, telemetria consentida.
 - Homologação de build, navegador desktop/mobile e publicação em ambiente de teste. Não confundir checagens de fonte com testes end-to-end.
@@ -26,6 +26,6 @@ O objetivo é autonomia sem editar código para operações comuns, mantendo o r
 ## Segunda entrega
 - Composições nativas opcionais baseadas nas páginas personalizadas, sem apagar os layouts anteriores.
 - Propriedades de bloco e edição contextual, vínculos de um nível com fallback, biblioteca local de modelos.
-- Checkpoints IndexedDB com mídia local referenciada, até cinco cópias de 100 MB; antes da publicação, importação e restauração da versão publicada. Se falhar, a operação é interrompida.
+- Checkpoints IndexedDB com mídia local referenciada, até cinco cópias de 100 MB; antes da publicação, importação e restauração da versão publicada. Se falhar, a operação exige confirmação explícita antes de continuar sem checkpoint.
 - Entrada via sessão GitHub verificada quando VITE_ALQUIMAGO_AUTH_ORIGIN está configurado; PIN continua somente no modo local sem serviço. Publicação continua exigindo autorização explícita, sem reuso de tokens locais.
 - Ainda exige configurar/verificar o Worker e suas variáveis no ambiente real. A interface local não é uma proteção para dados privados.

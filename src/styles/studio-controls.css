@@ -37,6 +37,6 @@
 .site-shell .studio-component[data-align="right"]{align-self:flex-end}
 .site-shell .studio-component.component-panel{padding:clamp(12px,2vw,24px);border:1px solid var(--jf-border);border-radius:calc(20px * var(--jf-control-radius,1));background:var(--jf-surface-deep)}
 .studio-component-edit{position:absolute;top:4px;right:4px;z-index:5;padding:8px;border-radius:9px;background:var(--jf-surface-deep);border:1px solid var(--jf-border);color:var(--jf-text)}
-.studio-component-properties{display:grid;padding:12px;margin:8px 0;border:1px solid var(--jf-border);border-radius:10px}.studio-component-properties summary{cursor:pointer;color:var(--jf-secondary)}.studio-component-properties>label{margin-top:10px}
+ .studio-component-properties{padding:12px;margin:8px 0;border:1px solid var(--jf-border);border-radius:10px}.studio-component-properties summary{cursor:pointer;color:var(--jf-secondary)}.studio-component-properties>label{margin-top:10px}.studio-component-properties[open]{display:grid;gap:6px}
 @media(max-width:750px){.studio-component.hide-mobile:not(.component-editing){display:none}.site-shell .studio-component{max-width:100%}}
 @media(min-width:751px){.studio-component.hide-desktop:not(.component-editing){display:none}}

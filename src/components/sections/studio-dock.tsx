@@ -193,7 +193,7 @@ export function StudioDock({
         {backupNotice&&<p className="studio-backup-notice" role="status">{backupNotice}</p>}
         <button type="button" className="studio-hub-item" disabled={backupBusy} onClick={()=>{
          const confirmed=window.confirm('Descartar os rascunhos locais deste portfólio e recuperar os dados da versão publicada? Esta ação não altera o GitHub. Exporte um backup ZIP antes de continuar caso queira guardar seus rascunhos.')
-         if(confirmed)void runBackup(onRestorePublished,'Versão publicada restaurada. Checkpoint anterior preservado.')
+         if(confirmed)void runBackup(onRestorePublished,'Versão publicada restaurada.')
         }}>
          <span className="studio-hub-icon"><BookOpen size={20}/></span>
          <span className="studio-hub-item-copy"><strong>Restaurar versão publicada</strong>

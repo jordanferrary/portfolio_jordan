@@ -187,10 +187,16 @@ export function usePortfolio(editing=false){
   // Only the non-sensitive revision id is exposed to the local companion.
   window.dispatchEvent(new CustomEvent('alquimago:activity',{detail:{type:'published',revision}}))
  }
- const makeCheckpoint=(label='Checkpoint manual')=>createCheckpoint(storeRef.current,refsFor(storeRef.current),label)
+ const makeCheckpoint=(label='Checkpoint manual',protectedId?:string)=>createCheckpoint(storeRef.current,refsFor(storeRef.current),label,protectedId)
+ const checkpointBefore=async(label:string,protectedId?:string)=>{
+  try{await makeCheckpoint(label,protectedId)}catch(e){
+   const message=e instanceof Error?e.message:'Falha ao criar checkpoint.'
+   if(!window.confirm(message+' Continuar sem criar o ponto de recuperação?'))throw new Error('Operação cancelada. O rascunho foi preservado.')
+  }
+ }
  const recoverCheckpoint=async(id:string)=>{
   const previous=storeRef.current
-  await makeCheckpoint('Antes de restaurar checkpoint')
+  await checkpointBefore('Antes de restaurar checkpoint',id)
   if(storeRef.current!==previous)throw new Error('O rascunho mudou durante a operação. Tente novamente.')
   const restored=await restoreCheckpoint(id)
   if(storeRef.current!==previous)throw new Error('O rascunho mudou durante a recuperação. Tente novamente.')
@@ -198,7 +204,7 @@ export function usePortfolio(editing=false){
  }
  const restorePublished=async()=>{
   const previous=storeRef.current
-  await makeCheckpoint('Antes de restaurar versão publicada')
+  await checkpointBefore('Antes de restaurar versão publicada')
   if(storeRef.current!==previous)throw new Error('O rascunho mudou durante a operação. Tente novamente.')
   localStorage.removeItem(KEY)
   localStorage.removeItem(PENDING_KEY)
@@ -246,19 +252,23 @@ export function usePortfolio(editing=false){
  }
  const importData=async(file:File)=>{
   const previous=storeRef.current
-  if(file.name.toLowerCase().endsWith('.json')){const parsed=parseStore(JSON.parse(await file.text()) as unknown);for(const ref of refsFor(parsed))if(!await readMedia(ref))throw new Error('Backup JSON contém mídia local ausente. Importe o ZIP completo.');await makeCheckpoint('Antes de importar JSON');if(storeRef.current!==previous)throw new Error('Rascunho alterado durante a importação.');save(parsed);return}
+  if(file.name.toLowerCase().endsWith('.json')){const parsed=parseStore(JSON.parse(await file.text()) as unknown);for(const ref of refsFor(parsed))if(!await readMedia(ref))throw new Error('Backup JSON contém mídia local ausente. Importe o ZIP completo.');await checkpointBefore('Antes de importar JSON');if(storeRef.current!==previous)throw new Error('Rascunho alterado durante a importação.');save(parsed);return}
   const {default:JSZip}=await import('jszip')
   const zip=await JSZip.loadAsync(file)
   const manifest=zip.file('portfolio.json')
   if(!manifest)throw new Error('portfolio.json não encontrado.')
   const parsed=parseStore(JSON.parse(await manifest.async('string')) as unknown)
   const catalogFile=zip.file('media-library.json')
-  await makeCheckpoint('Antes de importar ZIP')
+  await checkpointBefore('Antes de importar ZIP')
   if(storeRef.current!==previous)throw new Error('Rascunho alterado durante a importação.')
   const rawCatalog:unknown=catalogFile?JSON.parse(await catalogFile.async('string')):[]
   if(!Array.isArray(rawCatalog))throw new Error('Biblioteca de mídias inválida.')
   const catalog:LibraryAsset[]=rawCatalog.filter((item):item is LibraryAsset=>Boolean(item&&typeof item==='object'&&typeof item.ref==='string'))
   const allRefs=new Set([...refsFor(parsed),...catalog.filter(a=>isLocalMedia(a.ref)).map(a=>a.ref)])
+  for(const ref of allRefs){
+   const item=zip.file('public/assets/'+mediaKey(ref))??zip.file('public/images/'+mediaKey(ref))
+   if(!item&&!await readMedia(ref))throw new Error('Backup incompleto: há mídia local ausente. A restauração não foi concluída.')
+  }
   for(const ref of allRefs){
    const item=zip.file('public/assets/'+mediaKey(ref))??zip.file('public/images/'+mediaKey(ref))
    if(item)await saveMediaBlob(ref,await item.async('blob'))

@@ -120,7 +120,6 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
    const issues=await auditStudio(store,refsFor(store))
    const blockers=issues.filter(issue=>issue.level==='error')
    if(blockers.length)throw new Error('Publicação interrompida: '+blockers.map(issue=>issue.message).join('; '))
-   await createCheckpoint(store,refsFor(store),'Antes de publicar')
    // No publishing without a fresh check of the selected credential.
    const check=await vault.check(credential)
    if(viaAlquimago)setVaultStatus(check)
@@ -130,6 +129,8 @@ export function GitHubPublishEditor({entryPoint='studio',store,onPublished,onRes
      'O token expirou ou foi revogado. Informe uma autorização válida.':
      check.description)
    }
+   try{await createCheckpoint(store,refsFor(store),'Antes de publicar')}
+   catch(e){if(!window.confirm((e instanceof Error?e.message:'Checkpoint indisponível.')+' Continuar a publicação sem criar checkpoint?'))throw new Error('Publicação cancelada.')}
    // The live familiar's uncommitted state is included only on this explicit
    // publication. Reloading without publishing discards its draft changes.
    const familiar=document.querySelector('alquimago-familiar') as (HTMLElement&{snapshot?:()=>unknown})|null

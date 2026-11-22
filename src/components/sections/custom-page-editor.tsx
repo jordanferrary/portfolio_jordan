@@ -114,7 +114,7 @@ export function CustomPageEditor({pages,initialPageId,initialBlockId,onSavePages
  }
  const patchAppearance=(block:PageBlock,change:Partial<BlockAppearance>)=>patchBlock(block.id,{appearance:normalizeBlockAppearance({...block.appearance,...change})})
  const addBlock=(type:Kind,index?:number)=>{
-  if(!draft)return
+  if(!draft||draft.blocks.length>=250)return
   const block:PageBlock={
    id:'block-'+crypto.randomUUID(),type,content:'',
    gallery:type==='gallery'?['','']:undefined,

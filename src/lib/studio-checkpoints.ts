@@ -27,11 +27,12 @@ async function access<T>(mode:IDBTransactionMode,run:(store:IDBObjectStore)=>IDB
 async function listRecords():Promise<Checkpoint[]>{return (await access('readonly',s=>s.getAll()) as Checkpoint[]).sort((a,b)=>b.time-a.time||b.id.localeCompare(a.id))}
 export async function listCheckpoints():Promise<CheckpointInfo[]>{return (await listRecords()).map(({id,time,label,bytes})=>({id,time,label,bytes}))}
 export async function removeCheckpoint(id:string){await access('readwrite',s=>s.delete(id))}
-export function createCheckpoint(store:PortfolioStore,refs:string[],label:string):Promise<CheckpointInfo>{
+export function createCheckpoint(store:PortfolioStore,refs:string[],label:string,protectedId?:string):Promise<CheckpointInfo>{
  const snapshot=JSON.parse(JSON.stringify(store)) as PortfolioStore
  const run=async()=>{
   const media:Checkpoint['media']=[]
   let bytes=new Blob([JSON.stringify(snapshot)]).size
+  if(bytes>MAX_BYTES)throw new Error('O rascunho supera 100 MB. Use o backup ZIP completo.')
   for(const ref of new Set(refs)){
    const blob=await readMedia(ref)
    if(!blob?.size)throw new Error('Não foi possível criar checkpoint: mídia local ausente.')
@@ -48,7 +49,9 @@ export function createCheckpoint(store:PortfolioStore,refs:string[],label:string
    const req=items.getAll()
    req.onsuccess=()=>{
     const existing=(req.result as Checkpoint[]).sort((a,b)=>b.time-a.time||b.id.localeCompare(a.id))
-    for(const old of existing.slice(LIMIT-1))items.delete(old.id)
+    const keep=new Set(existing.filter(x=>x.id===protectedId).map(x=>x.id))
+    for(const item of existing){if(keep.size>=LIMIT-1)break;keep.add(item.id)}
+    for(const old of existing)if(!keep.has(old.id))items.delete(old.id)
     items.put(entry)
    }
    tx.oncomplete=()=>resolve()
