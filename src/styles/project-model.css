@@ -223,3 +223,25 @@
 @media(max-width:740px){.model-studio-viewport-head{flex-wrap:wrap}.model-preview-formats button{font-size:10px;padding:3px 5px}.model-published-preview .project-model-frame{width:min(100cqw,calc(max(88px,100cqh - 16px) * 1.6))}.model-published-preview.format-mobile .project-model-frame{width:min(100cqw,calc(max(88px,100cqh - 16px) * .8))}.model-published-preview .model-light-preview-notice{display:none}}
 
 .model-shader-parameters{display:grid;gap:11px;margin:10px 0}.model-shader-parameters>p{margin:0}
+
+/* Keep material selection outside the scrollable properties. A flexible list
+   must not collapse when multiple material sections are expanded. */
+.model-studio-sidebar>.model-material-selector{flex:0 0 auto;display:grid;gap:6px;padding:10px 14px;border-bottom:1px solid var(--jf-border);background:var(--jf-surface);min-width:0}
+.model-material-selector>label{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--jf-text);font-size:11px;font-weight:600}
+.model-material-selector>label small{font-size:10px;color:var(--jf-muted);font-weight:400}
+.model-active-material-field{display:grid;grid-template-columns:30px minmax(0,1fr) 17px;align-items:center;gap:7px;min-height:40px;padding:4px 8px;border:1px solid var(--jf-secondary);border-radius:10px;background:var(--jf-background);color:var(--jf-text)}
+.model-active-material-field select{min-width:0;width:100%;height:34px;background:transparent;color:var(--jf-text);font:inherit;font-size:12px;font-weight:600;appearance:none;border:0;cursor:pointer;text-overflow:ellipsis}
+.model-active-material-field select option{background:var(--jf-background);color:var(--jf-text)}
+.model-active-material-field select:focus-visible{outline:2px solid var(--jf-secondary);outline-offset:2px}
+.model-active-material-field select:disabled{opacity:.65;cursor:default}
+.model-active-material-field>svg{pointer-events:none;color:var(--jf-muted)}
+.model-active-material-sample{width:30px;height:30px;border-radius:7px;overflow:hidden;border:1px solid var(--jf-border);box-sizing:border-box}
+.model-active-material-sample img{width:100%;height:100%;object-fit:cover;display:block}
+.model-studio-controls{flex:1 1 auto}
+.model-studio-controls>*{flex-shrink:0}
+.model-material-browser{border:1px solid var(--jf-border);border-radius:10px;padding:9px;min-width:0;flex:none}
+.model-material-browser summary{cursor:pointer;color:var(--jf-text);font-size:12px;font-weight:600}
+.model-material-browser .model-material-list{margin-top:9px;max-height:230px;overflow-y:auto;flex:none;min-width:0}
+.model-material-editing-label{display:grid;gap:3px;overflow-wrap:anywhere;color:var(--jf-text)}
+.model-material-editing-label small{font-size:10px;color:var(--jf-muted)}
+@media(max-width:740px){.model-studio-sidebar>.model-material-selector{padding:6px 10px;gap:3px}.model-active-material-field{min-height:34px;padding:2px 6px}.model-active-material-field select{height:30px}.model-active-material-sample{width:26px;height:26px}}

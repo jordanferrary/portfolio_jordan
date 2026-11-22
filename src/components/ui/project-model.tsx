@@ -8,7 +8,7 @@ import {resolvePublishedAsset} from '../../lib/published-assets'
 import {DEFAULT_INSPECTOR_OPTIONS,normalizeModelPresentation,backdropFill,ART_SHADER_PRESETS,type ModelMode,type ModelPresentation,type InspectorOptions,type ModelCamera,type LightEditState,type LightEditCallbacks,type MaterialInfo,type MaterialEditState} from '../../lib/model-presentation'
 import {ModelInspectorPanel} from './model-inspector-panel'
 import type {ModelStage,ModelStats} from '../../lib/model-inspector-stage'
-type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;resetCameraToken?:number;previewArtShader?:boolean;onCaptureCamera?:(camera:ModelCamera)=>void;lightEditing?:LightEditState;lightCallbacks?:LightEditCallbacks;materialEditing?:MaterialEditState;onMaterials?:(materials:MaterialInfo[])=>void;onMaterialSelect?:(id:string)=>void}
+type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;resetCameraToken?:number;previewArtShader?:boolean;onCaptureCamera?:(camera:ModelCamera)=>void;lightEditing?:LightEditState;lightCallbacks?:LightEditCallbacks;materialEditing?:MaterialEditState;onMaterials?:(materials:MaterialInfo[]|null)=>void;onMaterialSelect?:(id:string)=>void}
 export function ProjectModel(props:Props){return <ModelViewer key={props.url} {...props}/>}
 function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,resetCameraToken,previewArtShader,onCaptureCamera,lightEditing,lightCallbacks,materialEditing,onMaterials,onMaterialSelect}:Props){
  const parsed=parseModelUrl(url)
@@ -46,7 +46,7 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
   if(!activated||!parsed)return
   let live=true,objectUrl=''
   let instance:ModelStage|null=null
-  setReady(false);setError('');setResolvedSource('');setStats(null)
+  setReady(false);setError('');setResolvedSource('');setStats(null);materialCallbacks.current.onMaterials?.(null)
   const prepare=async()=>{
    let source=resolvePublishedAsset(parsed.url)
    if(isLocalMedia(parsed.url)){
@@ -59,11 +59,11 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
    setResolvedSource(source)
    const {createModelStage}=await import('../../lib/model-inspector-stage')
    if(!live||!canvas.current)return
-   instance=createModelStage(canvas.current,source,configuration.current,{onLoad:value=>{if(live){setStats(value);materialCallbacks.current.onMaterials?.(value.materials);setReady(true);setError('')}},onError:()=>{if(live)setError('Could not load the 3D model. Check its format, textures and connection.')}},lightCallbacksRef.current?{onSelect:id=>lightCallbacksRef.current?.onSelect(id),onChange:(id,patch)=>lightCallbacksRef.current?.onChange(id,patch)}:undefined,materialCallbacks.current.onMaterialSelect?id=>materialCallbacks.current.onMaterialSelect?.(id):undefined)
+   instance=createModelStage(canvas.current,source,configuration.current,{onLoad:value=>{if(live){setStats(value);materialCallbacks.current.onMaterials?.(value.materials);setReady(true);setError('')}},onError:()=>{if(live){materialCallbacks.current.onMaterials?.([]);setError('Could not load the 3D model. Check its format, textures and connection.')}}},lightCallbacksRef.current?{onSelect:id=>lightCallbacksRef.current?.onSelect(id),onChange:(id,patch)=>lightCallbacksRef.current?.onChange(id,patch)}:undefined,materialCallbacks.current.onMaterialSelect?id=>materialCallbacks.current.onMaterialSelect?.(id):undefined)
    stage.current=instance
    instance.setMode(modeRef.current);instance.setRotation(rotationRef.current);if(lightStateRef.current)instance.setLightEditing(lightStateRef.current);if(materialEditingRef.current)instance.setMaterialEditing(materialEditingRef.current)
   }
-  void prepare().catch(()=>{if(live)setError('Could not initialize the 3D viewer. Check WebGL support and the model file.')})
+  void prepare().catch(()=>{if(live){materialCallbacks.current.onMaterials?.([]);setError('Could not initialize the 3D viewer. Check WebGL support and the model file.')}})
   return ()=>{live=false;instance?.dispose();if(stage.current===instance)stage.current=null;if(objectUrl)URL.revokeObjectURL(objectUrl)}
  },[activated,parsed?.url,retry])
  const fullscreen=()=>{if(document.fullscreenElement===frame.current)void document.exitFullscreen().catch(()=>{});else if(frame.current?.requestFullscreen)void frame.current.requestFullscreen().catch(()=>{})}

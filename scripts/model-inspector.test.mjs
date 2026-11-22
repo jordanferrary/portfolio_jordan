@@ -234,3 +234,15 @@ test('shader angles and artistic colors are independently persisted and uploaded
  const editor=await readFile('src/components/sections/model-material-editor.tsx','utf8')
  assert.match(editor,/custom\?\?newMaterialLook\(global\)/);assert.match(editor,/ShaderParameters value=\{look.surface\}/)
 })
+
+test('material selection stays outside scrolling properties and handles material loading',async()=>{
+ const [editor,material,view,css]=await Promise.all(['src/components/sections/model-presentation-editor.tsx','src/components/sections/model-material-editor.tsx','src/components/ui/project-model.tsx','src/styles/project-model.css'].map(path=>readFile(path,'utf8')))
+ assert.match(editor,/<MaterialSelector materials=\{materials\} selected=\{selectedMaterial\} onSelect=\{selectMaterial\}/)
+ assert.ok(editor.indexOf('<MaterialSelector')<editor.indexOf('<div className="model-studio-controls">'))
+ assert.match(material,/aria-label="Selecionar material para editar"/)
+ assert.match(material,/materials.map\(\(item,index\)=>/)
+ assert.match(material,/onSelect\(event.target.value\)/)
+ assert.match(editor,/onMaterialSelect=\{selectMaterial\}/)
+ assert.match(view,/onMaterials\?\.\(null\)/);assert.match(view,/onMaterials\?\.\(value.materials\)/)
+ assert.match(css,/model-material-selector\{flex:0 0 auto/);assert.match(css,/model-studio-controls>\*\{flex-shrink:0\}/)
+})
