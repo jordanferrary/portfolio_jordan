@@ -168,3 +168,90 @@
  .site-shell.home-route .home-dashboard{height:auto;min-height:100dvh}
  .site-shell.home-route .home-bottom-panels>section{min-width:0}
 }
+
+/* About: a single editorial grid. Portrait and copy share their starting edge.
+   The secondary artwork becomes an identity mark, not an overlapping image. */
+.site-shell.about-route .about-page{
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ width:100%;
+ min-height:100svh;
+ height:auto;
+ padding-block:clamp(100px,12vh,132px) clamp(42px,6vh,76px);
+}
+.site-shell.about-route .about-page-body{
+ display:grid;
+ grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr);
+ grid-template-areas:"portrait header" "portrait information";
+ grid-template-rows:auto 1fr;
+ align-items:start;
+ column-gap:clamp(32px,5vw,76px);
+ row-gap:clamp(24px,3vh,34px);
+ width:100%;
+ max-width:1330px;
+ margin-inline:auto;
+}
+.site-shell.about-route .about-page-header{grid-area:header;min-width:0;margin:0}
+.site-shell.about-route .about-page-header .eyebrow{margin-bottom:10px}
+.site-shell.about-route .about-page-header h1{margin:0;text-wrap:balance}
+.site-shell.about-route .about-art-stack{
+ grid-area:portrait;align-self:start;width:100%;max-width:none;min-height:0;
+}
+.site-shell.about-route .about-art-primary{
+ display:block;width:100%;height:auto;min-height:0;max-height: min(66vh,660px);
+ object-fit:contain;object-position:center;background:var(--jf-surface-deep);
+ border-radius:22px;box-shadow:none;
+}
+.site-shell.about-route .about-information{
+ grid-area:information;min-width:0;width:100%;margin:0;padding:0;
+ border:0!important;border-radius:0;background:transparent!important;
+ box-shadow:none;backdrop-filter:none;
+}
+.site-shell.about-route .about-identity{
+ display:flex;align-items:center;justify-content:space-between;gap:18px;
+ margin:0 0 16px;
+}
+.site-shell.about-route .about-identity h2{
+ margin:0;min-width:0;overflow-wrap:break-word;
+ font-family:var(--jf-page-heading-font);
+ font-size:var(--jf-page-section);font-weight:750;line-height:1.2;letter-spacing:-.03em;
+}
+.site-shell.about-route .about-art-secondary{
+ position:static;inset:auto;display:block;flex:0 0 auto;
+ width:64px;height:64px;min-height:0;max-height:none;
+ object-fit:contain;border-width:1px;border-radius:12px;box-shadow:none;
+}
+.site-shell.about-route .about-information .about-bio{max-width:65ch}
+.site-shell.about-route .about-bio p{margin:0 0 1em}
+.site-shell.about-route .about-bio p:last-child{margin-bottom:0}
+.site-shell.about-route .about-disciplines{
+ margin-top:24px;padding-top:20px;border-top:1px solid var(--jf-panel-edge);
+}
+.site-shell.about-route .about-disciplines h3{
+ margin:0 0 12px;text-transform:none;
+ font:700 var(--jf-page-subheading)/1.3 var(--jf-page-heading-font);
+ letter-spacing:-.02em;color:var(--jf-text);
+}
+.site-shell.about-route .about-skills{gap:7px 9px}
+.site-shell.about-route .about-skills span{padding:6px 12px}
+.site-shell.about-route .about-information .home-cta{margin-top:24px}
+@media(max-width:900px){
+ .site-shell.about-route .about-page-body{
+  grid-template-columns:minmax(0,1fr);
+  grid-template-areas:"header" "portrait" "information";
+  grid-template-rows:auto;
+  gap:24px;
+  max-width:650px;
+ }
+ .site-shell.about-route .about-page{justify-content:flex-start;min-height:0;padding-block:85px 28px}
+ .site-shell.about-route .about-art-stack{max-width:440px}
+ .site-shell.about-route .about-art-primary{max-height:520px}
+ .site-shell.about-route .about-art-secondary{width:56px;height:56px}
+}
+@media(max-width:600px){
+ .site-shell.about-route .about-page{padding-top:64px}
+ .site-shell.about-route .about-page-body{gap:20px}
+ .site-shell.about-route .about-art-primary{max-height:460px;border-radius:18px}
+ .site-shell.about-route .about-disciplines{margin-top:20px;padding-top:16px}
+}

@@ -46,3 +46,13 @@ test('gallery banner still bleeds right and fades after shared-width changes',()
  assert.ok(idx>=0&&late>idx,'Shared content width must override the earlier gallery bleed calculation')
  assert.match(css,/\.site-shell \.gallery-page\{padding-top:clamp\(88px,8\.7vh,108px\)\}/)
 })
+
+test('About uses one editorial grid and keeps the secondary artwork outside the portrait',()=>{
+ assert.match(about,/<header className="about-page-header">/)
+ assert.match(about,/<div className="about-identity">[\s\S]*?className="about-art-secondary"/)
+ assert.doesNotMatch(about,/The person behind the art/)
+ assert.match(css,/grid-template-areas:"portrait header" "portrait information"/)
+ assert.match(css,/grid-template-areas:"header" "portrait" "information"/)
+ assert.match(css,/\.about-art-secondary\{\s*position:static/)
+ assert.match(css,/\.about-information\{\s*grid-area:information;[\s\S]*?border:0!important/)
+})
