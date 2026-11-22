@@ -1,3 +1,4 @@
+import '../../styles/theme-palette-editor.css'
 import { useState,type CSSProperties } from 'react'
 import { Eye, MousePointer2, RotateCcw, Save, Upload, X } from 'lucide-react'
 import type { PortfolioStore } from '../../hooks/use-portfolio'
