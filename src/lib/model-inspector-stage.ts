@@ -11,6 +11,7 @@ import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model
 import {createLightGizmos} from './model-light-gizmos'
 import {attachArtShader,createArtUniforms,updateArtUniforms,updateMaterialLayers,type ArtUniforms} from './model-art-shaders'
 import {createChromaticPass} from './model-chromatic-pass'
+import {responsiveCameraFov,referenceFitDistance,cameraZoomForDistance,wrapCameraAzimuth} from './model-camera-framing'
 export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[];unlitMaterials:number;materials:MaterialInfo[]}
 export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean)=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;setLightEditing:(state:LightEditState)=>void;frameLights:()=>void;setMaterialEditing:(state:MaterialEditState)=>void;dispose:()=>void}
 const rad=THREE.MathUtils.degToRad
@@ -42,7 +43,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const scene=new THREE.Scene()
  const camera=new THREE.PerspectiveCamera(38,1,.01,1000)
  const controls=new OrbitControls(camera,canvas)
- controls.enableDamping=true;controls.dampingFactor=.075;controls.enablePan=true;controls.enableZoom=true
+ controls.enableDamping=true;controls.dampingFactor=.075;controls.enablePan=true;controls.enableZoom=true;controls.minPolarAngle=rad(1);controls.maxPolarAngle=rad(179)
  controls.listenToKeyEvents(canvas)
  const room=new RoomEnvironment(),pmrem=new THREE.PMREMGenerator(renderer)
  const environment=pmrem.fromScene(room,.04);room.dispose();pmrem.dispose();scene.environment=environment.texture
@@ -116,7 +117,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const gizmos=lightEditing?createLightGizmos(scene,camera,canvas,controls,customLights,vertexCenter,()=>radius,lightEditing):null
  const resize=()=>{
   const w=Math.max(1,host.clientWidth),h=Math.max(1,host.clientHeight)
-  camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false)
+  camera.aspect=w/h;camera.fov=responsiveCameraFov(presentation.fov,camera.aspect);camera.updateProjectionMatrix();renderer.setSize(w,h,false)
  }
  const observer=new ResizeObserver(resize);observer.observe(host);resize()
  const intersection=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting??true},{rootMargin:'100px'})
@@ -127,14 +128,18 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const end=()=>{interacting=false;idleUntil=performance.now()+900}
  canvas.addEventListener('pointerenter',enter);canvas.addEventListener('pointerleave',exit)
  controls.addEventListener('start',start);controls.addEventListener('end',end)
- const calculateFitDistance=()=>{
-  const vertical=rad(camera.fov/2),horizontal=Math.atan(Math.tan(vertical)*camera.aspect)
-  return radius/Math.sin(Math.min(vertical,horizontal))*1.12
+ // Flush residual orbit damping without allowing it to change the visible pose.
+ const settleOrbit=()=>{
+  const position=camera.position.clone(),target=controls.target.clone(),damping=controls.enableDamping
+  controls.autoRotate=false;controls.enableDamping=false;controls.update()
+  camera.position.copy(position);controls.target.copy(target);controls.update()
+  controls.enableDamping=damping
  }
  const captureCamera=():ModelCamera|null=>{
   if(!model)return null
+  rotate=false;settleOrbit()
   const offset=new THREE.Vector3().subVectors(controls.target,vertexCenter).divideScalar(radius)
-  return {azimuth:THREE.MathUtils.radToDeg(controls.getAzimuthalAngle()),elevation:90-THREE.MathUtils.radToDeg(controls.getPolarAngle()),zoom:calculateFitDistance()/Math.max(controls.getDistance(),.00001),fov:camera.fov,targetX:offset.x,targetY:offset.y,targetZ:offset.z}
+  return {azimuth:wrapCameraAzimuth(THREE.MathUtils.radToDeg(controls.getAzimuthalAngle())),elevation:90-THREE.MathUtils.radToDeg(controls.getPolarAngle()),zoom:cameraZoomForDistance(radius,presentation.fov,controls.getDistance()),fov:presentation.fov,targetX:offset.x,targetY:offset.y,targetZ:offset.z}
  }
  const frameLights=()=>{
   if(!model||!gizmos)return
@@ -150,12 +155,15 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  }
  const resetCamera=()=>{
   if(!model)return
-  camera.fov=presentation.fov
-  fitDistance=calculateFitDistance()
+  settleOrbit()
+  camera.fov=responsiveCameraFov(presentation.fov,camera.aspect)
+  fitDistance=referenceFitDistance(radius,presentation.fov)
+  idleUntil=performance.now()+4000
   const phi=rad(90-presentation.elevation),theta=rad(presentation.azimuth)
   controls.target.copy(vertexCenter).addScaledVector(new THREE.Vector3(presentation.targetX,presentation.targetY,presentation.targetZ),radius)
   camera.position.copy(controls.target).add(new THREE.Vector3().setFromSphericalCoords(fitDistance/presentation.zoom,phi,theta))
-  controls.minDistance=radius*.12;controls.maxDistance=fitDistance*8
+  // Keep the orbit range consistent with the persisted zoom range.
+  controls.minDistance=fitDistance/8;controls.maxDistance=fitDistance/.2
   camera.near=Math.max(radius*.001,.00001);camera.far=Math.max(radius*100,100);camera.updateProjectionMatrix()
   controls.update()
  }

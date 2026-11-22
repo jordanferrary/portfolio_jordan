@@ -191,3 +191,20 @@ test('Studio shares visual shader samples across global and per-material control
  assert.equal(PREVIEW_STYLES.length,28);assert.equal(CAMERA_EFFECTS.length,5)
  assert.ok(filterShaders('holo','pearl').some(p=>p.id==='pearl'));assert.ok(!filterShaders('all','flat',false).length)
 })
+
+test('camera capture uses a fixed reference composition and portrait contains its horizontal view',async()=>{
+ const result=await build({entryPoints:['src/lib/model-camera-framing.ts'],bundle:true,platform:'node',format:'esm',write:false,logLevel:'silent'})
+ const {responsiveCameraFov,referenceFitDistance,cameraZoomForDistance,MODEL_REFERENCE_ASPECT,MODEL_MOBILE_ASPECT,wrapCameraAzimuth}=await import('data:text/javascript;base64,'+Buffer.from(result.outputFiles[0].text).toString('base64'))
+ const fov=38,rad=angle=>angle*Math.PI/180
+ const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-9)
+ near(responsiveCameraFov(fov,MODEL_REFERENCE_ASPECT),fov)
+ near(responsiveCameraFov(fov,2.4),fov)
+ near(Math.tan(rad(responsiveCameraFov(fov,MODEL_MOBILE_ASPECT)/2))*MODEL_MOBILE_ASPECT,Math.tan(rad(fov/2))*MODEL_REFERENCE_ASPECT)
+ const distance=referenceFitDistance(3,fov)/1.7
+ near(cameraZoomForDistance(3,fov,distance),1.7)
+ assert.equal(wrapCameraAzimuth(370),10);assert.equal(wrapCameraAzimuth(-190),170)
+ const [stage,ui,css]=await Promise.all(['src/lib/model-inspector-stage.ts','src/components/sections/model-presentation-editor.tsx','src/styles/project-model.css'].map(p=>readFile(p,'utf8')))
+ assert.match(stage,/fov:presentation.fov/);assert.match(stage,/cameraZoomForDistance\(radius,presentation.fov,controls.getDistance\(\)\)/)
+ assert.match(stage,/settleOrbit\(\)/);assert.match(stage,/idleUntil=performance.now\(\)\+4000/)
+ assert.match(ui,/Desktop 16:10/);assert.match(ui,/Celular 4:5/);assert.match(css,/format-mobile .project-model-frame\{aspect-ratio:4\/5/)
+})
