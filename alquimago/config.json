@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "identity": {
+    "name": "Alquimago",
+    "subtitle": "Familiar arcano do Studio",
+    "greeting": "Saudações! O grimório está pronto."
+  },
+  "appearance": {
+    "accent": "#b58aff",
+    "gold": "#f9d891",
+    "position": "bottom-right",
+    "skins": [
+      {
+        "id": "padrao",
+        "label": "Alquimago Orb 2D — animado",
+        "type": "svg",
+        "src": "",
+        "shapeKeys": {
+          "idle": "Idle",
+          "blink": "Blink",
+          "happy": "Happy",
+          "curious": "Curious",
+          "talk": "Talk",
+          "sleep": "Sleep",
+          "pet": "Pet",
+          "surprised": "Surprised",
+          "focused": "Focused",
+          "sad": "Sad"
+        }
+      },
+      {
+        "id": "custom-3d",
+        "label": "Minha skin 3D (GLB)",
+        "type": "model3d",
+        "src": "./alquimago/skins/custom.glb",
+        "shapeKeys": {
+          "idle": "Idle",
+          "blink": "Blink",
+          "happy": "Happy",
+          "curious": "Curious",
+          "talk": "Talk",
+          "sleep": "Sleep",
+          "pet": "Pet",
+          "surprised": "Surprised",
+          "focused": "Focused",
+          "sad": "Sad",
+          "breath": "Breath"
+        }
+      }
+    ],
+    "selectedSkin": "padrao",
+    "visible": false
+  },
+  "memory": {
+    "namespace": "studio",
+    "remoteSnapshot": "./alquimago/project-memory.json",
+    "mode": "publish"
+  },
+  "project": {
+    "files": [
+      "./alquimago/project-context.json",
+      "./alquimago/project-memory.json"
+    ]
+  },
+  "assistant": {
+    "projectContext": "Assistir o editor do site sem mudar o design ou publicar alterações sem aprovação.",
+    "guidelines": [
+      "Respeite o visual atual e o fluxo de publicação existente.",
+      "Só leia recursos públicos explicitamente listados.",
+      "Não envie tokens ou informações privadas para modelos de IA."
+    ],
+    "spotlights": [
+      {
+        "title": "Frankie",
+        "message": "Frankie is stealing the spotlight again. Honestly, can you blame him?",
+        "videoMessage": "Frankie looks amazing, right? Try the video player to see more!",
+        "hoverMessage": "Frankie is quite the star, huh? Go on, take a closer look!"
+      }
+    ]
+  },
+  "language": {
+    "code": "pt-BR",
+    "file": ""
+  },
+  "proactive": {
+    "projectHover": true,
+    "delayMs": 1050,
+    "cooldownMs": 50000
+  },
+  "behavior": {
+    "enabled": true,
+    "mode": "equilibrado",
+    "minIntervalMs": 120000,
+    "maxPerDay": 4,
+    "toy": false
+  },
+  "knowledge": {
+    "file": "./alquimago/knowledge.json"
+  },
+  "llm": {
+    "provider": "gemini",
+    "enabled": true,
+    "endpoint": "/api/assistant",
+    "consentRequired": true
+  }
+}

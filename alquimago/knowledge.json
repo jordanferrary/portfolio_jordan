@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "revision": "2026-11-22T13:59:35.677Z-ea205ac7-f1a7-4f7f-9e43-742dd22f6c26",
+  "projects": [
+    {
+      "id": "project-mwqz9gcn",
+      "title": "nsfw text",
+      "category": "Props",
+      "year": "2026",
+      "tools": [],
+      "description": "isso é só um texte",
+      "featured": false
+    },
+    {
+      "id": "project-mw4oyna3",
+      "title": "Room of the Palhacito",
+      "category": "Environments",
+      "year": "2026",
+      "tools": [
+        "Blender",
+        "Substance Painter",
+        "Krita"
+      ],
+      "description": "A whimsical little world where fantasy, color, and creativity come together. ==Room of the Palhacito== is a stylized 3D diorama that explores a playful and cozy atmosphere, blending circus-inspired elements, cartoon-like shapes, and charming details.  Through vibrant colors, expressive textures, and soft lighting, the scene captures a sense of wonder and imagination, bringing a unique and personality-filled environment to life.",
+      "featured": true
+    },
+    {
+      "id": "project-mw4y57pk",
+      "title": "The Haunted Catch",
+      "category": "Stylized",
+      "year": "2026",
+      "tools": [
+        "Zbrush",
+        "Blender"
+      ],
+      "description": "A spooky little hammerhead shark based on a concept by Oscar Ibanez. I had a lot of fun bringing this character into 3D and playing around with its shapes, expressions, and Halloween-inspired details.",
+      "featured": true
+    }
+  ]
+}

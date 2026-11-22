@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "revision": "2026-11-22T13:59:35.677Z-ea205ac7-f1a7-4f7f-9e43-742dd22f6c26",
+  "updatedAt": "2026-11-22T13:59:35.677Z",
+  "site": {
+    "type": "react-portfolio",
+    "editor": "Local Studio"
+  },
+  "counts": {
+    "projects": 3,
+    "pages": 1,
+    "categories": 5
+  },
+  "description": "Resumo público do projeto gerado automaticamente durante a publicação."
+}

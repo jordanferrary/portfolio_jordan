@@ -1,0 +1,1 @@
+function r(i,e,t,s){if(!Number.isFinite(t)||!Number.isFinite(s)||t<=0||s<=0||e.width<=0||e.height<=0)return!0;const c=Math.min(e.width/t,e.height/s),h=t*c,n=s*c,w=e.left+(e.width-h)/2,f=e.top+(e.height-n)/2;return i.x>=w&&i.x<=w+h&&i.y>=f&&i.y<=f+n}export{r as i};
