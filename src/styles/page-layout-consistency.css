@@ -429,3 +429,17 @@
  .site-shell .custom-page .artist-showcase-grid{gap:9px}
  .site-shell .custom-page .artist-showcase-card:has(.artist-showcase-pdf-card)>span{padding:8px 9px}
 }
+
+/* The pill is the search field's focus indicator; avoid a second rectangular
+   outline around the nested native input. Keep keyboard focus visibly on the pill. */
+.site-shell .gallery-page .search input:focus,
+.site-shell .gallery-page .search input:focus-visible{
+ outline:none;outline-offset:0;box-shadow:none;
+}
+.site-shell .gallery-page .search:focus-within{
+ border-color:var(--jf-primary)!important;
+ box-shadow:0 0 0 3px var(--jf-primary-soft);
+}
+.site-shell .gallery-page .search:has(input:focus-visible){
+ outline:2px solid var(--jf-secondary);outline-offset:2px;
+}

@@ -92,3 +92,9 @@ test('mobile gallery banner starts at the top with floating social controls and 
  assert.match(gallery,/sizes="\(max-width: 600px\) 100vw/)
  assert.match(gallery,/distributeMasonry\(filtered,columnCount\)/)
 })
+
+test('gallery search keeps focus feedback on the rounded outer field only',()=>{
+ assert.match(css,/\.search input:focus,\s*\.site-shell \.gallery-page \.search input:focus-visible\{\s*outline:none;outline-offset:0;box-shadow:none;/)
+ assert.match(css,/\.gallery-page \.search:focus-within\{\s*border-color:var\(--jf-primary\)!important;/)
+ assert.match(css,/\.search:has\(input:focus-visible\)\{\s*outline:2px solid var\(--jf-secondary\)/)
+})
