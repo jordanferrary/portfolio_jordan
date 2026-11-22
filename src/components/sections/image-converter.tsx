@@ -84,7 +84,7 @@ export function ImageConverter({onClose}:{onClose:()=>void}){
        </select>
       </label>
       <label className="converter-quality">
-       <span className="converter-quality-caption">Qualidade WebP <output htmlFor="converter-quality" tabularNums>{quality}%</output></span>
+       <span className="converter-quality-caption">Qualidade WebP <output htmlFor="converter-quality" className="converter-quality-value">{quality}%</output></span>
        <input id="converter-quality" type="range" min={55} max={95} step={1} value={quality} disabled={busy}
         style={{'--converter-progress':((quality-55)/40*100)+'%'} as CSSProperties}
         onChange={event=>{setQuality(Number(event.target.value));setResult(null)}}/>

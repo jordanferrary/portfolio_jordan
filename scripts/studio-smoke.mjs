@@ -497,7 +497,7 @@ try{
  })
  check('Palette editor exposes real-time contrast checks and editable tokens',()=>{
   const html=element(app.ThemePaletteEditor,{value:app.DEFAULT_THEME,onSave:()=>{},onClose:()=>{}})
-  assert.match(html,/Legibilidade real/);assert.match(html,/Cor principal/)
+  assert.match(html,/Contraste das cores-base \(WCAG AA\)/);assert.match(html,/Cor principal/)
   assert.match(html,/Texto principal/);assert.match(html,/Texto secundário/);assert.match(html,/Bordas e divisórias/)
    assert.match(html,/Símbolos dos títulos/);assert.match(html,/Sem símbolo/)
  })
