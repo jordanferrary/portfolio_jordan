@@ -77,7 +77,7 @@ test('custom pages use one width baseline and PDF captions do not darken documen
  assert.match(css,/\.artist-showcase-card:has\(\.artist-showcase-pdf-card\)>span\{\s*position:relative/)
  assert.match(galleryView,/--showcase-columns/)
  assert.match(galleryView,/--showcase-open-columns/)
- assert.match(galleryView,/<PdfZoomViewer url=\{documentUrl\}/)
+ assert.match(galleryView,/<PdfZoomViewer key=\{zoomed.id\} url=\{zoomDocumentUrl\}/)
 })
 
 test('mobile gallery banner starts at the top with floating social controls and a single fade mask',async()=>{

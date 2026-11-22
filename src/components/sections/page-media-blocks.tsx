@@ -1,7 +1,7 @@
 import {lazy,Suspense,useEffect,useRef,useState,type CSSProperties} from 'react'
 import {ArrowLeft,ArrowRight,ArrowUpRight,FileText,Maximize2,Pause,Play,X} from 'lucide-react'
 import {AssetImage} from '../ui/asset-image'
-import {safePageHref,type PageBlock} from '../../data/custom-pages'
+import {safePageHref,showcaseHasDetails,type PageBlock,type ShowcaseItem} from '../../data/custom-pages'
 import {safeShowcaseDocumentHref} from '../../lib/showcase-pdf'
 import {PdfPagePreview} from '../ui/pdf-page-preview'
 const ArtLightbox=lazy(()=>import('../ui/art-lightbox').then(module=>({default:module.ArtLightbox})))
@@ -11,33 +11,47 @@ const PdfZoomViewer=lazy(()=>import('../ui/pdf-zoom-viewer').then(module=>({defa
 export function ArtistShowcase({block}:{block:PageBlock}){
  const items=(block.showcaseItems??[]).filter(item=>item.image.trim()||safeShowcaseDocumentHref(item.documentUrl))
  const [selectedId,setSelectedId]=useState<string|null>(null)
- const [zoom,setZoom]=useState(false)
- useEffect(()=>{setSelectedId(null);setZoom(false)},[block.id])
- const current=items.find(item=>item.id===selectedId)??null
- const destination=current?safePageHref(current.portfolioUrl):null
+ const [zoomedId,setZoomedId]=useState<string|null>(null)
+ useEffect(()=>{setSelectedId(null);setZoomedId(null)},[block.id])
+ const current=items.find(item=>item.id===selectedId&&showcaseHasDetails(item))??null
+ const zoomed=items.find(item=>item.id===zoomedId)??null
+ const destination=current&&current.showLink!==false?safePageHref(current.portfolioUrl):null
  const documentUrl=current?safeShowcaseDocumentHref(current.documentUrl):null
+ const zoomDocumentUrl=zoomed?safeShowcaseDocumentHref(zoomed.documentUrl):null
+ const openItem=(item:ShowcaseItem)=>{
+  if(!showcaseHasDetails(item)){
+   setSelectedId(null)
+   setZoomedId(item.id)
+   return
+  }
+  setZoomedId(null)
+  setSelectedId(previous=>previous===item.id?null:item.id)
+ }
  if(!items.length)return null
  const columns=Math.max(1,Math.min(6,block.showcaseColumns??3))
  const openColumns=Math.max(1,Math.min(3,block.showcaseExpandedColumns??2))
  const style={'--showcase-columns':columns,'--showcase-open-columns':openColumns} as CSSProperties
  return <section className={'artist-showcase'+(current?' is-open':'')} style={style} data-showcase-columns={columns} aria-label="Interactive gallery">
-  <div className="artist-showcase-grid">{items.map(item=><button type="button" key={item.id} className={'artist-showcase-card'+(current?.id===item.id?' active':'')} onClick={()=>{setZoom(false);setSelectedId(previous=>previous===item.id?null:item.id)}} aria-label={'View details: '+(item.name||'Untitled item')} aria-pressed={current?.id===item.id}>
+  <div className="artist-showcase-grid">{items.map(item=>{
+   const hasDetails=showcaseHasDetails(item)
+   const itemDocument=safeShowcaseDocumentHref(item.documentUrl)
+   return <button type="button" key={item.id} className={'artist-showcase-card'+(current?.id===item.id?' active':'')} onClick={()=>openItem(item)} aria-label={(hasDetails?'View details: ':itemDocument?'View certificate: ':'View image: ')+(item.name||'Untitled item')} aria-pressed={hasDetails?current?.id===item.id:undefined} aria-haspopup={hasDetails?undefined:'dialog'}>
    {item.image?<AssetImage src={item.image} alt={item.name||'Gallery item'} loading="lazy" sizes="(max-width: 700px) 45vw, 240px" style={{objectFit:block.showcaseFit==='contain'?'contain':'cover'}}/>:<div className="artist-showcase-pdf-card">
     <PdfPagePreview url={item.documentUrl||''} label={item.name||'Certificate'} mode="card"/>
    </div>}
-   {safeShowcaseDocumentHref(item.documentUrl)&&<div className="artist-showcase-pdf-tag"><FileText size={13}/> PDF</div>}
+   {itemDocument&&<div className="artist-showcase-pdf-tag"><FileText size={13}/> PDF</div>}
    {item.name&&<span>{item.name}</span>}
-  </button>)}</div>
+  </button>})}</div>
   {current&&<aside className="artist-showcase-detail" aria-label={'Details: '+(current.name||'Selected item')}>
-   <button type="button" className="artist-showcase-close" onClick={()=>{setSelectedId(null);setZoom(false)}} aria-label="Close details"><X size={18}/></button>
-   {documentUrl?<button type="button" className="artist-showcase-document-preview" onClick={()=>setZoom(true)} title="Click to inspect PDF" aria-label={'View certificate: '+(current.name||'Selected item')}>
+   <button type="button" className="artist-showcase-close" onClick={()=>{setSelectedId(null);setZoomedId(null)}} aria-label="Close details"><X size={18}/></button>
+   {documentUrl?<button type="button" className="artist-showcase-document-preview" onClick={()=>setZoomedId(current.id)} title="Click to inspect PDF" aria-label={'View certificate: '+(current.name||'Selected item')}>
      <PdfPagePreview key={documentUrl} url={documentUrl} label={current.name||'Certificate'} mode="detail"/>
-    </button>:<button type="button" className="artist-showcase-zoom" onClick={()=>setZoom(true)} aria-label="Enlarge selected image"><AssetImage src={current.image} alt={current.name||'Selected item'}/><span><Maximize2 size={16}/> Zoom</span></button>}
-   <div className="artist-showcase-detail-copy">{current.name&&<h3>{current.name}</h3>}{current.description&&<p>{current.description}</p>}
-     {current.showLink!==false&&destination&&<a className="artist-showcase-portfolio" href={destination} target="_blank" rel="noopener noreferrer">{current.linkLabel?.trim()||'View portfolio'} <ArrowUpRight size={17}/></a>}
+    </button>:<button type="button" className="artist-showcase-zoom" onClick={()=>setZoomedId(current.id)} aria-label="Enlarge selected image"><AssetImage src={current.image} alt={current.name||'Selected item'}/><span><Maximize2 size={16}/> Zoom</span></button>}
+   <div className="artist-showcase-detail-copy">{current.name&&<h3>{current.name}</h3>}{current.description.trim()&&<p>{current.description}</p>}
+     {destination&&<a className="artist-showcase-portfolio" href={destination} target="_blank" rel="noopener noreferrer">{current.linkLabel?.trim()||'View portfolio'} <ArrowUpRight size={17}/></a>}
    </div>
   </aside>}
-  {zoom&&current&&<Suspense fallback={null}>{documentUrl?<PdfZoomViewer url={documentUrl} title={current.name||'Certificate'} onClose={()=>setZoom(false)}/>:<ArtLightbox src={current.image} alt={current.name||'Gallery item'} onClose={()=>setZoom(false)}/>}</Suspense>}
+  {zoomed&&<Suspense fallback={null}>{zoomDocumentUrl?<PdfZoomViewer key={zoomed.id} url={zoomDocumentUrl} title={zoomed.name||'Certificate'} onClose={()=>setZoomedId(null)}/>:<ArtLightbox key={zoomed.id} src={zoomed.image} alt={zoomed.name||'Gallery item'} onClose={()=>setZoomedId(null)}/>}</Suspense>}
  </section>
 }
 

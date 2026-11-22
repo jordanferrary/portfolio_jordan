@@ -95,6 +95,7 @@ export function localPhrase(source:string,language:VisitorLanguage):string|null{
   {start:'PDF viewer: ',pt:'Visualizador de PDF: ',es:'Visor de PDF: '},
   {start:'View certificate: ',pt:'Visualizar certificado: ',es:'Ver certificado: '},
   {start:'View details: ',pt:'Ver detalhes: ',es:'Ver detalles: '},
+  {start:'View image: ',pt:'Visualizar imagem: ',es:'Ver imagen: '},
   {start:'Details: ',pt:'Detalhes: ',es:'Detalles: '},
   {start:'First page of PDF: ',pt:'Primeira página do PDF: ',es:'Primera página del PDF: '},
   {start:'PDF preview: ',pt:'Prévia do PDF: ',es:'Vista previa del PDF: '},

@@ -69,6 +69,10 @@ export function reorderCustomPages(pages:CustomPage[],fromId:string,toId:string)
  next.splice(to,0,moved)
  return next
 }
+/** A title alone is already shown on the card and does not need a second panel. */
+export function showcaseHasDetails(item:ShowcaseItem):boolean{
+ return Boolean(item.description.trim()||(item.showLink!==false&&safePageHref(item.portfolioUrl)))
+}
 /** Accept only simple http(s), mailto, or an internal hash route. No executable URLs. */
 export function safePageHref(value:string):string|null{
  const input=value.trim()
