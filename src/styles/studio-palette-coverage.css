@@ -274,3 +274,7 @@
 .studio-dock-anchor .studio-hub-count{
  background:var(--jf-studio-raised)!important;border-color:var(--jf-studio-line)!important;color:var(--jf-muted)!important;
 }
+
+/* Header icons share the label color, including the publisher's GitBranch. */
+.editor-overlay .eyebrow svg,
+.gate-card .eyebrow svg{color:currentColor;stroke:currentColor}

@@ -50,3 +50,8 @@ test('access dialog, player hover, rich text and sidebar use live tokens',async(
  assert.doesNotMatch(about,/roxo/i)
  assert.doesNotMatch(polish.match(/\.music-main-toggle:hover:not\(:disabled\)\{[^}]+\}/)?.[0]??'',/#[0-9a-f]{3,8}\b|rgba\(/i)
 })
+
+test('shared eyebrow icons inherit the current label color, including publication headers',()=>{
+ assert.match(base,/\.eyebrow svg\{color:currentColor\}/)
+ assert.match(studio,/\.editor-overlay \.eyebrow svg,\s*\.gate-card \.eyebrow svg\{color:currentColor;stroke:currentColor\}/)
+})
