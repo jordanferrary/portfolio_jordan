@@ -46,8 +46,8 @@ function parseStore(raw:unknown):PortfolioStore{
  const headingSymbol=normalizeHeadingSymbol(obj.headingSymbol)
  const siteLogo=typeof obj.siteLogo==='string'?normalizeBundledImage(obj.siteLogo):''
  const siteFavicon=typeof obj.siteFavicon==='string'?normalizeBundledImage(obj.siteFavicon):''
- const seoTitle=typeof obj.seoTitle==='string'&&obj.seoTitle.trim()?obj.seoTitle:'Jordan Ferrary — Creative Portfolio'
- const seoDescription=typeof obj.seoDescription==='string'&&obj.seoDescription.trim()?obj.seoDescription:'Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'
+ const seoTitle=typeof obj.seoTitle==='string'&&obj.seoTitle.trim()?obj.seoTitle.replace(/^Jordan Ferrary — Creative Portfolio$/,'Jordan Ferrary | 3D Artist'):'Jordan Ferrary | 3D Artist'
+ const seoDescription=typeof obj.seoDescription==='string'&&obj.seoDescription.trim()?obj.seoDescription.replace(/^Jordan Ferrary — 3D artist/,'Jordan Ferrary is a 3D artist'):'Jordan Ferrary is a 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'
  const siteLogoHover=typeof obj.siteLogoHover==='string'?normalizeBundledImage(obj.siteLogoHover):''
  const siteLogoSize=clampBrandScale(obj.siteLogoSize,100,65,180)
  const siteLogoHoverScale=clampBrandScale(obj.siteLogoHoverScale,110,100,170)
@@ -71,7 +71,7 @@ function publishedStore():PortfolioStore{
  if(bundled.schema===1&&bundled.store){
   try{return parseStore(bundled.store)}catch{/* preserve original defaults when a malformed content file is committed */}
  }
- return {customPages:[],imageVariants:{},themePalette:{...DEFAULT_THEME},glitchPalette:{...DEFAULT_GLITCH_PALETTE},headingSymbol:DEFAULT_HEADING_SYMBOL,projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,galleryFocus:{...DEFAULT_GALLERY_BANNER_FRAMING},galleryContent:{...defaultGalleryContent},siteLogo:'',siteLogoHover:'',siteLogoSize:100,siteLogoHoverScale:110,siteFavicon:'',seoTitle:'Jordan Ferrary — Creative Portfolio',seoDescription:'Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'}
+ return {customPages:[],imageVariants:{},themePalette:{...DEFAULT_THEME},glitchPalette:{...DEFAULT_GLITCH_PALETTE},headingSymbol:DEFAULT_HEADING_SYMBOL,projects:initialProjects,categories:starterCategories,home:defaultHome,testimonials:defaultTestimonials,musicTracks:defaultMusicTracks,socialLinks:defaultSocialLinks,showLikeCounts:false,about:defaultAbout,contact:defaultContact,galleryBackground:defaultGalleryBackground,galleryFocus:{...DEFAULT_GALLERY_BANNER_FRAMING},galleryContent:{...defaultGalleryContent},siteLogo:'',siteLogoHover:'',siteLogoSize:100,siteLogoHoverScale:110,siteFavicon:'',seoTitle:'Jordan Ferrary | 3D Artist',seoDescription:'Jordan Ferrary is a 3D artist, illustrator and motion designer. Discover characters, environments and creative projects.'}
 }
 function load():PortfolioStore{
  try{

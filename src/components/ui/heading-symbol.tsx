@@ -1,6 +1,6 @@
-import {Circle,Diamond,Sparkle,Sparkles,Star} from 'lucide-react'
+import {Box,Circle,Diamond,Layers,PenTool} from 'lucide-react'
 import {DEFAULT_HEADING_SYMBOL,type HeadingSymbolStyle} from '../../lib/heading-symbol'
-const icons={sparkle:Sparkle,sparkles:Sparkles,star:Star,diamond:Diamond,circle:Circle}
+const icons={sparkle:Box,sparkles:Layers,star:PenTool,box:Box,pen:PenTool,layers:Layers,diamond:Diamond,circle:Circle}
 export function HeadingSymbol({symbol=DEFAULT_HEADING_SYMBOL,size=17}:{symbol?:HeadingSymbolStyle;size?:number}){
  if(symbol==='none')return null
  const Icon=icons[symbol]

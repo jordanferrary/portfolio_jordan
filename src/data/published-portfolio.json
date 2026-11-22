@@ -197,7 +197,7 @@
         "navLabel": "Certifications",
         "icon": "graduation",
         "showInNav": true,
-        "eyebrow": "✦ CONTINUOUS LEARNING & CREATIVE GROWTH",
+        "eyebrow": "CONTINUOUS LEARNING & CREATIVE GROWTH",
         "title": "The Learning Behind the Art.",
         "subtitle": "Every skill begins with curiosity, and every new challenge is an opportunity to grow.\n\nMy journey as a digital artist is shaped by exploration, dedication, and continuous learning. Here, I share the courses, certifications, and educational milestones that contribute to my creative development.",
         "heroImage": "site://images/studio/3c009cdf95175f7569b1e3c04a968ccdb495e396a49b6e77bd8bab8fdf9c71cd.webp",
@@ -468,7 +468,7 @@
             "id": "b-zdh6t2l9edc",
             "type": "divider",
             "content": "",
-            "dividerIcon": "sparkles",
+            "dividerIcon": "diamond",
             "dividerStyle": "glow"
           },
           {
@@ -486,7 +486,7 @@
             "id": "b-u7f7wbn3v9",
             "type": "divider",
             "content": "",
-            "dividerIcon": "sparkles",
+            "dividerIcon": "diamond",
             "dividerStyle": "glow"
           },
           {
@@ -569,7 +569,7 @@
             "slideInterval": 5000,
             "slideHeight": 420,
             "slideShowPauseButton": false,
-            "dividerIcon": "sparkles",
+            "dividerIcon": "diamond",
             "dividerStyle": "glow"
           },
           {
@@ -621,7 +621,7 @@
             "slideInterval": 5000,
             "slideHeight": 420,
             "slideShowPauseButton": false,
-            "dividerIcon": "sparkles",
+            "dividerIcon": "diamond",
             "dividerStyle": "glow"
           },
           {
@@ -679,7 +679,7 @@
       {
         "id": "stylized",
         "label": "Stylized",
-        "icon": "sparkles"
+        "icon": "shapes"
       },
       {
         "id": "others",
@@ -764,7 +764,7 @@
     ],
     "showLikeCounts": true,
     "about": {
-      "eyebrow": "✦ Behind the art",
+      "eyebrow": "Behind the art",
       "titleFirst": "More than pixels.",
       "titleAccent": "A creative vision.",
       "name": "Jordan Ferrary",
@@ -828,8 +828,8 @@
       "dark": "#060410",
       "intensity": 1
     },
-    "headingSymbol": "sparkle",
-    "seoTitle": "Jordan Ferrary — Creative Portfolio",
-    "seoDescription": "Jordan Ferrary — 3D artist, illustrator and motion designer. Discover characters, environments and creative projects."
+    "headingSymbol": "box",
+    "seoTitle": "Jordan Ferrary | 3D Artist",
+    "seoDescription": "Jordan Ferrary is a 3D artist, illustrator and motion designer. Discover characters, environments and creative projects."
   }
 }

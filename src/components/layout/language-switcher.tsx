@@ -17,11 +17,6 @@ export function LanguageSwitcher({language,onChange}:{language:VisitorLanguage;o
   pt:'Alterar idioma do portfólio',
   es:'Cambiar idioma del portafolio'
  }
- const descriptions={
-  en:'Detected automatically. You can change it here.',
-  pt:'Detectado automaticamente. Você pode trocar aqui.',
-  es:'Detectado automáticamente. Puedes cambiarlo aquí.'
- }
 
  useEffect(()=>{
   if(!open)return
@@ -72,7 +67,6 @@ export function LanguageSwitcher({language,onChange}:{language:VisitorLanguage;o
     <span className="language-switcher-name">{option.name}</span>
     {option.value===language&&<Check className="language-switcher-check" size={16} aria-hidden="true"/>}
    </button>)}
-   <p className="language-switcher-note">{descriptions[language]}</p>
   </div>}
  </div>
 }

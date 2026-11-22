@@ -22,13 +22,13 @@ export function ContactPage({socials,settings,demoEnabled,onEdit,headingSymbol}:
     <h1>{settings.titleFirst}<br/><em>{settings.titleAccent}</em></h1>
     <p className="contact-social-description">{protectArtistName(settings.introduction)}</p>
     <div className="contact-social-divider" aria-hidden="true"><span/><span/></div>
-    <div className="contact-social-message"><span className="contact-social-message-icon"><MessagesSquare size={19}/></span><div><strong>Let's talk where we're already connected.</strong><p>Choose one of my social platforms and reach out there — no forms or email required.</p></div></div>
+    <div className="contact-social-message"><span className="contact-social-message-icon"><MessagesSquare size={19}/></span><div><strong>Let's talk where we're already connected.</strong><p>Choose a social platform and send me a message.</p></div></div>
     <a className="contact-social-portfolio-link" href="#/portfolio">Explore the portfolio <ArrowRight size={17}/></a>
     {demoEnabled&&<button type="button" lang="pt-BR" className="contact-dev-edit" onClick={onEdit}><Pencil size={15}/>Personalizar contato e redes</button>}
    </section>
    <section className={'contact-social-directory contact-directory-'+density} aria-label="Social media contact channels">
     <header className="contact-social-directory-head">
-     <div><span className="contact-social-section-index">DIRECT CONNECTIONS / 01</span><h2>Find me online<span>.</span></h2><p>{settings.greeting}</p></div>
+     <div><h2>Find me online<span>.</span></h2><p>{settings.greeting}</p></div>
      <span className="contact-social-head-ornament"><Waypoints size={21}/></span>
     </header>
     {channels.length>0?<div className={'contact-social-cards contact-cards-'+density}>
@@ -42,7 +42,6 @@ export function ContactPage({socials,settings,demoEnabled,onEdit,headingSymbol}:
       </a>
      })}
     </div>:<div className="contact-social-empty"><p>Social profiles are being updated. Please check back soon.</p>{demoEnabled&&<button type="button" onClick={onEdit}>Configurar redes sociais</button>}</div>}
-    <div className="contact-social-directory-footer"><span className="contact-social-status-dot"/>Links open directly on their respective platforms.</div>
    </section>
   </div>
   {settings.footerTags.length>0&&<div className="contact-social-bottomline" aria-label="Creative specialties">{settings.footerTags.map((label,index)=><span key={index} className="contact-social-bottomline-item">{index>0&&<i aria-hidden="true"/>}<span>{label}</span></span>)}</div>}

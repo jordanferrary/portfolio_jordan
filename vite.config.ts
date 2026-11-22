@@ -27,8 +27,8 @@ function socialMetadata(){
    order:'pre' as const,
    handler(html:string){
     let revision='default'
-    let title='Jordan Ferrary — Creative Portfolio'
-    let description='Jordan Ferrary — 3D artist, illustrator and motion designer. Explore selected artwork and creative projects.'
+    let title='Jordan Ferrary | 3D Artist'
+    let description='Jordan Ferrary is a 3D artist, illustrator and motion designer. Explore selected artwork and creative projects.'
     try{
      const data=JSON.parse(readFileSync(new URL('./src/data/published-portfolio.json',import.meta.url),'utf8')) as {revision?:string;store?:{seoTitle?:string;seoDescription?:string}}
      revision=data.revision||revision

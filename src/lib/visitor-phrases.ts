@@ -1,5 +1,9 @@
 /** Human-reviewed translations for UI and existing portfolio copy. Original text is English. */
 export const VISITOR_PHRASES:Record<string,{pt:string;es:string}>={
+ "Choose a social platform and send me a message.":{pt:"Escolha uma rede social e me envie uma mensagem.",es:"Elige una red social y envíame un mensaje."},
+ "BEHIND THE ARTWORK":{pt:"POR TRÁS DA OBRA",es:"DETRÁS DE LA OBRA"},
+ "ITEM DETAILS":{pt:"DETALHES DO ITEM",es:"DETALLES DEL ELEMENTO"},
+ "3D model unavailable. A GLB or glTF link is required.":{pt:"Modelo 3D indisponível. É necessário um link GLB ou glTF.",es:"Modelo 3D no disponible. Se necesita un enlace GLB o glTF."},
  "Model inspector":{"pt":"Inspetor de modelos","es":"Inspector de modelos"},
  "Active view":{"pt":"Visualização ativa","es":"Vista activa"},
  "Final render":{"pt":"Render final","es":"Render final"},
