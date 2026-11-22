@@ -79,3 +79,16 @@ test('custom pages use one width baseline and PDF captions do not darken documen
  assert.match(galleryView,/--showcase-open-columns/)
  assert.match(galleryView,/<PdfZoomViewer url=\{documentUrl\}/)
 })
+
+test('mobile gallery banner starts at the top with floating social controls and a single fade mask',async()=>{
+ const hero=await read('src/styles/gallery-hero-refinement.css')
+ const mobile=hero.slice(hero.indexOf('@media(max-width:600px)'))
+ assert.match(mobile,/\.site-main:has\(>\.gallery-page\)>\.socials\{\s*position:absolute;/)
+ assert.match(mobile,/\.gallery-banner\{\s*top:0;left:calc\(-1 \* var\(--gallery-hero-bleed\)\);/)
+ assert.match(mobile,/right:calc\(-1 \* var\(--gallery-hero-bleed\)\);width:auto;/)
+ assert.match(mobile,/mask-image:linear-gradient\(180deg,#000 0%,#000 45%,transparent 100%\);/)
+ assert.doesNotMatch(mobile,/mask-composite:intersect|mask-composite:source-in/)
+ assert.match(mobile,/\.gallery-heading\{\s*height:auto;min-height:220px;/)
+ assert.match(gallery,/sizes="\(max-width: 600px\) 100vw/)
+ assert.match(gallery,/distributeMasonry\(filtered,columnCount\)/)
+})

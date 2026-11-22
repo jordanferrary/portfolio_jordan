@@ -24,12 +24,40 @@
   width:calc(70% + var(--gallery-hero-bleed));
  }
 }
+/* On phones, the social controls overlay the artwork instead of creating
+   a separate strip above it. The gallery keeps its normal content gutters. */
 @media(max-width:600px){
- .site-shell .gallery-page{--gallery-hero-bleed:14px}
- .site-shell .gallery-page .gallery-banner{
-  width:calc(87% + var(--gallery-hero-bleed));
-  height:245px;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 22%,#000 100%),linear-gradient(180deg,#000 0%,#000 82%,transparent 100%);
-  mask-image:linear-gradient(90deg,transparent 0%,#000 22%,#000 100%),linear-gradient(180deg,#000 0%,#000 82%,transparent 100%);
+ .site-shell .site-main:has(>.gallery-page){position:relative}
+ .site-shell .site-main:has(>.gallery-page)>.socials{
+  position:absolute;top:max(10px,env(safe-area-inset-top,0px));right:14px;
+  margin:0;z-index:8;
  }
+ .site-shell .gallery-page{
+  --gallery-hero-bleed:14px;
+  padding-top:calc(62px + env(safe-area-inset-top,0px));
+ }
+ .site-shell .gallery-page .gallery-banner{
+  top:0;left:calc(-1 * var(--gallery-hero-bleed));
+  right:calc(-1 * var(--gallery-hero-bleed));width:auto;
+  height:clamp(260px,72vw,350px);
+  opacity:.86;
+  border:0;border-radius:0;background:transparent;
+  /* A single alpha mask avoids conflicting layer composition on mobile Safari.
+     Keep the top solid and fade only into the page below the artwork. */
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 45%,transparent 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 45%,transparent 100%);
+  -webkit-mask-composite:source-over;
+  mask-composite:add;
+ }
+ .site-shell .gallery-page .gallery-banner>img{
+  display:block;width:100%;height:100%;object-fit:cover;
+ }
+ .site-shell .gallery-page .gallery-banner::after{
+  background:linear-gradient(90deg,color-mix(in srgb,var(--jf-background) 82%,transparent),color-mix(in srgb,var(--jf-background) 47%,transparent) 48%,transparent 100%),
+   linear-gradient(180deg,color-mix(in srgb,var(--jf-background) 30%,transparent),transparent 26%,color-mix(in srgb,var(--jf-background) 68%,transparent) 85%)!important;
+ }
+ .site-shell .gallery-page .gallery-heading{
+  height:auto;min-height:220px;margin-bottom:20px;
+ }
+ .site-shell .gallery-page .gallery-heading h1{margin:18px 0 14px}
 }
