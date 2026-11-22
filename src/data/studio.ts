@@ -33,7 +33,7 @@ export const defaultHome:HomeContent = {
  background:bundledAsset('hero/hero-character.webp'),
  backgroundFocus:{x:50,y:50,zoom:1},
  available:true,
- aboutTagline:'Turning imagination into reality.',
+ aboutTagline:'',
  specialties:['3D Modeling','LookDev','Stylized Art','Animation'],
  focusItems:['3D Art & Characters','Games & Interactive','Stylized Assets & Environments']
 }
