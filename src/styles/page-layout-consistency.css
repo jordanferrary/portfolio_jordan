@@ -142,7 +142,7 @@
  line-height:1.4!important;
  letter-spacing:.04em!important;
 }
-.site-shell .site-main :is(.home-panel-heading h2,.home-about-panel h2,.work-title,.gallery-card .project-copy b,.contact-social-card-info strong,.artist-showcase-card strong,.artist-showcase-card .artist-showcase-caption,.story-block .rich-text h4){
+.site-shell .site-main :is(.home-panel-heading h2,.home-about-panel h2,.work-title,.gallery-card .project-copy b,.contact-social-card-info strong,.artist-showcase-card strong,.artist-showcase-card>span,.story-block .rich-text h4){
  font-family:var(--jf-page-heading-font)!important;
  font-size:var(--jf-page-card-title)!important;
  font-weight:700!important;
