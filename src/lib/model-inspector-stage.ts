@@ -10,6 +10,7 @@ import {createChecker,createMatcap,debugMaterial,isPresentationMaterial,createPr
 import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model-solid-wireframe'
 import {createLightGizmos} from './model-light-gizmos'
 import {attachArtShader,createArtUniforms,updateArtUniforms} from './model-art-shaders'
+import {createChromaticPass} from './model-chromatic-pass'
 export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[];unlitMaterials:number}
 export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean)=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;setLightEditing:(state:LightEditState)=>void;frameLights:()=>void;dispose:()=>void}
 const rad=THREE.MathUtils.degToRad
@@ -61,6 +62,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const skeletonHelpers:THREE.SkeletonHelper[]=[]
  const wireUniforms=createWireUniforms(options.wireColor,options.wireOpacity)
  const artUniforms=createArtUniforms(initial.artShader)
+ let chromaticPass:ReturnType<typeof createChromaticPass>|null=null
  const vertexCenter=new THREE.Vector3(),size=new THREE.Vector3()
  let radius=1,fitDistance=3
  let editState:LightEditState={selected:null,helpers:false,target:false,solo:false}
@@ -156,6 +158,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   const next=isPresentationMaterial(mode)?createPresentationMaterial(mode,mat,presentation):debugMaterial(mode,mat,{checker:()=>checker??(checker=createChecker()),matcap:()=>matcap??(matcap=createMatcap())})
   if(isPresentationMaterial(mode))applyPresentationEmission(next,mat,presentation.emissionScale)
   if(mode==='material')attachArtShader(next,artUniforms)
+  if(mode==='material'&&presentation.artShader.preset==='flat'&&(next as THREE.MeshStandardMaterial).isMeshStandardMaterial){(next as THREE.MeshStandardMaterial).flatShading=true;next.needsUpdate=true}
   if(isWireOverlay(mode))attachSolidWireShader(next,wireUniforms)
   cache.set(mat,next);return next
  }
@@ -224,10 +227,11 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   if(!visible||document.hidden||!model)return
   controls.autoRotate=rotate&&!hovered&&!interacting&&time>idleUntil&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if(animationPlaying)mixer?.update(delta)
-  controls.update(delta);gizmos?.sync();renderer.render(scene,camera)
+  controls.update(delta);gizmos?.sync()
+  if(mode==='material'&&presentation.artShader.chromaticAberration>0&&!editState.helpers){chromaticPass??=createChromaticPass(renderer);chromaticPass.render(scene,camera,presentation.artShader.chromaticAberration,presentation.artShader.chromaticAngle)}else{if(chromaticPass){chromaticPass.dispose();chromaticPass=null}renderer.render(scene,camera)}
  })
  return {
-  setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;const emissionChanged=next.emissionScale!==presentation.emissionScale;presentation=next;updateArtUniforms(artUniforms,next.artShader);applyLighting();if(relight){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();setMode(mode)}else if(emissionChanged)updateEmission();if(reframe)resetCamera()},
+  setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;const emissionChanged=next.emissionScale!==presentation.emissionScale;const flatChanged=(next.artShader.preset==='flat')!==(presentation.artShader.preset==='flat');presentation=next;updateArtUniforms(artUniforms,next.artShader);applyLighting();if(relight||flatChanged){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();setMode(mode)}else if(emissionChanged)updateEmission();if(reframe)resetCamera()},
   setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,resetCamera,captureCamera,frameLights,setLightEditing(state){editState=state;gizmos?.setState(state);applyLighting()},
   dispose(){if(disposed)return;disposed=true;renderer.setAnimationLoop(null);observer.disconnect();intersection.disconnect();controls.dispose();canvas.removeEventListener('pointerenter',enter);canvas.removeEventListener('pointerleave',exit)
    mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model)
@@ -236,7 +240,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
    if(model){for(const [mesh,material] of original)mesh.material=material;disposeObject(model);scene.remove(model)}
    for(const cache of variants.values())for(const material of cache.values())material.dispose()
    gizmos?.dispose();for(const light of customLights.values())removeCustomLight(light);customLights.clear()
-   environment.dispose();draco.dispose();ktx2.dispose();renderer.dispose();canvas.remove()
+   chromaticPass?.dispose();environment.dispose();draco.dispose();ktx2.dispose();renderer.dispose();canvas.remove()
   }
  }
 }

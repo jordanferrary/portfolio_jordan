@@ -116,3 +116,15 @@ test('art shaders are opt-in, persist and update uniforms without replacing mate
  assert.match(runtime,/if\(mode==='material'\)attachArtShader/);assert.match(runtime,/updateArtUniforms\(artUniforms,next.artShader\)/)
  mat.dispose();basic.dispose()
 })
+
+test('illustration surfaces and optional RGB camera pass preserve technical modes',async()=>{
+ const p=normalizeModelPresentation({artShader:{preset:'crosshatch',patternScale:99,patternAngle:-1,chromaticAberration:50}})
+ assert.equal(p.artShader.preset,'crosshatch');assert.equal(p.artShader.patternScale,24);assert.equal(p.artShader.patternAngle,0);assert.equal(p.artShader.chromaticAberration,12)
+ assert.equal(normalizeModelPresentation().artShader.chromaticAberration,0)
+ const [art,stage,post,ui]=await Promise.all(['src/lib/model-art-shaders.ts','src/lib/model-inspector-stage.ts','src/lib/model-chromatic-pass.ts','src/components/sections/model-presentation-editor.tsx'].map(path=>readFile(path,'utf8')))
+ assert.match(art,/hatch:8,crosshatch:9,stipple:10,halftone:11/)
+ assert.match(art,/jfInkColor/);assert.match(art,/smoothstep/);assert.match(stage,/flatShading=true/)
+ assert.match(stage,/mode==='material'&&presentation.artShader.chromaticAberration>0&&!editState.helpers/)
+ assert.match(stage,/chromaticPass.dispose\(\)/);assert.match(post,/vec3\(red.r,middle.g,blue.b\)/)
+ assert.match(post,/target.dispose\(\)/);assert.match(ui,/Aberração cromática RGB/)
+})

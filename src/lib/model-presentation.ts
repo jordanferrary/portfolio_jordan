@@ -1,6 +1,6 @@
 export type ModelMode='material'|'neutral'|'clay'|'wireframe'|'shaded-wire'|'clay-wire'|'flat'|'flat-wire'|'normals'|'unlit'|'metalness'|'roughness'|'normal-map'|'ao'|'opacity'|'emission'|'specular'|'scattering'|'matcap'|'matcap-surface'|'uv'|'bones'|'weights'
-export type ArtShaderPreset='original'|'toon'|'noir'|'rim'|'iridescent'|'hologram'|'blueprint'
-export type ArtShader={preset:ArtShaderPreset;strength:number;tint:string;bands:number;rimPower:number;scanSpacing:number}
+export type ArtShaderPreset='original'|'toon'|'noir'|'rim'|'iridescent'|'hologram'|'blueprint'|'flat'|'hatch'|'crosshatch'|'stipple'|'halftone'
+export type ArtShader={preset:ArtShaderPreset;strength:number;tint:string;bands:number;rimPower:number;scanSpacing:number;patternScale:number;inkColor:string;paperColor:string;patternAngle:number;chromaticAberration:number;chromaticAngle:number}
 export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;description:string;tint:string;swatch:string}[]=[
  {id:'original',name:'Original PBR',description:'Materiais e iluminação naturais.',tint:'#ffffff',swatch:'radial-gradient(circle at 30% 25%,#f5ebd7,#786853 45%,#25212b 80%)'},
  {id:'toon',name:'Cel / Toon',description:'Luz em faixas, acabamento de ilustração.',tint:'#ffffff',swatch:'radial-gradient(circle at 30% 30%,#ecb891 0 32%,#b35f7d 33% 57%,#43365f 58%)'},
@@ -8,9 +8,14 @@ export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;descrip
  {id:'rim',name:'Neon Rim',description:'Contorno luminoso dependente da câmera.',tint:'#a35bff',swatch:'radial-gradient(circle at 45% 48%,#232038 0 42%,#6f3bc6 65%,#e0aaff 81%,#292138 86%)'},
  {id:'iridescent',name:'Iridescent',description:'Reflexo colorido que muda com o ângulo.',tint:'#9fbaff',swatch:'conic-gradient(from 35deg,#e3a5fa,#657fec,#78e0d8,#fce3a0,#e3a5fa)'},
  {id:'hologram',name:'Hologram',description:'Fresnel e linhas de varredura sobre a malha sólida.',tint:'#54dcff',swatch:'repeating-linear-gradient(0deg,#143d62 0 4px,#75edff 5px,#143d62 7px)'},
- {id:'blueprint',name:'Blueprint',description:'Tons técnicos azuis com realce das formas.',tint:'#5eafff',swatch:'radial-gradient(circle at 28% 25%,#c7edff,#397ec8 40%,#0f2448 75%)'}
+ {id:'blueprint',name:'Blueprint',description:'Tons técnicos azuis com realce das formas.',tint:'#5eafff',swatch:'radial-gradient(circle at 28% 25%,#c7edff,#397ec8 40%,#0f2448 75%)'},
+ {id:'flat',name:'Textured Flat',description:'Faces planas com materiais e iluminação originais.',tint:'#ffffff',swatch:'conic-gradient(from 35deg,#c9aa96 0 26%,#71627c 26% 49%,#44334c 49% 74%,#e0cbbb 74%)'},
+ {id:'hatch',name:'Hatching',description:'Traços diagonais definidos pela luz.',tint:'#ffffff',swatch:'repeating-linear-gradient(45deg,#e9e1ce 0 5px,#29232b 5px 6px)'},
+ {id:'crosshatch',name:'Crosshatching',description:'Hachuras cruzadas em diferentes intensidades.',tint:'#ffffff',swatch:'repeating-linear-gradient(45deg,transparent 0 5px,#312b32 5px 6px),repeating-linear-gradient(-45deg,#e9dfcd 0 5px,#312b32 5px 6px)'},
+ {id:'stipple',name:'Stippling',description:'Pontilhado irregular inspirado em tinta.',tint:'#ffffff',swatch:'radial-gradient(circle,#322b30 18%,transparent 23%) 0 0/6px 7px,radial-gradient(circle,#322b30 14%,transparent 20%) 3px 3px/9px 8px,#f1e9d7'},
+ {id:'halftone',name:'Comic Halftone',description:'Retícula de pontos com tamanho variável.',tint:'#ffffff',swatch:'radial-gradient(circle,#2e2739 27%,transparent 32%) 0 0/8px 8px,#efc7a6'}
 ]
-export const DEFAULT_ART_SHADER:ArtShader={preset:'original',strength:.75,tint:'#ffffff',bands:4,rimPower:3,scanSpacing:7}
+export const DEFAULT_ART_SHADER:ArtShader={preset:'original',strength:.75,tint:'#ffffff',bands:4,rimPower:3,scanSpacing:7,patternScale:7,inkColor:'#211c29',paperColor:'#f5eedc',patternAngle:45,chromaticAberration:0,chromaticAngle:0}
 export const MAX_MODEL_LIGHTS=8
 export type ModelLight={id:string;name:string;type:'directional'|'point'|'spot';enabled:boolean;color:string;intensity:number;azimuth:number;elevation:number;distance:number;angle:number;softness:number;targetX:number;targetY:number;targetZ:number}
 export type ModelCamera={azimuth:number;elevation:number;zoom:number;fov:number;targetX:number;targetY:number;targetZ:number}
@@ -43,7 +48,7 @@ function normalizeLights(value:unknown):ModelLight[]{
 export function normalizeArtShader(value?:Partial<ArtShader>|null):ArtShader{
  const v=value??{},d=DEFAULT_ART_SHADER
  const preset=ART_SHADER_PRESETS.find(item=>item.id===v.preset)??ART_SHADER_PRESETS[0]
- return {preset:preset.id,strength:numeric(v.strength,d.strength,0,1),tint:color(v.tint,preset.tint),bands:Math.round(numeric(v.bands,d.bands,2,8)),rimPower:numeric(v.rimPower,d.rimPower,.5,8),scanSpacing:numeric(v.scanSpacing,d.scanSpacing,3,24)}
+ return {preset:preset.id,strength:numeric(v.strength,d.strength,0,1),tint:color(v.tint,preset.tint),bands:Math.round(numeric(v.bands,d.bands,2,8)),rimPower:numeric(v.rimPower,d.rimPower,.5,8),scanSpacing:numeric(v.scanSpacing,d.scanSpacing,3,24),patternScale:numeric(v.patternScale,d.patternScale,3,24),inkColor:color(v.inkColor,d.inkColor),paperColor:color(v.paperColor,d.paperColor),patternAngle:numeric(v.patternAngle,d.patternAngle,0,180),chromaticAberration:numeric(v.chromaticAberration,0,0,12),chromaticAngle:numeric(v.chromaticAngle,0,0,360)}
 }
 export function normalizeModelPresentation(value?:Partial<ModelPresentation>|null):ModelPresentation{
  const d=DEFAULT_MODEL_PRESENTATION,v=value??{}

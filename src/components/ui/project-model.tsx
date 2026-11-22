@@ -33,7 +33,7 @@ function ModelViewer({url,poster,title='3D artwork',presentation,startActive=fal
  useEffect(()=>{stage.current?.setPresentation(configuration.current)})
  useEffect(()=>{stage.current?.resetCamera()},[resetCameraToken])
  useEffect(()=>{stage.current?.setMode(mode)},[mode])
- useEffect(()=>{if(previewArtShader){setMode('material');setPanelOpen(false)}},[previewArtShader,settings.artShader.preset])
+ useEffect(()=>{if(previewArtShader){setMode('material');setPanelOpen(false)}},[previewArtShader,settings.artShader.preset,settings.artShader.chromaticAberration])
  useEffect(()=>{stage.current?.setRotation(rotate)},[rotate])
  useEffect(()=>{if(lightEditing)stage.current?.setLightEditing(lightEditing)},[lightEditing])
  useEffect(()=>{stage.current?.setOptions(options)},[options])
