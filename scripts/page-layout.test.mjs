@@ -58,7 +58,7 @@ test('About uses one editorial grid and keeps the secondary artwork outside the 
  const identity=css.slice(css.indexOf('.site-shell.about-route .about-art-secondary{'))
  const identityRule=identity.slice(0,identity.indexOf('}'))
  assert.match(identityRule,/object-fit:contain;border:0!important;background:transparent;/)
- assert.doesNotMatch(identityRule,/border-width:\\s*[12]px/)
+ assert.doesNotMatch(identityRule,/border-width:\s*[12]px/)
  assert.match(css,/\.about-information\{\s*grid-area:information;[\s\S]*?border:0!important/)
 })
 
