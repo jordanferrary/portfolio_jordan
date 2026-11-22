@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef,useState } from 'react'
 import { Download,ImagePlus,Plus,Save,Trash2,Upload,X } from 'lucide-react'
 import type { HomeContent,MusicTrack,Testimonial,SocialLink } from '../../data/studio'
 import type {Project} from '../../data/projects'
@@ -16,7 +16,9 @@ export function HomeEditor({projects,onFeaturedProjects,home,testimonials,tracks
  const [notice,setNotice]=useState('')
  const [specialtiesDraft,setSpecialtiesDraft]=useState(home.specialties.join('\n'))
  const [focusDraft,setFocusDraft]=useState(home.focusItems.join('\n'))
- const patch=(delta:Partial<HomeContent>)=>onHome({...home,...delta})
+ const homeRef=useRef(home)
+ homeRef.current=home
+ const patch=(delta:Partial<HomeContent>)=>{const next={...homeRef.current,...delta};homeRef.current=next;onHome(next)}
  const updateTestimonial=(id:string,changes:Partial<Testimonial>)=>onTestimonials(testimonials.map(t=>t.id===id?{...t,...changes}:t))
  const uploadImage=async(file:File,field:'avatar'|'background')=>{
   try{const src=await saveUploadedMedia(file,'home',field);patch({[field]:src})}catch(e){setNotice(e instanceof Error?e.message:'Falha ao salvar imagem.')}

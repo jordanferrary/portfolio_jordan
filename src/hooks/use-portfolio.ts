@@ -128,23 +128,23 @@ export function usePortfolio(editing=false){
  const storeRef=useRef(store)
  const [saveError,setSaveError]=useState('')
  const save=useCallback((next:PortfolioStore)=>{storeRef.current=next;setStore(next);try{localStorage.setItem(KEY,JSON.stringify(next));setSaveError('')}catch{setSaveError('Sem espaço para salvar dados locais; exporte um backup.')}},[])
- const update=(project:Project)=>save({...store,projects:store.projects.some(p=>p.id===project.id)?store.projects.map(p=>p.id===project.id?project:p):[project,...store.projects]})
- const remove=(id:string)=>save({...store,projects:store.projects.filter(p=>p.id!==id)})
- const setFeaturedProjects=(ids:string[])=>save({...store,projects:applyFeaturedSelection(store.projects,ids)})
+ const update=(project:Project)=>save({...storeRef.current,projects:storeRef.current.projects.some(p=>p.id===project.id)?storeRef.current.projects.map(p=>p.id===project.id?project:p):[project,...storeRef.current.projects]})
+ const remove=(id:string)=>save({...storeRef.current,projects:storeRef.current.projects.filter(p=>p.id!==id)})
+ const setFeaturedProjects=(ids:string[])=>save({...storeRef.current,projects:applyFeaturedSelection(storeRef.current.projects,ids)})
  const reorderProjects=(sourceId:string,targetId:string,after=false)=>{
   if(sourceId===targetId)return
-  const list=[...store.projects]
+  const list=[...storeRef.current.projects]
   const source=list.findIndex(p=>p.id===sourceId)
   if(source<0)return
   const [item]=list.splice(source,1)
   const target=list.findIndex(p=>p.id===targetId)
   if(target<0)return
   list.splice(target+(after?1:0),0,item)
-  save({...store,projects:list})
+  save({...storeRef.current,projects:list})
  }
- const setCategories=(categories:Category[])=>save({...store,categories})
- const setCustomPages=(customPages:CustomPage[])=>save({...store,customPages:normalizeCustomPages(customPages)})
- const setHome=(home:HomeContent)=>save({...store,home})
+ const setCategories=(categories:Category[])=>save({...storeRef.current,categories})
+ const setCustomPages=(customPages:CustomPage[])=>save({...storeRef.current,customPages:normalizeCustomPages(customPages)})
+ const setHome=(home:HomeContent)=>save({...storeRef.current,home})
  const markPublished=(revision:string,snapshot:string|null)=>{
   // Credential-free marker only. Never write the GitHub token to localStorage.
   try{localStorage.setItem(PENDING_KEY,JSON.stringify({revision,snapshot}))}catch{/* publication itself already succeeded */}
@@ -158,19 +158,19 @@ export function usePortfolio(editing=false){
   const restored=publishedStore();storeRef.current=restored;setStore(restored)
   setSaveError('')
  }
- const setGalleryBackground=(galleryBackground:string)=>save({...store,galleryBackground})
- const setGalleryPage=(galleryBackground:string,galleryContent:GalleryContent,galleryFocus:ImageFraming)=>save({...store,galleryBackground,galleryFocus:normalizeFraming(galleryFocus),galleryContent:normalizeGalleryContent(galleryContent)})
- const setBranding=(values:Pick<PortfolioStore,'siteLogo'|'siteLogoHover'|'siteLogoSize'|'siteLogoHoverScale'>)=>save({...store,...values,siteLogoSize:clampBrandScale(values.siteLogoSize,100,65,180),siteLogoHoverScale:clampBrandScale(values.siteLogoHoverScale,110,100,170)})
- const setSiteIdentity=(values:Pick<PortfolioStore,'siteFavicon'|'seoTitle'|'seoDescription'>)=>save({...store,...values,seoTitle:values.seoTitle.trim().slice(0,110),seoDescription:values.seoDescription.trim().slice(0,240)})
+ const setGalleryBackground=(galleryBackground:string)=>save({...storeRef.current,galleryBackground})
+ const setGalleryPage=(galleryBackground:string,galleryContent:GalleryContent,galleryFocus:ImageFraming)=>save({...storeRef.current,galleryBackground,galleryFocus:normalizeFraming(galleryFocus),galleryContent:normalizeGalleryContent(galleryContent)})
+ const setBranding=(values:Pick<PortfolioStore,'siteLogo'|'siteLogoHover'|'siteLogoSize'|'siteLogoHoverScale'>)=>save({...storeRef.current,...values,siteLogoSize:clampBrandScale(values.siteLogoSize,100,65,180),siteLogoHoverScale:clampBrandScale(values.siteLogoHoverScale,110,100,170)})
+ const setSiteIdentity=(values:Pick<PortfolioStore,'siteFavicon'|'seoTitle'|'seoDescription'>)=>save({...storeRef.current,...values,seoTitle:values.seoTitle.trim().slice(0,110),seoDescription:values.seoDescription.trim().slice(0,240)})
  const setThemePalette=(themePalette:ThemePalette,headingSymbol:HeadingSymbolStyle=storeRef.current.headingSymbol,typography?:TypographySettings)=>save({...storeRef.current,themePalette:normalizeThemePalette(themePalette),headingSymbol:normalizeHeadingSymbol(headingSymbol),typography:normalizeTypography(typography??storeRef.current.typography)})
  const setTypography=(typography:TypographySettings)=>save({...storeRef.current,typography:normalizeTypography(typography)})
- const setGlitchPalette=(glitchPalette:GlitchPalette)=>save({...store,glitchPalette:normalizeGlitchPalette(glitchPalette)})
- const setAbout=(about:AboutContent)=>save({...store,about})
- const setContactPage=(contact:ContactSettings,socialLinks:SocialLink[])=>save({...store,contact,socialLinks})
- const setTestimonials=(testimonials:Testimonial[])=>save({...store,testimonials})
- const setMusicTracks=(musicTracks:MusicTrack[])=>save({...store,musicTracks})
- const setSocialLinks=(socialLinks:SocialLink[])=>save({...store,socialLinks})
- const setShowLikeCounts=(showLikeCounts:boolean)=>save({...store,showLikeCounts})
+ const setGlitchPalette=(glitchPalette:GlitchPalette)=>save({...storeRef.current,glitchPalette:normalizeGlitchPalette(glitchPalette)})
+ const setAbout=(about:AboutContent)=>save({...storeRef.current,about})
+ const setContactPage=(contact:ContactSettings,socialLinks:SocialLink[])=>save({...storeRef.current,contact,socialLinks})
+ const setTestimonials=(testimonials:Testimonial[])=>save({...storeRef.current,testimonials})
+ const setMusicTracks=(musicTracks:MusicTrack[])=>save({...storeRef.current,musicTracks})
+ const setSocialLinks=(socialLinks:SocialLink[])=>save({...storeRef.current,socialLinks})
+ const setShowLikeCounts=(showLikeCounts:boolean)=>save({...storeRef.current,showLikeCounts})
  const exportData=async()=>{
   const {default:JSZip}=await import('jszip')
   const zip=new JSZip()
