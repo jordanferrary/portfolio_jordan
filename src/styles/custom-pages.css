@@ -131,7 +131,19 @@
 @media(max-width:600px){.custom-page{padding:62px 0 30px}.custom-page-hero{min-height:290px;border-radius:21px}.custom-page-hero.has-image{min-height:340px}.custom-page-hero-content{padding:28px 23px}.custom-page-hero h1{font-size:clamp(35px,10vw,50px)}.custom-page-subtitle{font-size:14px}.custom-page-body{padding:26px 0 0}.custom-page-footer{margin:42px 0 10px}.custom-page-editor-tabs{padding:10px 12px;gap:6px}.custom-page-editor-tabs button{font-size:10px;padding:9px 10px}.custom-page-editor>.editor-scroll{padding:13px}.custom-pages-intro{padding:14px}.custom-pages-entry{flex-wrap:wrap}.custom-pages-entry-actions{width:100%;justify-content:flex-start}.custom-page-edit-block{padding:12px 10px}.custom-page-template-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.custom-page-template-grid button{padding:11px 5px;min-height:112px}.custom-page-template-grid strong{font-size:10px}.custom-page-template-grid small{font-size:9px}.custom-page-button-options{grid-template-columns:1fr}.custom-page-edit-block .editor-two,.custom-page-settings .editor-two{grid-template-columns:1fr}.custom-page-gallery-fields{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.custom-page-cta,.custom-page-template-grid button{transition:none}}
 /* Allow an unlimited number of extra links without crushing the player or mobile navigation. */
-.sidebar .side-nav{min-height:0;flex:1;width:100%;overflow-y:auto;overflow-x:hidden;margin-top:22px;padding:6px 0 12px;gap:14px;scrollbar-width:thin;scrollbar-color:var(--jf-scroll-thumb) transparent}
+/* Keep the scroll container, but reserve real paint room around the Liquid Glass
+   shadows (including the top of the first item and both lateral edges).
+   Equal added width + negative margins + inner padding preserve icon positions. */
+.sidebar .side-nav{
+ min-height:0;flex:1;
+ width:calc(100% + 48px);
+ margin:6px -24px 0;
+ padding:22px 24px 26px;
+ gap:14px;
+ overflow-y:auto;overflow-x:hidden;
+ scrollbar-width:thin;
+ scrollbar-color:var(--jf-scroll-thumb) transparent;
+}
 .sidebar .side-link{flex:0 0 auto;max-width:100%;cursor:pointer}
 .sidebar .side-link-label{max-width:88px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sidebar .side-add-page .side-icon{border-style:dashed;border-color:var(--jf-border);color:var(--jf-muted)}

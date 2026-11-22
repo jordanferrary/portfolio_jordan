@@ -59,3 +59,12 @@ test('Material sliders use shared real CSS paint and separate icon radius',async
  assert.match(material,/calc\(79% \* var\(--jf-control-opacity,1\)\)/)
  assert.match(material,/calc\(47% \* var\(--jf-control-sheen,1\)\)/)
 })
+
+test('scrollable sidebar reserves glow space without shifting icons or changing mobile layout',async()=>{
+ const content=await readFile(new URL('../src/styles/custom-pages.css',import.meta.url),'utf8')
+ assert.match(content,/\.sidebar \.side-nav\{[\s\S]*?width:calc\(100% \+ 48px\);/)
+ assert.match(content,/margin:6px -24px 0;/)
+ assert.match(content,/padding:22px 24px 26px;/)
+ assert.match(content,/overflow-y:auto;overflow-x:hidden;/)
+ assert.match(content,/@media\(max-width:600px\)\{\.sidebar \.side-nav\{[^}]*width:auto;margin:0 5px;[^}]*overflow-x:auto;overflow-y:hidden;/)
+})
