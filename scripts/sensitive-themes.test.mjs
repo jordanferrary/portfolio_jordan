@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import {build} from 'esbuild'
 import {readFile} from 'node:fs/promises'
 const built=await build({entryPoints:['src/lib/sensitive-themes.ts'],bundle:true,format:'esm',platform:'node',write:false,logLevel:'silent'})
-const {isSensitiveTheme,projectMatchesVisibility,shouldCoverProject}=await import('data:text/javascript;base64,'+Buffer.from(built.outputFiles[0].text).toString('base64'))
+const {isSensitiveTheme,projectMatchesVisibility,shouldCoverProject,sensitiveCopy}=await import('data:text/javascript;base64,'+Buffer.from(built.outputFiles[0].text).toString('base64'))
 const safe={id:'safe',category:'Characters'}
 const horror={id:'horror',category:'NSFW'}
 const flagged={id:'flagged',category:'Characters',sensitiveTheme:true}
@@ -29,4 +29,11 @@ test('gallery and project route share the cover rule without Studio bypass',asyn
  const app=await readFile('src/app.tsx','utf8')
  assert.match(gallery,/const covered=shouldCoverProject\(p,revealedProjects\)/)
  assert.match(app,/project&&shouldCoverProject\(project,revealedProjects\)/)
+})
+
+test('localized notice describes sensitivity without making unsupported claims about the artwork',()=>{
+ assert.equal(sensitiveCopy('pt').warningText,"Este projeto aborda temas sensíveis e pode não ser adequado para todos os públicos.")
+ assert.equal(sensitiveCopy('en').warningText,"This project explores sensitive themes and may not be suitable for all audiences.")
+ assert.equal(sensitiveCopy('es').warningText,"Este proyecto aborda temas sensibles y puede no ser adecuado para todos los públicos.")
+ for(const lang of ['pt','en','es'])assert.doesNotMatch(sensitiveCopy(lang).warningText,/expl[ií]cit/i)
 })

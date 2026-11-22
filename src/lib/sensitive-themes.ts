@@ -13,8 +13,8 @@ export function projectMatchesVisibility(project:ClassifiedProject,filter:string
 }
 export function shouldCoverProject(project:ClassifiedProject&Pick<Project,'id'>,revealed:ReadonlySet<string>):boolean{return isSensitiveTheme(project)&&!revealed.has(project.id)}
 const copy={
- en:{safeTitle:'Hide sensitive themes',cover:'Sensitive theme',warningTitle:'Content notice',warningText:'This project explores a sensitive, non-explicit theme. Continue only if you are comfortable viewing this artwork.',back:'Back to portfolio',continue:'View this project'},
- pt:{safeTitle:'Ocultar temas sensíveis',cover:'Tema sensível',warningTitle:'Aviso de conteúdo',warningText:'Este projeto aborda um tema sensível, não explícito. Continue apenas se estiver confortável em visualizar esta obra.',back:'Voltar ao portfólio',continue:'Ver este projeto'},
- es:{safeTitle:'Ocultar temas sensibles',cover:'Tema sensible',warningTitle:'Aviso de contenido',warningText:'Este proyecto aborda un tema sensible, no explícito. Continúa solo si te sientes cómodo viendo esta obra.',back:'Volver al portafolio',continue:'Ver este proyecto'}
+ en:{safeTitle:'Hide sensitive themes',cover:'Sensitive theme',warningTitle:'Content notice',warningText:'This project explores sensitive themes and may not be suitable for all audiences.',back:'Back to portfolio',continue:'View this project'},
+ pt:{safeTitle:'Ocultar temas sensíveis',cover:'Tema sensível',warningTitle:'Aviso de conteúdo',warningText:'Este projeto aborda temas sensíveis e pode não ser adequado para todos os públicos.',back:'Voltar ao portfólio',continue:'Ver este projeto'},
+ es:{safeTitle:'Ocultar temas sensibles',cover:'Tema sensible',warningTitle:'Aviso de contenido',warningText:'Este proyecto aborda temas sensibles y puede no ser adecuado para todos los públicos.',back:'Volver al portafolio',continue:'Ver este proyecto'}
 } as const
 export function sensitiveCopy(language:VisitorLanguage){return copy[language]}
