@@ -22,3 +22,14 @@ export function cameraZoomForDistance(radius:number,fov:number,distance:number){
 export function wrapCameraAzimuth(angle:number){
  return ((angle+180)%360+360)%360-180
 }
+
+/** Explicit turntable orbit, matching OrbitControls' speed convention (6 degrees/sec at 1).
+ * Rotate the XZ offset about the target without changing elevation or zoom. */
+export function horizontalOrbitStep(x:number,z:number,deltaSeconds:number,speed:number):[number,number]{
+ const angle=-2*Math.PI/60*Math.max(0,deltaSeconds)*speed
+ const c=Math.cos(angle),s=Math.sin(angle)
+ return [x*c+z*s,z*c-x*s]
+}
+export function shouldOrbit(enabled:boolean,interacting:boolean,controlsEnabled:boolean,now:number,resumeAt:number){
+ return enabled&&!interacting&&controlsEnabled&&now>=resumeAt
+}

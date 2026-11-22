@@ -11,7 +11,7 @@ import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model
 import {createLightGizmos} from './model-light-gizmos'
 import {attachArtShader,createArtUniforms,updateArtUniforms,updateMaterialLayers,type ArtUniforms} from './model-art-shaders'
 import {createChromaticPass} from './model-chromatic-pass'
-import {responsiveCameraFov,referenceFitDistance,cameraZoomForDistance,wrapCameraAzimuth} from './model-camera-framing'
+import {responsiveCameraFov,referenceFitDistance,cameraZoomForDistance,wrapCameraAzimuth,horizontalOrbitStep,shouldOrbit} from './model-camera-framing'
 export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[];animationClips:ModelAnimationInfo[];unlitMaterials:number;materials:MaterialInfo[]}
 export type ModelStage={setPresentation:(value:ModelPresentation)=>void;setMode:(mode:ModelMode)=>void;setRotation:(value:boolean)=>void;setOptions:(options:InspectorOptions)=>void;setAnimation:(index:number,playing:boolean,speed?:number,loop?:boolean)=>void;restartAnimation:()=>void;resetCamera:()=>void;captureCamera:()=>ModelCamera|null;setLightEditing:(state:LightEditState)=>void;frameLights:()=>void;setMaterialEditing:(state:MaterialEditState)=>void;dispose:()=>void}
 const rad=THREE.MathUtils.degToRad
@@ -31,7 +31,7 @@ function disposeObject(root:THREE.Object3D){
  for(const s of skeletons)s.dispose()
 }
 export function createModelStage(host:HTMLElement,source:string,initial:ModelPresentation,callbacks:{onLoad:(stats:ModelStats)=>void;onError:(error:unknown)=>void;onAnimationFinished?:()=>void},lightEditing?:LightEditCallbacks,onMaterialSelect?:(id:string)=>void):ModelStage{
- let disposed=false,model:THREE.Object3D|undefined,presentation=initial,mode:ModelMode='material',rotate=false,hovered=false,interacting=false,visible=true,idleUntil=0
+ let disposed=false,model:THREE.Object3D|undefined,presentation=initial,mode:ModelMode='material',rotate=false,interacting=false,visible=true,idleUntil=0
  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'})
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5))
  renderer.outputColorSpace=THREE.SRGBColorSpace
@@ -122,11 +122,8 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const observer=new ResizeObserver(resize);observer.observe(host);resize()
  const intersection=new IntersectionObserver(entries=>{visible=entries[0]?.isIntersecting??true},{rootMargin:'100px'})
  intersection.observe(host)
- const enter=(event:PointerEvent)=>{if(event.pointerType==='mouse'||event.pointerType==='pen')hovered=true}
- const exit=()=>{hovered=false}
  const start=()=>{interacting=true}
  const end=()=>{interacting=false;idleUntil=performance.now()+900}
- canvas.addEventListener('pointerenter',enter);canvas.addEventListener('pointerleave',exit)
  controls.addEventListener('start',start);controls.addEventListener('end',end)
  // Flush residual orbit damping without allowing it to change the visible pose.
  const settleOrbit=()=>{
@@ -158,7 +155,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   settleOrbit()
   camera.fov=responsiveCameraFov(presentation.fov,camera.aspect)
   fitDistance=referenceFitDistance(radius,presentation.fov)
-  idleUntil=performance.now()+4000
+  idleUntil=0
   const phi=rad(90-presentation.elevation),theta=rad(presentation.azimuth)
   controls.target.copy(vertexCenter).addScaledVector(new THREE.Vector3(presentation.targetX,presentation.targetY,presentation.targetZ),radius)
   camera.position.copy(controls.target).add(new THREE.Vector3().setFromSphericalCoords(fitDistance/presentation.zoom,phi,theta))
@@ -294,7 +291,13 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   if(disposed)return
   const delta=last?Math.min((time-last)/1000,.05):1/60;last=time
   if(!visible||document.hidden||!model)return
-  controls.autoRotate=rotate&&!hovered&&!interacting&&time>idleUntil&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  // Orbit only around world Y, preserving height, target, and distance.
+  // Explicit visitor opt-in is not blocked by hover or a passive-motion preference.
+  if(shouldOrbit(rotate,interacting,controls.enabled,performance.now(),idleUntil)){
+   const offset=camera.position.clone().sub(controls.target)
+   const [x,z]=horizontalOrbitStep(offset.x,offset.z,delta,presentation.rotationSpeed)
+   camera.position.set(controls.target.x+x,camera.position.y,controls.target.z+z)
+  }
   if(animationPlaying)mixer?.update(delta)
   const artTime=window.matchMedia('(prefers-reduced-motion: reduce)').matches?0:time/1000;for(const uniforms of artUniforms.values())uniforms.jfTime.value=artTime
   controls.update(delta);gizmos?.sync()
@@ -302,8 +305,8 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  })
  return {
   setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;const emissionChanged=next.emissionScale!==presentation.emissionScale;presentation=next;applyLighting();if(relight){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();artUniforms.clear();setMode(mode)}else{if(emissionChanged)updateEmission();updateMaterialLooks()}if(reframe)resetCamera()},
-  setMode,setRotation(value){rotate=value},setOptions(value){options=value;applyOptions()},setAnimation,restartAnimation,resetCamera,captureCamera,frameLights,setMaterialEditing(state){materialEdit=state;updateMaterialLooks()},setLightEditing(state){editState=state;gizmos?.setState(state);applyLighting()},
-  dispose(){if(disposed)return;disposed=true;renderer.setAnimationLoop(null);canvas.removeEventListener('pointerdown',pickDown);canvas.removeEventListener('pointerup',pickUp);artUniforms.clear();observer.disconnect();intersection.disconnect();controls.dispose();canvas.removeEventListener('pointerenter',enter);canvas.removeEventListener('pointerleave',exit)
+  setMode,setRotation(value){if(rotate===value)return;rotate=value;idleUntil=0;if(model&&!interacting)settleOrbit()},setOptions(value){options=value;applyOptions()},setAnimation,restartAnimation,resetCamera,captureCamera,frameLights,setMaterialEditing(state){materialEdit=state;updateMaterialLooks()},setLightEditing(state){editState=state;gizmos?.setState(state);applyLighting()},
+  dispose(){if(disposed)return;disposed=true;renderer.setAnimationLoop(null);canvas.removeEventListener('pointerdown',pickDown);canvas.removeEventListener('pointerup',pickUp);artUniforms.clear();observer.disconnect();intersection.disconnect();controls.dispose()
    mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model)
    for(const helper of skeletonHelpers){scene.remove(helper);helper.dispose()}
    releaseWireGeometries();checker?.dispose();matcap?.dispose()
