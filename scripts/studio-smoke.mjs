@@ -461,12 +461,15 @@ try{
   assert.match(html,/project-artwork-frame/)
  })
  check('Title symbols share one global setting and clean duplicated legacy stars',()=>{
-  assert.equal(app.normalizeHeadingSymbol(undefined),'sparkle')
-  assert.equal(app.normalizeHeadingSymbol('star'),'star')
+  assert.equal(app.normalizeHeadingSymbol(undefined),'box')
+  assert.equal(app.normalizeHeadingSymbol('sparkle'),'box')
+  assert.equal(app.normalizeHeadingSymbol('sparkles'),'layers')
+  assert.equal(app.normalizeHeadingSymbol('star'),'pen')
   assert.equal(app.cleanHeadingText('✦ ✦ Behind the art'),'Behind the art')
   assert.equal(app.HEADING_SYMBOL_OPTIONS.length,6)
   assert.doesNotMatch(element(app.HeadingSymbol,{symbol:'none'}),/svg/)
-  assert.match(element(app.HeadingSymbol,{symbol:'star'}),/lucide-star/)
+  assert.match(element(app.HeadingSymbol,{symbol:'star'}),/lucide-pen-tool/)
+  assert.match(element(app.HeadingSymbol,{symbol:'box'}),/lucide-box/)
   const noop=()=>{}
   const about=element(app.AboutPage,{about:{...app.defaultAbout,eyebrow:'✦ Behind the art'},editing:false,onEdit:noop,onContact:noop,headingSymbol:'none'})
   assert.doesNotMatch(about,/lucide-sparkle|✦ Behind the art/)

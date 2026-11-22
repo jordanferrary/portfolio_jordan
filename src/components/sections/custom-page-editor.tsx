@@ -1,5 +1,5 @@
 import {useEffect,useRef,useState,type DragEvent,type PointerEvent} from 'react'
-import {ArrowDown,ArrowUp,BookOpen,Check,ChevronDown,Search,Copy,ExternalLink,FileText,ImagePlus,Layers,Link2,Plus,Save,Sparkles,Trash2,Upload,X,GripVertical,Clapperboard,Box as BoxIcon,GalleryHorizontal,Heading2,AlignLeft,Columns2,Minus} from 'lucide-react'
+import {ArrowDown,ArrowUp,BookOpen,Check,ChevronDown,Search,Copy,ExternalLink,FileText,ImagePlus,Layers,Link2,Plus,Save,PenTool,Trash2,Upload,X,GripVertical,Clapperboard,Box as BoxIcon,GalleryHorizontal,Heading2,AlignLeft,Columns2,Minus} from 'lucide-react'
 import type {LucideIcon} from 'lucide-react'
 import {AssetImage} from '../ui/asset-image'
 import {AssetClipButton} from '../ui/asset-picker'
@@ -93,7 +93,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
   setIconSearch('')
   iconTriggerRef.current?.focus()
  }
- const CurrentPageIcon=customPageIcons[draft?.icon??'sparkles']??Sparkles
+ const CurrentPageIcon=customPageIcons[draft?.icon??'sparkles']??PenTool
  const selectedIconLabel=customPageIconOptions.find(option=>option.value===draft?.icon)?.label??'Criação'
  const normalizedSearch=iconSearch.trim().normalize('NFD').replace(/\p{M}/gu,'').toLowerCase()
  const visibleIcons=customPageIconOptions.filter(option=>
@@ -112,7 +112,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
    slideItems:type==='slideshow'?[]:undefined,
    slideAutoplay:false,slideTransition:'fade',slideInterval:5000,
    slideHeight:520,slideFit:'contain',slideShowPauseButton:false,
-   dividerIcon:type==='divider'?'sparkles':undefined,
+   dividerIcon:type==='divider'?'diamond':undefined,
    dividerStyle:type==='divider'?'glow':undefined,
    buttonLabel:type==='action'?'Copy content':undefined,
    buttonAction:type==='action'?'copy':undefined,
@@ -227,7 +227,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
       <button type="button" onClick={()=>duplicate(page)} title="Duplicar página" aria-label={'Duplicar '+page.navLabel}><Copy size={14}/></button>
       <button type="button" onClick={()=>remove(page.id)} title="Excluir página" aria-label={'Excluir '+page.navLabel}><Trash2 size={15}/></button>
      </div></article>)}
-     {!pages.length&&<p className="custom-pages-empty"><Sparkles size={22}/> Nenhuma página adicional criada. Comece com uma página de curso, recursos ou materiais.</p>}
+     {!pages.length&&<p className="custom-pages-empty"><PenTool size={22}/> Nenhuma página adicional criada. Comece com uma página de curso, recursos ou materiais.</p>}
     </div>
     <p className="editor-help">Páginas ocultas apenas saem do menu — continuam acessíveis com o link direto. A ordem acima se aplica às páginas adicionais, entre Portfolio e About. A nova ordem é salva no rascunho; publique para atualizar o site dos visitantes.</p>
    </div>}
@@ -332,7 +332,7 @@ export function CustomPageEditor({pages,initialPageId,onSavePages,onNavigatePage
       <button type="button" className="custom-page-add-image" onClick={()=>patchBlock(block.id,{slideItems:[...(block.slideItems??[]),{id:'slide-'+crypto.randomUUID(),image:'',caption:''} satisfies SlideItem]})}><Plus size={15}/> Adicionar slide</button>
      </div>}
      {block.type==='before-after'&&<><div className="editor-two"><PageMediaField value={block.media??''} onChange={media=>patchBlock(block.id,{media})} folder={folder} slot={block.id+'-before'} label="Antes" onError={setError}/><PageMediaField value={block.after??''} onChange={after=>patchBlock(block.id,{after})} folder={folder} slot={block.id+'-after'} label="Depois" onError={setError}/></div><div className="editor-two"><label>Legenda Antes<input value={block.beforeLabel??'Before'} onChange={e=>patchBlock(block.id,{beforeLabel:e.target.value})}/></label><label>Legenda Depois<input value={block.afterLabel??'After'} onChange={e=>patchBlock(block.id,{afterLabel:e.target.value})}/></label></div><TextComposer value={block.content} onChange={content=>patchBlock(block.id,{content})} rows={2} label="Legenda da comparação"/></>}
-     {block.type==='divider'&&<div className="editor-two"><label>Ícone central<select value={block.dividerIcon??'sparkles'} onChange={e=>patchBlock(block.id,{dividerIcon:e.target.value as PageBlock['dividerIcon']})}><option value="sparkles">Brilho</option><option value="star">Estrela</option><option value="diamond">Diamante</option><option value="circle">Círculo</option><option value="none">Sem ícone</option></select></label><label>Estilo da linha<select value={block.dividerStyle??'glow'} onChange={e=>patchBlock(block.id,{dividerStyle:e.target.value as PageBlock['dividerStyle']})}><option value="glow">Brilho</option><option value="solid">Contínua</option><option value="dashed">Pontilhada</option></select></label></div>}
+     {block.type==='divider'&&<div className="editor-two"><label>Ícone central<select value={block.dividerIcon??'diamond'} onChange={e=>patchBlock(block.id,{dividerIcon:e.target.value as PageBlock['dividerIcon']})}><option value="sparkles">Cubo 3D</option><option value="star">Caneta vetorial</option><option value="diamond">Diamante</option><option value="circle">Círculo</option><option value="none">Sem ícone</option></select></label><label>Estilo da linha<select value={block.dividerStyle??'glow'} onChange={e=>patchBlock(block.id,{dividerStyle:e.target.value as PageBlock['dividerStyle']})}><option value="glow">Brilho</option><option value="solid">Contínua</option><option value="dashed">Pontilhada</option></select></label></div>}
      {block.type==='video'&&<><label>Link do YouTube / Vimeo<input type="url" value={block.content} onChange={e=>patchBlock(block.id,{content:e.target.value})} placeholder="https://www.youtube.com/watch?v=..."/></label><label>Nome exibido no player (opcional)<input value={block.videoTitle??''} onChange={e=>patchBlock(block.id,{videoTitle:e.target.value})}/></label><PageMediaField value={block.media??''} onChange={media=>patchBlock(block.id,{media})} folder={folder} slot={block.id+'-video'} label="Miniatura do vídeo" onError={setError}/>{parseVideoEmbed(block.content)&&<div className="custom-page-inline-preview"><ProjectVideo url={block.content} poster={block.media} title={block.videoTitle||draft.title}/></div>}{block.content&&!parseVideoEmbed(block.content)&&<p role="alert" className="editor-status">Use um endereço de YouTube ou Vimeo.</p>}</>}
      {block.type==='model'&&<><label>Link direto GLB / glTF<input type="url" value={block.content} onChange={e=>patchBlock(block.id,{content:e.target.value})} placeholder="https://.../model.glb"/></label><PageMediaField value={block.media??''} onChange={media=>patchBlock(block.id,{media})} folder={folder} slot={block.id+'-3d'} label="Miniatura do 3D" onError={setError}/>{parseModelUrl(block.content)&&<div className="custom-page-inline-preview"><ProjectModel url={block.content} poster={block.media} title={draft.title}/></div>}{block.content&&!parseModelUrl(block.content)&&<p role="alert" className="editor-status">Use um link direto GLB / glTF com CORS, ou converta FBX para GLB.</p>}</>}
      {block.type==='action'&&<div className="custom-page-button-form">

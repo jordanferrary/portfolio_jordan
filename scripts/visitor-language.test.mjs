@@ -165,3 +165,13 @@ test('PDF viewer and other public React portals are translated without scanning 
  assert.match(pdf,/Mouse wheel or pinch to zoom/)
  assert.match(preview,/First page of PDF/)
 })
+
+test('concise visitor copy keeps automatic language detection and local translations',async()=>{
+ assert.doesNotMatch(ui,/language-switcher-note|Detected automatically/)
+ const contact=await text('src/components/sections/contact-page.tsx')
+ assert.doesNotMatch(contact,/contact-social-directory-footer|Links open directly/)
+ const t=await moduleFrom('src/lib/public-page-translation.ts')
+ assert.equal(t.localPhrase('BEHIND THE ARTWORK','pt'),'POR TRÁS DA OBRA')
+ assert.equal(t.localPhrase('ITEM DETAILS','es'),'DETALLES DEL ELEMENTO')
+ assert.equal(t.localPhrase('Choose a social platform and send me a message.','pt'),'Escolha uma rede social e me envie uma mensagem.')
+})

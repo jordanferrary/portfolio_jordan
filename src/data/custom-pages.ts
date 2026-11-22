@@ -7,7 +7,7 @@ export const customPageIconOptions:{value:CustomPageIcon;label:string}[]=[
  {value:'book',label:'Livro'},{value:'graduation',label:'Curso'},{value:'sparkles',label:'Criação'},
  {value:'layers',label:'Coleção'},{value:'code',label:'Código'},{value:'download',label:'Downloads'},
  {value:'file',label:'Documento'},{value:'gem',label:'Destaque'},{value:'folder',label:'Pasta'},
- {value:'video',label:'Vídeo'},{value:'star',label:'Estrela'},{value:'link',label:'Links'}
+ {value:'video',label:'Vídeo'},{value:'star',label:'Prêmio'},{value:'link',label:'Links'}
 ]
 export type PageButtonAction='copy'|'url-current'|'url-new'
 export type ShowcaseItem={id:string;image:string;name:string;description:string;portfolioUrl:string;documentUrl?:string;linkLabel?:string;showLink?:boolean}

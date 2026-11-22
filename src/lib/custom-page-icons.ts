@@ -1,4 +1,4 @@
-import {BookOpen,Code2,Download,FileText,FolderOpen,Gem,GraduationCap,Layers,Link2,Sparkles,Star,Video} from 'lucide-react'
+import {BookOpen,Code2,Download,FileText,FolderOpen,Gem,GraduationCap,Layers,Link2,PenTool,Award,Video} from 'lucide-react'
 import type {LucideIcon} from 'lucide-react'
 import type {CustomPageIcon} from '../data/custom-pages'
 
@@ -6,7 +6,7 @@ import type {CustomPageIcon} from '../data/custom-pages'
 export const customPageIcons:Record<CustomPageIcon,LucideIcon>={
  book:BookOpen,
  graduation:GraduationCap,
- sparkles:Sparkles,
+ sparkles:PenTool,
  layers:Layers,
  code:Code2,
  download:Download,
@@ -14,6 +14,6 @@ export const customPageIcons:Record<CustomPageIcon,LucideIcon>={
  gem:Gem,
  folder:FolderOpen,
  video:Video,
- star:Star,
+ star:Award,
  link:Link2
 }
