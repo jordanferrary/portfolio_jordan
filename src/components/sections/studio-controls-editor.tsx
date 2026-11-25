@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState,type CSSProperties} from 'react'
 import {ArrowDown,ArrowUp,Plus,Trash2,X,Save,RotateCcw,House,Grid2X2,ArrowUpRight} from 'lucide-react'
-import {applyStudioControls,normalizeStudioControls,DEFAULT_CONTROLS,NAV_ICONS,type StudioControls,type NavId,type LayoutSettings} from '../../lib/studio-controls'
+import {applyStudioControls,normalizeStudioControls,getLocalGlassOverride,setLocalGlassOverride,DEFAULT_CONTROLS,NAV_ICONS,type StudioControls,type NavId,type LayoutSettings} from '../../lib/studio-controls'
 import '../../styles/studio-controls.css'
 type Tab='layout'|'motion'|'features'|'navigation'|'translations'
 const tabs:Record<Tab,string>={layout:'Layout e materiais',motion:'Animações',features:'Funcionalidades',navigation:'Navegação',translations:'Idiomas'}
@@ -21,6 +21,14 @@ export function StudioControlsEditor({value,initialTab='layout',onSave,onClose}:
  const [tab,setTab]=useState<Tab>(initialTab)
  const [layoutGroup,setLayoutGroup]=useState<'geometry'|'material'>('geometry')
  const [device,setDevice]=useState<'desktop'|'mobile'>('desktop')
+ const [reducedTransparency,setReducedTransparency]=useState(()=>window.matchMedia('(prefers-reduced-transparency: reduce)').matches)
+ const [glassOverride,setGlassOverride]=useState(getLocalGlassOverride)
+ useEffect(()=>{
+  const query=window.matchMedia('(prefers-reduced-transparency: reduce)')
+  const update=()=>setReducedTransparency(query.matches)
+  update();query.addEventListener('change',update)
+  return ()=>query.removeEventListener('change',update)
+ },[])
  const original=useRef(normalizeStudioControls(value)),saved=useRef(false)
  useEffect(()=>{applyStudioControls(draft)},[draft])
  useEffect(()=>()=>{if(!saved.current)applyStudioControls(original.current)},[])
@@ -42,7 +50,8 @@ export function StudioControlsEditor({value,initialTab='layout',onSave,onClose}:
    {tab==='layout'&&<><div className="studio-layout-toolbar"><div className="editor-tabs studio-device-tabs"><button type="button" aria-pressed={device==='desktop'} onClick={()=>setDevice('desktop')}>Desktop</button><button type="button" aria-pressed={device==='mobile'} onClick={()=>setDevice('mobile')}>Celular e tablet</button></div><button type="button" className="subtle-action" onClick={()=>setDraft(prev=>({...prev,[device]:{...DEFAULT_CONTROLS[device]}}))}><RotateCcw size={15}/>Restaurar</button></div><div className="studio-layout-columns"><div className="studio-material-preview" style={{'--jf-control-radius':draft[device].radius/100,'--jf-control-icon-radius':draft[device].iconRadius/100,'--jf-control-blur':draft[device].glassBlur/100,'--jf-control-glow':draft[device].glassGlow/100,'--jf-control-opacity':draft[device].glassOpacity/100,'--jf-control-sheen':draft[device].glassSheen/100} as CSSProperties}>
  <div className="studio-material-caption">Prévia do material — {device==='desktop'?'Desktop':'Celular e tablet'}</div>
  <div className="studio-material-sample"><div className="studio-material-pattern" aria-hidden="true"/><div className="studio-material-panel"><span className="studio-material-icon"><House size={23}/></span><span className="studio-material-icon is-tinted"><Grid2X2 size={23}/></span><span className="studio-material-pill">Explorar <ArrowUpRight size={17}/></span></div></div>
- <small>Prévia do dispositivo selecionado. Reduza a opacidade para destacar o vidro.</small>
+ <small>Prévia do material original do dispositivo selecionado. Reduza a opacidade para destacar o vidro.</small>
+ {(reducedTransparency||glassOverride)&&<div className="studio-material-system-note"><small>{reducedTransparency?'Seu sistema ou navegador solicita transparência reduzida. A prévia mostra o material original; a preferência de acessibilidade é preservada na página pública.':'O efeito de vidro está liberado neste navegador.'}</small><label><input type="checkbox" checked={glassOverride} onChange={e=>{setLocalGlassOverride(e.target.checked);setGlassOverride(e.target.checked)}}/>Mostrar o vidro também no site neste navegador (preferência local, não publicada).</label></div>}
  </div><div className="studio-layout-fields"><div className="studio-layout-group-tabs"><button type="button" aria-pressed={layoutGroup==='geometry'} onClick={()=>setLayoutGroup('geometry')}>Geometria</button><button type="button" aria-pressed={layoutGroup==='material'} onClick={()=>setLayoutGroup('material')}>Liquid Glass</button></div><div className="studio-control-grid">{layoutFields.filter(field=>(device==='mobile'?field.key!=='width':field.key!=='gutter')&&(layoutGroup==='material'?field.key.startsWith('glass'):!field.key.startsWith('glass'))).map(field=><label key={field.key}><span className="studio-slider-caption">{field.label}<output>{draft[device][field.key]}{field.unit}</output></span><input type="range" min={field.min} max={field.max} step={field.step} value={draft[device][field.key]} onChange={e=>setDraft(prev=>({...prev,[device]:{...prev[device],[field.key]:Number(e.target.value)}}))}/></label>)}</div></div></div></>}
    {tab==='motion'&&<><h3>Transição de páginas</h3><label>Estilo<select value={draft.motion.mode} onChange={e=>setDraft(prev=>({...prev,motion:{...prev.motion,mode:e.target.value as StudioControls['motion']['mode']}}))}><option value="glitch">Glitch suave</option><option value="fade">Fade</option><option value="none">Sem transição</option></select></label><label>Duração total: {draft.motion.duration} ms<input type="range" min="120" max="600" step="10" disabled={draft.motion.mode==='none'} value={draft.motion.duration} onChange={e=>setDraft(prev=>({...prev,motion:{...prev.motion,duration:Number(e.target.value)}}))}/></label><p>A preferência de movimento reduzido do visitante sempre tem prioridade. As cores e intensidade continuam no editor de glitch.</p></>}
    {tab==='features'&&<><h3>Funcionalidades públicas</h3><p>Desativar não exclui conteúdo. A edição permanece disponível no Studio.</p>{(Object.keys(featureLabels) as (keyof StudioControls['features'])[]).map(key=><label className="checkbox-line" key={key}><input type="checkbox" checked={draft.features[key]} onChange={e=>setDraft(prev=>({...prev,features:{...prev.features,[key]:e.target.checked}}))}/>{featureLabels[key]}</label>)}</>}

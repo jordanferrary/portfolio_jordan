@@ -46,8 +46,18 @@ export function normalizeStudioControls(raw:unknown):StudioControls{
  features:{music:bool(f.music,true),profile:bool(f.profile,true),featured:bool(f.featured,true),focus:bool(f.focus,true),testimonials:bool(f.testimonials,true),footer:bool(f.footer,true)},
  navigation:{order,items},translations}
 }
+// Personal browser preference only: never serialized in StudioControls or a theme.
+const LOCAL_GLASS_OVERRIDE='jf-local-glass-override'
+export function getLocalGlassOverride():boolean{
+ try{return localStorage.getItem(LOCAL_GLASS_OVERRIDE)==='true'}catch{return typeof document!=='undefined'&&document.documentElement.dataset.jfGlassOverride==='true'}
+}
+export function setLocalGlassOverride(enabled:boolean):void{
+ document.documentElement.dataset.jfGlassOverride=String(enabled)
+ try{localStorage.setItem(LOCAL_GLASS_OVERRIDE,String(enabled))}catch{/* In restricted storage, retain the current page preference. */}
+}
 export function applyStudioControls(raw:unknown){
  const v=normalizeStudioControls(raw),root=document.documentElement
+ if(root.dataset.jfGlassOverride===undefined)root.dataset.jfGlassOverride=String(getLocalGlassOverride())
  for(const device of ['desktop','mobile'] as const){
   const size=v[device]
   for(const key of ['gap','radius','iconRadius','glassBlur','glassGlow','glassOpacity','glassSheen'] as const)root.style.setProperty('--jf-'+device+'-'+key,String(size[key]/100))

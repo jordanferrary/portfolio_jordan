@@ -80,7 +80,7 @@
 .studio-dock-anchor .studio-dock .studio-dock-actions .studio-dock-publish{
  background:var(--jf-liquid-tinted)!important;box-shadow:var(--jf-liquid-tinted-shadow)!important;
 }
-@media(prefers-reduced-transparency:no-preference){
+/* Apply blur by default; the visitor accessibility rule below can disable it. */
  .site-shell .socials .language-switcher-trigger,.music-widget .music-main-toggle,
  .studio-dock-anchor .studio-dock :is(.studio-context-button,.studio-dock-actions button){
   -webkit-backdrop-filter:blur(calc(5px * var(--jf-control-blur,1))) saturate(150%)!important;
@@ -93,11 +93,10 @@
    backdrop-filter:blur(min(8px,calc(4px * var(--jf-control-blur,1)))) saturate(140%)!important;
   }
  }
-}
+/* The material editor is an intentional visual sample, not a visitor control. */
 @media(prefers-reduced-transparency:reduce){
- .studio-material-preview :is(.studio-material-icon,.studio-material-pill),
- .music-widget .music-main-toggle,.site-shell .music-widget .music-main-toggle,.site-shell .socials .language-switcher-trigger,
- .studio-dock-anchor .studio-dock :is(.studio-context-button,.studio-dock-actions button){
+ :root:not([data-jf-glass-override="true"]) :is(.music-widget .music-main-toggle,.site-shell .music-widget .music-main-toggle,.site-shell .socials .language-switcher-trigger),
+ :root:not([data-jf-glass-override="true"]) .studio-dock-anchor .studio-dock :is(.studio-context-button,.studio-dock-actions button){
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--jf-surface)!important;
  }
 }
@@ -139,8 +138,12 @@
 @media(max-width:760px){.studio-inspector{top:auto;bottom:10px;right:10px;width:calc(100vw - 20px);max-height:52dvh}.studio-inspector-tree{max-height:15vh}.studio-inspector>header{padding:10px}.studio-inspector-body{padding:10px}}
 
 /* For explicit glass panels only; avoid extra expensive media blur surfaces on phones. */
-@media(min-width:761px) and (prefers-reduced-transparency:no-preference){
+@media(min-width:761px){
  .site-shell .studio-component.component-glass{backdrop-filter:blur(calc(5px * var(--jf-control-blur,1))) saturate(150%);-webkit-backdrop-filter:blur(calc(5px * var(--jf-control-blur,1))) saturate(150%)}
 }
-@media(prefers-reduced-transparency:reduce){.site-shell .studio-component.component-glass{background:var(--jf-surface)}}
+@media(prefers-reduced-transparency:reduce){:root:not([data-jf-glass-override="true"]) .site-shell .studio-component.component-glass{background:var(--jf-surface);backdrop-filter:none;-webkit-backdrop-filter:none}}
 .site-shell .studio-component.component-editing:is(.hide-mobile,.hide-desktop)::before{content:"";position:absolute;inset:0;pointer-events:none;border:1px dashed var(--jf-secondary);border-radius:inherit}
+
+.studio-material-system-note{display:grid;gap:8px;padding:9px 10px;border:1px solid var(--jf-border);border-radius:9px;line-height:1.5;color:var(--jf-text);background:var(--jf-studio-deep)}
+.studio-controls-editor .studio-material-system-note label{display:flex;align-items:flex-start;gap:8px;font-size:11px;cursor:pointer}
+.studio-material-system-note input[type=checkbox]{flex:0 0 auto;accent-color:var(--jf-primary)}

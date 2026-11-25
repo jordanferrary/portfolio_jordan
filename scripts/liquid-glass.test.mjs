@@ -73,3 +73,14 @@ test('scrollable sidebar reserves glow space without shifting icons or changing 
  assert.match(content,/overflow-y:auto;overflow-x:hidden;/)
  assert.match(content,/@media\(max-width:600px\)\{\.sidebar \.side-nav\{[^}]*width:auto;margin:0 5px;[^}]*overflow-x:auto;overflow-y:hidden;/)
 })
+
+ test('material design preview is independent from the visitor transparency preference',async()=>{
+ const [style,editor,controls]=await Promise.all([file('src/styles/studio-controls.css'),file('src/components/sections/studio-controls-editor.tsx'),file('src/lib/studio-controls.ts')])
+ assert.doesNotMatch(style,/@media\(prefers-reduced-transparency:reduce\)\{\s*\.studio-material-preview/)
+ assert.match(style,/:root:not\(\[data-jf-glass-override="true"\]\)/)
+ assert.match(css,/:root:not\(\[data-jf-glass-override="true"\]\)/)
+ assert.match(editor,/matchMedia\('\(prefers-reduced-transparency: reduce\)'\)/)
+ assert.match(editor,/setLocalGlassOverride\(e.target.checked\)/)
+ assert.match(controls,/localStorage\.setItem\(LOCAL_GLASS_OVERRIDE,String\(enabled\)\)/)
+ assert.doesNotMatch(controls,/glassOverride:boolean/)
+})

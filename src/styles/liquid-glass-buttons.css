@@ -187,17 +187,18 @@
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
  .site-shell :is(.side-icon,.socials a,.home-explore,.primary-action,.secondary-action,.chips button,.filter-button),
  .studio-dock :is(.studio-context-button,.studio-dock-actions button){
-  background-color:var(--jf-surface)!important;
+  /* Unsupported blur does not require opaque pigment. */
+  -webkit-backdrop-filter:none;backdrop-filter:none;
  }
 }
 @media (prefers-reduced-transparency:reduce){
- .site-shell :is(.side-icon,.socials a,.home-explore,.primary-action,.secondary-action,.chips button,.filter-button),
- .studio-dock :is(.studio-context-button,.studio-dock-actions button){
+ :root:not([data-jf-glass-override="true"]) .site-shell :is(.side-icon,.socials a,.home-explore,.primary-action,.secondary-action,.chips button,.filter-button),
+ :root:not([data-jf-glass-override="true"]) .studio-dock :is(.studio-context-button,.studio-dock-actions button){
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
   background:var(--jf-surface)!important;
  }
- .site-shell :is(.primary-action,.preview-cta,.home-cta,.music-main-toggle),
- .studio-dock .studio-dock-actions .studio-dock-publish{
+ :root:not([data-jf-glass-override="true"]) .site-shell :is(.primary-action,.preview-cta,.home-cta,.music-main-toggle),
+ :root:not([data-jf-glass-override="true"]) .studio-dock .studio-dock-actions .studio-dock-publish{
   background:var(--jf-primary)!important;
  }
 }
