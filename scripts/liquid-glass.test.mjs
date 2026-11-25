@@ -56,7 +56,12 @@ test('Material sliders use shared real CSS paint and separate icon radius',async
  assert.match(style,/--jf-control-opacity:var\(--jf-mobile-glassOpacity,1\)/)
  const material=await readFile(new URL('../src/styles/liquid-glass-buttons.css',import.meta.url),'utf8')
  assert.match(material,/:root,.studio-material-preview\{/)
- assert.match(material,/calc\(79% \* var\(--jf-control-opacity,1\)\)/)
+ assert.match(material,/--jf-liquid-fill:clamp\(0%,calc\(62% \* var\(--jf-control-opacity,1\)\),93%\)/)
+ assert.match(material,/--jf-liquid-tint-fill:clamp\(0%,calc\(66% \* var\(--jf-control-opacity,1\)\),99%\)/)
+ assert.match(material,/color-mix\(in srgb,var\(--jf-surface\) var\(--jf-liquid-fill\),transparent\)/)
+ assert.match(material,/color-mix\(in srgb,var\(--jf-primary\) var\(--jf-liquid-tint-fill\),transparent\)/)
+ assert.match(style,/\.studio-material-pattern\{[^}]*24% 45%/)
+ assert.doesNotMatch(style,/\.studio-material-sample\{[^}]*isolation:isolate/)
  assert.match(material,/calc\(47% \* var\(--jf-control-sheen,1\)\)/)
 })
 

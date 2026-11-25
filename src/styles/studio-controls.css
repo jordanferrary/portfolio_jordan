@@ -83,14 +83,14 @@
 @media(prefers-reduced-transparency:no-preference){
  .site-shell .socials .language-switcher-trigger,.music-widget .music-main-toggle,
  .studio-dock-anchor .studio-dock :is(.studio-context-button,.studio-dock-actions button){
-  -webkit-backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(130%)!important;
-  backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(130%)!important;
+  -webkit-backdrop-filter:blur(calc(5px * var(--jf-control-blur,1))) saturate(150%)!important;
+  backdrop-filter:blur(calc(5px * var(--jf-control-blur,1))) saturate(150%)!important;
  }
  @media(max-width:640px){
   .site-shell :is(.side-icon,.socials a,.socials .language-switcher-trigger,.chips button,.filter-button),
   .music-widget .music-main-toggle,.studio-dock-anchor .studio-dock :is(.studio-context-button,.studio-dock-actions button){
-   -webkit-backdrop-filter:blur(min(12px,calc(6px * var(--jf-control-blur,1)))) saturate(125%)!important;
-   backdrop-filter:blur(min(12px,calc(6px * var(--jf-control-blur,1)))) saturate(125%)!important;
+   -webkit-backdrop-filter:blur(min(8px,calc(4px * var(--jf-control-blur,1)))) saturate(140%)!important;
+   backdrop-filter:blur(min(8px,calc(4px * var(--jf-control-blur,1)))) saturate(140%)!important;
   }
  }
 }
@@ -106,10 +106,10 @@
    A patterned background makes transparency and blur visibly distinguishable. */
 .studio-material-preview{display:grid;gap:8px;color:var(--jf-muted);font-size:12px}
 .studio-material-caption{color:var(--jf-text);font-weight:650}
-.studio-material-sample{position:relative;isolation:isolate;overflow:hidden;min-height:124px;border:1px solid var(--jf-border);border-radius:calc(18px * var(--jf-control-radius,1));display:grid;place-items:center;background:var(--jf-background)}
-.studio-material-pattern{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 28%,var(--jf-primary),transparent 43%),radial-gradient(ellipse at 83% 75%,var(--jf-secondary),transparent 48%),repeating-linear-gradient(120deg,var(--jf-surface) 0 9px,var(--jf-background) 9px 17px);opacity:.95}
+.studio-material-sample{position:relative;overflow:hidden;min-height:124px;border:1px solid var(--jf-border);border-radius:calc(18px * var(--jf-control-radius,1));display:grid;place-items:center;background:var(--jf-background)}
+.studio-material-pattern{position:absolute;inset:0;background:radial-gradient(ellipse at 24% 45%,var(--jf-primary),transparent 55%),radial-gradient(ellipse at 80% 58%,var(--jf-secondary),transparent 52%),repeating-linear-gradient(120deg,var(--jf-surface) 0 15px,color-mix(in srgb,var(--jf-primary) 35%,var(--jf-background)) 15px 30px)}
 .studio-material-panel{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;padding:12px;flex-wrap:wrap}
-.studio-material-icon,.studio-material-pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;color:var(--jf-text);border:1px solid var(--jf-liquid-edge);background:var(--jf-liquid-clear);box-shadow:var(--jf-liquid-border-shadow);-webkit-backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(130%);backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(130%)}
+.studio-material-icon,.studio-material-pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;color:var(--jf-text);border:1px solid var(--jf-liquid-edge);background:var(--jf-liquid-clear);box-shadow:var(--jf-liquid-border-shadow);-webkit-backdrop-filter:blur(calc(5px * var(--jf-control-blur,1))) saturate(150%);backdrop-filter:blur(calc(5px * var(--jf-control-blur,1))) saturate(150%)}
 .studio-material-icon{width:52px;height:52px;border-radius:calc(20px * var(--jf-control-icon-radius,1))}
 .studio-material-icon.is-tinted,.studio-material-pill{background:var(--jf-liquid-tinted);box-shadow:var(--jf-liquid-tinted-shadow);border-color:var(--jf-liquid-edge-hot)}
 .studio-material-pill{padding:12px 15px;border-radius:calc(32px * var(--jf-control-icon-radius,1))}
@@ -140,7 +140,7 @@
 
 /* For explicit glass panels only; avoid extra expensive media blur surfaces on phones. */
 @media(min-width:761px) and (prefers-reduced-transparency:no-preference){
- .site-shell .studio-component.component-glass{backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(125%);-webkit-backdrop-filter:blur(calc(9px * var(--jf-control-blur,1))) saturate(125%)}
+ .site-shell .studio-component.component-glass{backdrop-filter:blur(calc(5px * var(--jf-control-blur,1))) saturate(150%);-webkit-backdrop-filter:blur(calc(5px * var(--jf-control-blur,1))) saturate(150%)}
 }
 @media(prefers-reduced-transparency:reduce){.site-shell .studio-component.component-glass{background:var(--jf-surface)}}
 .site-shell .studio-component.component-editing:is(.hide-mobile,.hide-desktop)::before{content:"";position:absolute;inset:0;pointer-events:none;border:1px dashed var(--jf-secondary);border-radius:inherit}
