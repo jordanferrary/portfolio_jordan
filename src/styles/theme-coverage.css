@@ -180,6 +180,11 @@
 .site-shell .block-image img{
  background:var(--jf-background)!important;
 }
+/* Keep existing artwork borders in sync with the active visitor palette. */
+.site-shell .block-image img,
+.site-shell .story-multi-images img{
+ border-color:var(--jf-border)!important;
+}
 .site-shell .project-like{
  border-color:var(--jf-border)!important;
  background:linear-gradient(125deg,var(--jf-surface-tint),var(--jf-surface-deep))!important;
