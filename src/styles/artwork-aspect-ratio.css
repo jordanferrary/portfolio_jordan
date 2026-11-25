@@ -29,9 +29,46 @@
  background:transparent;
 }
 .site-shell .story-block.story-multi-images{
- justify-items:center;
- align-items:start;
+ --jf-gallery-gap:clamp(8px,1.5vw,16px);
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ gap:var(--jf-gallery-gap);
  min-width:0;
+}
+ /* Allocate the usable image width by the original ratios. Account for the
+    two 1px borders on each image so the content heights match exactly. */
+.site-shell .story-multi-images > .story-gallery-row{
+ display:grid;
+ grid-template-columns:minmax(0,calc((100% - var(--jf-gallery-gap) - 4px) * var(--jf-gallery-first-share,.5) + 2px)) minmax(0,1fr);
+ align-items:start;
+ gap:var(--jf-gallery-gap);
+ width:min(100%,calc(var(--jf-gallery-row-ratio,2) * min(680px,80dvh) + var(--jf-gallery-gap) + 4px));
+ min-width:0;
+}
+.site-shell .story-multi-images > .story-gallery-row > img.zoomable-art{
+ display:block;
+ box-sizing:border-box;
+ width:100%;
+ min-width:0;
+ max-width:100%;
+ height:auto;
+ max-height:none;
+ margin:0;
+ object-fit:contain;
+ background:transparent;
+ border:1px solid var(--jf-border);
+}
+@media(max-width:600px){
+ .site-shell .story-multi-images > .story-gallery-row{
+  grid-template-columns:minmax(0,1fr);
+  width:100%;
+  justify-items:center;
+ }
+ .site-shell .story-multi-images > .story-gallery-row > img.zoomable-art{
+  width:auto;
+  max-height:80dvh;
+ }
 }
 .site-shell .story-block.story-multi-images > img.zoomable-art,
 .site-shell .story-block.story-multi-images > img.zoomable-art:first-child:nth-last-child(odd){

@@ -106,3 +106,14 @@ test('case-study artwork containers respect intrinsic ratios; drag ghosts are di
  assert.match(page,/alt=\{title\+' before'\} draggable=\{false\}/)
  assert.match(page,/alt=\{title\+' after'\} draggable=\{false\}/)
 })
+
+ test('multi-image project rows use source aspect ratios without cropping or fixed heights',async()=>{
+ const [page,css]=await Promise.all([read('src/components/sections/project-page.tsx'),read('src/styles/artwork-aspect-ratio.css')])
+ assert.match(page,/naturalWidth\/naturalHeight/)
+ assert.match(page,/first\/total/)
+ assert.match(page,/sources\.slice\(i,i\+2\)/)
+ assert.match(page,/const start=sources\.length%2/)
+ assert.match(css,/grid-template-columns:minmax\(0,calc\(\(100% - var\(--jf-gallery-gap\) - 4px\) \* var\(--jf-gallery-first-share,\.5\) \+ 2px\)\)/)
+ assert.match(css,/\.story-gallery-row > img\.zoomable-art\{[^}]*height:auto;[^}]*object-fit:contain;[^}]*border:1px solid var\(--jf-border\)/)
+ assert.match(css,/@media\(max-width:600px\)\{\s*\.site-shell \.story-multi-images > \.story-gallery-row\{\s*grid-template-columns:minmax\(0,1fr\)/)
+})
