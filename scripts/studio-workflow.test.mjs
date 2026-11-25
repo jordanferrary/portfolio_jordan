@@ -49,3 +49,14 @@ test('temporary visual preview is separate from draft save and clean visitor mod
  assert.match(custom,/appearancePreview\?\.id===original.id/)
  assert.match(link,/appearance:block.appearance\}/)
 })
+
+ test('inspector exposes searchable hierarchy, local appearance clipboard and reversible preview presets',async()=>{
+ const [ins,props]=await Promise.all([read('src/components/sections/studio-inspector.tsx'),read('src/components/ui/block-properties.tsx')])
+ assert.match(ins,/matchesTool\(query/)
+ assert.match(ins,/onMove\(dragged,i-from\)/)
+ assert.match(ins,/sessionStorage\.setItem\(styleClipboardKey/)
+ assert.match(ins,/new ResizeObserver\(update\)/)
+ assert.match(ins,/setDraft\(current.appearance\)/)
+ assert.match(ins,/hideMobile:draft\?\.hideMobile,hideDesktop:draft\?\.hideDesktop/)
+ assert.match(props,/step="1" value=\{value\?\.width/)
+})

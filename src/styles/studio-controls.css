@@ -147,3 +147,21 @@
 .studio-material-system-note{display:grid;gap:8px;padding:9px 10px;border:1px solid var(--jf-border);border-radius:9px;line-height:1.5;color:var(--jf-text);background:var(--jf-studio-deep)}
 .studio-controls-editor .studio-material-system-note label{display:flex;align-items:flex-start;gap:8px;font-size:11px;cursor:pointer}
 .studio-material-system-note input[type=checkbox]{flex:0 0 auto;accent-color:var(--jf-primary)}
+
+/* Inspector workspace tools; all styling inherits the live palette. */
+.studio-inspector-search{display:flex;align-items:center;gap:8px;padding:7px 9px;margin-bottom:8px;border:1px solid var(--jf-border);border-radius:8px;color:var(--jf-muted);background:var(--jf-studio-deep)}
+.studio-inspector-search input{min-width:0;flex:1;background:transparent;color:var(--jf-text);border:0;font:inherit;font-size:12px;padding:4px 0}
+.studio-inspector-search button{padding:3px}
+.studio-inspector-tree>button{align-items:center;gap:7px}
+.studio-inspector-tree>button>span{flex:1}
+.studio-inspector-tree>button[draggable=true]{cursor:grab}
+.studio-inspector-grip{flex-shrink:0;color:var(--jf-muted)}
+.studio-inspector-tree>button[data-dragging=true]{opacity:.5}
+.studio-inspector-measure{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border-radius:8px;border:1px solid var(--jf-border);font-size:12px;font-variant-numeric:tabular-nums}
+.studio-inspector-style-tools{display:flex;gap:6px;margin:8px 0}
+.studio-inspector-style-tools button{flex:1;justify-content:center;font-size:12px}
+.studio-inspector-presets{padding:10px;border:1px solid var(--jf-border);border-radius:8px;margin:8px 0;font-size:12px}
+.studio-inspector-presets summary{cursor:pointer;color:var(--jf-secondary)}
+.studio-inspector-presets>div{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}
+.studio-inspector-footer{position:sticky;bottom:0;display:flex;gap:6px;padding:10px 0;background:var(--jf-studio-panel);z-index:2}
+.studio-inspector-footer .studio-inspector-save{flex:1;width:auto}
