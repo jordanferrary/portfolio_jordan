@@ -1,6 +1,7 @@
 import '../../styles/project-model.css'
 import {useEffect,useRef,useState} from 'react'
 import {Box,ExternalLink,Move3d,Play,Pause,RotateCcw,Expand,SlidersHorizontal,Camera,Focus,RefreshCw,SkipBack} from 'lucide-react'
+import {useActivePalette} from '../../hooks/use-active-palette'
 import {AssetImage} from './asset-image'
 import {MODEL_MIME,parseModelUrl} from '../../lib/model-embed'
 import {isLocalMedia,readMedia} from '../../lib/media-store'
@@ -11,6 +12,7 @@ import type {ModelStage,ModelStats} from '../../lib/model-inspector-stage'
 type Props={url:string;poster?:string;title?:string;presentation?:Partial<ModelPresentation>;startActive?:boolean;resetCameraToken?:number;previewArtShader?:boolean;onCaptureCamera?:(camera:ModelCamera)=>void;lightEditing?:LightEditState;lightCallbacks?:LightEditCallbacks;materialEditing?:MaterialEditState;onMaterials?:(materials:MaterialInfo[]|null)=>void;onMaterialSelect?:(id:string)=>void;onAnimations?:(clips:ModelAnimationInfo[]|null)=>void;previewRotation?:boolean;onPreviewRotationChange?:(value:boolean)=>void}
 export function ProjectModel(props:Props){return <ModelViewer key={props.url} {...props}/>}
 function ModelViewer({url,poster,title='3D artwork',presentation,startActive=false,resetCameraToken,previewArtShader,onCaptureCamera,lightEditing,lightCallbacks,materialEditing,onMaterials,onMaterialSelect,onAnimations,previewRotation,onPreviewRotationChange}:Props){
+ useActivePalette()
  const parsed=parseModelUrl(url)
  const settings=normalizeModelPresentation(presentation)
  const configuration=useRef(settings);configuration.current=settings
