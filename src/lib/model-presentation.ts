@@ -1,4 +1,5 @@
-export type ModelMode='material'|'neutral'|'clay'|'wireframe'|'shaded-wire'|'clay-wire'|'flat'|'flat-wire'|'normals'|'unlit'|'metalness'|'roughness'|'normal-map'|'ao'|'opacity'|'emission'|'specular'|'scattering'|'matcap'|'matcap-surface'|'uv'|'bones'|'weights'
+import {normalizeAdaptiveStop,resolveAdaptiveColor,readActivePalette,type AdaptiveStop,type ActivePalette} from './adaptive-background'
+export type ModelMode='material'|'neutral'|'clay'|'wireframe'|'shaded-wire'|'clay-wire'|'flat'|'flat-wire'|'normals'|'unlit'|'metalness'|'roughness'|'normal-map'|'height'|'ao'|'opacity'|'emission'|'specular'|'scattering'|'matcap'|'matcap-surface'|'uv'|'bones'|'weights'
 export type ArtShaderPreset='original'|'toon'|'noir'|'rim'|'iridescent'|'hologram'|'blueprint'|'flat'|'hatch'|'crosshatch'|'stipple'|'halftone'|'pixel'|'outline'|'dither'|'watercolor'|'pencil'|'pearl'|'foil'|'opal'|'velvet'|'chrome'|'xray'
 export type ArtShader={preset:ArtShaderPreset;strength:number;tint:string;bands:number;rimPower:number;scanSpacing:number;scanSpeed:number;patternScale:number;inkColor:string;paperColor:string;patternAngle:number;chromaticAberration:number;chromaticAngle:number;crt:number;vhs:number;pixelSize:number;bloom:number;bloomThreshold:number;bloomRadius:number}
 export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;description:string;tint:string;swatch:string}[]=[
@@ -27,7 +28,7 @@ export const ART_SHADER_PRESETS:readonly {id:ArtShaderPreset;name:string;descrip
  {id:'xray',name:'X-Ray Glow',description:'Acabamento luminoso de radiografia estilizada, sem transparência.',tint:'#7cddff',swatch:'radial-gradient(circle,#0c233b,#2f719c 50%,#b5faff 88%)'}
 ]
 export const DEFAULT_ART_SHADER:ArtShader={preset:'original',strength:.75,tint:'#ffffff',bands:4,rimPower:3,scanSpacing:7,scanSpeed:14,patternScale:7,inkColor:'#211c29',paperColor:'#f5eedc',patternAngle:45,chromaticAberration:0,chromaticAngle:0,crt:0,vhs:0,pixelSize:0,bloom:.35,bloomThreshold:1,bloomRadius:3}
-export type ModelBackdrop={mode:'solid'|'linear'|'radial'|'image'|'transparent';secondary:string;angle:number;centerX:number;centerY:number;image:string;fit:'cover'|'contain';opacity:number}
+export type ModelBackdrop={mode:'solid'|'linear'|'radial'|'conic'|'image'|'transparent';secondary:string;adaptivePrimary?:AdaptiveStop;adaptiveSecondary?:AdaptiveStop;extraStops?:{color:string;position:number;adaptive?:AdaptiveStop}[];angle:number;centerX:number;centerY:number;image:string;fit:'cover'|'contain';opacity:number}
 export const DEFAULT_MODEL_BACKDROP:ModelBackdrop={mode:'solid',secondary:'#080713',angle:135,centerX:50,centerY:42,image:'',fit:'cover',opacity:1}
 export const MAX_MODEL_LIGHTS=8
 export type ModelLight={id:string;name:string;type:'directional'|'point'|'spot';enabled:boolean;color:string;intensity:number;azimuth:number;elevation:number;distance:number;angle:number;softness:number;targetX:number;targetY:number;targetZ:number}
@@ -64,13 +65,17 @@ function normalizeLights(value:unknown):ModelLight[]{
 export function normalizeBackdrop(value?:Partial<ModelBackdrop>|null):ModelBackdrop{
  const v=value??{},d=DEFAULT_MODEL_BACKDROP
  const image=typeof v.image==='string'?v.image.trim().slice(0,2048):''
- return {mode:v.mode==='linear'||v.mode==='radial'||v.mode==='image'||v.mode==='transparent'?v.mode:'solid',secondary:color(v.secondary,d.secondary),angle:numeric(v.angle,d.angle,0,360),centerX:numeric(v.centerX,d.centerX,0,100),centerY:numeric(v.centerY,d.centerY,0,100),image:/^(https?:\/\/|media:\/\/|site:\/\/images\/studio\/|\/images\/)/i.test(image)?image:'',fit:v.fit==='contain'?'contain':'cover',opacity:numeric(v.opacity,1,0,1)}
+ return {mode:v.mode==='linear'||v.mode==='radial'||v.mode==='conic'||v.mode==='image'||v.mode==='transparent'?v.mode:'solid',secondary:color(v.secondary,d.secondary),angle:numeric(v.angle,d.angle,0,360),centerX:numeric(v.centerX,d.centerX,0,100),centerY:numeric(v.centerY,d.centerY,0,100),image:/^(https?:\/\/|media:\/\/|site:\/\/images\/studio\/|\/images\/)/i.test(image)?image:'',fit:v.fit==='contain'?'contain':'cover',opacity:numeric(v.opacity,1,0,1),...(v.adaptivePrimary?{adaptivePrimary:normalizeAdaptiveStop(v.adaptivePrimary)}:{}),...(v.adaptiveSecondary?{adaptiveSecondary:normalizeAdaptiveStop(v.adaptiveSecondary)}:{}),...(Array.isArray(v.extraStops)&&v.extraStops.length?{extraStops:v.extraStops.slice(0,6).filter(item=>item&&typeof item==='object').map(item=>({color:color(item.color,'#808080'),position:numeric(item.position,50,0,100),...(item.adaptive?{adaptive:normalizeAdaptiveStop(item.adaptive)}:{})}))}:{})}
 }
-export function backdropFill(background:string,backdrop:ModelBackdrop):string{
+export function backdropFill(background:string,backdrop:ModelBackdrop,palette:ActivePalette=readActivePalette()):string{
  if(backdrop.mode==='transparent')return 'transparent'
- if(backdrop.mode==='linear')return `linear-gradient(${backdrop.angle}deg, ${background}, ${backdrop.secondary})`
- if(backdrop.mode==='radial')return `radial-gradient(ellipse at ${backdrop.centerX}% ${backdrop.centerY}%, ${background}, ${backdrop.secondary})`
- return background
+ const primary=resolveAdaptiveColor(background,backdrop.adaptivePrimary,palette),secondary=resolveAdaptiveColor(backdrop.secondary,backdrop.adaptiveSecondary,palette)
+ const extra=(backdrop.extraStops??[]).slice().sort((a,b)=>a.position-b.position).map(item=>resolveAdaptiveColor(item.color,item.adaptive,palette)+' '+item.position+'%')
+ const stops=extra.length?[primary+' 0%',...extra,secondary+' 100%'].join(', '):primary+', '+secondary
+ if(backdrop.mode==='linear')return `linear-gradient(${backdrop.angle}deg, ${stops})`
+ if(backdrop.mode==='radial')return `radial-gradient(ellipse at ${backdrop.centerX}% ${backdrop.centerY}%, ${stops})`
+ if(backdrop.mode==='conic')return `conic-gradient(from ${backdrop.angle}deg at ${backdrop.centerX}% ${backdrop.centerY}%, ${stops})`
+ return primary
 }
 export function normalizeArtShader(value?:Partial<ArtShader>|null):ArtShader{
  const v=value??{},d=DEFAULT_ART_SHADER
@@ -78,7 +83,8 @@ export function normalizeArtShader(value?:Partial<ArtShader>|null):ArtShader{
  return {preset:preset.id,strength:numeric(v.strength,d.strength,0,1),tint:color(v.tint,preset.tint),bands:Math.round(numeric(v.bands,d.bands,2,8)),rimPower:numeric(v.rimPower,d.rimPower,.5,8),scanSpacing:numeric(v.scanSpacing,d.scanSpacing,3,24),scanSpeed:numeric(v.scanSpeed,d.scanSpeed,-60,60),patternScale:numeric(v.patternScale,d.patternScale,3,24),inkColor:color(v.inkColor,d.inkColor),paperColor:color(v.paperColor,d.paperColor),patternAngle:numeric(v.patternAngle,preset.id==='hologram'?0:d.patternAngle,0,180),chromaticAberration:numeric(v.chromaticAberration,0,0,12),chromaticAngle:numeric(v.chromaticAngle,0,0,360),crt:numeric(v.crt,0,0,1),vhs:numeric(v.vhs,0,0,1),pixelSize:numeric(v.pixelSize,0,0,12),bloom:numeric(v.bloom,d.bloom,0,2),bloomThreshold:numeric(v.bloomThreshold,d.bloomThreshold,.1,4),bloomRadius:numeric(v.bloomRadius,d.bloomRadius,1,8)}
 }
 export type MaterialLayer=Pick<ArtShader,'preset'|'strength'|'tint'|'patternScale'|'bands'|'rimPower'|'scanSpacing'|'scanSpeed'|'patternAngle'|'inkColor'|'paperColor'>
-export type MaterialLook={surface:ArtShader;light:MaterialLayer;shadow:MaterialLayer;shadowThreshold:number;shadowSoftness:number;rimStrength:number;rimTint:string;rimPower:number;baseTint:string;opacity:number;emission:number;emissionMode:'original'|'base'|'color';emissionColor:string;roughness:number;metalness:number;roughnessOverride:number|null;metalnessOverride:number|null}
+export type HeightSettings={map:string;mode:'inspect'|'bump'|'displacement';scale:number;bias:number}
+export type MaterialLook={height?:HeightSettings;surface:ArtShader;light:MaterialLayer;shadow:MaterialLayer;shadowThreshold:number;shadowSoftness:number;rimStrength:number;rimTint:string;rimPower:number;baseTint:string;opacity:number;emission:number;emissionMode:'original'|'base'|'color';emissionColor:string;roughness:number;metalness:number;roughnessOverride:number|null;metalnessOverride:number|null}
 export type MaterialInfo={id:string;name:string;meshes:number;color:string;texturePreview?:string;roughness?:number;metalness?:number}
 export type MaterialEditState={active:boolean;selected:string|null;isolate:boolean;highlight:boolean}
 export function newMaterialLook(surface:ArtShader=DEFAULT_ART_SHADER):MaterialLook{
@@ -90,7 +96,9 @@ function normalizeLayer(value:unknown):MaterialLayer{
 }
 export function normalizeMaterialLook(value:unknown):MaterialLook{
  const v=(value&&typeof value==='object'?value:{}) as Partial<MaterialLook>,d=newMaterialLook()
- return {surface:normalizeArtShader(v.surface),light:normalizeLayer(v.light),shadow:normalizeLayer(v.shadow),shadowThreshold:numeric(v.shadowThreshold,d.shadowThreshold,.05,.95),shadowSoftness:numeric(v.shadowSoftness,d.shadowSoftness,.01,.5),rimStrength:numeric(v.rimStrength,0,0,1),rimTint:color(v.rimTint,d.rimTint),rimPower:numeric(v.rimPower,3,.5,8),baseTint:color(v.baseTint,'#ffffff'),opacity:numeric(v.opacity,1,0,1),emission:numeric(v.emission,1,0,10),emissionMode:v.emissionMode==='base'||v.emissionMode==='color'?v.emissionMode:'original',emissionColor:color(v.emissionColor,'#ffffff'),roughness:numeric(v.roughness,1,0,2),metalness:numeric(v.metalness,1,0,2),roughnessOverride:typeof v.roughnessOverride==='number'?numeric(v.roughnessOverride,1,0,1):null,metalnessOverride:typeof v.metalnessOverride==='number'?numeric(v.metalnessOverride,0,0,1):null}
+ const h=v.height;const map=typeof h?.map==='string'?h.map.trim().slice(0,2048):''
+ const height:HeightSettings|undefined=h&&/^(https?:\/\/|media:\/\/|site:\/\/images\/studio\/|\/images\/)/i.test(map)?{map,mode:h.mode==='bump'||h.mode==='displacement'?h.mode:'inspect',scale:numeric(h.scale,.03,-1,1),bias:numeric(h.bias,0,-1,1)}:undefined
+ return {...(height?{height}:{}),surface:normalizeArtShader(v.surface),light:normalizeLayer(v.light),shadow:normalizeLayer(v.shadow),shadowThreshold:numeric(v.shadowThreshold,d.shadowThreshold,.05,.95),shadowSoftness:numeric(v.shadowSoftness,d.shadowSoftness,.01,.5),rimStrength:numeric(v.rimStrength,0,0,1),rimTint:color(v.rimTint,d.rimTint),rimPower:numeric(v.rimPower,3,.5,8),baseTint:color(v.baseTint,'#ffffff'),opacity:numeric(v.opacity,1,0,1),emission:numeric(v.emission,1,0,10),emissionMode:v.emissionMode==='base'||v.emissionMode==='color'?v.emissionMode:'original',emissionColor:color(v.emissionColor,'#ffffff'),roughness:numeric(v.roughness,1,0,2),metalness:numeric(v.metalness,1,0,2),roughnessOverride:typeof v.roughnessOverride==='number'?numeric(v.roughnessOverride,1,0,1):null,metalnessOverride:typeof v.metalnessOverride==='number'?numeric(v.metalnessOverride,0,0,1):null}
 }
 function normalizeMaterialLooks(value:unknown):Record<string,MaterialLook>{
  if(!value||typeof value!=='object'||Array.isArray(value))return {}
@@ -114,7 +122,7 @@ export type InspectorGroup={label:string;items:readonly {id:ModelMode;label:stri
 export const INSPECTOR_GROUPS:readonly InspectorGroup[]=[
  {label:'Render',items:[{id:'material',label:'Final render'},{id:'neutral',label:'No tone mapping'}]},
  {label:'Animation',items:[{id:'bones',label:'Bones'},{id:'weights',label:'Bones influence',hint:'Strongest skin weight per vertex'}]},
- {label:'Material channels',items:[{id:'unlit',label:'Base color'},{id:'metalness',label:'Metalness'},{id:'roughness',label:'Roughness'},{id:'scattering',label:'Scattering',hint:'Not a standard glTF surface channel'},{id:'normal-map',label:'Normal map'},{id:'ao',label:'Ambient occlusion',hint:'Baked AO, if present; not a generated cavity map'},{id:'opacity',label:'Opacity'},{id:'emission',label:'Emission'},{id:'specular',label:'Specular F0',hint:'Estimated reflectance from the PBR material'}]},
+ {label:'Material channels',items:[{id:'unlit',label:'Base color'},{id:'metalness',label:'Metalness'},{id:'roughness',label:'Roughness'},{id:'scattering',label:'Scattering',hint:'Not a standard glTF surface channel'},{id:'normal-map',label:'Normal map'},{id:'height',label:'Height map',hint:'Imported grayscale height map'},{id:'ao',label:'Ambient occlusion',hint:'Baked AO, if present; not a generated cavity map'},{id:'opacity',label:'Opacity'},{id:'emission',label:'Emission'},{id:'specular',label:'Specular F0',hint:'Estimated reflectance from the PBR material'}]},
  {label:'Geometry',items:[{id:'matcap',label:'Matcap'},{id:'matcap-surface',label:'Matcap + surface'},{id:'clay',label:'Clay'},{id:'flat',label:'Flat shading'},{id:'wireframe',label:'Wireframe only'},{id:'shaded-wire',label:'Material + wireframe'},{id:'clay-wire',label:'Clay + wireframe'},{id:'flat-wire',label:'Flat + wireframe'},{id:'normals',label:'Surface normals'}]},
  {label:'UV',items:[{id:'uv',label:'UV checker'}]}
 ]

@@ -183,3 +183,17 @@ export async function saveUploadedModel(file:File):Promise<string>{
  if(!existing)await updateCatalog({ref,name:file.name,folders:['models'],hash,size:blob.size,mime:MODEL_MIME,createdAt:Date.now()})
  return ref
 }
+
+/** Data maps keep their original PNG bytes, unlike color artwork. */
+export async function saveUploadedHeightMap(file:File):Promise<string>{
+ if(file.type!=='image/png'||!/\.png$/i.test(file.name))throw new Error('Importe o mapa de altura em PNG, sem perdas.')
+ if(file.size>16_000_000)throw new Error('Mapa de altura acima de 16 MB.')
+ const signature=new Uint8Array(await file.slice(0,8).arrayBuffer())
+ if(signature.join(',')!=='137,80,78,71,13,10,26,10')throw new Error('PNG inválido.')
+ const bitmap=await createImageBitmap(file)
+ try{if(bitmap.width>4096||bitmap.height>4096)throw new Error('Use uma textura de até 4096 × 4096.')}finally{bitmap.close()}
+ const hash=await fingerprint(file),ref=PREFIX+'model-height/'+hash+'.png'
+ await saveMediaBlob(ref,file)
+ await updateCatalog({ref,name:file.name,folders:['model-height'],hash,size:file.size,mime:file.type,createdAt:Date.now()})
+ return ref
+}

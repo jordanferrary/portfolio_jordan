@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import type {ModelMode,ModelPresentation,MaterialLook} from './model-presentation'
+import type {ModelMode,ModelPresentation,MaterialLook,HeightSettings} from './model-presentation'
 type PBR=THREE.MeshPhysicalMaterial
 const basic=(src:THREE.Material,params:THREE.MeshBasicMaterialParameters={})=>new THREE.MeshBasicMaterial({side:src.side,toneMapped:false,...params})
 export function createChecker():THREE.CanvasTexture{
@@ -80,7 +80,13 @@ export function applyPresentationEmission(material:THREE.Material,source:THREE.M
  }
  if(next.emissiveMap!==map){next.emissiveMap=map;next.needsUpdate=true}
 }
-export function debugMaterial(mode:ModelMode,source:THREE.Material,textures:{checker:()=>THREE.Texture;matcap:()=>THREE.Texture}):THREE.Material{
+export function applyHeightMap(material:THREE.Material,settings:HeightSettings|undefined,map:THREE.Texture|undefined){
+ const lit=material as THREE.MeshStandardMaterial
+ if(!lit.isMeshStandardMaterial||!settings||!map)return
+ if(settings.mode==='bump'){lit.normalMap=null;lit.bumpMap=map;lit.bumpScale=settings.scale;lit.needsUpdate=true}
+ if(settings.mode==='displacement'){lit.displacementMap=map;lit.displacementScale=settings.scale;lit.displacementBias=settings.bias;lit.needsUpdate=true}
+}
+export function debugMaterial(mode:ModelMode,source:THREE.Material,textures:{checker:()=>THREE.Texture;matcap:()=>THREE.Texture;height?:THREE.Texture}):THREE.Material{
  const src=source as PBR
  const color=src.color?.clone()??new THREE.Color(0xffffff)
  if(isPresentationMaterial(mode))return createPresentationMaterial(mode,source,{relightUnlit:false})
@@ -89,6 +95,7 @@ export function debugMaterial(mode:ModelMode,source:THREE.Material,textures:{che
  if(mode==='unlit')return basic(source,{color,map:src.map??null,vertexColors:source.vertexColors})
  if(mode==='metalness')return channel(source,src.metalnessMap,'b',src.metalness??0)
  if(mode==='roughness')return channel(source,src.roughnessMap,'g',src.roughness??1)
+ if(mode==='height')return channel(source,textures.height,'r',1,0)
  if(mode==='normal-map')return basic(source,{map:src.normalMap??null,color:src.normalMap?0xffffff:0x8080ff})
  if(mode==='ao')return channel(source,src.aoMap,'r',1)
  if(mode==='opacity')return channel(source,src.map,'a',source.opacity)

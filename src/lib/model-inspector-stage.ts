@@ -6,10 +6,12 @@ import {KTX2Loader} from 'three/examples/jsm/loaders/KTX2Loader.js'
 import {MeshoptDecoder} from 'three/examples/jsm/libs/meshopt_decoder.module.js'
 import {RoomEnvironment} from 'three/examples/jsm/environments/RoomEnvironment.js'
 import {DEFAULT_INSPECTOR_OPTIONS,isWireOverlay,resolvePbrFactor,type InspectorOptions,type ModelMode,type ModelPresentation,type ModelAnimationInfo,type MaterialInfo,type MaterialEditState,type ModelCamera,type LightEditState,type LightEditCallbacks} from './model-presentation'
-import {createChecker,createMatcap,debugMaterial,isPresentationMaterial,createPresentationMaterial,applyPresentationEmission} from './model-debug-materials'
+import {createChecker,createMatcap,debugMaterial,isPresentationMaterial,createPresentationMaterial,applyPresentationEmission,applyHeightMap} from './model-debug-materials'
 import {attachSolidWireShader,createWireUniforms,makeWireGeometry} from './model-solid-wireframe'
 import {createLightGizmos} from './model-light-gizmos'
 import {attachArtShader,createArtUniforms,updateArtUniforms,updateMaterialLayers,type ArtUniforms} from './model-art-shaders'
+import {isLocalMedia,readMedia} from './media-store'
+import {resolvePublishedAsset} from './published-assets'
 import {createChromaticPass} from './model-chromatic-pass'
 import {responsiveCameraFov,referenceFitDistance,cameraZoomForDistance,wrapCameraAzimuth,horizontalOrbitStep,shouldOrbit,safeTurntableDistance,orbitEdgeMargin} from './model-camera-framing'
 export type ModelStats={triangles:number;vertices:number;meshes:number;available:ModelMode[];animations:string[];animationClips:ModelAnimationInfo[];unlitMaterials:number;materials:MaterialInfo[]}
@@ -30,7 +32,7 @@ function disposeObject(root:THREE.Object3D){
  for(const g of geometries)g.dispose()
  for(const s of skeletons)s.dispose()
 }
-export function createModelStage(host:HTMLElement,source:string,initial:ModelPresentation,callbacks:{onLoad:(stats:ModelStats)=>void;onError:(error:unknown)=>void;onAnimationFinished?:()=>void},lightEditing?:LightEditCallbacks,onMaterialSelect?:(id:string)=>void):ModelStage{
+export function createModelStage(host:HTMLElement,source:string,initial:ModelPresentation,callbacks:{onLoad:(stats:ModelStats)=>void;onError:(error:unknown)=>void;onAnimationFinished?:()=>void;onAvailable?:(modes:ModelMode[])=>void;onTextureError?:(message:string)=>void},lightEditing?:LightEditCallbacks,onMaterialSelect?:(id:string)=>void):ModelStage{
  let disposed=false,model:THREE.Object3D|undefined,presentation=initial,mode:ModelMode='material',rotate=false,interacting=false,visible=true,idleUntil=0
  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'})
  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5))
@@ -64,6 +66,42 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  const wireUniforms=createWireUniforms(options.wireColor,options.wireOpacity)
  const materialIds=new Map<THREE.Material,string>()
  const materialInfo=new Map<string,MaterialInfo>()
+ const heightTextures=new Map<string,{texture?:THREE.Texture;bitmap?:ImageBitmap;failed?:boolean}>()
+ let baseAvailable:ModelMode[]=[]
+ const heightFor=(source:THREE.Material)=>heightTextures.get(presentation.materialLooks[materialIds.get(source)??'']?.height?.map??'')?.texture
+ const heightSignature=(p:ModelPresentation)=>JSON.stringify(Object.entries(p.materialLooks).filter(([,look])=>look.height).map(([id,look])=>[id,look.height]))
+ function rebuildVariants(){
+  for(const cache of variants.values())for(const material of cache.values())material.dispose()
+  variants.clear();artUniforms.clear();setMode(mode)
+ }
+ function updateHeightAvailability(){
+  const enabled=[...materialIds.keys()].some(source=>Boolean(heightFor(source)))
+  const available=enabled?[...baseAvailable,'height' as const]:baseAvailable
+  if(!enabled&&mode==='height')setMode('material')
+  callbacks.onAvailable?.(available)
+  callbacks.onTextureError?.([...heightTextures.values()].some(entry=>entry.failed)?'Não foi possível carregar um Height Map. Confira o arquivo ou publique novamente.':'')
+ }
+ function releaseHeight(entry:{texture?:THREE.Texture;bitmap?:ImageBitmap}){entry.texture?.dispose();entry.bitmap?.close()}
+ function syncHeightMaps(){
+  if(!model||disposed)return
+  const wanted=new Set([...materialIds.values()].flatMap(id=>{const map=presentation.materialLooks[id]?.height?.map;return map?[map]:[]}))
+  let changed=false
+  for(const [ref,entry] of heightTextures)if(!wanted.has(ref)){heightTextures.delete(ref);releaseHeight(entry);changed=true}
+  for(const ref of wanted)if(!heightTextures.has(ref)){
+   const entry:{texture?:THREE.Texture;bitmap?:ImageBitmap;failed?:boolean}={};heightTextures.set(ref,entry)
+   void (async()=>{
+    const blob=isLocalMedia(ref)?await readMedia(ref):await fetch(resolvePublishedAsset(ref),{credentials:'omit'}).then(response=>{if(!response.ok)throw new Error('Height map unavailable');return response.blob()})
+    if(!blob)throw new Error('Height map unavailable')
+    const bitmap=await createImageBitmap(blob,{colorSpaceConversion:'none',premultiplyAlpha:'none'})
+    if(disposed||heightTextures.get(ref)!==entry){bitmap.close();return}
+    if(bitmap.width>4096||bitmap.height>4096){bitmap.close();throw new Error('Height map too large')}
+    const texture=new THREE.Texture(bitmap);texture.flipY=false;texture.colorSpace=THREE.NoColorSpace;texture.needsUpdate=true
+    entry.bitmap=bitmap;entry.texture=texture
+    rebuildVariants();updateHeightAvailability()
+   })().catch(()=>{if(!disposed&&heightTextures.get(ref)===entry){entry.failed=true;updateHeightAvailability()}})
+  }
+  if(changed)updateHeightAvailability()
+ }
  function texturePreview(material:THREE.Material):string|undefined{
   if(!onMaterialSelect)return
   const image=(material as THREE.MeshStandardMaterial).map?.image
@@ -207,12 +245,13 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
  function variant(mat:THREE.Material):THREE.Material{
   let cache=variants.get(mode);if(!cache){cache=new Map();variants.set(mode,cache)}
   const previous=cache.get(mat);if(previous)return previous
-  const next=isPresentationMaterial(mode)?createPresentationMaterial(mode,mat,presentation):debugMaterial(mode,mat,{checker:()=>checker??(checker=createChecker()),matcap:()=>matcap??(matcap=createMatcap())})
+  const next=isPresentationMaterial(mode)?createPresentationMaterial(mode,mat,presentation):debugMaterial(mode,mat,{checker:()=>checker??(checker=createChecker()),matcap:()=>matcap??(matcap=createMatcap()),height:heightFor(mat)})
   if(isPresentationMaterial(mode))applyPresentationEmission(next,mat,presentation.emissionScale)
   if(mode==='material'){
    const uniforms=createArtUniforms(lookFor(mat)?.surface??presentation.artShader);artUniforms.set(mat,uniforms)
    attachArtShader(next,uniforms);updateMaterialLook(mat,next)
   }
+  if(isPresentationMaterial(mode))applyHeightMap(next,lookFor(mat)?.height,heightFor(mat))
   if(isWireOverlay(mode))attachSolidWireShader(next,wireUniforms)
   cache.set(mat,next);return next
  }
@@ -284,7 +323,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
    const position=obj.geometry.getAttribute('position');const count=obj instanceof THREE.InstancedMesh?obj.count:1
    stats.vertices+=(position?.count??0)*count;stats.triangles+=Math.floor((obj.geometry.index?.count??position?.count??0)/3)*count
   }})
-  stats.materials=[...materialInfo.values()];stats.available=[...available];applyLighting();resetCamera();setMode(mode);callbacks.onLoad(stats)
+  stats.materials=[...materialInfo.values()];stats.available=[...available];baseAvailable=stats.available;applyLighting();resetCamera();setMode(mode);callbacks.onLoad(stats);syncHeightMaps()
  }).catch(error=>{if(!disposed)callbacks.onError(error)})
  applyLighting()
  let last=0
@@ -323,7 +362,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
   if(mode==='material'&&(presentation.artShader.chromaticAberration>0||presentation.artShader.crt>0||presentation.artShader.vhs>0||presentation.artShader.pixelSize>0||presentation.artShader.bloom>0)&&!editState.helpers){chromaticPass??=createChromaticPass(renderer);chromaticPass.render(scene,camera,presentation.artShader,artTime)}else{if(chromaticPass){chromaticPass.dispose();chromaticPass=null}renderer.render(scene,camera)}
  })
  return {
-  setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;const emissionChanged=next.emissionScale!==presentation.emissionScale;presentation=next;applyLighting();if(relight){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();artUniforms.clear();setMode(mode)}else{if(emissionChanged)updateEmission();updateMaterialLooks()}if(reframe)resetCamera()},
+  setPresentation(next){const reframe=next.azimuth!==presentation.azimuth||next.elevation!==presentation.elevation||next.zoom!==presentation.zoom||next.fov!==presentation.fov||next.targetX!==presentation.targetX||next.targetY!==presentation.targetY||next.targetZ!==presentation.targetZ;const relight=next.relightUnlit!==presentation.relightUnlit;const emissionChanged=next.emissionScale!==presentation.emissionScale;const heightChanged=heightSignature(next)!==heightSignature(presentation);presentation=next;applyLighting();if(heightChanged)syncHeightMaps();if(relight||heightChanged){for(const cache of variants.values())for(const material of cache.values())material.dispose();variants.clear();artUniforms.clear();setMode(mode)}else{if(emissionChanged)updateEmission();updateMaterialLooks()}if(reframe)resetCamera()},
   setMode,setRotation(value){if(rotate===value)return;rotate=value;idleUntil=0;if(model&&!interacting)settleOrbit()},setOptions(value){options=value;applyOptions()},setAnimation,restartAnimation,resetCamera,captureCamera,frameLights,setMaterialEditing(state){materialEdit=state;updateMaterialLooks()},setLightEditing(state){editState=state;gizmos?.setState(state);applyLighting()},
   dispose(){if(disposed)return;disposed=true;renderer.setAnimationLoop(null);canvas.removeEventListener('pointerdown',pickDown);canvas.removeEventListener('pointerup',pickUp);artUniforms.clear();observer.disconnect();intersection.disconnect();controls.dispose()
    mixer?.stopAllAction();if(model)mixer?.uncacheRoot(model)
@@ -331,6 +370,7 @@ export function createModelStage(host:HTMLElement,source:string,initial:ModelPre
    releaseWireGeometries();checker?.dispose();matcap?.dispose()
    if(model){for(const [mesh,material] of original)mesh.material=material;disposeObject(model);scene.remove(model)}
    for(const cache of variants.values())for(const material of cache.values())material.dispose()
+   for(const entry of heightTextures.values())releaseHeight(entry);heightTextures.clear()
    gizmos?.dispose();for(const light of customLights.values())removeCustomLight(light);customLights.clear()
    chromaticPass?.dispose();environment.dispose();draco.dispose();ktx2.dispose();renderer.dispose();canvas.remove()
   }

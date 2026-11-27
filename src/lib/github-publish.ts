@@ -26,7 +26,7 @@ const ALQUIMAGO_MEMORY_PATH='public/alquimago/project-memory.json'
 const ALQUIMAGO_CONTEXT_PATH='public/alquimago/project-context.json'
 const ALQUIMAGO_KNOWLEDGE_PATH='public/alquimago/knowledge.json'
 const MAX_NEW_MEDIA_BYTES=80*1024*1024
-type Kind='image'|'audio'|'model'
+type Kind='image'|'audio'|'model'|'texture'
 type TreeEntry={path:string;mode:'100644';type:'blob';sha?:string|null;content?:string}
 export type GitHubPublishResult={revision:string;commitSha:string;commitUrl:string;newFiles:number;deletedFiles:number}
 export type GitHubPublishProgress=(status:string)=>void
@@ -85,6 +85,7 @@ function extension(ref:string,blob:Blob,kind:Kind):string{
   if(/\.glb$/i.test(ref))return 'glb'
   throw new Error('O modelo local precisa estar no formato GLB.')
  }
+ if(kind==='texture'){if(mime==='image/png')return 'png';throw new Error('Mapas de altura precisam ser PNG.')}
  if(kind==='image'){
   if(mime==='image/jpeg')return 'jpg'
   if(mime==='image/png')return 'png'
@@ -128,6 +129,7 @@ function stageSnapshot(store:PortfolioStore){
   siteLogoAppearance:store.siteLogoAppearance,
   siteFavicon:store.siteFavicon,
   themePalette:store.themePalette,
+  activeThemeName:store.activeThemeName,
   typography:store.typography,
   studioControls:store.studioControls,
   glitchPalette:store.glitchPalette,
@@ -252,7 +254,7 @@ export async function publishPortfolioToGitHub(
    if(block.type==='slideshow'&&block.slideItems)for(const slide of block.slideItems)slide.image=await stage(slide.image,'image')
    // Interactive showcase images may now be uploaded local WebP assets.
    if(block.showcaseItems)for(const item of block.showcaseItems)item.image=await stage(item.image,'image')
-   if(block.type==='model'){block.content=await stage(block.content,'model');if(block.modelPresentation?.backdrop?.image)block.modelPresentation.backdrop.image=await stage(block.modelPresentation.backdrop.image,'image')}
+   if(block.type==='model'){block.content=await stage(block.content,'model');if(block.modelPresentation?.backdrop?.image)block.modelPresentation.backdrop.image=await stage(block.modelPresentation.backdrop.image,'image');for(const look of Object.values(block.modelPresentation?.materialLooks??{}))if(look.height?.map)look.height.map=await stage(look.height.map,'texture')}
    if(block.type==='image')block.content=await stage(block.content,'image')
    if(block.media)block.media=await stage(block.media,'image')
    if(block.after)block.after=await stage(block.after,'image')
@@ -263,7 +265,7 @@ export async function publishPortfolioToGitHub(
   project.image=await stage(project.image,'image')
   for(const step of project.processSteps??[])step.image=await stage(step.image,'image')
   for(const block of project.blocks){
-   if(block.type==='model'){block.content=await stage(block.content,'model');if(block.modelPresentation?.backdrop?.image)block.modelPresentation.backdrop.image=await stage(block.modelPresentation.backdrop.image,'image')}
+   if(block.type==='model'){block.content=await stage(block.content,'model');if(block.modelPresentation?.backdrop?.image)block.modelPresentation.backdrop.image=await stage(block.modelPresentation.backdrop.image,'image');for(const look of Object.values(block.modelPresentation?.materialLooks??{}))if(look.height?.map)look.height.map=await stage(look.height.map,'texture')}
    if(block.type==='image')block.content=await stage(block.content,'image')
    if(block.media)block.media=await stage(block.media,'image')
    if(block.after)block.after=await stage(block.after,'image')
