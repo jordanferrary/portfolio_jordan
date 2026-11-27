@@ -109,6 +109,7 @@ export function refsFor(store:PortfolioStore):string[]{
  const refs=new Set(mediaRefs(store.projects,store.categories))
  for(const project of store.projects)for(const block of project.blocks){
   if(block.modelPresentation?.backdrop?.image&&isLocalMedia(block.modelPresentation.backdrop.image))refs.add(block.modelPresentation.backdrop.image)
+   for(const look of Object.values(block.modelPresentation?.materialLooks??{}))if(look.height?.map&&isLocalMedia(look.height.map))refs.add(look.height.map)
   for(const item of block.galleryEntries??[])if(isLocalMedia(item.image))refs.add(item.image)
   for(const slide of block.slides??[])if(isLocalMedia(slide.image))refs.add(slide.image)
  }
@@ -118,6 +119,7 @@ export function refsFor(store:PortfolioStore):string[]{
   for(const block of page.blocks){
    if((block.type==='image'||block.type==='model')&&isLocalMedia(block.content))refs.add(block.content)
    if(block.modelPresentation?.backdrop?.image&&isLocalMedia(block.modelPresentation.backdrop.image))refs.add(block.modelPresentation.backdrop.image)
+   for(const look of Object.values(block.modelPresentation?.materialLooks??{}))if(look.height?.map&&isLocalMedia(look.height.map))refs.add(look.height.map)
    if(block.media&&isLocalMedia(block.media))refs.add(block.media)
    if(block.after&&isLocalMedia(block.after))refs.add(block.after)
    for(const src of block.gallery??[])if(isLocalMedia(src))refs.add(src)
