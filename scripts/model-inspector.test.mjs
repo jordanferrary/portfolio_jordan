@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import {build} from 'esbuild'
 import {readFile} from 'node:fs/promises'
 const compiled=await build({entryPoints:['src/lib/model-presentation.ts'],bundle:true,platform:'node',format:'esm',write:false,logLevel:'silent'})
-const {normalizeModelPresentation,MODEL_MODES,DEFAULT_MODEL_PRESENTATION}=await import('data:text/javascript;base64,'+Buffer.from(compiled.outputFiles[0].text).toString('base64'))
+const {normalizeModelPresentation,MODEL_MODES,DEFAULT_MODEL_PRESENTATION,backdropFill}=await import('data:text/javascript;base64,'+Buffer.from(compiled.outputFiles[0].text).toString('base64'))
 test('old blocks get defaults and invalid settings are clamped',()=>{
  assert.deepEqual(normalizeModelPresentation(),DEFAULT_MODEL_PRESENTATION)
  const p=normalizeModelPresentation({exposure:99,zoom:0,background:'bad',rotationSpeed:NaN,autoRotate:false})
@@ -338,4 +338,38 @@ test('padded compositor retains CRT corners, RGB offsets and bloom beyond origin
  assert.match(post,/view.projectionMatrix.copy\(originalProjection\)/)
  assert.match(post,/view.projectionMatrixInverse.copy\(originalInverse\)/)
  assert.doesNotMatch(post,/rgb=vec3\(0\.0\);alpha=0\.0/)
+})
+
+test('adaptive colors inherit global settings and named theme exceptions survive palette edits',async()=>{
+ const compiled=await build({entryPoints:['src/lib/adaptive-background.ts'],bundle:true,platform:'node',format:'esm',write:false,logLevel:'silent'})
+ const {paletteIdentity,normalizeAdaptiveStop,resolveAdaptiveColor,effectiveAdaptiveColor}=await import('data:text/javascript;base64,'+Buffer.from(compiled.outputFiles[0].text).toString('base64'))
+ const colors={primary:'#FF8800',secondary:'#FFCCAA',background:'#221100',surface:'#332200',text:'#FFFFFF',muted:'#CCCCCC',border:'#AA5500'}
+ const orange={...colors,themeName:'Orange'},purple={...colors,themeName:'Purple',border:'#6633AA'}
+ const id=paletteIdentity(orange)
+ const stop=normalizeAdaptiveStop({global:{source:'border',lightness:-25},themes:{[id]:{lightness:10}}})
+ assert.equal(effectiveAdaptiveColor(stop,orange).lightness,10)
+ assert.equal(effectiveAdaptiveColor(stop,{...orange,border:'#CC6600'}).lightness,10)
+ assert.equal(effectiveAdaptiveColor(stop,purple).lightness,-25)
+ assert.notEqual(resolveAdaptiveColor('#000000',stop,orange),resolveAdaptiveColor('#000000',stop,purple))
+ const p=normalizeModelPresentation({background:'#112233',backdrop:{mode:'conic',adaptivePrimary:stop,secondary:'#334455',extraStops:[{color:'#abcdef',position:70},{color:'#765432',position:20}]}})
+ const gradient=backdropFill(p.background,p.backdrop,orange)
+ assert.match(gradient,/^conic-gradient/);assert.ok(gradient.indexOf('20%')<gradient.indexOf('70%'));assert.match(gradient,/#334455/)
+ assert.equal(backdropFill('#112233',normalizeModelPresentation().backdrop),'#112233')
+ assert.equal(normalizeAdaptiveStop({global:{lightness:999}}).global.lightness,100)
+})
+test('height maps are optional, bounded and use a separate lossless media path',async()=>{
+ const settings=normalizeModelPresentation({materialLooks:{'mat-glb-0':{height:{map:'media://model-height/test.png',mode:'displacement',scale:9,bias:-5}},'mat-glb-1':{height:{map:'javascript:alert(1)',mode:'bump'}}}})
+ const height=settings.materialLooks['mat-glb-0'].height
+ assert.equal(height.scale,1);assert.equal(height.bias,-1);assert.equal(settings.materialLooks['mat-glb-1'].height,undefined)
+ assert.ok(MODEL_MODES.some(m=>m.id==='height'))
+ const {MeshStandardMaterial,Texture}=await import('three')
+ const compiled=await build({entryPoints:['src/lib/model-debug-materials.ts'],bundle:true,platform:'node',format:'esm',write:false,logLevel:'silent'})
+ const {applyHeightMap,debugMaterial}=await import('data:text/javascript;base64,'+Buffer.from(compiled.outputFiles[0].text).toString('base64'))
+ const texture=new Texture(),normal=new Texture(),source=new MeshStandardMaterial({normalMap:normal}),target=source.clone()
+ applyHeightMap(target,height,texture);assert.equal(target.displacementMap,texture);assert.equal(target.normalMap,normal);assert.equal(source.displacementMap,null)
+ const bump=source.clone();applyHeightMap(bump,{...height,mode:'bump',scale:.03},texture);assert.equal(bump.bumpMap,texture);assert.equal(bump.normalMap,null);assert.equal(source.normalMap,normal)
+ const display=debugMaterial('height',source,{checker:()=>texture,matcap:()=>texture,height:texture});assert.equal(display.map,texture)
+ const [publish,media,hook,stage]=await Promise.all(['src/lib/github-publish.ts','src/lib/media-store.ts','src/hooks/use-portfolio.ts','src/lib/model-inspector-stage.ts'].map(path=>readFile(path,'utf8')))
+ assert.ok(publish.includes("stage(look.height.map,'texture')"));assert.ok(media.includes('saveUploadedHeightMap'));assert.ok(hook.includes('refs.add(look.height.map)'));assert.ok(stage.includes('texture.colorSpace=THREE.NoColorSpace'));assert.ok(stage.includes('releaseHeight(entry)'))
+ display.dispose();source.dispose();target.dispose();bump.dispose();texture.dispose();normal.dispose()
 })
