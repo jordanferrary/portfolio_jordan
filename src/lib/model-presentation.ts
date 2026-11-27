@@ -1,5 +1,4 @@
-import {normalizeAdaptiveStop,resolveAdaptiveColor,readActivePalette,type AdaptiveStop} from './adaptive-background'
-import type {ThemePalette} from './theme-palette'
+import {normalizeAdaptiveStop,resolveAdaptiveColor,readActivePalette,type AdaptiveStop,type ActivePalette} from './adaptive-background'
 export type ModelMode='material'|'neutral'|'clay'|'wireframe'|'shaded-wire'|'clay-wire'|'flat'|'flat-wire'|'normals'|'unlit'|'metalness'|'roughness'|'normal-map'|'height'|'ao'|'opacity'|'emission'|'specular'|'scattering'|'matcap'|'matcap-surface'|'uv'|'bones'|'weights'
 export type ArtShaderPreset='original'|'toon'|'noir'|'rim'|'iridescent'|'hologram'|'blueprint'|'flat'|'hatch'|'crosshatch'|'stipple'|'halftone'|'pixel'|'outline'|'dither'|'watercolor'|'pencil'|'pearl'|'foil'|'opal'|'velvet'|'chrome'|'xray'
 export type ArtShader={preset:ArtShaderPreset;strength:number;tint:string;bands:number;rimPower:number;scanSpacing:number;scanSpeed:number;patternScale:number;inkColor:string;paperColor:string;patternAngle:number;chromaticAberration:number;chromaticAngle:number;crt:number;vhs:number;pixelSize:number;bloom:number;bloomThreshold:number;bloomRadius:number}
@@ -68,7 +67,7 @@ export function normalizeBackdrop(value?:Partial<ModelBackdrop>|null):ModelBackd
  const image=typeof v.image==='string'?v.image.trim().slice(0,2048):''
  return {mode:v.mode==='linear'||v.mode==='radial'||v.mode==='conic'||v.mode==='image'||v.mode==='transparent'?v.mode:'solid',secondary:color(v.secondary,d.secondary),angle:numeric(v.angle,d.angle,0,360),centerX:numeric(v.centerX,d.centerX,0,100),centerY:numeric(v.centerY,d.centerY,0,100),image:/^(https?:\/\/|media:\/\/|site:\/\/images\/studio\/|\/images\/)/i.test(image)?image:'',fit:v.fit==='contain'?'contain':'cover',opacity:numeric(v.opacity,1,0,1),...(v.adaptivePrimary?{adaptivePrimary:normalizeAdaptiveStop(v.adaptivePrimary)}:{}),...(v.adaptiveSecondary?{adaptiveSecondary:normalizeAdaptiveStop(v.adaptiveSecondary)}:{}),...(Array.isArray(v.extraStops)&&v.extraStops.length?{extraStops:v.extraStops.slice(0,6).filter(item=>item&&typeof item==='object').map(item=>({color:color(item.color,'#808080'),position:numeric(item.position,50,0,100),...(item.adaptive?{adaptive:normalizeAdaptiveStop(item.adaptive)}:{})}))}:{})}
 }
-export function backdropFill(background:string,backdrop:ModelBackdrop,palette:ThemePalette=readActivePalette()):string{
+export function backdropFill(background:string,backdrop:ModelBackdrop,palette:ActivePalette=readActivePalette()):string{
  if(backdrop.mode==='transparent')return 'transparent'
  const primary=resolveAdaptiveColor(background,backdrop.adaptivePrimary,palette),secondary=resolveAdaptiveColor(backdrop.secondary,backdrop.adaptiveSecondary,palette)
  const extra=(backdrop.extraStops??[]).slice().sort((a,b)=>a.position-b.position).map(item=>resolveAdaptiveColor(item.color,item.adaptive,palette)+' '+item.position+'%')
