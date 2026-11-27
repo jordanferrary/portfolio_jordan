@@ -86,6 +86,8 @@ test('every persistent image upload input routes through WebP path',async()=>{
    if(!src.includes('type="file"')||!src.includes('image/'))continue
    // Dedicated converter only downloads WebP and never persists its source file.
    if(file==='image-converter.tsx')continue
+   // Height maps are data, not artwork. Preserve the original PNG bytes.
+   if(file==='model-material-editor.tsx'){assert.ok(src.includes('saveUploadedHeightMap('));assert.match(src,/accept="image\/png,\.png"/);continue}
    assert.ok(src.includes('saveUploadedMedia('),folder+'/'+file+' bypasses WebP persistence')
   }
  }
