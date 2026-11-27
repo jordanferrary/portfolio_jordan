@@ -293,7 +293,7 @@ export function App(){
   window.addEventListener('alquimago:request-skin-editor',openSkinEditor)
   return ()=>window.removeEventListener('alquimago:request-skin-editor',openSkinEditor)
  },[editing])
- useEffect(()=>{applyThemePalette(portfolio.themePalette);applyTypography(portfolio.typography)},[portfolio.themePalette,portfolio.typography])
+ useEffect(()=>{document.documentElement.dataset.jfTheme=portfolio.activeThemeName??'';applyThemePalette(portfolio.themePalette);applyTypography(portfolio.typography)},[portfolio.themePalette,portfolio.activeThemeName,portfolio.typography])
  useEffect(()=>{applyGlitchPalette(portfolio.glitchPalette)},[portfolio.glitchPalette])
  useEffect(()=>{
   // Installed mascot is public; Gemini chat and creator tools are only shown
