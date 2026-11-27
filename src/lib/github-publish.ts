@@ -129,6 +129,7 @@ function stageSnapshot(store:PortfolioStore){
   siteLogoAppearance:store.siteLogoAppearance,
   siteFavicon:store.siteFavicon,
   themePalette:store.themePalette,
+  activeThemeName:store.activeThemeName,
   typography:store.typography,
   studioControls:store.studioControls,
   glitchPalette:store.glitchPalette,
